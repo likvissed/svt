@@ -1,0 +1,41 @@
+.navbar.navbar-inverse{ role: "navigation-top" }
+  .container
+    .row
+      .col-lg-24
+        .navbar-header
+          = button_tag "", class: "navbar-toggle", "data-toggle": "collapse", "data-target": ".navbar-collapse-head" do
+            %span.sr-only Toggle navigation
+            %span.icon-bar
+            %span.icon-bar
+            %span.icon-bar
+
+        = link_to root_path, class: "navbar-brand" do
+          -#= image_tag ""
+          = "Инвентаризация"
+        -#.navbar-text Инвентаризация
+
+        .collapse.navbar-collapse.navbar-collapse-head
+          .navbar-text.navbar-right.pull-right
+            = "***REMOVED*** Р.Ф. | "
+            = link_to "", method: :delete, class: "navbar-link" do
+              Выход
+
+.navbar.navbar-default{ role: "navigation-main" }
+  .container
+    .navbar-header
+      = button_tag "", class: "navbar-toggle", "data-toggle": "collapse", "data-target": ".navbar-collapse-main" do
+        %span.sr-only Toggle navigation
+        %span.icon-bar
+        %span.icon-bar
+        %span.icon-bar
+
+    .collapse.navbar-collapse.navbar-collapse-main
+      %ul.nav.navbar-nav
+        %li.dropdown
+          = link_to "Рабочие места", work_places_path
+        %li
+          = link_to "ПК с изменениями", ""
+        -#%li
+          = link_to "Поиск", ""
+        %li
+          = link_to "Логи", ""
