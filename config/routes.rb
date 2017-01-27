@@ -4,4 +4,5 @@ Rails.application.routes.draw do
   root 'work_places#index'
 
   resources :work_places
+  resources :system_units
 end
