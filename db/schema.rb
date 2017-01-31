@@ -22,7 +22,7 @@ ActiveRecord::Schema.define(version: 20170127022132) do
   create_table "etalon_changes", force: :cascade, options: "ENGINE=InnoDB DEFAULT CHARSET=utf8" do |t|
     t.integer  "system_unit_id"
     t.integer  "detail_type_id"
-    t.string   "device",         null: false
+    t.string   "detail",         null: false
     t.integer  "event",          null: false
     t.datetime "created_at",     null: false
     t.datetime "updated_at",     null: false
@@ -30,20 +30,10 @@ ActiveRecord::Schema.define(version: 20170127022132) do
     t.index ["system_unit_id"], name: "index_etalon_changes_on_system_unit_id", using: :btree
   end
 
-  create_table "etalon_configs", force: :cascade, options: "ENGINE=InnoDB DEFAULT CHARSET=utf8" do |t|
-    t.integer  "system_units_id"
-    t.integer  "detail_types_id"
-    t.string   "device",          null: false
-    t.datetime "created_at",      null: false
-    t.datetime "updated_at",      null: false
-    t.index ["detail_types_id"], name: "index_etalon_configs_on_detail_types_id", using: :btree
-    t.index ["system_units_id"], name: "index_etalon_configs_on_system_units_id", using: :btree
-  end
-
   create_table "etalon_details", force: :cascade, options: "ENGINE=InnoDB DEFAULT CHARSET=utf8" do |t|
     t.integer  "system_unit_id"
     t.integer  "detail_type_id"
-    t.string   "device",         null: false
+    t.string   "detail",         null: false
     t.datetime "created_at",     null: false
     t.datetime "updated_at",     null: false
     t.index ["detail_type_id"], name: "index_etalon_details_on_detail_type_id", using: :btree
@@ -63,6 +53,7 @@ ActiveRecord::Schema.define(version: 20170127022132) do
 
   create_table "logs", force: :cascade, options: "ENGINE=InnoDB DEFAULT CHARSET=utf8" do |t|
     t.integer  "system_unit_id"
+    t.string   "username",       null: false
     t.integer  "event",          null: false
     t.datetime "created_at",     null: false
     t.datetime "updated_at",     null: false
