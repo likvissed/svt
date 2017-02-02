@@ -64,3 +64,5 @@ config/redis.yml
 #/spec/views
 /specifications
 /cached_pages/*
+
+.lib/AuditBot/var/auditbot.log
