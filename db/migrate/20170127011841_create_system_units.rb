@@ -5,7 +5,7 @@ class CreateSystemUnits < ActiveRecord::Migration[5.0]
       t.integer :tn_responsible,  unsigned: true
       t.integer :division,        unsigned: true
       t.boolean :etalon_status,   null: false
-      t.integer :work_place_id,   unsigned: true
+      t.integer :workplace_id,    unsigned: true
       t.timestamps
     end
   end
