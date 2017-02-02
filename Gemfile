@@ -66,7 +66,7 @@ group :development do
   # Rails panel
   # gem 'meta_request'
   # View errors
-  # gem 'better_errors'
+  gem 'better_errors'
   # Quiet assets
   # gem 'quiet_assets'
 
