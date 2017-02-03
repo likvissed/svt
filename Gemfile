@@ -5,8 +5,13 @@ git_source(:github) do |repo_name|
   "https://github.com/#{repo_name}.git"
 end
 
+# For usage 'respond_to/respond_with'
+gem 'responders'
+gem 'binding_of_caller'
+
 # Background processing
 gem 'sidekiq'
+
 # MySQL
 gem 'mysql2'
 # Icons
