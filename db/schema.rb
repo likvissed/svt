@@ -10,7 +10,7 @@
 #
 # It's strongly recommended that you check this file into your version control system.
 
-ActiveRecord::Schema.define(version: 20170127022132) do
+ActiveRecord::Schema.define(version: 20170202092807) do
 
   create_table "detail_types", force: :cascade, options: "ENGINE=InnoDB DEFAULT CHARSET=utf8" do |t|
     t.string   "type_name",  limit: 50, null: false
@@ -65,7 +65,7 @@ ActiveRecord::Schema.define(version: 20170127022132) do
     t.integer  "tn_responsible",                         unsigned: true
     t.integer  "division",                               unsigned: true
     t.boolean  "etalon_status",             null: false
-    t.integer  "work_place_id",                          unsigned: true
+    t.integer  "workplace_id",                           unsigned: true
     t.datetime "created_at",                null: false
     t.datetime "updated_at",                null: false
   end

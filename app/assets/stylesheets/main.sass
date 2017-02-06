@@ -1,5 +1,59 @@
 $min-width:   970px
 $corp-color:  #0050a0
+$main-bg-color:   white
 
 .bg-content
   margin-bottom: $line-height-computed
+
+.content-body
+  width: 100%
+  padding: 20px
+  display: inline-block
+
+/* ================================================ Основной контент ================================================ */
+
+body
+  background-color: $main-bg-color
+
+button
+  @extend .btn, .btn-default
+
+textarea
+  resize: none
+
+a.default-color
+  color: $btn-default-color !important
+
+// Для отображения flash сообщений
+.absolute
+  position: absolute
+  z-index: 9999
+  width: 100%
+
+/* ================================================ Таблицы ========================================================= */
+
+.table
+  @extend .table
+  margin: 10px 0 !important
+
+table.center-header
+  th
+    text-align: center
+
+.table-hover
+  @extend .table-hover
+  cursor: pointer
+
+.row-margin-bot
+  margin-bottom: 15px
+
+/* ================================================ Стиль для компонентов таблицы DataTables ======================== */
+
+.dataTables_wrapper
+  .form-control
+    width: 100% !important
+    margin-left: 0 !important
+
+  .dataTables_filter
+    label
+      width: 100% !important

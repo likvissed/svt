@@ -5,12 +5,18 @@ git_source(:github) do |repo_name|
   "https://github.com/#{repo_name}.git"
 end
 
+# For usage 'respond_to/respond_with'
+gem 'responders'
+gem 'binding_of_caller'
+
 # Background processing
 gem 'sidekiq'
+
 # MySQL
 gem 'mysql2'
 # Icons
-gem 'font-awesome-sass'
+gem 'font-awesome-rails'
+# gem 'font-awesome-rails'
 # Twitter Bootstrap
 gem 'bootstrap-sass'
 # Simple form
@@ -66,7 +72,7 @@ group :development do
   # Rails panel
   # gem 'meta_request'
   # View errors
-  # gem 'better_errors'
+  gem 'better_errors'
   # Quiet assets
   # gem 'quiet_assets'
 
