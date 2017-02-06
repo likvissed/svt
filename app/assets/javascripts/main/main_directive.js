@@ -2,9 +2,33 @@
   'use strict';
 
   app
+    .directive('disableLink', disableLink)
     .directive('datatableWrapper', datatableWrapper);
 
   datatableWrapper.$inject = ['$timeout', '$compile'];
+
+  // Отключить переход по ссылке
+  function disableLink() {
+    return {
+      restrict: 'A',
+      link: function (scope, element, attrs) {
+        var checkLink = function (data) {
+          if (data)
+            element.on('click', function (event) {
+              event.preventDefault();
+            });
+          else
+            element.off().on('click', function() {
+              return true;
+            })
+        };
+
+        scope.$watch(attrs.disableLink, function (newValue, oldValue) {
+          checkLink(newValue);
+        });
+      }
+    }
+  }
 
 // Скомпилировать представление таблиц DataTable
 // Нужно для работы директивы newRecord, так как на момент добавления этой директивы DOM уже скомпилирован

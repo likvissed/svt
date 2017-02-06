@@ -15,7 +15,8 @@ gem 'sidekiq'
 # MySQL
 gem 'mysql2'
 # Icons
-gem 'font-awesome-sass'
+gem 'font-awesome-rails'
+# gem 'font-awesome-rails'
 # Twitter Bootstrap
 gem 'bootstrap-sass'
 # Simple form
