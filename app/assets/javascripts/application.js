@@ -11,6 +11,10 @@
 //= require lib/bootstrap.js
 //= require lib/datatables/angular-datatables
 
+//= require lib/angularjs/ui-bootstrap-tpls-2.5.0.js
+//= require lib/angularjs/angular-locale_ru
+
 //= require_tree ./main
+//= require_tree ./count_workplaces
 //= require_tree ./system_units
 //= require_tree ./workplaces

@@ -3,6 +3,12 @@ Rails.application.routes.draw do
 
   root 'work_places#index'
 
-  resources :workplaces
+  # Инвентаризация
+  resources :workplaces, param: :workplace_id
+  resources :count_workplaces, param: :count_workplace_id, except: :edit do
+    get 'link/new_record', to: 'count_workplaces#link_to_new_record', on: :collection
+  end
+
+  # Эталоны
   resources :system_units
 end

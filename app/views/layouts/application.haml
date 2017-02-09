@@ -8,6 +8,7 @@
     = stylesheet_link_tag    'application', media: 'all'
     = javascript_include_tag 'application'
   %body{ "ng-app": "Inv" }
+    = render partial: "layouts/flash"
     = render partial: "layouts/header"
     .bg-content
       = yield

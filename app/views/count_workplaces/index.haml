@@ -1,0 +1,12 @@
+= title "Инвентаризация"
+
+.container{ "ng-controller": "CountWorkplaceIndexCtrl as countWp" }
+  .row
+    .col-fhd-24
+      .well
+        .content-body
+          %datatable-wrapper
+            %table.table.table-striped{ datatable: "", "dt-options": "countWp.dtOptions", "dt-columns": |
+            "countWp.dtColumns", "dt-instance": "countWp.dtInstance", width: "100%" } |
+
+  = render partial: 'modal'

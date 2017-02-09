@@ -3,7 +3,8 @@
 
   app
     .directive('disableLink', disableLink)
-    .directive('datatableWrapper', datatableWrapper);
+    .directive('datatableWrapper', datatableWrapper)
+    .directive('newRecord', newRecord);
 
   datatableWrapper.$inject = ['$timeout', '$compile'];
 
@@ -30,8 +31,8 @@
     }
   }
 
-// Скомпилировать представление таблиц DataTable
-// Нужно для работы директивы newRecord, так как на момент добавления этой директивы DOM уже скомпилирован
+  // Скомпилировать представление таблиц DataTable
+  // Нужно для работы директивы newRecord, так как на момент добавления этой директивы DOM уже скомпилирован
   function datatableWrapper($timeout, $compile) {
     return {
       restrict: 'E',
@@ -40,6 +41,7 @@
       link: function (scope, element, attrs) {
         function compileElements() {
           $timeout(function () {
+            $compile(element.find('.new-record'))(scope);
           }, 0, false);
         }
 
@@ -55,6 +57,19 @@
         )
       }
     };
+  }
+
+  // Для таблицы DataTable добавить кнопку "Добавить", если у пользователя есть доступ
+  // Необходимо добавить в атрибут id имя контроллера, на который отправится запрос
+  function newRecord() {
+    return {
+      restrict: 'C',
+      //template: '<button class="btn-sm btn btn-primary btn-block"
+      // ng-click="contactPage.showContactModal()">Добавить</button>'
+      templateUrl: function (element, attrs) {
+        return '/' + attrs.id + '/link/new_record.json';
+      }
+    }
   }
 
 })();
