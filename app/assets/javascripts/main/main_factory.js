@@ -70,7 +70,10 @@ function Error(Flash) {
    * параметре "response")
    */
   self.response = function (response, status) {
-    var code; // код ответа
+    // Код ответа
+    var code;
+    // Расшифровка статуса ошибки.
+    var descr;
 
     code = (response && response.status) ? parseInt(response.status): parseInt(status);
 
@@ -85,10 +88,22 @@ function Error(Flash) {
         Flash.alert('Запись не найдена.');
         break;
       case 422:
-        response.data ? Flash.alert(response.data.full_message) : Flash.alert(response.full_message);
+        descr = (response && response.statusText) ? ' (' + response.statusText + ')' : '';
+
+        if (response.data) {
+          if (response.data.full_message)
+            Flash.alert(response.data.full_message);
+          else
+            Flash.alert('Ошибка. Код: ' + code + descr + '. Обратитесь к администратору (тел. ***REMOVED***).');
+        } else {
+          if (response.data.full_message)
+            Flash.alert(response.full_message);
+          else
+            Flash.alert('Ошибка. Код: ' + code + descr + '. Обратитесь к администратору (тел. ***REMOVED***).');
+        }
         break;
       default:
-        var descr = (response && response.statusText) ? ' (' + response.statusText + ')' : '';
+        descr = (response && response.statusText) ? ' (' + response.statusText + ')' : '';
         Flash.alert('Ошибка. Код: ' + code + descr + '. Обратитесь к администратору (тел. ***REMOVED***).');
         break;
     }

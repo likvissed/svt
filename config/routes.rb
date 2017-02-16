@@ -5,9 +5,17 @@ Rails.application.routes.draw do
 
   # Инвентаризация
   resources :workplaces, param: :workplace_id
+
+  # Отделы
   resources :count_workplaces, param: :count_workplace_id, except: :edit do
-    get 'link/new_record', to: 'count_workplaces#link_to_new_record', on: :collection
+    get 'link/new_record',    to: 'count_workplaces#link_to_new_record',  on: :collection
   end
+
+  # Запросы с ЛК
+  # Инициализация
+  get '***REMOVED***_invents/init/:tn', to: '***REMOVED***_invents#init', constraints: { tn: /\d+/ }
+  # Получить данные по выбранном отделу (список РМ, макс. число, список работников отдела)
+  get '***REMOVED***_invents/show_division_data/:division', to: '***REMOVED***_invents#show_division_data', constraints: { division: /\d+/ }
 
   # Эталоны
   resources :system_units

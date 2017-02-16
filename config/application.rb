@@ -16,5 +16,14 @@ module Inv
     # -- all .rb files in that directory are automatically loaded.
     config.time_zone = 'Krasnoyarsk'
     config.i18n.default_locale = :ru
+
+    # Provides support for Cross-Origin Resource Sharing (CORS)
+    config.middleware.insert_before 0, Rack::Cors do
+      allow do
+        origins 'http://***REMOVED***', 'https://***REMOVED***.***REMOVED***.ru'
+        resource '/***REMOVED***_invents/init/*', :headers => :any, :methods => [:get]
+        resource '/***REMOVED***_invents/show_division_data/*', :headers => :any, :methods => [:get]
+      end
+    end
   end
 end

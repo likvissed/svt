@@ -19,7 +19,6 @@ class ApplicationController < ActionController::Base
     super || valid_authenticity_token?(session, request.headers['X-XSRF-TOKEN'])
   end
 
-
   # Создать html-строку с содержимым, зависящим от прав доступа пользователя
   # Запрос на данный метод генерирует директива addRecord, которая рендерит полученную строку.
   #

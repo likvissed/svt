@@ -5,6 +5,8 @@ git_source(:github) do |repo_name|
   "https://github.com/#{repo_name}.git"
 end
 
+# Provides support for Cross-Origin Resource Sharing (CORS)
+gem 'rack-cors', :require => 'rack/cors'
 # For usage 'respond_to/respond_with'
 gem 'responders'
 gem 'binding_of_caller'

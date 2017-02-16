@@ -251,6 +251,7 @@ ModalCountWpController.prototype.ok = function () {
         self.Flash.notice(response.full_message);
       },
       function error(response) {
+        console.log(response);
         self.Error.response(response);
         self.errorResponse(response);
       }

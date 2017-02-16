@@ -2,8 +2,8 @@ class CountWorkplace < Netadmin
   self.table_name   = :invent_count_workplace
   self.primary_key  = :count_workplace_id
 
-  has_many :workplaces
-  belongs_to :user_iss, class_name: 'UserIss', foreign_key: 'id_tn', optional: true
+  has_many    :workplaces
+  belongs_to  :user_iss, foreign_key: 'id_tn', optional: true
 
   after_validation :get_user_data, if: -> { self.errors[:tn].empty? }
 
