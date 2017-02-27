@@ -131,7 +131,7 @@ function Server($resource) {
      *
      * @memberOf Inv.Server
      */
-    CountWorkplace: $resource('/count_workplaces/:count_workplace_id.json', {}, { update: { method: 'PATCH' } })
+    WorkplaceCount: $resource('/workplace_counts/:workplace_count_id.json', {}, { update: { method: 'PATCH' } })
   }
 }
 

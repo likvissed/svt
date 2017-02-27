@@ -10,6 +10,15 @@ $main-bg-color:   white
   padding: 20px
   display: inline-block
 
+.pointer
+  cursor: pointer
+
+.no-left-padding
+  padding-left: 0 !important
+
+.no-right-padding
+  padding-right: 0 !important
+
 /* ================================================ Основной контент ================================================ */
 
 body
@@ -46,6 +55,27 @@ table.center-header
 
 .row-margin-bot
   margin-bottom: 15px
+
+// Стили для внутренних таблиц, используемых внутри форм
+.internal-table
+  width: 100%
+
+  tr.empty
+    height: 15px
+
+  //.fa
+    cursor: pointer
+
+  .min-td
+    width: 20px
+    padding: 1px 2px 0 2px !important
+
+  .form-group
+    margin-bottom: 0 !important
+
+  //.icon-padding
+  i
+    padding: 10px 0
 
 /* ================================================ Стиль для компонентов таблицы DataTables ======================== */
 

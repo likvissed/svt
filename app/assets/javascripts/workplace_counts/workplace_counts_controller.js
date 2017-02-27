@@ -1,14 +1,14 @@
 app
-  .controller('CountWorkplaceIndexCtrl', CountWorkplaceIndexCtrl)
-  .controller('ModalCountWpController', ModalCountWpController);
+  .controller('WorkplaceCountIndexCtrl', WorkplaceCountIndexCtrl)
+  .controller('ModalWpCountController', ModalWpCountController);
 
-CountWorkplaceIndexCtrl.$inject = ['$controller', '$scope', '$compile', '$uibModal', 'DTOptionsBuilder', 'DTColumnBuilder', 'Config', 'Server', 'Flash', 'Error', 'CountWorkplace'];
-ModalCountWpController.$inject  = ['$scope', '$uibModalInstance', 'data', 'Server', 'Config', 'Flash', 'Error'];
+WorkplaceCountIndexCtrl.$inject = ['$controller', '$scope', '$compile', '$uibModal', 'DTOptionsBuilder', 'DTColumnBuilder', 'Config', 'Server', 'Flash', 'Error', 'WorkplaceCount'];
+ModalWpCountController.$inject  = ['$scope', '$uibModalInstance', 'data', 'Server', 'Config', 'Flash', 'Error', 'WorkplaceCount'];
 
 /**
  * Управление общей таблицей информации РМ по отделам.
  *
- * class Inv.CountWorkplaceIndexCtrl
+ * class Inv.WorkplaceCountIndexCtrl
  * @param $controller
  * @param $scope
  * @param $compile
@@ -19,9 +19,9 @@ ModalCountWpController.$inject  = ['$scope', '$uibModalInstance', 'data', 'Serve
  * @param Server - описание: {@link Inv.Server}
  * @param Flash - описание: {@link Inv.Flash}
  * @param Error - описание: {@link Inv.Error}
- * @param CountWorkplace - описание: {@link Inv.CountWorkplace}
+ * @param WorkplaceCount - описание: {@link Inv.WorkplaceCount}
  */
-function CountWorkplaceIndexCtrl($controller, $scope, $compile, $uibModal, DTOptionsBuilder, DTColumnBuilder, Config, Server, Flash, Error, CountWorkplace) {
+function WorkplaceCountIndexCtrl($controller, $scope, $compile, $uibModal, DTOptionsBuilder, DTColumnBuilder, Config, Server, Flash, Error, WorkplaceCount) {
   var self = this;
 
 // =============================================== Инициализация =======================================================
@@ -32,19 +32,19 @@ function CountWorkplaceIndexCtrl($controller, $scope, $compile, $uibModal, DTOpt
   self.Server         = Server;
   self.Flash          = Flash;
   self.Error          = Error;
-  self.CountWorkplace = CountWorkplace;
+  self.WorkplaceCount = WorkplaceCount;
 
   // Подключаем основные параметры таблицы
   $controller('DefaultDataTableCtrl', {});
 
-  // Объекты отделов инвентаризации (count_workplace_id => data)
-  self.countWp    = {};
+  // Объекты отделов инвентаризации (workplace_count_id => data)
+  self.wpCount    = {};
   self.dtInstance = {};
   self.dtOptions  = DTOptionsBuilder
     .newOptions()
     .withOption('stateSave', true)
     .withOption('ajax', {
-      url:  '/count_workplaces.json',
+      url:  '/workplace_counts.json',
       error: function (response) {
         Error.response(response);
       }
@@ -53,7 +53,7 @@ function CountWorkplaceIndexCtrl($controller, $scope, $compile, $uibModal, DTOpt
     .withDOM(
       '<"row"' +
         '<"col-sm-4 col-md-3 col-lg-2 col-fhd-2"' +
-          '<"#count_workplaces.new-record">>' +
+          '<"#workplace_counts.new-record">>' +
         '<"col-sm-16 col-md-18 col-lg-19 col-fhd-19">' +
         '<"col-sm-4 col-md-3 col-lg-3 col-fhd-3"f>>' +
       '<"row"' +
@@ -66,13 +66,13 @@ function CountWorkplaceIndexCtrl($controller, $scope, $compile, $uibModal, DTOpt
   self.dtColumns      = [
     DTColumnBuilder.newColumn(null).withTitle('').withOption('className', 'col-fhd-1').renderWith(renderIndex),
     DTColumnBuilder.newColumn('division').withTitle('Отдел').withOption('className', 'col-fhd-3'),
-    DTColumnBuilder.newColumn('responsible').withTitle('Ответственный').withOption('className', 'col-fhd-5'),
+    DTColumnBuilder.newColumn('responsibles').withTitle('Ответственный').withOption('className', 'col-fhd-6'),
     DTColumnBuilder.newColumn('phone').withTitle('Телефон').withOption('className', 'col-fhd-3'),
-    DTColumnBuilder.newColumn('count_wp').withTitle('Кол-во РМ').withOption('className', 'col-fhd-3 text-center'),
-    DTColumnBuilder.newColumn('date-range').withTitle('Время доступа').withOption('className', 'col-fhd-4' +
+    // DTColumnBuilder.newColumn('count_wp').withTitle('Кол-во РМ').withOption('className', 'col-fhd-3 text-center'),
+    DTColumnBuilder.newColumn('date-range').withTitle('Время доступа').withOption('className', 'col-fhd-5' +
       ' text-center'),
     DTColumnBuilder.newColumn('waiting').withTitle('Ожидают').withOption('className', 'text-center col-fhd-2'),
-    DTColumnBuilder.newColumn('ready').withTitle('Готовность').withOption('className', 'text-center col-fhd-2'),
+    DTColumnBuilder.newColumn('ready').withTitle('Подтверждено').withOption('className', 'text-center col-fhd-2'),
     DTColumnBuilder.newColumn(null).withTitle('').notSortable().withOption('className', 'text-center col-fhd-1').renderWith(editRecord),
     DTColumnBuilder.newColumn(null).withTitle('').notSortable().withOption('className', 'text-center col-fhd-1').renderWith(delRecord)
   ];
@@ -84,7 +84,7 @@ function CountWorkplaceIndexCtrl($controller, $scope, $compile, $uibModal, DTOpt
    */
   function renderIndex(data, type, full, meta) {
     // Сохранить данные сервиса (нужны для вывода пользователю информации об удаляемом элементе)
-    self.countWp[data.count_workplace_id] = data;
+    self.wpCount[data.workplace_count_id] = data;
     return meta.row + 1;
   }
 
@@ -100,7 +100,7 @@ function CountWorkplaceIndexCtrl($controller, $scope, $compile, $uibModal, DTOpt
    * Отрендерить ссылку на редактирование записи.
    */
   function editRecord(data, type, full, meta) {
-    return '<a href="" class="default-color" disable-link=true ng-click="countWp.openCountWpEditModal(' + data.count_workplace_id +
+    return '<a href="" class="default-color" disable-link=true ng-click="wpCount.openWpCountEditModal(' + data.workplace_count_id +
       ')" uib-tooltip="Редактировать запись"><i class="fa fa-pencil-square-o fa-1g"></a>';
   }
 
@@ -108,7 +108,7 @@ function CountWorkplaceIndexCtrl($controller, $scope, $compile, $uibModal, DTOpt
    * Отрендерить ссылку на удаление данных.
    */
   function delRecord(data, type, full, meta) {
-    return '<a href="" class="text-danger" disable-link=true ng-click="countWp.destroyRecord(' + data.count_workplace_id +
+    return '<a href="" class="text-danger" disable-link=true ng-click="wpCount.destroyRecord(' + data.workplace_count_id +
       ')" uib-tooltip="Удалить запись"><i class="fa fa-trash-o fa-1g"></a>';
   }
 
@@ -119,13 +119,13 @@ function CountWorkplaceIndexCtrl($controller, $scope, $compile, $uibModal, DTOpt
  *
  * @param data - данные, вставляемые в форму
  */
-CountWorkplaceIndexCtrl.prototype._openCountWpEditModal = function (data) {
+WorkplaceCountIndexCtrl.prototype._openWpCountEditModal = function (data) {
   var self = this;
 
   var modalInstance = self.$uibModal.open({
     animation:    self.Config.global.modalAnimation,
-    templateUrl:  'editCountWp.haml',
-    controller:   'ModalCountWpController',
+    templateUrl:  'editWpCount.haml',
+    controller:   'ModalWpCountController',
     controllerAs: 'modal',
     resolve: {
       data: data
@@ -134,10 +134,10 @@ CountWorkplaceIndexCtrl.prototype._openCountWpEditModal = function (data) {
 
   modalInstance.result.then(function () {
     // Обновить таблицу после того, как пользователь нажал кнопку "Готово".
-    self.dtInstance.reloadData(null, self.Config.count_workplace.reloadPaging);
+    self.dtInstance.reloadData(null, self.Config.workplace_count.reloadPaging);
   }, function () {
     // Закрыли модальное окно (все остальные случаи)
-    self.CountWorkplace.clearData();
+    self.WorkplaceCount.clearData();
   });
 };
 
@@ -146,37 +146,38 @@ CountWorkplaceIndexCtrl.prototype._openCountWpEditModal = function (data) {
  *
  * @param id - id отдела
  */
-CountWorkplaceIndexCtrl.prototype.openCountWpEditModal = function (id) {
+WorkplaceCountIndexCtrl.prototype.openWpCountEditModal = function (id) {
   var self = this;
 
   if (id)
-    self.CountWorkplace.getDivision(id).then(function (data) {
-      self._openCountWpEditModal(data);
+    self.WorkplaceCount.getDivision(id).then(function (data) {
+      console.log(data);
+      self._openWpCountEditModal(data);
     });
   else
-    self._openCountWpEditModal(self.CountWorkplace.newDivision());
+    self._openWpCountEditModal(self.WorkplaceCount.newDivision());
 
 };
 
 /**
  * Удалить запись.
  *
- * @param id - id записи в объекте countWp
+ * @param id - id записи в объекте wpCount
  */
-CountWorkplaceIndexCtrl.prototype.destroyRecord = function (id) {
+WorkplaceCountIndexCtrl.prototype.destroyRecord = function (id) {
   var self = this;
 
-  var confirm_str = "Вы действительно хотите удалить отдел \"" + self.countWp[id].division + "\"?";
+  var confirm_str = "Вы действительно хотите удалить отдел \"" + self.wpCount[id].division + "\"?";
 
   if (!confirm(confirm_str))
     return false;
 
-  self.Server.CountWorkplace.delete({ count_workplace_id: id },
+  self.Server.WorkplaceCount.delete({ workplace_count_id: id },
     // Success
     function (response) {
       self.Flash.notice(response.full_message);
 
-      self.dtInstance.reloadData(null, self.Config.count_workplace.reloadPaging);
+      self.dtInstance.reloadData(null, self.Config.workplace_count.reloadPaging);
     },
     // Error
     function (response) {
@@ -190,7 +191,7 @@ CountWorkplaceIndexCtrl.prototype.destroyRecord = function (id) {
 /**
  * Управление модальным окном, создающим/редактирующим записи.
  *
- * @class Inv.ModalCountWpController
+ * @class Inv.ModalWpCountController
  * @param $scope
  * @param $uibModalInstance
  * @param data - данные, передаваемые модальному окну
@@ -199,15 +200,16 @@ CountWorkplaceIndexCtrl.prototype.destroyRecord = function (id) {
  * @param Flash - описание: {@link Inv.Flash}
  * @param Error - описание: {@link Inv.Error}
  */
-function ModalCountWpController($scope, $uibModalInstance, data, Server, Config, Flash, Error) {
-  // Установить имя формы для класса ModalCountWpController
-  this.setFormName('count_workplace');
+function ModalWpCountController($scope, $uibModalInstance, data, Server, Config, Flash, Error, WorkplaceCount) {
+  // Установить имя формы для класса ModalWpCountController
+  this.setFormName('workplace_count');
 
   this.$scope             = $scope;
   this.$uibModalInstance  = $uibModalInstance;
   this.Server             = Server;
   this.Flash              = Flash;
   this.Error              = Error;
+  this.WorkplaceCount     = WorkplaceCount;
 
   // Данные по отделу
   this.data         = data.value;
@@ -232,33 +234,48 @@ function ModalCountWpController($scope, $uibModalInstance, data, Server, Config,
 }
 
 // Унаследовать методы класса FormValidationController
-ModalCountWpController.prototype = Object.create(FormValidationController.prototype);
-ModalCountWpController.prototype.constructor = ModalCountWpController;
+ModalWpCountController.prototype = Object.create(FormValidationController.prototype);
+ModalWpCountController.prototype.constructor = ModalWpCountController;
+
+/**
+ * Добавить ответсвенного.
+ */
+ModalWpCountController.prototype.addResponsible = function () {
+  this.WorkplaceCount.addResponsible();
+};
+
+/**
+ * Удалить ответственного.
+ *
+ * @param obj - удаляемый объект
+ */
+ModalWpCountController.prototype.delResponsible = function (obj) {
+  this.WorkplaceCount.delResponsible(obj);
+};
 
 /**
  * Сохранить данные и закрыть модальное окно.
  */
-ModalCountWpController.prototype.ok = function () {
+ModalWpCountController.prototype.ok = function () {
   var self = this;
 
   self.clearErrors();
-
+  
   if (self.method == 'POST') {
-    self.Server.CountWorkplace.save({ count_workplace: self.data },
+    self.Server.WorkplaceCount.save({ workplace_count: self.data },
       function success(response) {
         self.$uibModalInstance.close();
 
         self.Flash.notice(response.full_message);
       },
       function error(response) {
-        console.log(response);
         self.Error.response(response);
         self.errorResponse(response);
       }
     )
   }
   else {
-    self.Server.CountWorkplace.update({ count_workplace_id: self.data.count_workplace_id}, { count_workplace: self.data },
+    self.Server.WorkplaceCount.update({ workplace_count_id: self.data.workplace_count_id}, { workplace_count: self.data },
       function success(response) {
         self.$uibModalInstance.close();
 
@@ -275,7 +292,7 @@ ModalCountWpController.prototype.ok = function () {
 /**
  * Закрыть модальное окно по нажатии кнопки "Закрыть".
  */
-ModalCountWpController.prototype.cancel = function () {
+ModalWpCountController.prototype.cancel = function () {
   this.$uibModalInstance.dismiss();
 };
 
@@ -284,7 +301,7 @@ ModalCountWpController.prototype.cancel = function () {
  *
  * @param type - тип календаря, time_start или time_end
  */
-ModalCountWpController.prototype.openDatePicker = function (type) {
+ModalWpCountController.prototype.openDatePicker = function (type) {
   this[type].openDatePicker = true;
 };
 

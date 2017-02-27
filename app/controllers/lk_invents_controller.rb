@@ -2,7 +2,7 @@ class LkInventsController < ApplicationController
   # Получить список отделов, закрепленных за пользователем и список всех типов оборудования с их параметрами
   def init
     # Получить список отделов
-    @count_workplace = CountWorkplace
+    @count_workplace = WorkplaceCount
                          .left_outer_joins(:user_iss).select(:division)
                          .where('user_iss.tn = ?', params[:tn])
 
@@ -36,13 +36,13 @@ invent_property.type, invent_property.mandatory, invent_property.multiple, inven
   # Получить данные по выбранном отделу (список РМ, макс. число, список работников отдела)
   def show_division_data
     # Получить рабочие места указанного отдела
-    @workplaces = CountWorkplace
+    @workplaces = WorkplaceCount
                     .joins('RIGHT OUTER JOIN invent_workplace USING(count_workplace_id)')
                     .left_outer_joins(:user_iss)
                     .joins('LEFT OUTER JOIN invent_workplace_type ON invent_workplace.workplace_type_id =
 invent_workplace_type.workplace_type_id')
                     .select('invent_workplace.*, invent_workplace_type.name as type_name, invent_workplace_type
-.short_description as type_short_descr, user_iss.fio_initials as fio, user_iss.tn as user_tn')
+.short_description as type_short_descr, user_iss.fio_initials as fio, user_iss.tn as user_tn, user_iss.duty')
                     .where(division: params[:division])
 
     # SELECT
@@ -67,12 +67,12 @@ invent_workplace_type.workplace_type_id')
                .where('tn < 100000')
 
     # Получить максимальное количество рабочих мест указанного отдела
-    @count_wp = CountWorkplace.select(:count_wp).find_by(division: params[:division])
+    # @count_wp = CountWorkplace.select(:count_wp).find_by(division: params[:division])
 
     data = {
       workplaces: @workplaces,
-      users:      @users,
-      maxCount:   @count_wp.nil? ? nil : @count_wp.count_wp
+      users:      @users
+      # maxCount:   @count_wp.nil? ? nil : @count_wp.count_wp
     }
 
     render json: data, status: :ok

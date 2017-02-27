@@ -23,7 +23,7 @@
         longFormat: 'dd-MMMM-yyyy'
       }
     },
-    count_workplace: {
+    workplace_count: {
       reloadPaging: false
     }
   };

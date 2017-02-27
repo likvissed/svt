@@ -67,4 +67,30 @@ class WorkplacesController < ApplicationController
   # LIMIT 1
   end
 
+  private
+
+  def workplace_params
+    params.require(:workplace).permit(
+      :count_workplace_id,
+      :name,
+      :workplace_type_id,
+      :id_tn,
+      :location,
+      :comment,
+      :status,
+      inv_items_attributes: [
+        :item_id,
+        :type_id,
+        :parent_id,
+        :workplace_id,
+        :_destroy,
+        inv_property_values_attributes: [
+          :property_value_id,
+          :property_id,
+          :item_id,
+          :value
+        ]
+      ]
+    )
+  end
 end

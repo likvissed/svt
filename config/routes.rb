@@ -1,14 +1,14 @@
 Rails.application.routes.draw do
   # For details on the DSL available within this file, see http://guides.rubyonrails.org/routing.html
 
-  root 'work_places#index'
+  root 'workplaces#index'
 
   # Инвентаризация
   resources :workplaces, param: :workplace_id
 
   # Отделы
-  resources :count_workplaces, param: :count_workplace_id, except: :edit do
-    get 'link/new_record',    to: 'count_workplaces#link_to_new_record',  on: :collection
+  resources :workplace_counts, param: :workplace_count_id, except: :edit do
+    get 'link/new_record',    to: 'workplace_counts#link_to_new_record',  on: :collection
   end
 
   # Запросы с ЛК

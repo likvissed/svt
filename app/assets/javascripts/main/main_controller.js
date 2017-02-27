@@ -85,7 +85,7 @@ function FormValidationController() {
  */
 FormValidationController.prototype._setValidations = function (array, flag) {
   var self = this;
-  
+
   $.each(array, function (key, value) {
     $.each(value, function (index, message) {
       if (key != 'base')
