@@ -63,6 +63,8 @@ group :development, :test do
   gem 'byebug', platform: :mri
   # Testing
   gem 'rspec-rails'
+  # Colorize text
+  gem 'colorize'
 end
 
 group :development do

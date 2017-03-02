@@ -12,4 +12,5 @@ class Workplace < Netadmin
   accepts_nested_attributes_for :inv_items, allow_destroy: true, reject_if: proc { |attr| attr['type_id'].blank? }
 
   enum status: { 'Утверждено': 0, 'В ожидании проверки': 1, 'Отклонено': 2 }
+
 end

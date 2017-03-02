@@ -1,20 +1,39 @@
 class WorkplacesController < ApplicationController
 
+  protect_from_forgery except: :create
+
   def index
     respond_to do |format|
       format.html
       format.json do
-        # @workplaces = Workplace.all
-        render json: [
-          { name: 'Место-***REMOVED***-1', type: 'Конструкторское', responsible: '***REMOVED*** Р.Ф.', location: '3а-321а', count: 4},
-          { name: 'Место-***REMOVED***-2', type: 'Офисное', responsible: '***REMOVED*** Р.Ф.', location: '3а-321а', count: 2}
-        ]
+        @workplaces = Workplace
+                        .left_outer_joins(:user_iss)
+                        .left_outer_joins(:workplace_type)
+                        .left_outer_joins(:inv_items)
+                        .select('invent_workplace.*, invent_workplace_type.short_description as wp_type, user_iss
+.fio_initials as responsible, count(invent_item.item_id) as count')
+
+        render json: @workplaces
       end
     end
   end
 
   def create
+    @workplace = Workplace.new(workplace_params)
+    logger.info "WORKPLACE: #{@workplace.inspect}".red
+    @workplace.inv_items.each_with_index do |item, index|
+      logger.info "ITEM [#{index}]: #{item.inspect}".green
 
+      item.inv_property_values.each_with_index do |val, index|
+        logger.info "PROP_VALUE [#{index}]: #{val.inspect}".cyan
+      end
+    end
+    # logger.info "INV_PROPERTY_VALUES: #{@workplace.inspect}"
+    # if @workplace.save
+    #   render json: { full_message: 'ok' }, status: :ok
+    # else
+    #   render json: { full_message: @workplace.errors.full_messages.join(', ') }, status: :unprocessable_entity
+    # end
   end
 
   # Получить состав рабочего места
@@ -71,24 +90,27 @@ class WorkplacesController < ApplicationController
 
   def workplace_params
     params.require(:workplace).permit(
-      :count_workplace_id,
-      :name,
+      :workplace_count_id,
       :workplace_type_id,
       :id_tn,
       :location,
       :comment,
       :status,
       inv_items_attributes: [
-        :item_id,
-        :type_id,
+        :id,
         :parent_id,
+        :type_id,
         :workplace_id,
+        :location,
+        :model_name,
+        :invent_num,
         :_destroy,
         inv_property_values_attributes: [
-          :property_value_id,
+          :id,
           :property_id,
           :item_id,
-          :value
+          :value,
+          :_destroy
         ]
       ]
     )

@@ -160,7 +160,7 @@ invent_workplace_count.workplace_count_id and w.status = 1')
       :time_end,
       workplace_responsibles_attributes: [
         :id,
-        # :workplace_responsible_id,
+        :workplace_responsible_id,
         :workplace_count_id,
         :id_tn,
         :tn,

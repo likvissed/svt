@@ -61,6 +61,7 @@ GEM
       coffee-script-source
       execjs
     coffee-script-source (1.12.2)
+    colorize (0.8.1)
     concurrent-ruby (1.0.4)
     connection_pool (2.2.1)
     database_cleaner (1.5.3)
@@ -225,6 +226,7 @@ DEPENDENCIES
   bootstrap-sass
   byebug
   coffee-rails (~> 4.2)
+  colorize
   database_cleaner
   font-awesome-rails
   haml-rails

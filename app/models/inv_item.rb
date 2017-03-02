@@ -8,6 +8,6 @@ class InvItem < Netadmin
 
   delegate :inv_properties, to: :inv_type
 
-  accepts_nested_attributes_for :property_values, allow_destroy: true, reject_if: proc { |attr| attr['property_id']
-    .blank? || attr['item_id'].blank? }
+  accepts_nested_attributes_for :inv_property_values, allow_destroy: true
+                                # reject_if: proc { |attr| attr['property_id'].blank? }
 end

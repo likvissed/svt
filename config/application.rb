@@ -23,6 +23,7 @@ module Inv
         origins 'http://***REMOVED***', 'https://***REMOVED***.***REMOVED***.ru'
         resource '/***REMOVED***_invents/init/*', :headers => :any, :methods => [:get]
         resource '/***REMOVED***_invents/show_division_data/*', :headers => :any, :methods => [:get]
+        resource '/workplaces/', :headers => :any, :methods => [:post]
       end
     end
   end
