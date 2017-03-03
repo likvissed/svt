@@ -8,9 +8,10 @@ class Workplace < Netadmin
   belongs_to  :user_iss, foreign_key: 'id_tn', optional: true
 
   validates :id_tn, presence: true, numericality: { greater_than: 0, only_integer: true }
+  validates :workplace_count_id, presence: true, numericality: { greater_than: 0, only_integer: true }
+  validates :workplace_type_id, presence: true, numericality: { greater_than: 0, only_integer: true }
 
   accepts_nested_attributes_for :inv_items, allow_destroy: true, reject_if: proc { |attr| attr['type_id'].blank? }
 
   enum status: { 'Утверждено': 0, 'В ожидании проверки': 1, 'Отклонено': 2 }
-
 end

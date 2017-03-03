@@ -1,0 +1,8 @@
+development:
+  hostname: inv-dev
+
+test:
+  hostname: inv-dev
+
+production:
+  hostname: inv

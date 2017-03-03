@@ -14,8 +14,15 @@ gem 'binding_of_caller'
 # Background processing
 gem 'sidekiq'
 
+# Authorization
+gem 'devise'
+gem 'omniauth'
+gem 'cancancan'
+
 # MySQL
 gem 'mysql2'
+# PHP serialize/unserialize data
+gem 'php_serialize'
 # Icons
 gem 'font-awesome-rails'
 # gem 'font-awesome-rails'

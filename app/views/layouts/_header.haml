@@ -17,7 +17,7 @@
         .collapse.navbar-collapse.navbar-collapse-head
           .navbar-text.navbar-right.pull-right
             = "***REMOVED*** Р.Ф. | "
-            = link_to "", method: :delete, class: "navbar-link" do
+            = link_to destroy_user_session_path, method: :delete, class: "navbar-link" do
               Выход
 
 .navbar.navbar-default{ role: "navigation-main" }

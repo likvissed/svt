@@ -3,13 +3,36 @@ require "application_responder"
 class ApplicationController < ActionController::Base
   self.responder = ApplicationResponder
 
+  layout :layout
   protect_from_forgery with: :exception
-
   after_action :set_csrf_cookie_for_ng
+  before_action :authenticate_user!
+
+  # Обрабтка случаев, когда у пользователя нет доступа на выполнение запрашиваемых действий
+  rescue_from CanCan::AccessDenied do |exception|
+    respond_to do |format|
+      format.html do
+        render_403
+      end
+      format.json { render json: { full_message: "Доступ запрещен" }, status: :forbidden }
+    end
+  end
 
   # XSRF for angularjs
   def set_csrf_cookie_for_ng
     cookies['XSRF-TOKEN'] = form_authenticity_token if protect_against_forgery?
+  end
+
+  def render_403
+    render file: "#{Rails.root}/public/403.html", status: 403, layout: false
+  end
+
+  def render_404
+    render file: "#{Rails.root}/public/404.html", status: 404, layout: false
+  end
+
+  def render_500
+    render file: "#{Rails.root}/public/500.html", status: 500, layout: false
   end
 
   protected
@@ -35,8 +58,12 @@ class ApplicationController < ActionController::Base
         <input class='btn btn-primary btn-block' type='submit' value='Добавить'>
       </form>"
     end
-    # else
-    #   ""
-    # end
+  end
+
+  private
+
+  # Определяем, какой layout выводить: для входа в систему или основной
+  def layout
+    is_a?(Devise::SessionsController) ? "sign_in_app" : "application"
   end
 end

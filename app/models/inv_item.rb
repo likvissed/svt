@@ -6,6 +6,8 @@ class InvItem < Netadmin
   belongs_to  :inv_type, foreign_key: 'type_id'
   belongs_to  :workplace, optional: true
 
+  validates :type_id, presence: true, numericality: { greater_than: 0, only_integer: true }
+
   delegate :inv_properties, to: :inv_type
 
   accepts_nested_attributes_for :inv_property_values, allow_destroy: true

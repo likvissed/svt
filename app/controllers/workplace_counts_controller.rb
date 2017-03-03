@@ -1,5 +1,6 @@
 class WorkplaceCountsController < ApplicationController
   before_action :find_by_id, only: [:update, :destroy]
+  load_and_authorize_resource
 
   def index
     respond_to do |format|
