@@ -19,16 +19,6 @@ class WorkplacesController < ApplicationController
   end
 
   def create
-    @workplace = Workplace.new(workplace_params)
-    logger.info "WORKPLACE: #{@workplace.inspect}".red
-    @workplace.inv_items.each_with_index do |item, index|
-      logger.info "ITEM [#{index}]: #{item.inspect}".green
-
-      item.inv_property_values.each_with_index do |val, index|
-        logger.info "PROP_VALUE [#{index}]: #{val.inspect}".cyan
-      end
-    end
-    # logger.info "INV_PROPERTY_VALUES: #{@workplace.inspect}"
     # if @workplace.save
     #   render json: { full_message: 'ok' }, status: :ok
     # else

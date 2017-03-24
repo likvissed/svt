@@ -11,6 +11,8 @@ module Inv
     # Use the responders controller from the responders gem
     config.app_generators.scaffold_controller :responders_controller
 
+    config.assets.enabled = true
+
     # Settings in config/environments/* take precedence over those specified here.
     # Application configuration should go into files in config/initializers
     # -- all .rb files in that directory are automatically loaded.
@@ -26,8 +28,12 @@ module Inv
         origins   'http://***REMOVED***', 'https://***REMOVED***.***REMOVED***.ru'
         resource  '/***REMOVED***_invents/init/*', :headers => :any, :methods => [:get]
         resource  '/***REMOVED***_invents/show_division_data/*', :headers => :any, :methods => [:get]
+        resource  '/***REMOVED***_invents/get_data_from_audit/*', :headers => :any, :methods => [:get]
         resource  '/***REMOVED***_invents/create_workplace/', :headers => :any, :methods => [:post]
-        # resource  '/workplaces/', :headers => :any, :methods => [:post]
+        resource  '/***REMOVED***_invents/edit_workplace/*', :headers => :any, :methods => [:get]
+        resource  '/***REMOVED***_invents/update_workplace/*', :headers => :any, :methods => [:patch]
+        resource  '/***REMOVED***_invents/delete_workplace/*', :headers => :any, :methods => [:delete]
+        resource  '/***REMOVED***_invents/generate_pdf/*', :headers => :any, :methods => [:get]
       end
     end
   end

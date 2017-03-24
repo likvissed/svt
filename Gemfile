@@ -21,6 +21,13 @@ gem 'cancancan'
 
 # MySQL
 gem 'mysql2'
+# MSSQL
+gem 'tiny_tds'
+gem 'activerecord-sqlserver-adapter'
+
+# Generate PDF
+gem 'wicked_pdf'
+gem 'wkhtmltopdf-binary'
 # PHP serialize/unserialize data
 gem 'php_serialize'
 # Icons

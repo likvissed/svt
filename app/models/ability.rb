@@ -8,8 +8,9 @@ class Ability
     if user.has_role? :admin
       can :manage, :all
     elsif user.has_role? :***REMOVED***_user
-      can :manage, :all
+      can :manage, :***REMOVED***_invent
+    else
+      cannot :manage, :all
     end
-
   end
 end

@@ -6,4 +6,5 @@ class InvProperty < Netadmin
   has_many :inv_property_lists, foreign_key: 'property_id', dependent: :destroy
   has_many :inv_property_to_types, foreign_key: 'type_id', dependent: :destroy
   has_many :inv_types, through: :inv_property_to_types
+  has_many :inv_model_property_lists, foreign_key: 'property_id'
 end

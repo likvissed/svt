@@ -24,8 +24,8 @@ class WorkplaceCount < Netadmin
 
   # Проверка наличия ответственного
   def at_least_one_responsible
-    return errors.add :base, "Необходимо добавить ответственного" unless workplace_responsibles.length > 0
-    return errors.add :base, "Необходимо оставить хотя бы одного ответственного" if workplace_responsibles.reject{
+    return self.errors.add(:base, "Необходимо добавить ответственного") unless workplace_responsibles.length > 0
+    return self.errors.add(:base, "Необходимо оставить хотя бы одного ответственного") if workplace_responsibles.reject{
       |resp| resp._destroy == true }.empty?
   end
 

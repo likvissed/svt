@@ -2,6 +2,7 @@ ru:
   activerecord:
     errors:
       messages:
+        taken: "'%{value}' уже существует"
         greater_than: "должен иметь значение большее чем %{count}"
         greater_than_or_equal_to: "должен иметь значение большее или равное %{count}"
         less_than: "должен иметь значение меньшее чем %{count}"
@@ -25,6 +26,8 @@ ru:
     models:
       workplace_count: "отделы"
       workplace_responsible: "ответственные"
+      workplace: "рабочее место"
+      inv_item: "оборудование"
 
     attributes:
       workplace_count:
@@ -34,3 +37,31 @@ ru:
       workplace_count/workplace_responsible:
         tn: "Табельный номер"
         phone: "Номер телефона"
+
+      workplace:
+        id_tn: "Табельный номер ответственного"
+        workplace_count_id: "Отдел, к которому привязано рабочее место,"
+        workplace_type_id: "Тип рабочего места"
+        workplace_specialization_id: "Направление деятельности"
+        location: "Расположение"
+      workplace/inv_items:
+        base: ""
+        type_id: "Тип оборудования"
+        invent_num: "Инвентарный номер"
+        model_id: "Модель"
+        item_model: "Наименование модели"
+      workplace/inv_items/inv_property_values:
+        base: ""
+        property_id: "Свойство"
+        property_list_id: "Значение"
+        value: "Значение"
+
+      inv_item:
+        type_id: "Тип оборудования"
+        invent_num: "Инвентарный номер"
+        model_id: "Модель"
+        item_model: "Модель"
+      inv_item/inv_property_values:
+        property_id: "Свойство"
+        property_list_id: "Значение"
+        value: "Значение"
