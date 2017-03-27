@@ -53,27 +53,28 @@
       DTColumnBuilder.newColumn(null).withTitle('').withOption('className', 'col-fhd-1').renderWith(renderIndex),
       // DTColumnBuilder.newColumn('name').withTitle('Наименование').withOption('className', 'col-fhd-6'),
       DTColumnBuilder.newColumn('wp_type').withTitle('Тип').withOption('className', 'col-fhd-4'),
-      DTColumnBuilder.newColumn('responsible').withTitle('Ответственный').withOption('className', 'col-fhd-4'),
+      DTColumnBuilder.newColumn('responsible').withTitle('Ответственный').withOption('className', 'col-fhd-6'),
       DTColumnBuilder.newColumn('location').withTitle('Расположение').withOption('className', 'col-fhd-4'),
       DTColumnBuilder.newColumn('count').withTitle('Кол-во техники').withOption('className', 'col-fhd-2 text-center'),
-      DTColumnBuilder.newColumn(null).withTitle('').notSortable().withOption('className', 'text-center col-fhd-1').renderWith(editRecord),
-      DTColumnBuilder.newColumn(null).withTitle('').notSortable().withOption('className', 'text-center col-fhd-1').renderWith(delRecord)
+      DTColumnBuilder.newColumn('status').withTitle('Статус').withOption('className', 'col-fhd-4 text-center'),
+      DTColumnBuilder.newColumn(null).withTitle('').notSortable().withOption('className', 'text-center col-fhd-3').renderWith(editRecord),
+      // DTColumnBuilder.newColumn(null).withTitle('').notSortable().withOption('className', 'text-center col-fhd-1').renderWith(delRecord)
     ];
 
     function initComplete(setting, json) {
       console.log(json);
     }
-    
-    function renderIndex() {
-      return '1';
+
+    function renderIndex(data, type, full, meta) {
+      // self.services[data.id] = data;
+      return meta.row + 1;
     }
 
     function editRecord() {
-      return '1';
-    }
-
-    function delRecord() {
-      return '1';
+      return '<div class="btn-group" role="group">' +
+          '<button class="btn btn-default btn-sm">Изменить</button>' +
+          '<button class="btn btn-danger btn-sm">Удалить</button>' +
+        '</div>';
     }
   }
 

@@ -16,11 +16,7 @@ class Audit < SMSServer
   # Выполнить хранимую процедуру на сервере smssvr
   # pc_name - имя компьютера
   def self.get_data(pc_name)
-    # begin
     raw_data = self.execute_procedure('ISS_Get_HW_invent_inf', pc_name, 'f')
-    # rescue TinyTds::Error => e
-    #   raise TinyTds::Error, "Ошибка."
-    # end
 
     logger.info "Raw data: #{raw_data.inspect}".blue
 

@@ -1,4 +1,4 @@
-class InvVendor < Netadmin
+class InvVendor < Invent
   self.primary_key  = :vendor_id
   self.table_name   = :invent_vendor
 

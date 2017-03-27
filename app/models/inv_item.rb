@@ -1,4 +1,4 @@
-class InvItem < Netadmin
+class InvItem < Invent
   self.primary_key  = :item_id
   self.table_name   = :invent_item
 

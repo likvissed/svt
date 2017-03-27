@@ -1,4 +1,4 @@
-class InvType < Netadmin
+class InvType < Invent
   self.primary_key  = :type_id
   self.table_name   = :invent_type
 

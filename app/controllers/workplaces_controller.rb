@@ -12,6 +12,7 @@ class WorkplacesController < ApplicationController
                         .left_outer_joins(:inv_items)
                         .select('invent_workplace.*, invent_workplace_type.short_description as wp_type, user_iss
 .fio_initials as responsible, count(invent_item.item_id) as count')
+                        .group(:workplace_id)
 
         render json: @workplaces
       end

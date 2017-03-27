@@ -1,4 +1,4 @@
-class WorkplaceResponsible < Netadmin
+class WorkplaceResponsible < Invent
   self.table_name   = :invent_workplace_responsible
   self.primary_key  = :workplace_responsible_id
 

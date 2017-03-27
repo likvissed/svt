@@ -1,4 +1,4 @@
-class InvPropertyToType < Netadmin
+class InvPropertyToType < Invent
   self.primary_key  = :property_to_type_id
   self.table_name   = :invent_property_to_type
 

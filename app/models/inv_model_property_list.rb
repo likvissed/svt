@@ -1,4 +1,4 @@
-class InvModelPropertyList < Netadmin
+class InvModelPropertyList < Invent
   self.primary_key  = :model_property_list_id
   self.table_name   = :invent_model_property_list
 

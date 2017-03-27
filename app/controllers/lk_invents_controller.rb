@@ -7,6 +7,8 @@ class LkInventsController < ApplicationController
   before_action :check_timeout, except: [:init, :show_division_data, :get_data_from_audit]
   after_action -> { sign_out @user }
 
+  @tn_***REMOVED***_user = 999999
+
   # Получить список отделов, закрепленных за пользователем и список всех типов оборудования с их параметрами.
   def init
     # Получить список отделов
@@ -136,12 +138,11 @@ invent_workplace_count.division, invent_workplace_count.time_start, invent_workp
     begin
       @audit = Audit.get_data(@host['name'])
     rescue Exception => e
-      # render json: { full_message: e }, status: 422
-      render json: { full_message: 'Аудит не отвечает. Попробуйте еще раз.' }, status: 422
+      render json: { full_message: 'Аудит не отвечает. Попробуйте еще раз через несколько минут.' }, status: 422
       return
     end
 
-    #   Данных от аудита нет
+    # Данных от аудита нет
     if @audit.nil?
       render json: { full_message: 'Не удается получить данные от системы аудит. Проверьте, установлен ли на указанном
 вами компьютере аудит. Если отсутствует возможность установки аудита или компьютер не подключен к сети, загрузите

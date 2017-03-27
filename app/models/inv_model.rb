@@ -1,4 +1,4 @@
-class InvModel < Netadmin
+class InvModel < Invent
   self.primary_key  = :model_id
   self.table_name   = :invent_model
 

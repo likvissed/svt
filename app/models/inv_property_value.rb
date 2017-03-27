@@ -1,4 +1,4 @@
-class InvPropertyValue < Netadmin
+class InvPropertyValue < Invent
   self.primary_key  = :property_value_id
   self.table_name   = :invent_property_value
 

@@ -1,4 +1,4 @@
-class WorkplaceCount < Netadmin
+class WorkplaceCount < Invent
   self.table_name   = :invent_workplace_count
   self.primary_key  = :workplace_count_id
 
