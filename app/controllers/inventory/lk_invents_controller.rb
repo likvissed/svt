@@ -8,6 +8,7 @@ module Inventory
     before_action :check_timeout, except: [:init, :show_division_data, :get_data_from_audit]
     after_action -> { sign_out @user }
 
+    # Табельный номер пользователя в таблице users, от имени которого пользователи ЛК получают доступ в систему.
     @tn_***REMOVED***_user = 999999
 
     # Получить список отделов, закрепленных за пользователем и список всех типов оборудования с их параметрами.
@@ -97,6 +98,7 @@ invent_workplace_count.division, invent_workplace_count.time_start, invent_workp
                       .select('invent_workplace.*, invent_workplace_type.name as type_name, invent_workplace_type
 .short_description, user_iss.fio_initials as fio, user_iss.tn as user_tn, user_iss.duty')
                       .where('invent_workplace_count.division = ?', params[:division])
+                      .order(:workplace_id)
 
       # SELECT
       #   invent_workplace.*,
@@ -172,7 +174,7 @@ invent_workplace_count.division, invent_workplace_count.time_start, invent_workp
         # Чтобы избежать N+1 запрос в методе 'transform_workplace' нужно создать объект ActiveRecord (например, вызвать
         # find)
         @workplace = transform_workplace(Workplace
-                                           .includes({ inv_items: { inv_property_values: :inv_property } })
+                                           .includes({ inv_items: [:inv_type, { inv_property_values: :inv_property }] })
                                            .find(@workplace.workplace_id))
 
         unless params[:pc_file] == 'null'
@@ -188,12 +190,12 @@ invent_workplace_count.division, invent_workplace_count.time_start, invent_workp
     def edit_workplace
       get_workplace
       @workplace = @workplace.as_json({
-                                        include: {
-                                          inv_items: {
-                                            include: :inv_property_values
-                                          }
-                                        }
-                                      })
+        include: {
+          inv_items: {
+            include: :inv_property_values
+          }
+        }
+      })
 
       # Преобразование объекта.
       @workplace['inv_items_attributes'] = @workplace['inv_items']
@@ -215,7 +217,6 @@ invent_workplace_count.division, invent_workplace_count.time_start, invent_workp
     end
 
     def update_workplace
-      # @workplace = Workplace.find(params[:workplace_id])
       get_workplace
       if @workplace
         if @workplace.update_attributes(workplace_params)
@@ -271,6 +272,7 @@ invent_workplace_count.division, invent_workplace_count.time_start, invent_workp
       property_value_id = 0
       # Получаем property_value_id, чтобы создать директорию.
       @workplace['inv_items'].each do |item|
+        next unless item['inv_type']['name'] == 'pc'
         break if property_value_id = item['inv_property_values'].find { |val| val['inv_property']['name'] ==
           'config_file' }['property_value_id']
       end
@@ -304,27 +306,33 @@ invent_workplace_count.division, invent_workplace_count.time_start, invent_workp
       end
 
       true
-    rescue
+    rescue Exception => e
+      logger.info "Ошибка функции upload_file. #{e}".red
+      logger.info "Описание:"
+      e.backtrace.each { |val| logger.info val }
+
       render json: { workplace: @workplace, full_message: 'Рабочее место создано, но сохранить файл конфигурации не
 удалось. Для загрузки файла свяжитесь с администратором сервиса.'}, status: 200
 
       false
     end
 
+    # Преобразование объекта workplace в специальный вид, чтобы таблица могла отобразить данные.
     def transform_workplace(wp)
       wp = wp.as_json({
-                        include: {
-                          user_iss: {},
-                          workplace_type: {},
-                          inv_items: {
-                            include: {
-                              inv_property_values: {
-                                include: :inv_property
-                              }
-                            }
-                          }
-                        }
-                      })
+        include: {
+          user_iss: {},
+          workplace_type: {},
+          inv_items: {
+            include: {
+              inv_type: {},
+              inv_property_values: {
+                include: :inv_property
+              }
+            }
+          }
+        }
+      })
 
       wp['short_description'] = wp['workplace_type']['short_description']
       wp['duty']              = wp['user_iss']['duty']

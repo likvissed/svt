@@ -24,44 +24,44 @@ ru:
 #              greater_than: "не выбрана"
 
     models:
-      workplace_count: "отделы"
-      workplace_responsible: "ответственные"
-      workplace: "рабочее место"
-      inv_item: "оборудование"
+      inventory/workplace_count: "отделы"
+      inventory/workplace_responsible: "ответственные"
+      inventory/workplace: "рабочее место"
+      inventory/inv_item: "оборудование"
 
     attributes:
-      workplace_count:
+      inventory/workplace_count:
         division: "Отдел"
         time_start: "Дата начала ввода данных"
         time_end: "Дата окончания ввода данных"
-      workplace_count/workplace_responsible:
+      inventory/workplace_count/workplace_responsible:
         tn: "Табельный номер"
         phone: "Номер телефона"
 
-      workplace:
+      inventory/workplace:
         id_tn: "Табельный номер ответственного"
         workplace_count_id: "Отдел, к которому привязано рабочее место,"
         workplace_type_id: "Тип рабочего места"
         workplace_specialization_id: "Направление деятельности"
         location: "Расположение"
-      workplace/inv_items:
+      inventory/workplace/inv_items:
         base: ""
         type_id: "Тип оборудования"
         invent_num: "Инвентарный номер"
         model_id: "Модель"
         item_model: "Наименование модели"
-      workplace/inv_items/inv_property_values:
+      inventory/workplace/inv_items/inv_property_values:
         base: ""
         property_id: "Свойство"
         property_list_id: "Значение"
         value: "Значение"
 
-      inv_item:
+      inventory/inv_item:
         type_id: "Тип оборудования"
         invent_num: "Инвентарный номер"
         model_id: "Модель"
         item_model: "Модель"
-      inv_item/inv_property_values:
+      inventory/inv_item/inv_property_values:
         property_id: "Свойство"
         property_list_id: "Значение"
         value: "Значение"
