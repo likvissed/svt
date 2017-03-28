@@ -35,6 +35,21 @@ class ApplicationController < ActionController::Base
     render file: "#{Rails.root}/public/500.html", status: 500, layout: false
   end
 
+  # Если у пользователя есть доступ, в ответ присылается html-код кнопки "Добавить" для создания новой записи
+  # Запрос отсылается из JS файла при инициализации таблицы
+  def link_to_new_record
+    case params[:ctrl_name]
+      when 'workplace_counts'
+        class_name  = Inventory::WorkplaceCount
+        type        = :modal
+        attrs       = "ng-click='wpCount.openWpCountEditModal()'"
+    end
+
+    link = create_link_to_new_record(type, class_name, attrs)
+
+    render json: link
+  end
+
   protected
 
   # XSRF for angularjs

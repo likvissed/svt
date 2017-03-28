@@ -26,14 +26,14 @@ module Inv
     config.middleware.insert_before 0, Rack::Cors do
       allow do
         origins   'http://***REMOVED***', 'https://***REMOVED***.***REMOVED***.ru'
-        resource  '/***REMOVED***_invents/init/*', :headers => :any, :methods => [:get]
-        resource  '/***REMOVED***_invents/show_division_data/*', :headers => :any, :methods => [:get]
-        resource  '/***REMOVED***_invents/get_data_from_audit/*', :headers => :any, :methods => [:get]
-        resource  '/***REMOVED***_invents/create_workplace/', :headers => :any, :methods => [:post]
-        resource  '/***REMOVED***_invents/edit_workplace/*', :headers => :any, :methods => [:get]
-        resource  '/***REMOVED***_invents/update_workplace/*', :headers => :any, :methods => [:patch]
-        resource  '/***REMOVED***_invents/delete_workplace/*', :headers => :any, :methods => [:delete]
-        resource  '/***REMOVED***_invents/generate_pdf/*', :headers => :any, :methods => [:get]
+        resource  '/inventory/***REMOVED***_invents/init/*', :headers => :any, :methods => [:get]
+        resource  '/inventory/***REMOVED***_invents/show_division_data/*', :headers => :any, :methods => [:get]
+        resource  '/inventory/***REMOVED***_invents/get_data_from_audit/*', :headers => :any, :methods => [:get]
+        resource  '/inventory/***REMOVED***_invents/create_workplace/', :headers => :any, :methods => [:post]
+        resource  '/inventory/***REMOVED***_invents/edit_workplace/*', :headers => :any, :methods => [:get]
+        resource  '/inventory/***REMOVED***_invents/update_workplace/*', :headers => :any, :methods => [:patch]
+        resource  '/inventory/***REMOVED***_invents/delete_workplace/*', :headers => :any, :methods => [:delete]
+        resource  '/inventory/***REMOVED***_invents/generate_pdf/*', :headers => :any, :methods => [:get]
       end
     end
   end

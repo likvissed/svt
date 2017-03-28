@@ -125,13 +125,13 @@ function Server($resource) {
      *
      * @memberOf Inv.Server
      */
-    Workplace: $resource('/workplaces/:workplace_id.json', {}, { update: { method: 'PATCH' } }),
+    Workplace: $resource('/inventory/workplaces/:workplace_id.json', {}, { update: { method: 'PATCH' } }),
     /**
      * Ресурс модели отделов с количеством рабочих мест
      *
      * @memberOf Inv.Server
      */
-    WorkplaceCount: $resource('/workplace_counts/:workplace_count_id.json', {}, { update: { method: 'PATCH' } })
+    WorkplaceCount: $resource('/inventory/workplace_counts/:workplace_count_id.json', {}, { update: { method: 'PATCH' } })
   }
 }
 

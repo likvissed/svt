@@ -15,6 +15,5 @@
 //= require lib/angularjs/angular-locale_ru
 
 //= require_tree ./main
-//= require_tree ./workplace_counts
-//= require_tree ./system_units
-//= require_tree ./workplaces
+//= require_tree ./inventory
+//= require_tree ./standart
