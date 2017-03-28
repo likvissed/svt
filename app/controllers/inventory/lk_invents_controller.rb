@@ -78,7 +78,6 @@ invent_workplace_count.division, invent_workplace_count.time_start, invent_workp
         type
       end
 
-
       data = {
         divisions:  @divisions,
         eq_types:   types,

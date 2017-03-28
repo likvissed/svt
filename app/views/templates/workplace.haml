@@ -28,14 +28,16 @@
       %table.table
         %thead
           %th{ align: "center" } №
-          %th Тип
-          %th Ответственный
-          %th Расположение
+          %th Описание
+          %th{ width: '25%' } Ответственный
+          %th{ width: '20%' } Расположение
         %tbody
           - workplace_count.workplaces.each_with_index do |wp, index|
+            - items = wp.inv_items.map{ |item| item.invent_num }
+
             %tr
               %td{ align: "center" }= index + +1
-              %td= wp.workplace_type.short_description
+              %td= wp.workplace_type.short_description + " (инв. №№: #{items.join(', ')})"
               %td= wp.user_iss.fio_initials
               %td= wp.location
 
