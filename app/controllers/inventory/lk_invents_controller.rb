@@ -132,15 +132,16 @@ invent_workplace_count.division, invent_workplace_count.time_start, invent_workp
       @host = HostIss.get_host(params[:invent_num])
 
       if @host.nil?
-        render json: { full_message: 'Данные по указанному инвентарному не найдены. Проверьте, корректность введенного
-номера.' }, status: 422
+        render json: { full_message: 'Данные по указанному инвентарному номеру не найдены. Проверьте, корректность
+введенного номера или загрузите файл конфигурации.' }, status: 422
         return
       end
 
       begin
         @audit = Audit.get_data(@host['name'])
       rescue Exception => e
-        render json: { full_message: 'Аудит не отвечает. Попробуйте еще раз через несколько минут.' }, status: 422
+        render json: { full_message: 'Аудит не отвечает. Попробуйте еще раз через несколько минут или загрузите файл
+конфигурации.' }, status: 422
         return
       end
 
