@@ -5,7 +5,7 @@ module Inventory
     before_action :check_***REMOVED***_authorization
     authorize_resource class: false, param_method: :workplace_params
     before_action :check_workplace_count_access, only: [:create_workplace, :update_workplace, :destroy_workplace]
-    before_action :check_timeout, except: [:init, :show_division_data, :get_data_from_audit]
+    before_action :check_timeout, except: [:init, :show_division_data, :get_data_from_audit, :send_pc_script]
     after_action -> { sign_out @user }
 
     # Табельный номер пользователя в таблице users, от имени которого пользователи ЛК получают доступ в систему.
@@ -71,7 +71,8 @@ invent_workplace_count.division, invent_workplace_count.time_start, invent_workp
           inv_models: {}
         }
       }).each do |type|
-        unless type['name'] == 'pc'
+        if !InvPropertyValue::PROPERTY_WITH_FILES.any?{ |val| val == type['name'] }
+        # if type['name'] != 'pc' && type['name'] != 'allin1' && type['name'] != 'notebook'
           type['inv_properties'].delete_if{ |prop| prop['mandatory'] == false }
         end
 
@@ -137,22 +138,27 @@ invent_workplace_count.division, invent_workplace_count.time_start, invent_workp
         return
       end
 
+      error_message = 'Получить данные автоматически не удалось, вам необходимо ввести их вручную. Для этого вам
+ необходимо нажать кнопку "Ввод данных вручную"'
+
       begin
         @audit = Audit.get_data(@host['name'])
       rescue Exception => e
-        render json: { full_message: 'Аудит не отвечает. Попробуйте еще раз через несколько минут или загрузите файл
-конфигурации.' }, status: 422
+        render json: { full_message: error_message }, status: 422
         return
       end
 
       # Данных от аудита нет
       if @audit.nil?
-        render json: { full_message: 'Не удается получить данные от системы аудит. Проверьте, установлен ли на указанном
-вами компьютере аудит. Если отсутствует возможность установки аудита или компьютер не подключен к сети, загрузите
-файл конфигурации вручную.' }, status: 422
+        render json: { full_message: error_message }, status: 422
         return
       else
-        render json: @audit, status: 200
+        # Проверяем актуальность данных по полю last_connection
+        if Time.parse(@audit['last_connection'].first) + 20.days <= Time.now
+          render json: { full_message: error_message }, status: 422
+        else
+          render json: @audit, status: 200
+        end
       end
     end
 
@@ -178,6 +184,7 @@ invent_workplace_count.division, invent_workplace_count.time_start, invent_workp
                                            .find(@workplace.workplace_id))
 
         unless params[:pc_file] == 'null'
+          logger.info "Получен файл для загрузки".red
           return false unless upload_file
         end
 
@@ -265,6 +272,10 @@ invent_workplace_count.division, invent_workplace_count.time_start, invent_workp
       # disposition: 'attachment'
     end
 
+    def send_pc_script
+      send_file(Rails.root.join('public', 'Конфигурация_ПК.vbs'), disposition: 'attachment')
+    end
+
     private
 
     # Сохранить файл в файловой системе.
@@ -272,7 +283,8 @@ invent_workplace_count.division, invent_workplace_count.time_start, invent_workp
       property_value_id = 0
       # Получаем property_value_id, чтобы создать директорию.
       @workplace['inv_items'].each do |item|
-        next unless item['inv_type']['name'] == 'pc'
+        # next if item['inv_type']['name'] != 'pc' && item['inv_type']['name'] != 'pc' && item['inv_type']['name'] != 'pc'
+        next if !InvPropertyValue::PROPERTY_WITH_FILES.any?{ |val| val == item['inv_type']['name'] }
         break if property_value_id = item['inv_property_values'].find { |val| val['inv_property']['name'] ==
           'config_file' }['property_value_id']
       end

@@ -24,7 +24,7 @@ class Audit < SMSServer
 
     data = raw_data[0]
 
-    data.delete('last_connection')
+    # data.delete('last_connection')
     data.delete('printers')
 
     data.each do |type, value|

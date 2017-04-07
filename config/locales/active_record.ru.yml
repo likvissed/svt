@@ -39,7 +39,7 @@ ru:
         phone: "Номер телефона"
 
       inventory/workplace:
-        id_tn: "Табельный номер ответственного"
+        id_tn: "ФИО ответственного"
         workplace_count_id: "Отдел, к которому привязано рабочее место,"
         workplace_type_id: "Тип рабочего места"
         workplace_specialization_id: "Направление деятельности"

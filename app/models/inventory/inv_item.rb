@@ -3,13 +3,14 @@ module Inventory
     self.primary_key  = :item_id
     self.table_name   = :invent_item
 
-    has_many    :inv_property_values, foreign_key: 'item_id', dependent: :destroy, inverse_of: :inv_item
+    has_many    :inv_property_values, -> { order(:property_id) }, foreign_key: 'item_id', dependent: :destroy,
+                inverse_of: :inv_item
     belongs_to  :inv_type, foreign_key: 'type_id'
     belongs_to  :workplace, optional: true
     belongs_to  :inv_model, foreign_key: 'model_id'
 
     validates :type_id, presence: true, numericality: { greater_than: 0, only_integer: true, message: 'не выбран' }
-    validates :invent_num, presence: true, uniqueness: true
+    validates :invent_num, presence: true
     validate  :presence_model
     validate  :check_property_value
 
@@ -43,8 +44,8 @@ module Inventory
       # @properties = InvProperty.where('name IN (?)', %w{ mb ram video cpu hdd })
       @properties = InvProperty.all
 
-      # Отдельная проверка для ПК
-      if self.inv_type.name == 'pc'
+      # Отдельная проверка для ПК, моноблока, ноутбука
+      if InvPropertyValue::PROPERTY_WITH_FILES.include?(self.inv_type.name)
         # Предполагаем, что все параметры ПК заданы (далее в цикле проверяем, так ли это).
         # true - если все параметры заданы.
         # false - если хотя бы один параметр отсутствует.
@@ -54,6 +55,8 @@ module Inventory
         file_name_exist       = false
 
         inv_property_values.each do |prop_val|
+          next if prop_val._destroy
+
           if %w{ mb ram video cpu hdd }.any? { |pc_prop| pc_prop == @properties.find { |prop| prop.property_id ==
             prop_val.property_id }.name }
             full_properties_flag = false if property_value_invalid?(prop_val)
@@ -67,7 +70,7 @@ module Inventory
 
         # Проверка наличия данных от аудита, либо отчета о конфигурации
         if !self.invent_num.blank? && !full_properties_flag && !file_name_exist
-          self.errors.add(:base, 'Необходимо добавить отчет о конфигурации, либо получить данные от аудита')
+          self.errors.add(:base, 'Необходимо добавить отчет о конфигурации, либо получить данные автоматически')
         end
 
       else

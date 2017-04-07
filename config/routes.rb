@@ -37,6 +37,8 @@ Rails.application.routes.draw do
            constraints: { workplace_id: /\d+/ }
     # Создать PDF файл со списком РМ для отдела
     get '***REMOVED***_invents/generate_pdf/:division', to: '***REMOVED***_invents#generate_pdf', constraints: { division: /\d+/ }
+    # Скачать скрипт для генерации файла конфигурации ПК
+    get '***REMOVED***_invents/get_pc_script', to: '***REMOVED***_invents#send_pc_script'
   end
 
   # Эталоны

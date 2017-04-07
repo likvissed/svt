@@ -4,5 +4,8 @@ development:
 test:
   hostname: inv-dev
 
+staging:
+  hostname: staging.svt
+
 production:
-  hostname: inv
+  hostname: svt
