@@ -1,0 +1,42 @@
+.navbar
+  border-radius: 0 !important
+
+[role="navigation-top"]
+  $text-color: white
+
+  margin-bottom: 0
+  color: $text-color
+
+  //.navbar-brand
+    padding:
+      top: 0
+      right: 0
+      bottom: 0
+
+  .navbar-text
+    color: $text-color
+
+    a
+      color: $text-color
+      text-decoration: underline
+
+      &:hover
+        color: darken($text-color, 15%)
+
+[role="navigation-main"]
+  $dropDown: true
+
+  .navbar-nav
+    > li
+      > a
+
+        &:hover, &:focus
+          color: $corp-color
+
+      @if $dropDown
+        > .dropdown-menu
+          > li
+            > a
+              &:hover, &:focus
+                color: $corp-color
+                background-color: transparent

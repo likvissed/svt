@@ -5,16 +5,42 @@ git_source(:github) do |repo_name|
   "https://github.com/#{repo_name}.git"
 end
 
+# Provides support for Cross-Origin Resource Sharing (CORS)
+gem 'rack-cors', :require => 'rack/cors'
+# For usage 'respond_to/respond_with'
+gem 'responders'
+gem 'binding_of_caller'
+
+# Background processing
+gem 'sidekiq'
+
+# Authorization
+gem 'devise'
+gem 'omniauth'
+gem 'cancancan'
+
 # MySQL
 gem 'mysql2'
+# MSSQL
+gem 'tiny_tds'
+gem 'activerecord-sqlserver-adapter'
+
+# Generate PDF
+gem 'wicked_pdf'
+gem 'wkhtmltopdf-binary'
+# PHP serialize/unserialize data
+gem 'php_serialize'
 # Icons
-gem 'font-awesome-sass'
+gem 'font-awesome-rails'
+# gem 'font-awesome-rails'
 # Twitter Bootstrap
 gem 'bootstrap-sass'
 # Simple form
 gem 'simple_form'
 # haml
 gem 'haml-rails'
+# locale
+gem 'rails-i18n'
 # Bundle edge Rails instead: gem 'rails', github: 'rails/rails'
 gem 'rails', '~> 5.0.1'
 # Use Puma as the app server
@@ -49,6 +75,10 @@ end
 group :development, :test do
   # Call 'byebug' anywhere in the code to stop execution and get a debugger console
   gem 'byebug', platform: :mri
+  # Testing
+  gem 'rspec-rails'
+  # Colorize text
+  gem 'colorize'
 end
 
 group :development do
@@ -62,12 +92,19 @@ group :development do
   # Rails panel
   # gem 'meta_request'
   # View errors
-  # gem 'better_errors'
+  gem 'better_errors'
   # Quiet assets
   # gem 'quiet_assets'
 
   # For console
   gem 'awesome_print'
+
+  # Deploy application
+  gem 'capistrano'
+  gem 'capistrano-rails'
+  gem 'capistrano-bundler'
+  gem 'capistrano-rbenv'
+  gem 'capistrano-passenger'
 end
 
 # Windows does not include zoneinfo files, so bundle the tzinfo-data gem

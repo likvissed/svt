@@ -1,0 +1,11 @@
+development:
+  hostname: inv-dev
+
+test:
+  hostname: inv-dev
+
+staging:
+  hostname: staging.svt
+
+production:
+  hostname: svt

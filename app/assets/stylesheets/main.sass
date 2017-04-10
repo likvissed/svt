@@ -1,0 +1,106 @@
+$min-width:   970px
+$corp-color:  #0050a0
+$main-bg-color:   white
+
+.bg-content
+  margin-bottom: $line-height-computed
+
+.content-body
+  width: 100%
+  padding: 20px
+  display: inline-block
+
+.pointer
+  cursor: pointer
+
+.no-left-padding
+  padding-left: 0 !important
+
+.no-right-padding
+  padding-right: 0 !important
+
+/* ================================================ Страницы входа на сайт ========================================== */
+
+.auth-header
+  h2
+    margin:
+      top: 0
+      left: 40px
+      right: 40px
+    line-height: 95px
+    border-bottom: 1px $table-border-color solid
+    text-align: center
+
+.auth-content
+  text-align: center
+  //width: 300px
+  margin-top: 100px
+
+/* ================================================ Основной контент ================================================ */
+
+body
+  background-color: $main-bg-color
+
+button
+  @extend .btn, .btn-default
+
+textarea
+  resize: none
+
+a.default-color
+  color: $btn-default-color !important
+
+// Для отображения flash сообщений
+.absolute
+  position: absolute
+  z-index: 9999
+  width: 100%
+
+/* ================================================ Таблицы ========================================================= */
+
+.table
+  @extend .table
+  margin: 10px 0 !important
+
+table.center-header
+  th
+    text-align: center
+
+.table-hover
+  @extend .table-hover
+  cursor: pointer
+
+.row-margin-bot
+  margin-bottom: 15px
+
+// Стили для внутренних таблиц, используемых внутри форм
+.internal-table
+  width: 100%
+
+  tr.empty
+    height: 15px
+
+  //.fa
+    cursor: pointer
+
+  .min-td
+    width: 20px
+    padding: 1px 2px 0 2px !important
+
+  .form-group
+    margin-bottom: 0 !important
+
+  //.icon-padding
+  i
+    padding: 10px 0
+
+/* ================================================ Стиль для компонентов таблицы DataTables ======================== */
+
+.dataTables_wrapper
+  .form-control
+    width: 100% !important
+    margin-left: 0 !important
+
+  .dataTables_filter
+    label
+      width: 100% !important
