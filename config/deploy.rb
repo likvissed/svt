@@ -1,8 +1,8 @@
 # config valid only for current version of Capistrano
 lock "3.8.0"
 
-set :application, "my_app_name"
-set :repo_url, "git@example.com:me/my_repo.git"
+# set :application, "my_app_name"
+# set :repo_url, "git@example.com:me/my_repo.git"
 
 # Default branch is :master
 # ask :branch, `git rev-parse --abbrev-ref HEAD`.chomp
@@ -31,3 +31,53 @@ set :repo_url, "git@example.com:me/my_repo.git"
 
 # Default value for keep_releases is 5
 # set :keep_releases, 5
+
+set :ssh_options, {
+  keys:               %w(/home/ravil/.ssh/id_rsa),
+  forward_agent:      false,
+  user:               'deployer'
+}
+set :deploy_to,   "/var/www/html/#{fetch(:application)}"
+server 'dc', user: 'deployer', roles: %w{web app dc}
+
+# Repo details
+set :rbenv_ruby,      '2.3.1'
+set :repo_url,        '/var/repos/inv.git'
+set :scm,             :git
+set :branch,          'master'
+set :rbenv_map_bins,  %w{rake gem bundle ruby rails}
+
+set :keep_releases,   10
+
+set :deploy_via,      :remote_cache
+set :use_sudo,        false
+set :passenger_restart_with_touch, true
+
+set :linked_files,    %w{ config/database.yml }
+set :linked_dirs,     %w{ log tmp/pids tmp/cache vendor/bundle public/uploads }
+
+SSHKit.config.command_map[:rake]  = "bundle exec rake" #8
+SSHKit.config.command_map[:rails] = "bundle exec rails"
+
+namespace :deploy do
+  desc "Restart Passenger app"
+  task :restart do
+    on roles(:app), in: :sequence, wait: 5 do
+      execute :touch, release_path.join("tmp/restart.txt")
+    end
+  end
+end
+
+desc "Reset database and add default data"
+task :seed do
+  on primary fetch(:migration_role) do
+    within release_path do
+      with rails_env: fetch(:rails_env) do
+        execute :rake, 'db:reset'
+      end
+    end
+  end
+end
+
+after 'deploy', 'deploy:cleanup'
+after 'deploy:publishing', 'deploy:restart'

@@ -59,3 +59,9 @@
 #     auth_methods: %w(publickey password)
 #     # password: "please use keys"
 #   }
+
+set :application, 'svt'
+
+role :web,  'svt'
+role :app,  'svt'
+role :db,   'svt'
