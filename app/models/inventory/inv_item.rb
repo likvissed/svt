@@ -3,6 +3,9 @@ module Inventory
     self.primary_key  = :item_id
     self.table_name   = :invent_item
 
+    # Список типов оборудования, для которых не обязательно наличие модели.
+    PRESENCE_MODEL_EXCEPT = %w{ pc }
+
     has_many    :inv_property_values, -> { order(:property_id) }, foreign_key: 'item_id', dependent: :destroy,
                 inverse_of: :inv_item
     belongs_to  :inv_type, foreign_key: 'type_id'
@@ -25,7 +28,8 @@ module Inventory
     # Проверка наличия модели.
     def presence_model
       # Если модель не задана
-      if (self.model_id.to_i.zero? && self.item_model.blank?) || self.model_id == -1
+      if ((self.model_id.to_i.zero? && self.item_model.blank?) || self.model_id == -1) && !PRESENCE_MODEL_EXCEPT
+        .include?(self.inv_type.name)
         self.errors.add(:model_id, 'не указана')
       end
     end

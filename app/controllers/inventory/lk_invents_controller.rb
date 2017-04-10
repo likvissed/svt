@@ -54,6 +54,7 @@ invent_workplace_count.division, invent_workplace_count.time_start, invent_workp
 
       # Получить список типов РМ
       @wp_types = WorkplaceType.all
+      @wp_types = @wp_types.as_json().each { |type| type['full_description'] = WorkplaceType::DESCR[type['name'].to_sym] }
 
       # Получить список направлений
       @specs = WorkplaceSpecialization.all
@@ -141,9 +142,25 @@ invent_workplace_count.division, invent_workplace_count.time_start, invent_workp
       error_message = 'Получить данные автоматически не удалось, вам необходимо ввести их вручную. Для этого вам
  необходимо нажать кнопку "Ввод данных вручную"'
 
+      # begin
+      #   @audit = Audit.get_data(@host['name'])
+      # rescue Exception => e
+      #   render json: { full_message: error_message }, status: 422
+      #   return
+      # end
+
+      # В течении 29 секунд пытаться выполнить запрос к Аудиту.
       begin
-        @audit = Audit.get_data(@host['name'])
-      rescue Exception => e
+        Timeout.timeout(29) do
+          while true do
+            begin
+              @audit = Audit.get_data(@host['name'])
+              break
+            rescue Exception => e
+            end
+          end
+        end
+      rescue Timeout::Error
         render json: { full_message: error_message }, status: 422
         return
       end
