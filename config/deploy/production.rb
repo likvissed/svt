@@ -61,7 +61,4 @@
 #   }
 
 set :application, 'svt'
-
-role :web,  'svt'
-role :app,  'svt'
-role :db,   'svt'
+set :deploy_to,   "/var/www/html/#{fetch(:application)}"
