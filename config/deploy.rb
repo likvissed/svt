@@ -33,19 +33,18 @@ lock "3.8.0"
 # set :keep_releases, 5
 
 set :ssh_options, {
-  keys:               %w(/home/ravil/.ssh/id_rsa),
+#   keys:               %w(/home/developer/.ssh/id_rsa),
   forward_agent:      false,
-  user:               'deployer'
+  user:               'deployer',
 }
-set :deploy_to,   "/var/www/html/#{fetch(:application)}"
-server 'dc', user: 'deployer', roles: %w{web app dc}
+
+server 'dc', user: 'deployer', roles: %w{ web app db }
 
 # Repo details
 set :rbenv_ruby,      '2.3.1'
 set :repo_url,        '/var/repos/inv.git'
-set :scm,             :git
 set :branch,          'master'
-set :rbenv_map_bins,  %w{rake gem bundle ruby rails}
+set :rbenv_map_bins,  %w{ rake gem bundle ruby rails }
 
 set :keep_releases,   10
 

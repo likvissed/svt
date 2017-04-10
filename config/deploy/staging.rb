@@ -62,7 +62,4 @@
 
 
 set :application, 'staging-svt'
-
-role :web,  'staging-svt'
-role :app,  'staging-svt'
-role :db,   'staging-svt'
+set :deploy_to,   "/var/www/html/#{fetch(:application)}"
