@@ -3,6 +3,6 @@ module Standart
     belongs_to :log
     belongs_to :detail_type
 
-    validates :log_id, :detail_type_id, precense: true
+    validates :log_id, :detail_type_id, presence: true
   end
 end
