@@ -5,6 +5,8 @@ app
   .factory('Server', Server)
   .factory('TableSettings', TableSettings);
 
+Flash.$inject         = ['$timeout'];
+Error.$inject         = ['Flash'];
 Server.$inject        = ['$resource'];
 TableSettings.$inject = [];
 
