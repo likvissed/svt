@@ -74,7 +74,7 @@ module Inventory
 
         # Проверка наличия данных от аудита, либо отчета о конфигурации
         if !self.invent_num.blank? && !full_properties_flag && !file_name_exist
-          self.errors.add(:base, 'Необходимо добавить отчет о конфигурации, либо получить данные автоматически')
+          self.errors.add(:base, 'Необходимо нажать "Получить данные автоматически", либо "Ввод данных вручную"')
         end
 
       else
