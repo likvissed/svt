@@ -3,7 +3,8 @@ app
   .controller('DefaultDataTableCtrl', DefaultDataTableCtrl)           // Основные настройки таблицы angular-datatable
   .controller('FormValidationController', FormValidationController);  // Функции вывода ошибок валидаций форм
 
-DefaultDataTableCtrl.$inject = ['DTDefaultOptions'];
+FlashMessageCtrl.$inject      = ['$scope', '$attrs', 'Flash'];
+DefaultDataTableCtrl.$inject  = ['DTDefaultOptions'];
 
 // =====================================================================================================================
 
@@ -72,8 +73,8 @@ function DefaultDataTableCtrl(DTDefaultOptions) {
  * @class Inv.DefaultDataTableCtrl
  */
 function FormValidationController() {
-  this._errors = null;
-  this._formName = '';
+  this._errors    = null;
+  this._formName  = '';
 }
 
 /**

@@ -6,7 +6,11 @@
     .directive('datatableWrapper', datatableWrapper)
     .directive('newRecord', newRecord);
 
-  datatableWrapper.$inject = ['$timeout', '$compile'];
+  disableLink.$inject       = [];
+  datatableWrapper.$inject  = ['$timeout', '$compile'];
+  newRecord.$inject         = [];
+
+// =====================================================================================================================
 
   // Отключить переход по ссылке
   function disableLink() {
