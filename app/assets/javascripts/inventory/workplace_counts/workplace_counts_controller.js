@@ -304,5 +304,3 @@ ModalWpCountController.prototype.cancel = function () {
 ModalWpCountController.prototype.openDatePicker = function (type) {
   this[type].openDatePicker = true;
 };
-
-// =====================================================================================================================
