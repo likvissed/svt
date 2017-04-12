@@ -149,13 +149,14 @@ WorkplaceCountIndexCtrl.prototype._openWpCountEditModal = function (data) {
 WorkplaceCountIndexCtrl.prototype.openWpCountEditModal = function (id) {
   var self = this;
 
-  if (id)
+  if (id) {
     self.WorkplaceCount.getDivision(id).then(function (data) {
       console.log(data);
       self._openWpCountEditModal(data);
     });
-  else
+  } else {
     self._openWpCountEditModal(self.WorkplaceCount.newDivision());
+  }
 
 };
 
@@ -273,8 +274,7 @@ ModalWpCountController.prototype.ok = function () {
         self.errorResponse(response);
       }
     )
-  }
-  else {
+  } else {
     self.Server.WorkplaceCount.update({ workplace_count_id: self.data.workplace_count_id}, { workplace_count: self.data },
       function success(response) {
         self.$uibModalInstance.close();
