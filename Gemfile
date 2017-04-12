@@ -68,6 +68,11 @@ gem 'jbuilder', '~> 2.5'
 # Use Capistrano for deployment
 # gem 'capistrano-rails', group: :development
 
+# For console
+gem 'awesome_print'
+# Colorize text
+gem 'colorize'
+
 group :test do
   gem 'database_cleaner'
 end
@@ -77,8 +82,6 @@ group :development, :test do
   gem 'byebug', platform: :mri
   # Testing
   gem 'rspec-rails'
-  # Colorize text
-  gem 'colorize'
 end
 
 group :development do
@@ -95,9 +98,6 @@ group :development do
   gem 'better_errors'
   # Quiet assets
   # gem 'quiet_assets'
-
-  # For console
-  gem 'awesome_print'
 
   # Deploy application
   gem 'capistrano'
