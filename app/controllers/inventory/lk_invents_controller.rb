@@ -290,7 +290,7 @@ invent_workplace_count.division, invent_workplace_count.time_start, invent_workp
     end
 
     def send_pc_script
-      send_file(Rails.root.join('public', 'SysInfo.exe'), disposition: 'attachment')
+      send_file(Rails.root.join('public', 'downloads', 'SysInfo.exe'), disposition: 'attachment')
     end
 
     private
