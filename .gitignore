@@ -53,6 +53,7 @@ config/redis.yml
 /public/system
 /public/ckeditor_assets
 /public/uploads
+/public/downloads
 /spec/tmp/*
 /cache
 /capybara*
