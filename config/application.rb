@@ -26,7 +26,8 @@ module Inv
     config.middleware.insert_before 0, Rack::Cors do
       allow do
         origins   'http://***REMOVED***', 'https://***REMOVED***.***REMOVED***.ru', 'https://***REMOVED***.npopm.ru',
-                  'http://***REMOVED***.***REMOVED***.ru', 'http://***REMOVED***.npopm.ru'
+                  'http://***REMOVED***.***REMOVED***.ru', 'http://***REMOVED***.npopm.ru', '***REMOVED***.npopm.ru',
+                  '***REMOVED***.***REMOVED***.ru'
         resource  '/inventory/***REMOVED***_invents/init/*', :headers => :any, :methods => [:get]
         resource  '/inventory/***REMOVED***_invents/show_division_data/*', :headers => :any, :methods => [:get]
         resource  '/inventory/***REMOVED***_invents/get_data_from_audit/*', :headers => :any, :methods => [:get]
