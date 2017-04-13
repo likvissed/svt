@@ -73,7 +73,6 @@ invent_workplace_count.division, invent_workplace_count.time_start, invent_workp
         }
       }).each do |type|
         if !InvPropertyValue::PROPERTY_WITH_FILES.any?{ |val| val == type['name'] }
-        # if type['name'] != 'pc' && type['name'] != 'allin1' && type['name'] != 'notebook'
           type['inv_properties'].delete_if{ |prop| prop['mandatory'] == false }
         end
 
@@ -300,7 +299,6 @@ invent_workplace_count.division, invent_workplace_count.time_start, invent_workp
       property_value_id = 0
       # Получаем property_value_id, чтобы создать директорию.
       @workplace['inv_items'].each do |item|
-        # next if item['inv_type']['name'] != 'pc' && item['inv_type']['name'] != 'pc' && item['inv_type']['name'] != 'pc'
         next if !InvPropertyValue::PROPERTY_WITH_FILES.any?{ |val| val == item['inv_type']['name'] }
         break if property_value_id = item['inv_property_values'].find { |val| val['inv_property']['name'] ==
           'config_file' }['property_value_id']

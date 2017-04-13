@@ -25,7 +25,7 @@ module Inv
     # Provides support for Cross-Origin Resource Sharing (CORS)
     config.middleware.insert_before 0, Rack::Cors do
       allow do
-        origins   'http://***REMOVED***', 'https://***REMOVED***.***REMOVED***.ru'
+        origins   'http://***REMOVED***', 'https://***REMOVED***.***REMOVED***.ru', 'http://***REMOVED***.***REMOVED***.ru'
         resource  '/inventory/***REMOVED***_invents/init/*', :headers => :any, :methods => [:get]
         resource  '/inventory/***REMOVED***_invents/show_division_data/*', :headers => :any, :methods => [:get]
         resource  '/inventory/***REMOVED***_invents/get_data_from_audit/*', :headers => :any, :methods => [:get]
@@ -36,6 +36,12 @@ module Inv
         resource  '/inventory/***REMOVED***_invents/generate_pdf/*', :headers => :any, :methods => [:get]
         resource  '/inventory/***REMOVED***_invents/get_pc_script/', :headers => :any, :methods => [:get]
       end
+    end
+
+    config.generators do |g|
+      g.template_engine     :haml
+      g.test_framework      :rspec, fixtures: true, views: false # Дефолтный тестовый фреймворк
+      g.fixture_replacement :factory_girl, dir: "spec/factories"
     end
   end
 end

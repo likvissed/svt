@@ -82,6 +82,7 @@ group :development, :test do
   gem 'byebug', platform: :mri
   # Testing
   gem 'rspec-rails'
+  gem 'factory_girl_rails'
 end
 
 group :development do
