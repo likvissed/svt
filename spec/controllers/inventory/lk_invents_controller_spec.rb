@@ -12,9 +12,13 @@ module Inventory
         before { subject }
         let(:data) { JSON.parse(subject.body) }
 
-          it "must have 'divisions' key" do
-            expect(data).to have_key('divisions')
-          end
+        it "must have 'divisions' key" do
+          expect(data).to have_key('divisions')
+        end
+
+        # it "must have 'eq_types' key" do
+        #   expect(data).to have_key('eq_types')
+        # end
 
         # it "response with json object" do
           # expect(data).to

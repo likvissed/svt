@@ -6,6 +6,7 @@ abort("The Rails environment is running in production mode!") if Rails.env.produ
 require 'spec_helper'
 require 'rspec/rails'
 # Add additional requires below this line. Rails is not loaded until this point!
+require 'database_cleaner'
 
 # Requires supporting ruby files with custom matchers and macros, etc, in
 # spec/support/ and its subdirectories. Files matching `spec/**/*_spec.rb` are
@@ -61,4 +62,21 @@ RSpec.configure do |config|
   # For Devise
   config.include Devise::Test::ControllerHelpers, type: :controller
   config.include Devise::Test::ControllerHelpers, type: :view
+
+  # For Database_cleaner
+  keep_tables = %w{ invent_type invent_property_to_type invent_property invent_property_list invent_vendor
+invent_model invent_model_property_list invent_workplace_specialization invent_workplace_type }
+
+  config.before(:suite) do
+    # DatabaseCleaner.strategy = :transaction, { except: keep_tables }
+    DatabaseCleaner.clean_with(:truncation, { except: keep_tables })
+  end
+
+  config.before(:each) do
+    DatabaseCleaner.start
+  end
+
+  config.after(:each) do
+    DatabaseCleaner.clean
+  end
 end
