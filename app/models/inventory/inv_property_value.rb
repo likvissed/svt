@@ -4,7 +4,7 @@ module Inventory
     self.table_name   = :invent_property_value
 
     # Список типов оборудования, которые имеют свойство с типом "файл"
-    PROPERTY_WITH_FILES = %w{pc allin1 notebook}
+    PROPERTY_WITH_FILES = %w{ pc allin1 notebook }
 
     belongs_to :inv_property, foreign_key: 'property_id'
     belongs_to :inv_item, foreign_key: 'item_id'
