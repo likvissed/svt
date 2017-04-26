@@ -43,26 +43,31 @@
         ответственного", "ng-click": "modal.addResponsible()" |
 
       %table.internal-table
+        %thead
+          %tr
+            %td.col-sm-16.col-md-16.col-lg-5
+              = label_tag "workplace_count_workplace_responsibles.tn", class: "control-label" do
+                %abbr{ title: "Обязательное поле" } *
+                %b Табельный номер
+            %td.col-lg-13
+              %b ФИО
+            %td.col-sm-8.col-md-8.col-lg-6
+              = label_tag :workplace_count_phone, class: "control-label" do
+                %b Телефон
         %tbody.animate-repeat.animate-show{ "ng-repeat": "resp in modal.data.workplace_responsibles_attributes",
         "ng-hide": "resp._destroy" }
           %tr
-            %td
-              = label_tag 'workplace_count_workplace_responsibles.tn', class: "control-label" do
-                %abbr{ title: "Обязательное поле" } *
-                %b Табельный номер
-            %td
-              = label_tag :workplace_count_phone, class: "control-label" do
-                %b Телефон
-          %tr
-            %td.col-sm-16.col-md-16.col-lg-18
+            %td.col-sm-16.col-md-16.col-lg-5
               .form-group.required
                 = text_field_tag "workplace_count[workplace_responsibles.tn]", "", class: "form-control", "ng-model": |
                  "resp.tn" |
+            %td.col-lg-13
+              = text_field_tag "workplace_count[workplace_responsibles.fio", "", class: "form-control", disabled: ""
             %td.col-sm-8.col-md-8.col-lg-6
               .col-sm-20.col-md-20.col-lg-20.no-left-padding.no-right-padding
                 .form-group
-                  = text_field_tag "workplace_count[workplace_responsibles.phone]", "", class: |
-                  "form-control", "ng-model": "resp.phone" |
+                  = text_field_tag "workplace_count[workplace_responsibles.phone]", "", class: "form-control", |
+                  "ng-model": "resp.phone" |
               .col-sm-4.col-md-4.col-lg-4.no-right-padding
                 = fa_icon "minus-circle lg", class: "pointer", "tooltip-placement": "left", "uib-tooltip": "Удалить |
                 ответственного", "ng-click": "modal.delResponsible(resp)" |

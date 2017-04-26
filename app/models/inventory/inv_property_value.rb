@@ -17,6 +17,18 @@ module Inventory
     before_destroy :destroy_file, if: :is_this_config_file?
     after_initialize :set_default_property_list_id_to_zero
 
+    # Удалить директорию, содержащую файл с конфигурацией ПК.
+    def destroy_file
+      path_to_file = Rails.root.join('public', 'uploads', self.property_value_id.to_s)
+      begin
+        logger.info "Удаление директории: #{path_to_file}".red
+        FileUtils.rm_r(path_to_file) if File.exist?(path_to_file)
+      rescue
+        # self.errors.add(:base, 'Не удалось удалить файл. Обратитесь к администратору')
+        throw(:abort)
+      end
+    end
+
     private
 
     # Проверка наличия значений для свойства
@@ -40,19 +52,6 @@ module Inventory
     # Проверка, является ли текущее свойство типом 'config_file'
     def is_this_config_file?
       self.inv_property.name == 'config_file'
-    end
-
-    # Удалить директорию, содержащую файл с конфигурацией ПК.
-    def destroy_file
-      unless self.value.empty?
-        path_to_file = Rails.root.join('public', 'uploads', self.property_value_id.to_s)
-        begin
-          FileUtils.rm_r(path_to_file) if File.exist?(path_to_file)
-        rescue
-          # self.errors.add(:base, 'Не удалось удалить файл. Обратитесь к администратору')
-          throw(:abort)
-        end
-      end
     end
   end
 end

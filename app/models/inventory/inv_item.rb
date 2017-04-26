@@ -5,6 +5,13 @@ module Inventory
 
     # Список типов оборудования, для которых не обязательно наличие модели.
     PRESENCE_MODEL_EXCEPT = %w{ pc }
+    # Типы оборудования, разрешенные для установки на мобильном рабочем месте.
+    ALLOWED_MOB_TYPES     = %w{ notebook tablet }
+    # Типы ПК, которые не могут встречаться дважды в одном РМ.
+    SINGLE_PC_ITEMS       = %w{ pc allin1 notebook tablet }
+    # Все типы печатающих устройств, у которых можно выбрать тип подключения.
+    ALL_PRINT_TYPES       = %w{ printer plotter scanner mfu copier print_system }
+    # Типы печатающих устройств, которые не могут ид
 
     has_many    :inv_property_values, -> { order(:property_id) }, foreign_key: 'item_id', dependent: :destroy,
                 inverse_of: :inv_item
@@ -61,11 +68,11 @@ module Inventory
         inv_property_values.each do |prop_val|
           next if prop_val._destroy
 
-          if %w{ mb ram video cpu hdd }.any? { |pc_prop| pc_prop == @properties.find { |prop| prop.property_id ==
+          if %w{ mb ram video cpu hdd }.any? { |pc_prop| pc_prop == @properties.find{ |prop| prop.property_id ==
             prop_val.property_id }.name }
             full_properties_flag = false if property_value_invalid?(prop_val)
             # Пропускаем тип свойства "config_file", так как его проверка будет последней, в конце метода.
-          elsif @properties.find { |prop| prop.property_id == prop_val.property_id }.name == 'config_file'
+          elsif @properties.find{ |prop| prop.property_id == prop_val.property_id }.name == 'config_file'
             file_name_exist = true unless prop_val.value.blank?
           else
             add_prop_val_error(prop_val)
@@ -74,7 +81,25 @@ module Inventory
 
         # Проверка наличия данных от аудита, либо отчета о конфигурации
         if !self.invent_num.blank? && !full_properties_flag && !file_name_exist
-          self.errors.add(:base, 'Необходимо нажать "Получить данные автоматически", либо "Ввод данных вручную"')
+          self.errors.add(:base, 'Сначала необходимо нажать кнопку "Получить данные автоматически" или "Ввод данных
+вручную"')
+        end
+
+        # Если имя файла пришло пустым (не будет работать при создании нового item, только во время редактирования).
+        if !file_name_exist
+          # Объект свойства 'config_file'
+          prop      = @properties.find{ |prop| prop.name == 'config_file' }
+          # Объект inv_property_value со свойством 'config_file'
+          file_obj  = self.inv_property_values.find{ |val| val.property_id == prop.property_id }
+
+          unless file_obj.nil?
+            # Если имя файла изменилось и при этом ранее имя файла было указано (а сейчас оно отсутствует), файл
+            # необходимо удалить из файловой системы.
+            if file_obj.value_changed? && !file_obj.value_was.to_s.empty?
+              logger.info "Вызов метода для удаления файла."
+              file_obj.destroy_file
+            end
+          end
         end
 
       else
@@ -93,5 +118,6 @@ module Inventory
     def property_value_invalid?(prop_val)
       (prop_val.property_list_id == -1 || (prop_val.property_list_id.to_i.zero? && prop_val.value.blank?)) && !prop_val._destroy
     end
+
   end
 end

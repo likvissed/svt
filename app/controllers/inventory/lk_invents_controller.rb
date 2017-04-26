@@ -119,7 +119,7 @@ invent_workplace_count.division, invent_workplace_count.time_start, invent_workp
       @users = UserIss
                  .select(:id_tn, :fio)
                  .where(dept: params[:division])
-                 .where('tn < 100000')
+                 # .where('tn < 100000')
 
       data = {
         workplaces: @workplaces,
@@ -133,27 +133,20 @@ invent_workplace_count.division, invent_workplace_count.time_start, invent_workp
       @host = HostIss.get_host(params[:invent_num])
 
       if @host.nil?
-        render json: { full_message: 'Данные по указанному инвентарному номеру не найдены. Проверьте, корректность
-введенного номера или загрузите файл конфигурации.' }, status: 422
+        render json: { full_message: 'Данные по указанному инвентарному номеру не найдены. Проверьте корректность
+введенного номера или загрузите файл конфигурации нажав кнопку "Ввод данных вручную".' }, status: 422
         return
       end
 
       error_message = 'Получить данные автоматически не удалось, вам необходимо ввести их вручную. Для этого вам
  необходимо нажать кнопку "Ввод данных вручную"'
 
-      # begin
-      #   @audit = Audit.get_data(@host['name'])
-      # rescue Exception => e
-      #   render json: { full_message: error_message }, status: 422
-      #   return
-      # end
-
       # В течении 29 секунд пытаться выполнить запрос к Аудиту.
       begin
         Timeout.timeout(29) do
           while true do
             begin
-              @audit = Audit.get_data(@host['name'])
+              @audit_data = Audit.get_data(@host['name'])
               break
             rescue Exception => e
             end
@@ -165,15 +158,15 @@ invent_workplace_count.division, invent_workplace_count.time_start, invent_workp
       end
 
       # Данных от аудита нет
-      if @audit.nil?
+      if @audit_data.nil?
         render json: { full_message: error_message }, status: 422
         return
       else
         # Проверяем актуальность данных по полю last_connection
-        if Time.parse(@audit['last_connection'].first) + 20.days <= Time.now
+        unless Audit.is_relevance?(@audit_data)
           render json: { full_message: error_message }, status: 422
         else
-          render json: @audit, status: 200
+          render json: @audit_data, status: 200
         end
       end
     end

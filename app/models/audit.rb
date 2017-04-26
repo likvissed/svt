@@ -1,6 +1,6 @@
 class Audit < SMSServer
-  # Устройства, которые не нужно контролировать
-  @not_detected_devices = [
+  # Устройства, которые не нужно контролировать.
+  NOT_DETECTED_DEVICES = [
     'jetflash transcend 4gb',
     'jetflash transcend 8gb',
     'jetflash transcend 16gb',
@@ -12,8 +12,11 @@ class Audit < SMSServer
     'generic- sd/mmc',
     'sd card'
   ]
+  # Максимальное количество дней, по истечению которых данные от Аудита считаются устаревшими.
+  MAX_RELENAVCE_TIME = 20
 
-  # Выполнить хранимую процедуру на сервере smssvr
+
+  # Выполнить хранимую процедуру на сервере smssvr.
   # pc_name - имя компьютера
   def self.get_data(pc_name)
     raw_data = self.execute_procedure('ISS_Get_HW_invent_inf', pc_name, 'f')
@@ -33,8 +36,8 @@ class Audit < SMSServer
       value.split(';').map do |val|
         val.strip!
 
-        # Игнорировать результат нахождения флэшек
-        next if @not_detected_devices.include? val
+        # Игнорировать результат нахождения флэшек.
+        next if NOT_DETECTED_DEVICES.include? val
 
         # Перевести значения ОЗУ из Кб в Гб. Округление по 512Мб.
         if type == 'ram'
@@ -44,7 +47,7 @@ class Audit < SMSServer
 
           if mod_part[1].to_i <= 5
             mod_part[1] = 5
-            val = eval(mod_part.join('.'))
+            val         = eval(mod_part.join('.'))
           else
             val = val.to_f.ceil
           end
@@ -55,5 +58,10 @@ class Audit < SMSServer
     end
 
     data
+  end
+
+  # Проверка актуальности данных по полю last_connection (всё, что более 20 дней - устаревшие данные).
+  def self.is_relevance?(data)
+    Time.parse(data['last_connection'].first) + MAX_RELENAVCE_TIME.days > Time.now
   end
 end
