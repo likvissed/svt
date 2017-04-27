@@ -34,8 +34,9 @@ ru:
         division: "Отдел"
         time_start: "Дата начала ввода данных"
         time_end: "Дата окончания ввода данных"
-      inventory/workplace_count/workplace_responsible:
+      inventory/workplace_count/workplace_responsibles:
         tn: "Табельный номер"
+        id_tn: "Табельный номер"
         phone: "Номер телефона"
 
       inventory/workplace:
