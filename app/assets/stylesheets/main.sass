@@ -1,23 +1,33 @@
-$min-width:   970px
-$corp-color:  #0050a0
-$main-bg-color:   white
+body
+  background-color: $main-bg-color
+
+button
+  @extend .btn, .btn-default
+
+textarea
+  resize: none
+
+/* ================================================ Основной контент ================================================ */
 
 .bg-content
   margin-bottom: $line-height-computed
+
+// Позиционирование уведомлений
+.alert
+  position: absolute
+  z-index: 9999
+  width: 100%
 
 .content-body
   width: 100%
   padding: 20px
   display: inline-block
 
+a.default-color
+  color: $btn-default-color !important
+
 .pointer
   cursor: pointer
-
-.no-left-padding
-  padding-left: 0 !important
-
-.no-right-padding
-  padding-right: 0 !important
 
 /* ================================================ Страницы входа на сайт ========================================== */
 
@@ -33,28 +43,7 @@ $main-bg-color:   white
 
 .auth-content
   text-align: center
-  //width: 300px
   margin-top: 100px
-
-/* ================================================ Основной контент ================================================ */
-
-body
-  background-color: $main-bg-color
-
-button
-  @extend .btn, .btn-default
-
-textarea
-  resize: none
-
-a.default-color
-  color: $btn-default-color !important
-
-// Для отображения flash сообщений
-.absolute
-  position: absolute
-  z-index: 9999
-  width: 100%
 
 /* ================================================ Таблицы ========================================================= */
 
@@ -62,16 +51,9 @@ a.default-color
   @extend .table
   margin: 10px 0 !important
 
-table.center-header
-  th
-    text-align: center
-
 .table-hover
   @extend .table-hover
   cursor: pointer
-
-.row-margin-bot
-  margin-bottom: 15px
 
 // Стили для внутренних таблиц, используемых внутри форм
 .internal-table

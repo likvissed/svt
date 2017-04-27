@@ -1,17 +1,11 @@
 .navbar
-  border-radius: 0 !important
+  @include border-radius(0)
 
 [role="navigation-top"]
   $text-color: white
 
   margin-bottom: 0
   color: $text-color
-
-  //.navbar-brand
-    padding:
-      top: 0
-      right: 0
-      bottom: 0
 
   .navbar-text
     color: $text-color
@@ -26,17 +20,20 @@
 [role="navigation-main"]
   $dropDown: true
 
+  //ul.nav li.dropdown:hover > ul.dropdown-menu
+    display: block
+
   .navbar-nav
     > li
       > a
 
         &:hover, &:focus
-          color: $corp-color
+          color: $main-corp-color
 
       @if $dropDown
         > .dropdown-menu
           > li
             > a
               &:hover, &:focus
-                color: $corp-color
+                color: $main-corp-color
                 background-color: transparent

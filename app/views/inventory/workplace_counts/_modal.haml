@@ -64,7 +64,8 @@
             %td.col-lg-13
               = text_field_tag "workplace_count[workplace_responsibles.fio", "", class: "form-control", disabled: ""
             %td.col-sm-8.col-md-8.col-lg-6
-              .col-sm-20.col-md-20.col-lg-20.no-left-padding.no-right-padding
+              .col-sm-20.col-md-20.col-lg-20
+                -#.no-left-padding.no-right-padding
                 .form-group
                   = text_field_tag "workplace_count[workplace_responsibles.phone]", "", class: "form-control", |
                   "ng-model": "resp.phone" |

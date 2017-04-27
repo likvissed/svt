@@ -2,7 +2,7 @@
  * @namespace Inv
  */
 var app = angular
-  .module('Inv', [
+  .module('SVT', [
     'ngResource',
     'ngAnimate',
     'datatables',

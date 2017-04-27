@@ -1,0 +1,21 @@
+// Длительность смены стиля
+@mixin duration($a)
+  -webkit-transition-duration: $a
+  -o-transition-duration: $a
+  -moz-transition-duration: $a
+  transition-duration: $a
+
+// Прозрачность
+@mixin opacity($p)
+  opacity: $p
+  -webkit-opacity: $p
+  -khtml-opacity: $p
+  -moz-opacity: $p
+  filter: alpha(opacity=$p)
+  -ms-filter: "progid:DXImageTransform.Microsoft.Alpha(Opacity=$p)"
+
+@mixin border-radius($radius)
+  -webkit-border-radius: $radius
+  -moz-border-radius: $radius
+  -ms-border-radius: $radius
+  border-radius: $radius

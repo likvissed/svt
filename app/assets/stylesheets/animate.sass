@@ -1,28 +1,25 @@
-$animate-time: 0.2s // Время анимации
-
 /* ================================================ Анимация для ng-repeat ========================================== */
 
 .animate-repeat.ng-move,  // Если соседний элемент после отфильтровывания вызывает перестроение списка или список изменился
 .animate-repeat.ng-enter, // Добавление нового элемента или фильтрация
 .animate-repeat.ng-leave  // Удаление элемента или фильтрация
-  -webkit-transition: $animate-time
-  transition: all linear $animate-time
+  @include duration($animate-time)
 
 .animate-repeat.ng-leave.ng-leave-active,
 .animate-repeat.ng-move,
 .animate-repeat.ng-enter
-  opacity: 0
+  @include opacity(0)
 
 .animate-repeat.ng-leave,
 .animate-repeat.ng-move.ng-move-active,
 .animate-repeat.ng-enter.ng-enter-active
-  opacity: 1
+  @include opacity(1)
 
 /* ================================================ Анимация для ng-show & ng-hide ================================== */
 
 .animate-show.ng-hide-add,
 .animate-show.ng-hide-remove
-  transition: all linear $animate-time
+  @include duration($animate-time)
 
 .animate-show.ng-hide
-  opacity: 0
+  @include opacity(0)
