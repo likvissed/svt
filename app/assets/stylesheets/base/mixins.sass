@@ -14,8 +14,15 @@
   filter: alpha(opacity=$p)
   -ms-filter: "progid:DXImageTransform.Microsoft.Alpha(Opacity=$p)"
 
+// Скругление углов
 @mixin border-radius($radius)
   -webkit-border-radius: $radius
   -moz-border-radius: $radius
   -ms-border-radius: $radius
   border-radius: $radius
+
+// Тень объектов
+@mixin box-shadow($left, $top, $blur, $color)
+  -moz-box-shadow: $left $top $blur $color
+  -webkit-box-shadow: $left $top $blur $color
+  box-shadow: $left $top $blur $color
