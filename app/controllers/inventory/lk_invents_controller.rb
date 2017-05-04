@@ -4,36 +4,25 @@ module Inventory
     skip_before_action :verify_authenticity_token
     before_action :check_***REMOVED***_authorization
     authorize_resource class: false, param_method: :workplace_params
-    before_action :check_workplace_count_access, only: [:create_workplace, :update_workplace, :destroy_workplace]
-    before_action :check_timeout, except: [:init, :show_division_data, :get_data_from_audit, :send_pc_script]
+    before_action :check_workplace_count_access, only: %i[create_workplace update_workplace destroy_workplace]
+    before_action :check_timeout, except: %i[init show_division_data data_from_audit send_pc_script]
     after_action -> { sign_out @user }
 
     # Табельный номер пользователя в таблице users, от имени которого пользователи ЛК получают доступ в систему.
-    @tn_***REMOVED***_user = 999999
+    @tn_***REMOVED***_user = 999_999
 
     # Получить список отделов, закрепленных за пользователем и список всех типов оборудования с их параметрами.
     def init
       # Получить список отделов
       @divisions = WorkplaceResponsible
-                     .left_outer_joins(:user_iss, :workplace_count)
+                     .left_outer_joins(:workplace_count)
                      .select('invent_workplace_count.workplace_count_id, invent_workplace_count.workplace_count_id,
 invent_workplace_count.division, invent_workplace_count.time_start, invent_workplace_count.time_end')
-                     .where('user_iss.tn = ?', params[:tn])
-
-      # SELECT
-      #   invent_workplace_count.workplace_count_id, invent_workplace_count.division
-      # FROM
-      #   `invent_workplace_responsible`
-      # LEFT OUTER JOIN `user_iss` ON
-      #   `user_iss`.`id_tn` = `invent_workplace_responsible`.`id_tn`
-      # LEFT OUTER JOIN `invent_workplace_count` ON
-      #   `invent_workplace_count`.`workplace_count_id` = `invent_workplace_responsible`.`workplace_count_id`
-      # WHERE
-      #   (user_iss.tn = '***REMOVED***')
+                     .where(id_tn: params[:id_tn])
 
       # Проверка, прошел ли срок редактирования для каждого полученного отдела. Результат записывается в переменную
       # allowed_time.
-      @divisions = @divisions.as_json().each do |division|
+      @divisions = @divisions.as_json.each do |division|
         division['allowed_time'] = time_not_passed?(division['time_start'], division['time_end'])
 
         division.delete('time_start')
@@ -42,25 +31,21 @@ invent_workplace_count.division, invent_workplace_count.time_start, invent_workp
 
       # Получить список типов оборудования с их свойствами и возможными значениями.
       @inv_types = InvType
-                     .includes(:inv_models, { inv_properties: { inv_property_lists: :inv_model_property_lists } })
+                     .includes(:inv_models, inv_properties: { inv_property_lists: :inv_model_property_lists })
                      .where('name != "unknown"')
 
-      # SELECT `invent_type`.* FROM `invent_type` WHERE (name != "unknown")
-      # SELECT `invent_property_to_type`.* FROM `invent_property_to_type` WHERE `invent_property_to_type`.`type_id` IN ()
-      # SELECT `invent_property`.* FROM `invent_property` WHERE `invent_property`.`property_id` IN ()
-      # SELECT `invent_model`.* FROM `invent_model` WHERE `invent_model`.`type_id` IN ()
-      # SELECT `invent_model_property_list`.* FROM `invent_model_property_list` WHERE `invent_model_property_list`.`model_id` IN ()
-      # SELECT `invent_property_list`.* FROM `invent_property_list` WHERE `invent_property_list`.`property_list_id` IN ()
-
-      # Получить список типов РМ
+      # Получить список типов РМ.
       @wp_types = WorkplaceType.all
-      @wp_types = @wp_types.as_json().each { |type| type['full_description'] = WorkplaceType::DESCR[type['name'].to_sym] }
+      @wp_types = @wp_types.as_json.each { |type| type['full_description'] = WorkplaceType::DESCR[type['name'].to_sym] }
 
-      # Получить список направлений
+      # Получить список направлений.
       @specs = WorkplaceSpecialization.all
 
+      # Получить список площадок и корпусов.
+      @iss_locations = IssReferenceSite.includes(:iss_reference_buildings)
+
       # Исключить все свойства inv_property, где mandatory = false (исключение для системных блоков).
-      types = @inv_types.as_json({
+      types = @inv_types.as_json(
         include: {
           inv_properties: {
             include: {
@@ -71,19 +56,20 @@ invent_workplace_count.division, invent_workplace_count.time_start, invent_workp
           },
           inv_models: {}
         }
-      }).each do |type|
-        if !InvPropertyValue::PROPERTY_WITH_FILES.any?{ |val| val == type['name'] }
-          type['inv_properties'].delete_if{ |prop| prop['mandatory'] == false }
+      ).each do |type|
+        if InvPropertyValue::PROPERTY_WITH_FILES.none? { |val| val == type['name'] }
+          type['inv_properties'].delete_if { |prop| prop['mandatory'] == false }
         end
 
         type
       end
 
       data = {
-        divisions:  @divisions,
-        eq_types:   types,
-        wp_types:   @wp_types,
-        specs:      @specs
+        divisions: @divisions,
+        eq_types: types,
+        wp_types: @wp_types,
+        specs: @specs,
+        iss_locations: @iss_locations.as_json(include: :iss_reference_buildings)
       }
       render json: data, status: 200
     end
@@ -92,44 +78,42 @@ invent_workplace_count.division, invent_workplace_count.time_start, invent_workp
     def show_division_data
       # Получить рабочие места указанного отдела
       @workplaces = Workplace
-                      .joins('LEFT OUTER JOIN invent_workplace_count USING(workplace_count_id)')
-                      .joins('LEFT OUTER JOIN user_iss ON invent_workplace.id_tn = user_iss.id_tn')
-                      .joins('LEFT OUTER JOIN invent_workplace_type USING(workplace_type_id)')
-                      .select('invent_workplace.*, invent_workplace_type.name as type_name, invent_workplace_type
-.short_description, user_iss.fio_initials as fio, user_iss.tn as user_tn, user_iss.duty')
+                      .includes(:iss_reference_site, :iss_reference_building, :iss_reference_room, :user_iss)
+                      .left_outer_joins(:workplace_count, :workplace_type)
+                      .select('invent_workplace.*, invent_workplace_type.name as type_name, invent_workplace_type' \
+'.short_description')
                       .where('invent_workplace_count.division = ?', params[:division])
                       .order(:workplace_id)
 
-      # SELECT
-      #   invent_workplace.*,
-      #   invent_workplace_type.name as type_name,
-      #   invent_workplace_type.short_description as type_short_descr,
-      #   user_iss.fio_initials as fio,
-      #   user_iss.tn as user_tn
-      # FROM `invent_workplace_count`
-      # RIGHT OUTER JOIN
-      #   invent_workplace USING(workplace_count_id)
-      # LEFT OUTER JOIN invent_workplace_type ON
-      #   invent_workplace.workplace_type_id = invent_workplace_type.workplace_type_id
-      # LEFT OUTER JOIN `user_iss` ON
-      #   `user_iss`.`id_tn` = `invent_workplace_count`.`id_tn`
-      # WHERE `invent_workplace_count`.`division` = '***REMOVED***'
+      @workplaces = @workplaces.as_json(
+        include: %i[iss_reference_site iss_reference_building iss_reference_room user_iss]
+      ).each do |wp|
+        wp['location'] = "Пл. '#{wp['iss_reference_site']['name']}', корп. #{wp['iss_reference_building']['name']},
+комн. #{wp['iss_reference_room']['name']}"
+        wp['fio'] = wp['user_iss']['fio_initials']
+        wp['user_tn'] = wp['user_iss']['tn']
+        wp['duty'] = wp['user_iss']['duty']
+
+        wp.delete('iss_reference_site')
+        wp.delete('iss_reference_building')
+        wp.delete('iss_reference_room')
+        wp.delete('user_iss')
+      end
 
       # Получить список работников указанного отдела.
       @users = UserIss
                  .select(:id_tn, :fio)
                  .where(dept: params[:division])
-                 # .where('tn < 100000')
 
       data = {
         workplaces: @workplaces,
-        users:      @users
+        users: @users
       }
 
       render json: data, status: 200
     end
 
-    def get_data_from_audit
+    def data_from_audit
       @host = HostIss.get_host(params[:invent_num])
 
       if @host.nil?
@@ -144,11 +128,11 @@ invent_workplace_count.division, invent_workplace_count.time_start, invent_workp
       # В течении 29 секунд пытаться выполнить запрос к Аудиту.
       begin
         Timeout.timeout(29) do
-          while true do
+          loop do
             begin
               @audit_data = Audit.get_data(@host['name'])
               break
-            rescue Exception => e
+            rescue Exception
             end
           end
         end
@@ -161,27 +145,30 @@ invent_workplace_count.division, invent_workplace_count.time_start, invent_workp
       if @audit_data.nil?
         render json: { full_message: error_message }, status: 422
         return
-      else
+      elsif Audit.relevance?(@audit_data)
         # Проверяем актуальность данных по полю last_connection
-        unless Audit.is_relevance?(@audit_data)
-          render json: { full_message: error_message }, status: 422
-        else
-          render json: @audit_data, status: 200
-        end
+        render json: @audit_data, status: 200
+      else
+        render json: { full_message: error_message }, status: 422
       end
     end
 
     # Создать РМ
     def create_workplace
+      unless create_or_get_room
+        render json: { full_message: @room.errors.full_messages.join('. ') }, status: 422
+        return
+      end
+
       @workplace = Workplace.new(workplace_params)
 
       # Логирование полученных данных
       logger.info "WORKPLACE: #{@workplace.inspect}".red
-      @workplace.inv_items.each_with_index do |item, index|
-        logger.info "ITEM [#{index}]: #{item.inspect}".green
+      @workplace.inv_items.each_with_index do |item, item_index|
+        logger.info "ITEM [#{item_index}]: #{item.inspect}".green
 
-        item.inv_property_values.each_with_index do |val, index|
-          logger.info "PROP_VALUE [#{index}]: #{val.inspect}".cyan
+        item.inv_property_values.each_with_index do |val, prop_index|
+          logger.info "PROP_VALUE [#{prop_index}]: #{val.inspect}".cyan
         end
       end
 
@@ -189,11 +176,11 @@ invent_workplace_count.division, invent_workplace_count.time_start, invent_workp
         # Чтобы избежать N+1 запрос в методе 'transform_workplace' нужно создать объект ActiveRecord (например, вызвать
         # find)
         @workplace = transform_workplace(Workplace
-                                           .includes({ inv_items: [:inv_type, { inv_property_values: :inv_property }] })
+                                           .includes(inv_items: [:inv_type, { inv_property_values: :inv_property }])
                                            .find(@workplace.workplace_id))
 
         unless params[:pc_file] == 'null'
-          logger.info "Получен файл для загрузки".red
+          logger.info 'Получен файл для загрузки'.red
           return false unless upload_file
         end
 
@@ -204,18 +191,29 @@ invent_workplace_count.division, invent_workplace_count.time_start, invent_workp
     end
 
     def edit_workplace
-      get_workplace
-      @workplace = @workplace.as_json({
+      @workplace = Workplace
+                     .includes(:iss_reference_room)
+                     .find(params[:workplace_id])
+
+      unless @workplace
+        render json: { full_message: 'Рабочее место не найдено.' }, status: 404
+      end
+
+      @workplace = @workplace.as_json(
         include: {
+          iss_reference_room: {},
           inv_items: {
             include: :inv_property_values
           }
         }
-      })
+      )
 
       # Преобразование объекта.
+      @workplace['location_room_name'] = @workplace['iss_reference_room']['name']
       @workplace['inv_items_attributes'] = @workplace['inv_items']
       @workplace.delete('inv_items')
+      @workplace.delete('iss_reference_room')
+      @workplace.delete('location_room_id')
 
       @workplace['inv_items_attributes'].each do |item|
         item['id'] = item['item_id']
@@ -233,13 +231,20 @@ invent_workplace_count.division, invent_workplace_count.time_start, invent_workp
     end
 
     def update_workplace
-      get_workplace
+      workplace
       if @workplace
+
+        create_or_get_room
         if @workplace.update_attributes(workplace_params)
-          # Чтобы избежать N+1 запрос в методе 'transform_workplace' нужно создать объект ActiveRecord (например, вызвать
-          # find)
+          # Чтобы избежать N+1 запрос в методе 'transform_workplace' нужно создать объект ActiveRecord (например,
+          # вызвать find)
           @workplace = transform_workplace(Workplace
-                                             .includes({ inv_items: { inv_property_values: :inv_property } })
+                                             .includes(
+                                               :iss_reference_site,
+                                               :iss_reference_building,
+                                               :iss_reference_room,
+                                               inv_items: { inv_property_values: :inv_property }
+                                             )
                                              .find(@workplace.workplace_id))
 
           unless params[:pc_file] == 'null'
@@ -256,7 +261,7 @@ invent_workplace_count.division, invent_workplace_count.time_start, invent_workp
     end
 
     def delete_workplace
-      get_workplace
+      workplace
       if @workplace
         if @workplace.destroy_from_***REMOVED***
           render json: { full_message: 'Рабочее место удалено.' }, status: 200
@@ -270,14 +275,14 @@ invent_workplace_count.division, invent_workplace_count.time_start, invent_workp
 
     def generate_pdf
       @workplace_count = WorkplaceCount
-                           .includes({ workplaces: [ :workplace_type, :user_iss, { inv_items: :inv_type } ] })
+                           .includes(workplaces: [:workplace_type, :user_iss, { inv_items: :inv_type }])
                            .where(division: params[:division])
                            .first
 
-      render pdf:       'test',
-             template:  'templates/workplace.haml',
-             locals:    { workplace_count: @workplace_count },
-             encoding:  'UTF-8'
+      render pdf: 'test',
+             template: 'templates/workplace.haml',
+             locals: { workplace_count: @workplace_count },
+             encoding: 'UTF-8'
       # disposition: 'attachment'
     end
 
@@ -287,14 +292,38 @@ invent_workplace_count.division, invent_workplace_count.time_start, invent_workp
 
     private
 
+    # Если комната в базе не существует, создать комнату. Если комната в базе существует - получить id комнаты.
+    # Возвращает true, если ошибок нет; false - если не удалось создать комнату
+    def create_or_get_room
+      @room = IssReferenceRoom.find_by(name: params[:workplace][:location_room_name])
+
+      if @room.nil?
+        @room = IssReferenceRoom.new(
+          building_id: params[:workplace][:location_building_id],
+          name: params[:workplace][:location_room_name]
+        )
+
+        return false unless @room.save
+      end
+
+      params[:workplace].delete :location_room_name
+      params[:workplace][:location_room_id] = @room.room_id
+
+      true
+    end
+
     # Сохранить файл в файловой системе.
     def upload_file
       property_value_id = 0
       # Получаем property_value_id, чтобы создать директорию.
       @workplace['inv_items'].each do |item|
-        next if !InvPropertyValue::PROPERTY_WITH_FILES.any?{ |val| val == item['inv_type']['name'] }
-        break if property_value_id = item['inv_property_values'].find { |val| val['inv_property']['name'] ==
-          'config_file' }['property_value_id']
+        next if InvPropertyValue::PROPERTY_WITH_FILES.none? { |val| val == item['inv_type']['name'] }
+
+        property_value_id = item['inv_property_values'].find do |val|
+          val['inv_property']['name'] == 'config_file'
+        end['property_value_id']
+
+        break if property_value_id
       end
 
       unless property_value_id
@@ -308,15 +337,11 @@ invent_workplace_count.division, invent_workplace_count.time_start, invent_workp
       path_to_file = Rails.root.join('public', 'uploads', property_value_id.to_s)
 
       # Проверить, существует ли директория public/upload/<property_value_id>. Если нет - создать.
-      unless path_to_file.exist?
-        FileUtils.mkdir_p(path_to_file)
-      end
+      FileUtils.mkdir_p(path_to_file) unless path_to_file.exist?
 
       # Удалить все существующие файлы из директории.
       Dir.foreach(path_to_file) do |file|
-        if file != '.' && file != '..';
-          FileUtils.rm_f("#{path_to_file}/#{file.to_s}")
-        end
+        FileUtils.rm_f("#{path_to_file}/#{file}") if file != '.' && file != '..'
       end
 
       # Запись файла
@@ -328,19 +353,22 @@ invent_workplace_count.division, invent_workplace_count.time_start, invent_workp
       true
     rescue Exception => e
       logger.info "Ошибка функции upload_file. #{e}".red
-      logger.info "Описание:"
+      logger.info 'Описание:'
       e.backtrace.each { |val| logger.info val }
 
-      render json: { workplace: @workplace, full_message: 'Рабочее место создано, но сохранить файл конфигурации не
-удалось. Для загрузки файла свяжитесь с администратором сервиса.'}, status: 200
+      render json: { workplace: @workplace, full_message: 'Рабочее место создано, но сохранить файл конфигурации не' \
+' удалось. Для загрузки файла свяжитесь с администратором сервиса.' }, status: 200
 
       false
     end
 
     # Преобразование объекта workplace в специальный вид, чтобы таблица могла отобразить данные.
     def transform_workplace(wp)
-      wp = wp.as_json({
+      wp = wp.as_json(
         include: {
+          iss_reference_site: {},
+          iss_reference_building: {},
+          iss_reference_room: {},
           user_iss: {},
           workplace_type: {},
           inv_items: {
@@ -352,12 +380,17 @@ invent_workplace_count.division, invent_workplace_count.time_start, invent_workp
             }
           }
         }
-      })
+      )
 
       wp['short_description'] = wp['workplace_type']['short_description']
-      wp['duty']              = wp['user_iss']['duty']
-      wp['fio']               = wp['user_iss']['fio_initials']
+      wp['duty'] = wp['user_iss']['duty']
+      wp['fio'] = wp['user_iss']['fio_initials']
+      wp['location'] = "Пл. '#{wp['iss_reference_site']['name']}', корп. #{wp['iss_reference_building']['name']},
+комн. #{wp['iss_reference_room']['name']}"
 
+      wp.delete('iss_reference_site')
+      wp.delete('iss_reference_building')
+      wp.delete('iss_reference_room')
       wp.delete('user_iss')
       wp.delete('workplace_type')
 
@@ -366,14 +399,14 @@ invent_workplace_count.division, invent_workplace_count.time_start, invent_workp
 
     # Проверить SID в таблице user_sessions, чтобы знать, действительно ли пользователь авторизован в ЛК.
     def check_***REMOVED***_authorization
-      if (params[:sid])
+      if params[:sid]
         @user_session = UserSession.find(params[:sid])
         if @user_session.nil?
           render json: { full_message: 'Доступ запрещен' }, status: 403
         else
           data = PHP.unserialize(@user_session.data)
-          if data['authed'] && Time.now < (Time.at(@user_session.last_access) + @user_session.timeout)
-            @user = User.find_by(tn: 999999)
+          if data['authed'] && Time.zone.now < (Time.zone.at(@user_session.last_access) + @user_session.timeout)
+            @user = User.find_by(tn: 999_999)
             if @user.nil?
               render json: { full_message: 'Ошибка доступа. Обратитесь к администратору' }, status: 403
             else
@@ -402,7 +435,7 @@ invent_workplace_count.division, invent_workplace_count.time_start, invent_workp
         return
       end
 
-      get_workplace_count
+      workplace_count
       if @workplace_count
         unless @workplace_count.workplace_responsibles.any? { |resp| resp.id_tn == session[:id_tn] }
           render json: { full_message: 'Доступ запрещен' }, status: 403
@@ -414,7 +447,7 @@ invent_workplace_count.division, invent_workplace_count.time_start, invent_workp
     def check_timeout
       # Для случаев, когда workplace_id существует (например, редактирование или удаление записи)
       if params[:workplace_id]
-        get_workplace
+        workplace
         unless time_not_passed?(@workplace.workplace_count.time_start, @workplace.workplace_count.time_end)
           render json: { full_message: "Время для работы с отделом #{@workplace.workplace_count.division} истекло" },
                  status: 403
@@ -423,10 +456,10 @@ invent_workplace_count.division, invent_workplace_count.time_start, invent_workp
         end
         # Для случаев, когда workplace_id не существует (создается новая запись), но задан workplace_count_id
       elsif params[:workplace] && params[:workplace][:workplace_count_id]
-        get_workplace_count
+        workplace_count
 
         unless time_not_passed?(@workplace_count.time_start, @workplace_count.time_end)
-          render json: { full_message: "Время для работы с отделом #{@workplace_count.division} истекло"}, status: 403
+          render json: { full_message: "Время для работы с отделом #{@workplace_count.division} истекло" }, status: 403
 
           return false
         end
@@ -444,10 +477,10 @@ invent_workplace_count.division, invent_workplace_count.time_start, invent_workp
       end
 =end
       else
-        render json: { full_message: "Доступ запрещен, так как не удается определить, к какому отделу относится
-запрашиваемая операция. Обратитесь к администратору" }, status: 403
+        render json: { full_message: 'Доступ запрещен, так как не удается определить, к какому отделу относится' \
+' запрашиваемая операция. Обратитесь к администратору' }, status: 403
 
-        return false
+        false
       end
     end
 
@@ -457,12 +490,12 @@ invent_workplace_count.division, invent_workplace_count.time_start, invent_workp
     end
 
     # Создать переменную @workplace_count, если она не существует.
-    def get_workplace_count
+    def workplace_count
       @workplace_count = WorkplaceCount.find(params[:workplace][:workplace_count_id]) unless @workplace_count
     end
 
     # Создать переменную @workplace, если она не существует.
-    def get_workplace
+    def workplace
       @workplace = Workplace.find(params[:workplace_id]) unless @workplace
     end
 
@@ -472,7 +505,10 @@ invent_workplace_count.division, invent_workplace_count.time_start, invent_workp
         :workplace_type_id,
         :workplace_specialization_id,
         :id_tn,
-        :location,
+        :location_site_id,
+        :location_building_id,
+        :location_room_name,
+        :location_room_id,
         :comment,
         :status,
         inv_items_attributes: [
@@ -485,13 +521,13 @@ invent_workplace_count.division, invent_workplace_count.time_start, invent_workp
           :location,
           :invent_num,
           :_destroy,
-          inv_property_values_attributes: [
-            :id,
-            :property_id,
-            :item_id,
-            :property_list_id,
-            :value,
-            :_destroy
+          inv_property_values_attributes: %i[
+            id
+            property_id
+            item_id
+            property_list_id
+            value
+            _destroy
           ]
         ]
       )

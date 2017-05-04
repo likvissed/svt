@@ -3993,3 +3993,10 @@ td.hidden-8k {
     display: none !important;
   }
 }
+
+.col-xlg-1, .col-fhd-1, .col-xlg-2, .col-fhd-2, .col-xlg-3, .col-fhd-3, .col-xlg-4, .col-fhd-4, .col-xlg-5, .col-fhd-5, .col-xlg-6, .col-fhd-6, .col-xlg-7, .col-fhd-7, .col-xlg-8, .col-fhd-8, .col-xlg-9, .col-fhd-9, .col-xlg-10, .col-fhd-10, .col-xlg-11, .col-fhd-11, .col-xlg-12, .col-fhd-12, .col-xlg-13, .col-fhd-13, .col-xlg-14, .col-fhd-14, .col-xlg-15, .col-fhd-15, .col-xlg-16, .col-fhd-16, .col-xlg-17, .col-fhd-17, .col-xlg-18, .col-fhd-18, .col-xlg-19, .col-fhd-19, .col-xlg-20, .col-fhd-20, .col-xlg-21, .col-fhd-21, .col-xlg-22, .col-fhd-22, .col-xlg-23, .col-fhd-23, .col-xlg-24, .col-fhd-24 {
+  position: relative;
+  min-height: 1px;
+  padding-left: 10px;
+  padding-right: 10px;
+}

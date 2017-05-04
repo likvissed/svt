@@ -252,15 +252,15 @@ Devise.setup do |config|
   config.omniauth :open_id_***REMOVED***,
                   server: 'https://***REMOVED***.***REMOVED***.ru/tools/openid/server',
                   identity: 'http://' + SERVER_CONFIG['hostname'] + '/users/auth/open_id_***REMOVED***/callback',
-                  mandatory_fields: [:email, :fullname, :login, :tn]
+                  mandatory_fields: %i[email fullname login tn]
 
   # ==> Warden configuration
   # If you want to use other strategies, that are not supported by Devise, or
   # change the failure app, you can configure them inside the config.warden block.
   #
   # config.warden do |manager|
-    # manager.intercept_401 = false
-    # manager.default_strategies(scope: :user).unshift :some_external_strategy
+  #   manager.intercept_401 = false
+  #   manager.default_strategies(scope: :user).unshift :some_external_strategy
   # end
 
   # ==> Mountable engine configurations

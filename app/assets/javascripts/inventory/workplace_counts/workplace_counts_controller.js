@@ -3,23 +3,12 @@ app
   .controller('ModalWpCountController', ModalWpCountController);
 
 WorkplaceCountIndexCtrl.$inject = ['$controller', '$scope', '$compile', '$uibModal', 'DTOptionsBuilder', 'DTColumnBuilder', 'Config', 'Server', 'Flash', 'Error', 'WorkplaceCount'];
-ModalWpCountController.$inject  = ['$scope', '$uibModalInstance', 'data', 'Server', 'Config', 'Flash', 'Error', 'WorkplaceCount'];
+ModalWpCountController.$inject  = ['$uibModalInstance', 'data', 'Server', 'Config', 'Flash', 'Error', 'WorkplaceCount'];
 
 /**
  * Управление общей таблицей информации РМ по отделам.
  *
- * class Inv.WorkplaceCountIndexCtrl
- * @param $controller
- * @param $scope
- * @param $compile
- * @param $uibModal
- * @param DTOptionsBuilder
- * @param DTColumnBuilder
- * @param Config - описание: {@link Inv.Config}
- * @param Server - описание: {@link Inv.Server}
- * @param Flash - описание: {@link Inv.Flash}
- * @param Error - описание: {@link Inv.Error}
- * @param WorkplaceCount - описание: {@link Inv.WorkplaceCount}
+ * @class SVT.WorkplaceCountIndexCtrl
  */
 function WorkplaceCountIndexCtrl($controller, $scope, $compile, $uibModal, DTOptionsBuilder, DTColumnBuilder, Config, Server, Flash, Error, WorkplaceCount) {
   var self = this;
@@ -37,7 +26,7 @@ function WorkplaceCountIndexCtrl($controller, $scope, $compile, $uibModal, DTOpt
   // Подключаем основные параметры таблицы
   $controller('DefaultDataTableCtrl', {});
 
-  // Объекты отделов инвентаризации (workplace_count_id => data)
+  // Объект, содержащий данные о доступах пользователей к инвентаризации (workplace_count_id => data)
   self.wpCount    = {};
   self.dtInstance = {};
   self.dtOptions  = DTOptionsBuilder
@@ -65,8 +54,8 @@ function WorkplaceCountIndexCtrl($controller, $scope, $compile, $uibModal, DTOpt
 
   self.dtColumns      = [
     DTColumnBuilder.newColumn(null).withTitle('').withOption('className', 'col-fhd-1').renderWith(renderIndex),
-    DTColumnBuilder.newColumn('division').withTitle('Отдел').withOption('className', 'col-fhd-3'),
-    DTColumnBuilder.newColumn('responsibles').withTitle('Ответственный').withOption('className', 'col-fhd-6'),
+    DTColumnBuilder.newColumn('division').withTitle('Отдел').withOption('className', 'col-fhd-2'),
+    DTColumnBuilder.newColumn('responsibles').withTitle('Ответственный').withOption('className', 'col-fhd-7'),
     DTColumnBuilder.newColumn('phone').withTitle('Телефон').withOption('className', 'col-fhd-3'),
     // DTColumnBuilder.newColumn('count_wp').withTitle('Кол-во РМ').withOption('className', 'col-fhd-3 text-center'),
     DTColumnBuilder.newColumn('date-range').withTitle('Время доступа').withOption('className', 'col-fhd-5' +
@@ -151,7 +140,6 @@ WorkplaceCountIndexCtrl.prototype.openWpCountEditModal = function (id) {
 
   if (id) {
     self.WorkplaceCount.getDivision(id).then(function (data) {
-      console.log(data);
       self._openWpCountEditModal(data);
     });
   } else {
@@ -192,20 +180,12 @@ WorkplaceCountIndexCtrl.prototype.destroyRecord = function (id) {
 /**
  * Управление модальным окном, создающим/редактирующим записи.
  *
- * @class Inv.ModalWpCountController
- * @param $scope
- * @param $uibModalInstance
- * @param data - данные, передаваемые модальному окну
- * @param Server - описание: {@link Inv.Server}
- * @param Config - описание: {@link Inv.Config}
- * @param Flash - описание: {@link Inv.Flash}
- * @param Error - описание: {@link Inv.Error}
+ * @class SVT.ModalWpCountController
  */
-function ModalWpCountController($scope, $uibModalInstance, data, Server, Config, Flash, Error, WorkplaceCount) {
+function ModalWpCountController($uibModalInstance, data, Server, Config, Flash, Error, WorkplaceCount) {
   // Установить имя формы для класса ModalWpCountController
   this.setFormName('workplace_count');
 
-  this.$scope             = $scope;
   this.$uibModalInstance  = $uibModalInstance;
   this.Server             = Server;
   this.Flash              = Flash;

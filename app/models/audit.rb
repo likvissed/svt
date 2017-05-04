@@ -11,15 +11,14 @@ class Audit < SMSServer
     'generic- sm/xd-picture',
     'generic- sd/mmc',
     'sd card'
-  ]
+  ].freeze
   # Максимальное количество дней, по истечению которых данные от Аудита считаются устаревшими.
   MAX_RELENAVCE_TIME = 20
-
 
   # Выполнить хранимую процедуру на сервере smssvr.
   # pc_name - имя компьютера
   def self.get_data(pc_name)
-    raw_data = self.execute_procedure('ISS_Get_HW_invent_inf', pc_name, 'f')
+    raw_data = execute_procedure('ISS_Get_HW_invent_inf', pc_name, 'f')
 
     logger.info "Raw data: #{raw_data.inspect}".blue
 
@@ -41,13 +40,13 @@ class Audit < SMSServer
 
         # Перевести значения ОЗУ из Кб в Гб. Округление по 512Мб.
         if type == 'ram'
-          tmp_ram   = val.to_f / 1024 / 1024
-          val       = sprintf("%.1f", tmp_ram)
-          mod_part  = val.split('.')
+          tmp_ram = val.to_f / 1024 / 1024
+          val = format('%.1f', tmp_ram)
+          mod_part = val.split('.')
 
           if mod_part[1].to_i <= 5
             mod_part[1] = 5
-            val         = eval(mod_part.join('.'))
+            val = eval(mod_part.join('.'))
           else
             val = val.to_f.ceil
           end
@@ -61,7 +60,7 @@ class Audit < SMSServer
   end
 
   # Проверка актуальности данных по полю last_connection (всё, что более 20 дней - устаревшие данные).
-  def self.is_relevance?(data)
-    Time.parse(data['last_connection'].first) + MAX_RELENAVCE_TIME.days > Time.now
+  def self.relevance?(data)
+    Time.zone.parse(data['last_connection'].first) + MAX_RELENAVCE_TIME.days > Time.zone.now
   end
 end

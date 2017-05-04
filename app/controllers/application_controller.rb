@@ -1,4 +1,4 @@
-require "application_responder"
+require 'application_responder'
 
 class ApplicationController < ActionController::Base
   self.responder = ApplicationResponder
@@ -14,7 +14,7 @@ class ApplicationController < ActionController::Base
       format.html do
         render_403
       end
-      format.json { render json: { full_message: "Доступ запрещен" }, status: :forbidden }
+      format.json { render json: { full_message: 'Доступ запрещен' }, status: :forbidden }
     end
   end
 
@@ -24,25 +24,25 @@ class ApplicationController < ActionController::Base
   end
 
   def render_403
-    render file: "#{Rails.root}/public/403.html", status: 403, layout: false
+    render file: Rails.root.join('public', '403.html'), status: 403, layout: false
   end
 
   def render_404
-    render file: "#{Rails.root}/public/404.html", status: 404, layout: false
+    render file: Rails.root.join('public', '404.html'), status: 404, layout: false
   end
 
   def render_500
-    render file: "#{Rails.root}/public/500.html", status: 500, layout: false
+    render file: Rails.root.join('public', '500.html'), status: 500, layout: false
   end
 
   # Если у пользователя есть доступ, в ответ присылается html-код кнопки "Добавить" для создания новой записи
   # Запрос отсылается из JS файла при инициализации таблицы
   def link_to_new_record
     case params[:ctrl_name]
-      when 'workplace_counts'
-        class_name  = Inventory::WorkplaceCount
-        type        = :modal
-        attrs       = "ng-click='wpCount.openWpCountEditModal()'"
+    when 'workplace_counts'
+      class_name = Inventory::WorkplaceCount
+      type = :modal
+      attrs = 'ng-click="wpCount.openWpCountEditModal()"'
     end
 
     link = create_link_to_new_record(type, class_name, attrs)
@@ -79,6 +79,6 @@ class ApplicationController < ActionController::Base
 
   # Определяем, какой layout выводить: для входа в систему или основной
   def layout
-    is_a?(Devise::SessionsController) ? "sign_in_app" : "application"
+    is_a?(Devise::SessionsController) ? 'sign_in_app' : 'application'
   end
 end

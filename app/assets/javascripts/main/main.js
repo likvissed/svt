@@ -1,5 +1,5 @@
 /**
- * @namespace Inv
+ * @namespace SVT
  */
 var app = angular
   .module('SVT', [

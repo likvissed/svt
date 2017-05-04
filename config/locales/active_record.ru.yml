@@ -44,7 +44,9 @@ ru:
         workplace_count_id: "Отдел, к которому привязано рабочее место,"
         workplace_type_id: "Тип рабочего места"
         workplace_specialization_id: "Направление деятельности"
-        location: "Расположение"
+        iss_reference_site: "Площадка"
+        iss_reference_building: "Корпус"
+        iss_reference_room: "Комната"
       inventory/workplace/inv_items:
         base: ""
         type_id: "Тип оборудования"
@@ -66,3 +68,5 @@ ru:
         property_id: "Свойство"
         property_list_id: "Значение"
         value: "Значение"
+      iss_reference_room:
+        name: "Номер комнаты"

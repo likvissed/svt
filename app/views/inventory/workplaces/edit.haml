@@ -1,0 +1,24 @@
+.container{ "ng-controller": "WorkplaceEditCtrl as wp", "ng-init": "wp.init(#{@workplace.workplace_id || 0})" }
+  .well
+    .row
+      .col-fhd-4
+        .form-group
+          = label_tag :workplace_id_tn, "ФИО ответственного", class: "control-label"
+          = text_field_tag "workplace[id_tn]", "", class: "form-control", "ng-model": "wp.workplace.id_tn"
+      .col-fhd-4
+        .form-group
+          = label_tag :workplace_workplace_type, "Тип рабочего места", class: "control-label"
+          = text_field_tag "workplace[workplace_type]", "", label: "Тип рабочего места", class: "form-control", |
+          "ng-model": "wp.workplace.id_tn"  |
+      .col-fhd-4
+        .form-group
+          = label_tag :workplace_workplace_specialization_id, "Вид выполняемое работы", class: "control-label"
+          = text_field_tag "workplace[workplace_specialization_id]", "", label: "Вид выполняемое работы", class: |
+          "form-control", "ng-model": "wp.workplace.id_tn" |
+      .col-fhd-4
+        .form-group
+          = label_tag :workplace_location, "Расположение", class: "control-label"
+          = text_field_tag "workplace[location]", "", label: "Расположение", class: "form-control", "ng-model": "wp |
+          .workplace.id_tn" |
+    .row
+      %pre{ "ng-bind": "wp.workplace | json" }

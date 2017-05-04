@@ -1,11 +1,13 @@
 module Inventory
   FactoryGirl.define do
     factory :workplace, class: Workplace do
-      workplace_specialization  { WorkplaceSpecialization.last }
-      id_tn                     0
-      location                  'Location 2'
-      comment                   ''
-      status                    { Workplace.statuses['В ожидании проверки'] }
+      workplace_specialization { WorkplaceSpecialization.last }
+      id_tn 0
+      iss_reference_site { loc_site }
+      iss_reference_building { loc_building }
+      iss_reference_room { loc_room }
+      comment ''
+      status { Workplace.statuses['В ожидании проверки'] }
 
       trait :rm_pk do
         workplace_type { WorkplaceType.find_by(name: 'rm_pk') }
@@ -27,6 +29,12 @@ module Inventory
         association :workplace_count, factory: :active_workplace_count
       end
 
+      transient do
+        loc_site { IssReferenceSite.first }
+        loc_building { loc_site.iss_reference_buildings.first }
+        loc_room { loc_building.iss_reference_rooms.first }
+      end
+
       trait :add_items do
         transient do
           # Массив типов создаваемых экземпляров техники.
@@ -42,11 +50,13 @@ module Inventory
         after(:build) do |workplace, evaluator|
           evaluator.items.each do |item|
             case item
-              when Hash
-                workplace.inv_items << build(:item_with_item_model, :with_property_values, type_name: item.keys[0],
-                                             property_values: item[item.keys[0]])
-              when Symbol || String
-                workplace.inv_items << build(:item_with_item_model, :with_property_values, type_name: item)
+            when Hash
+              workplace.inv_items << build(
+                :item_with_item_model, :with_property_values, type_name: item.keys[0], property_values: item[item
+                .keys[0]]
+              )
+            when Symbol || String
+              workplace.inv_items << build(:item_with_item_model, :with_property_values, type_name: item)
             end
           end
         end
@@ -68,7 +78,7 @@ module Inventory
     factory :workplace_with_wrong_id_tn, parent: :workplace do
       active
       rm_pk
-      id_tn 987654321
+      id_tn 987_654_321
     end
   end
 end

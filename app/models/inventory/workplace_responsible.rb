@@ -1,7 +1,7 @@
 module Inventory
   class WorkplaceResponsible < Invent
-    self.table_name   = :invent_workplace_responsible
-    self.primary_key  = :workplace_responsible_id
+    self.table_name = :invent_workplace_responsible
+    self.primary_key = :workplace_responsible_id
 
     belongs_to :workplace_count, inverse_of: :workplace_responsibles
     belongs_to :user_iss, foreign_key: 'id_tn', optional: true
@@ -14,7 +14,7 @@ module Inventory
 
     # Валидация, проверяющая уникальность табельного номера в рамках текущего workplace_count.
     def tn_uniqueness_per_workplace_count
-      errors.add(:tn, "'#{self.tn}' уже существует") if self.class.exists?(workplace_count: workplace_count, id_tn:
+      errors.add(:tn, "'#{tn}' уже существует") if self.class.exists?(workplace_count: workplace_count, id_tn:
         id_tn, phone: phone)
     end
   end

@@ -5,6 +5,6 @@ module Standart
 
     validates :device, :system_unit, :detail_type, :event, presence: true
 
-    enum event: ["Добавилось", "Изменилось", "Удалилось"]
+    enum event: %w[Добавилось Изменилось Удалилось]
   end
 end

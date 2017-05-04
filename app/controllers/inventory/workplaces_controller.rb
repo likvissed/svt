@@ -10,12 +10,37 @@ module Inventory
           @workplaces = Workplace
                           .left_outer_joins(:user_iss)
                           .left_outer_joins(:workplace_type)
+                          .left_outer_joins(:workplace_count)
                           .left_outer_joins(:inv_items)
-                          .select('invent_workplace.*, invent_workplace_type.short_description as wp_type, user_iss
-.fio_initials as responsible, count(invent_item.item_id) as count')
+                          .select('invent_workplace.*, invent_workplace_count.division, invent_workplace_type
+.short_description as wp_type, user_iss.fio_initials as responsible, count(invent_item.item_id) as count')
                           .group(:workplace_id)
 
           render json: @workplaces
+        end
+      end
+    end
+
+    def edit
+      workplace
+      respond_to do |format|
+        format.html
+        format.json do
+          # redirect_to "/inventory/***REMOVED***_invents/edit_workplace/#{params[:workplace_id]}"
+
+          unless @workplace
+            render json: { full_message: 'Рабочее место не найдено.' }, status: 404
+          end
+
+          @workplace = @workplace.as_json(
+            include: {
+              inv_items: {
+                include: :inv_property_values
+              }
+            }
+          )
+
+          render json: @workplace
         end
       end
     end
@@ -80,6 +105,10 @@ module Inventory
 
     private
 
+    def workplace
+      @workplace = Workplace.find(params[:workplace_id]) unless @workplace
+    end
+
     def workplace_params
       params.require(:workplace).permit(
         :workplace_count_id,
@@ -97,12 +126,12 @@ module Inventory
           :model_name,
           :invent_num,
           :_destroy,
-          inv_property_values_attributes: [
-            :id,
-            :property_id,
-            :item_id,
-            :value,
-            :_destroy
+          inv_property_values_attributes: %i[
+            id
+            property_id
+            item_id
+            value
+            _destroy
           ]
         ]
       )

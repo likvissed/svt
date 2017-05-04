@@ -62,7 +62,8 @@
                 = text_field_tag "workplace_count[workplace_responsibles.tn]", "", class: "form-control", "ng-model": |
                  "resp.tn" |
             %td.col-lg-13
-              = text_field_tag "workplace_count[workplace_responsibles.fio", "", class: "form-control", disabled: ""
+              = text_field_tag "workplace_count[workplace_responsibles.fio", "", class: "form-control", "ng-model": |
+              "resp.fio" , disabled: true |
             %td.col-sm-8.col-md-8.col-lg-6
               .col-sm-20.col-md-20.col-lg-20
                 -#.no-left-padding.no-right-padding

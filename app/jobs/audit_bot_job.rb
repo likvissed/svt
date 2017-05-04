@@ -4,7 +4,6 @@ class AuditBotJob < ApplicationJob
   # after_perform { AuditBotJob.set(wait: 5.seconds).perform later}
 
   def self.perform(*args)
-    logger.info "JOB WORKS!"
+    logger.info 'JOB WORKS!'
   end
 end
-

@@ -12,10 +12,7 @@ DefaultDataTableCtrl.$inject  = ['DTDefaultOptions'];
  * Контроллер для управления уведомлениями. После того, как страница отрендерится, контроллер запустит Flash
  * уведомления, полученные от сервера.
  *
- * @class DataCenter.FlashMessageCtrl
- * @param $scope
- * @param $attrs
- * @param Flash - описание: {@link DataCenter.Flash}
+ * @class SVT.FlashMessageCtrl
  */
 function FlashMessageCtrl($scope, $attrs, Flash) {
   $scope.flash = Flash.flash;
@@ -39,7 +36,7 @@ function FlashMessageCtrl($scope, $attrs, Flash) {
 /**
  * Основные настройки таблиц angular-datatable.
  *
- * @class Inv.DefaultDataTableCtrl
+ * @class SVT.DefaultDataTableCtrl
  */
 function DefaultDataTableCtrl(DTDefaultOptions) {
   DTDefaultOptions
@@ -70,7 +67,7 @@ function DefaultDataTableCtrl(DTDefaultOptions) {
 /**
  * Содержит функции вывода ошибок валидации форм.
  *
- * @class Inv.DefaultDataTableCtrl
+ * @class SVT.DefaultDataTableCtrl
  */
 function FormValidationController() {
   this._errors    = null;

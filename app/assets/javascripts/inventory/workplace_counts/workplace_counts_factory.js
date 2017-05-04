@@ -4,30 +4,30 @@ app
 WorkplaceCount.$inject = ['Server', 'Error'];
 
 /**
- * Сервис для создания/редактирования количества рабочих мест (РМ) отделов.
+ * Сервис для управления доступом к созданию/редактированию РМ через ЛК.
  *
- * @class Inv.WorkplaceCount
+ * @class SVT.WorkplaceCount
  */
 function WorkplaceCount(Server, Error) {
-  this.Server   = Server;
-  this.Error    = Error;
+  this.Server = Server;
+  this.Error = Error;
 
   // Шаблон данных
   this._templateValue = {
     workplace_count_id: null,
-    division:           '',
-    count_wp:           '',
-    time_start:         '',
-    time_end:           '',
+    division: '',
+    count_wp: '',
+    time_start: '',
+    time_end: '',
     workplace_responsibles_attributes: []
   };
 
   // Шаблон объекта ответсвенного
   this._template_responsible_attributes = {
-    id:                 null,
+    id: null,
     workplace_count_id: null,
-    tn:                 '',
-    phone:              ''
+    tn: '',
+    phone: ''
   };
 
   this._data = {
@@ -41,7 +41,7 @@ function WorkplaceCount(Server, Error) {
  */
 WorkplaceCount.prototype.newDivision = function () {
   this._data.method = 'POST';
-  this._data.value  = angular.copy(this._templateValue);
+  this._data.value = angular.copy(this._templateValue);
 
   return this._data;
 };
@@ -55,10 +55,10 @@ WorkplaceCount.prototype.getDivision = function (id) {
   var self = this;
 
   return this.Server.WorkplaceCount.get({ workplace_count_id: id }).$promise.then(function (data) {
-    self._data.method           = 'PATCH';
-    self._data.value            = angular.copy(data);
+    self._data.method = 'PATCH';
+    self._data.value = angular.copy(data);
     self._data.value.time_start = new Date(angular.copy(data.time_start));
-    self._data.value.time_end   = new Date(angular.copy(data.time_end));
+    self._data.value.time_end = new Date(angular.copy(data.time_end));
 
     return self._data;
   });
@@ -84,7 +84,6 @@ WorkplaceCount.prototype.addResponsible = function () {
  * @param obj - удаляемый объект.
  */
 WorkplaceCount.prototype.delResponsible = function (obj) {
-  console.log(obj);
   if (obj.workplace_responsible_id)
     obj._destroy = 1;
   else

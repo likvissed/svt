@@ -1,58 +1,34 @@
 module Inventory
   class WorkplaceCountsController < ApplicationController
-    before_action :find_by_id, only: [:update, :destroy]
+    before_action :find_by_id, only: %i[update destroy]
     load_and_authorize_resource
 
     def index
       respond_to do |format|
         format.html
         format.json do
-          # @workplace_counts = WorkplaceCount
-          #                       .joins('LEFT OUTER JOIN invent_workplace r ON r.workplace_id = invent_workplace_count
-          # .workplace_count_id and r.status = 0')
-          #                               .joins('LEFT OUTER JOIN invent_workplace w ON w.workplace_count_id =
-          # invent_workplace_count.workplace_count_id and w.status = 1')
-          #                               .left_outer_joins(:user_iss)
-          #                               .select('invent_workplace_count.*, user_iss.fio as responsible, COUNT(r
-          # .workplace_id) as ready, COUNT(w.workplace_id) as waiting')
-          #                               .group('invent_workplace_count.workplace_count_id')
-
           @workplace_counts = WorkplaceCount
-                                .joins('LEFT OUTER JOIN invent_workplace r ON r.workplace_id = invent_workplace_count
-.workplace_count_id and r.status = 0')
-                                .joins('LEFT OUTER JOIN invent_workplace w ON w.workplace_count_id =
-invent_workplace_count.workplace_count_id and w.status = 1')
+                                .joins('LEFT OUTER JOIN invent_workplace r ON r.workplace_id = invent_workplace_count' \
+'.workplace_count_id and r.status = 0')
+                                .joins('LEFT OUTER JOIN invent_workplace w ON w.workplace_count_id =' \
+' invent_workplace_count.workplace_count_id and w.status = 1')
                                 .includes(:workplace_responsibles, :user_isses)
-                                .select('invent_workplace_count.*, COUNT(r.workplace_id) as ready, COUNT(w
-.workplace_id) as waiting')
+                                .select('invent_workplace_count.*, COUNT(r.workplace_id) as ready, COUNT(w' \
+'.workplace_id) as waiting')
                                 .group('invent_workplace_count.workplace_count_id')
 
-
-          # SELECT invent_workplace_count.*, fio_initials as responsible, COUNT(r.workplace_id) as ready, COUNT(w.workplace_id) as waiting
-          # FROM `invent_workplace_count`
-          # LEFT OUTER JOIN invent_workplace r ON
-          #   r.`workplace_count_id` = invent_workplace_count.workplace_count_id AND
-          #   r.`status` = 0
-          # LEFT OUTER JOIN invent_workplace w ON
-          #   w.`workplace_count_id` = invent_workplace_count.workplace_count_id AND
-          #   w.`status` = 1
-          # LEFT OUTER JOIN `user_iss` ON
-          #   `user_iss`.`id_tn` = `invent_workplace_count`.`id_tn`
-          # GROUP BY invent_workplace_count.workplace_count_id;
-
-          @workplace_counts = @workplace_counts
-                                .as_json(
-                                  {
-                                    include:
-                                      {
-                                        workplace_responsibles:
-                                          {
-                                            only: [:id_tn, :phone],
-                                            include: { user_iss: { only: [:tn, :fio] } }
-                                          }
-                                      }
-                                  }
-                                )
+          @workplace_counts = @workplace_counts.as_json(
+            include: {
+              workplace_responsibles: {
+                only: %i[id_tn phone],
+                include: {
+                  user_iss: {
+                    only: %i[tn fio]
+                  }
+                }
+              }
+            }
+          )
                                 .each do |c|
             c['date-range']   = "#{c['time_start']} - #{c['time_end']}"
             c['responsibles'] = []
@@ -78,8 +54,8 @@ invent_workplace_count.workplace_count_id and w.status = 1')
       if @workplace_count.save
         render json: { full_message: "Отдел #{@workplace_count.division} добавлен." }, status: :created
       else
-        render json: { object: @workplace_count.errors, full_message: "Ошибка. #{ @workplace_count.errors
-                                                                                    .full_messages.join(", ") }" }, status: :unprocessable_entity
+        render json: { object: @workplace_count.errors, full_message: "Ошибка. #{@workplace_count.errors
+          .full_messages.join(', ')}" }, status: :unprocessable_entity
       end
     end
 
@@ -90,23 +66,20 @@ invent_workplace_count.workplace_count_id and w.status = 1')
                            .where(workplace_count_id: params[:workplace_count_id])
                            .first
 
-      @workplace_count = @workplace_count
-                           .as_json(
-                             {
-                               include:
-                                 {
-                                   workplace_responsibles:
-                                     {
-                                       include: { user_iss: { only: [:id_tn, :tn] } }
-                                     },
-                                 }
-                             }
-                           )
+      @workplace_count = @workplace_count.as_json(
+        include: {
+          workplace_responsibles: {
+            include: {
+              user_iss: { only: %i[id_tn tn fio_initials] }
+            }
+          }
+        }
+      )
 
       @workplace_count['workplace_responsibles'] = @workplace_count['workplace_responsibles'].each do |resp|
         resp['id'] = resp['workplace_responsible_id']
-
         resp['tn'] = resp['user_iss']['tn']
+        resp['fio'] = resp['user_iss']['fio_initials']
 
         resp.delete('user_iss')
         resp.delete('id_tn')
@@ -125,8 +98,8 @@ invent_workplace_count.workplace_count_id and w.status = 1')
       if @workplace_count.update_attributes(workplace_count_params)
         render json: { full_message: 'Данные обновлены.' }, status: :ok
       else
-        render json: { object: @workplace_count.errors, full_message: "Ошибка. #{ @workplace_count.errors
-                                                                                    .full_messages.join(",")}" }, status: :unprocessable_entity
+        render json: { object: @workplace_count.errors, full_message: "Ошибка. #{@workplace_count.errors
+          .full_messages.join(', ')}" }, status: :unprocessable_entity
       end
     end
 
@@ -134,7 +107,7 @@ invent_workplace_count.workplace_count_id and w.status = 1')
       if @workplace_count.destroy
         render json: { full_message: 'Отдел удален.' }, status: :ok
       else
-        render json: { full_message: "Ошибка. #{ @workplace_count.errors.full_messages.join(", ") }" }, status:
+        render json: { full_message: "Ошибка. #{@workplace_count.errors.full_messages.join(', ')}" }, status:
           :unprocessable_entity
       end
     end
@@ -152,14 +125,14 @@ invent_workplace_count.workplace_count_id and w.status = 1')
         :division,
         :time_start,
         :time_end,
-        workplace_responsibles_attributes: [
-          :id,
-          :workplace_responsible_id,
-          :workplace_count_id,
-          :id_tn,
-          :tn,
-          :phone,
-          :_destroy
+        workplace_responsibles_attributes: %i[
+          id
+          workplace_responsible_id
+          workplace_count_id
+          id_tn
+          tn
+          phone
+          _destroy
         ]
       )
     end

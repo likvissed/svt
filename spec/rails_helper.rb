@@ -2,7 +2,7 @@
 ENV['RAILS_ENV'] ||= 'test'
 require File.expand_path('../../config/environment', __FILE__)
 # Prevent database truncation if the environment is production
-abort("The Rails environment is running in production mode!") if Rails.env.production?
+abort('The Rails environment is running in production mode!') if Rails.env.production?
 require 'spec_helper'
 require 'rspec/rails'
 # Add additional requires below this line. Rails is not loaded until this point!
@@ -27,7 +27,7 @@ require 'database_cleaner'
 # If you are not using ActiveRecord, you can remove this line.
 ActiveRecord::Migration.maintain_test_schema!
 
-Dir[Rails.root.join("spec/models/shared_examples/**/*.rb")].each { |f| require f }
+Dir[Rails.root.join('spec', 'models', 'shared_examples', '**', '*.rb')].each { |f| require f }
 
 RSpec.configure do |config|
   # Remove this line if you're not using ActiveRecord or ActiveRecord fixtures
@@ -66,12 +66,14 @@ RSpec.configure do |config|
   config.include Devise::Test::ControllerHelpers, type: :view
 
   # For Database_cleaner
-  keep_tables = %w{ invent_type invent_property_to_type invent_property invent_property_list invent_vendor
-invent_model invent_model_property_list invent_workplace_specialization invent_workplace_type }
+  keep_tables = %w[
+    invent_type invent_property_to_type invent_property invent_property_list invent_vendor invent_model
+    invent_model_property_list invent_workplace_specialization invent_workplace_type
+  ]
 
   config.before(:suite) do
     # DatabaseCleaner.strategy = :transaction, { except: keep_tables }
-    DatabaseCleaner.clean_with(:truncation, { except: keep_tables })
+    DatabaseCleaner.clean_with(:truncation, except: keep_tables)
   end
 
   config.before(:each) do

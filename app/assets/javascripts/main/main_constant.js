@@ -2,9 +2,9 @@
   'use strict';
 
   /**
-   * Конфигурационные данные
+   * Конфигурационные данные.
    *
-   * @class Inv.Config
+   * @class SVT.Config
    */
   var config = {
     // Глобальные настройки
