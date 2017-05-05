@@ -47,6 +47,11 @@ ru:
         iss_reference_site: "Площадка"
         iss_reference_building: "Корпус"
         iss_reference_room: "Комната"
+        statuses:
+          confirmed: "Подтверждено"
+          pending_verification: "В ожидании проверки"
+          disapproved: "Отклонено"
+
       inventory/workplace/inv_items:
         base: ""
         type_id: "Тип оборудования"

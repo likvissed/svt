@@ -88,6 +88,7 @@ invent_workplace_count.division, invent_workplace_count.time_start, invent_workp
       @workplaces = @workplaces.as_json(
         include: %i[iss_reference_site iss_reference_building iss_reference_room user_iss]
       ).each do |wp|
+        wp['status'] = Workplace.translate_enum(:status, wp['status'])
         wp['location'] = "Пл. '#{wp['iss_reference_site']['name']}', корп. #{wp['iss_reference_building']['name']},
 комн. #{wp['iss_reference_room']['name']}"
         wp['fio'] = wp['user_iss']['fio_initials']
@@ -195,8 +196,13 @@ invent_workplace_count.division, invent_workplace_count.time_start, invent_workp
                      .includes(:iss_reference_room)
                      .find(params[:workplace_id])
 
+      if @workplace.status == 'confirmed'
+        render json: { full_message: 'Рабочее место уже подтверждено. Редактирование запрещено.' }, status: 422
+        return
+      end
       unless @workplace
         render json: { full_message: 'Рабочее место не найдено.' }, status: 404
+        return
       end
 
       @workplace = @workplace.as_json(
@@ -263,6 +269,11 @@ invent_workplace_count.division, invent_workplace_count.time_start, invent_workp
     def delete_workplace
       workplace
       if @workplace
+        if @workplace.status == 'confirmed'
+          render json: { full_message: 'Рабочее место уже подтверждено. Удаление запрещено.' }, status: 422
+          return
+        end
+
         if @workplace.destroy_from_***REMOVED***
           render json: { full_message: 'Рабочее место удалено.' }, status: 200
         else
@@ -292,10 +303,14 @@ invent_workplace_count.division, invent_workplace_count.time_start, invent_workp
 
     private
 
-    # Если комната в базе не существует, создать комнату. Если комната в базе существует - получить id комнаты.
+    # Если комната в базе не существует (в рамках указанного корпуса), создать комнату. Если комната в базе
+    # существует - получить id комнаты.
     # Возвращает true, если ошибок нет; false - если не удалось создать комнату
     def create_or_get_room
-      @room = IssReferenceRoom.find_by(name: params[:workplace][:location_room_name])
+      @room = IssReferenceRoom
+                .where(name: params[:workplace][:location_room_name])
+                .where(building_id: params[:workplace][:location_building_id])
+                .first
 
       if @room.nil?
         @room = IssReferenceRoom.new(

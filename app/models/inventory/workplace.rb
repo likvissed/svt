@@ -42,7 +42,7 @@ module Inventory
 
     accepts_nested_attributes_for :inv_items, allow_destroy: true, reject_if: proc { |attr| attr['type_id'].to_i.zero? }
 
-    enum status: { 'Утверждено': 0, 'В ожидании проверки': 1, 'Отклонено': 2 }
+    enum status: { confirmed: 0, pending_verification: 1, disapproved: 2 }
 
     # Удалить РМ, связанные экземпляры техники, значения их свойств, а также загруженные файлы.
     def destroy_from_***REMOVED***

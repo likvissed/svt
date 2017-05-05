@@ -8,13 +8,26 @@ module Inventory
         format.html
         format.json do
           @workplaces = Workplace
-                          .left_outer_joins(:user_iss)
+                          .includes(:iss_reference_site, :iss_reference_building, :iss_reference_room, :user_iss)
                           .left_outer_joins(:workplace_type)
                           .left_outer_joins(:workplace_count)
                           .left_outer_joins(:inv_items)
                           .select('invent_workplace.*, invent_workplace_count.division, invent_workplace_type
-.short_description as wp_type, user_iss.fio_initials as responsible, count(invent_item.item_id) as count')
+.short_description as wp_type, count(invent_item.item_id) as count')
                           .group(:workplace_id)
+
+          @workplaces = @workplaces.as_json(
+            include: %i[iss_reference_site iss_reference_building iss_reference_room user_iss]
+          ).each do |wp|
+            wp['location'] = "Пл. '#{wp['iss_reference_site']['name']}', корп. #{wp['iss_reference_building']['name']},
+комн. #{wp['iss_reference_room']['name']}"
+            wp['responsible'] = wp['user_iss']['fio_initials']
+
+            wp.delete('iss_reference_site')
+            wp.delete('iss_reference_building')
+            wp.delete('iss_reference_room')
+            wp.delete('user_iss')
+          end
 
           render json: @workplaces
         end
@@ -22,85 +35,49 @@ module Inventory
     end
 
     def edit
-      workplace
+      @workplace = Workplace
+                     .includes(:iss_reference_room)
+                     .find(params[:workplace_id])
+
       respond_to do |format|
         format.html
         format.json do
-          # redirect_to "/inventory/***REMOVED***_invents/edit_workplace/#{params[:workplace_id]}"
-
           unless @workplace
             render json: { full_message: 'Рабочее место не найдено.' }, status: 404
+            return
           end
 
           @workplace = @workplace.as_json(
             include: {
+              iss_reference_room: {},
               inv_items: {
                 include: :inv_property_values
               }
             }
           )
 
-          render json: @workplace
+          # Преобразование объекта.
+          @workplace['location_room_name'] = @workplace['iss_reference_room']['name']
+          @workplace['inv_items_attributes'] = @workplace['inv_items']
+          @workplace.delete('inv_items')
+          @workplace.delete('iss_reference_room')
+          @workplace.delete('location_room_id')
+
+          @workplace['inv_items_attributes'].each do |item|
+            item['id'] = item['item_id']
+            item['inv_property_values_attributes'] = item['inv_property_values']
+            item.delete('item_id')
+            item.delete('inv_property_values')
+
+            item['inv_property_values_attributes'].each do |prop_val|
+              prop_val['id'] = prop_val['property_value_id']
+              prop_val.delete('property_value_id')
+            end
+          end
+
+          render json: @workplace, status: 200
         end
       end
-    end
-
-    def create
-      # if @workplace.save
-      #   render json: { full_message: 'ok' }, status: :ok
-      # else
-      #   render json: { full_message: @workplace.errors.full_messages.join(', ') }, status: :unprocessable_entity
-      # end
-    end
-
-    # Получить состав рабочего места
-    def show_workplace_structure
-      # Вывести состав указанного РМ
-      # SELECT
-      #   i.item_id, i.type_id, i.parent_id, i.workplace_id,
-      #   t.name, t.short_description as type_short_descr,
-      #   p.property_id, p.name as prop_name, p.short_description as prop_short_descr, p.type,
-      #   CASE p.type
-      #     WHEN 'int' THEN pv.value_int
-      #     WHEN 'date' THEN pv.value_date
-      #     WHEN 'float' THEN pv.value_float
-      #     WHEN 'list' THEN pv.value_list
-      #     WHEN 'string' THEN pv.value_string
-      #     WHEN 'longstring' THEN pv.value_longstring
-      #   END as value
-      # FROM invent_item i
-      # LEFT OUTER JOIN invent_type t
-      #   USING(type_id)
-      # LEFT OUTER JOIN invent_property p ON
-      #   p.type_id = t.type_id
-      # LEFT OUTER JOIN invent_property_value pv ON
-      #   pv.item_id = i.item_id AND pv.property_id = p.property_id
-      # WHERE workplace_id = 2;
-
-      # Получить все типы объектов с их свойствами и значениями
-      # SELECT
-      #   t.*,
-      #   i.*,
-      #   p.*,
-      #   p.name as prop_name,
-      #   CASE type
-      #     WHEN 'int' THEN pv.value_int
-      #     WHEN 'date' THEN pv.value_date
-      #     WHEN 'float' THEN pv.value_float
-      #     WHEN 'list' THEN pv.value_list
-      #     WHEN 'string' THEN pv.value_string
-      #     WHEN 'longstring' THEN pv.value_longstring
-      #   END as value
-      # FROM invent_type t
-      # LEFT OUTER JOIN invent_item i
-      #   USING(type_id)
-      # LEFT OUTER JOIN invent_property p ON
-      #   p.type_id = t.type_id
-      # LEFT OUTER JOIN invent_property_value pv ON
-      #   pv.item_id = i.item_id AND pv.property_id = p.property_id
-
-      # WHERE i.workplace_id = 1
-      # LIMIT 1
     end
 
     private

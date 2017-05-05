@@ -9,9 +9,9 @@ Workplace.$inject = ['$http', 'Server', 'Error'];
  * @class SVT.Workplace
  */
 function Workplace($http, Server, Error) {
-  this.$http  = $http;
+  this.$http = $http;
   this.Server = Server;
-  this.Error  = Error;
+  this.Error = Error;
 }
 
 Workplace.prototype.init = function (id) {
@@ -21,7 +21,6 @@ Workplace.prototype.init = function (id) {
     .get('/inventory/workplaces/' + id + '/edit.json')
     .success(function (workplace) {
       self.workplace = angular.copy(workplace);
-
       
       return workplace;
     })
@@ -29,3 +28,4 @@ Workplace.prototype.init = function (id) {
       self.Error.response(response);
     });
 };
+

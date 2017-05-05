@@ -2,9 +2,8 @@
 
 .container{ "ng-controller": "WorkplaceCountIndexCtrl as wpCount" }
   .well
-    .content-body
-      %datatable-wrapper
-        %table.table.table-striped{ datatable: "", "dt-options": "wpCount.dtOptions", "dt-columns": |
-        "wpCount.dtColumns", "dt-instance": "wpCount.dtInstance", width: "100%" } |
+    %datatable-wrapper
+      %table.table.table-striped{ datatable: "", "dt-options": "wpCount.dtOptions", "dt-columns": "wpCount |
+      .dtColumns", "dt-instance": "wpCount.dtInstance", width: "100%" } |
 
   = render partial: 'modal'

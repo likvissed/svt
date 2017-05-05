@@ -3,7 +3,7 @@ app
   .controller('ModalWpCountController', ModalWpCountController);
 
 WorkplaceCountIndexCtrl.$inject = ['$controller', '$scope', '$compile', '$uibModal', 'DTOptionsBuilder', 'DTColumnBuilder', 'Config', 'Server', 'Flash', 'Error', 'WorkplaceCount'];
-ModalWpCountController.$inject  = ['$uibModalInstance', 'data', 'Server', 'Config', 'Flash', 'Error', 'WorkplaceCount'];
+ModalWpCountController.$inject = ['$uibModalInstance', 'data', 'Server', 'Config', 'Flash', 'Error', 'WorkplaceCount'];
 
 /**
  * Управление общей таблицей информации РМ по отделам.
@@ -15,25 +15,25 @@ function WorkplaceCountIndexCtrl($controller, $scope, $compile, $uibModal, DTOpt
 
 // =============================================== Инициализация =======================================================
 
-  self.$scope         = $scope;
-  self.$uibModal      = $uibModal;
-  self.Config         = Config;
-  self.Server         = Server;
-  self.Flash          = Flash;
-  self.Error          = Error;
+  self.$scope = $scope;
+  self.$uibModal = $uibModal;
+  self.Config = Config;
+  self.Server = Server;
+  self.Flash = Flash;
+  self.Error = Error;
   self.WorkplaceCount = WorkplaceCount;
 
   // Подключаем основные параметры таблицы
   $controller('DefaultDataTableCtrl', {});
 
   // Объект, содержащий данные о доступах пользователей к инвентаризации (workplace_count_id => data)
-  self.wpCount    = {};
+  self.wpCount = {};
   self.dtInstance = {};
-  self.dtOptions  = DTOptionsBuilder
+  self.dtOptions = DTOptionsBuilder
     .newOptions()
     .withOption('stateSave', true)
     .withOption('ajax', {
-      url:  '/inventory/workplace_counts.json',
+      url: '/inventory/workplace_counts.json',
       error: function (response) {
         Error.response(response);
       }
@@ -52,7 +52,7 @@ function WorkplaceCountIndexCtrl($controller, $scope, $compile, $uibModal, DTOpt
         '<"col-fhd-12"p>>'
     );
 
-  self.dtColumns      = [
+  self.dtColumns = [
     DTColumnBuilder.newColumn(null).withTitle('').withOption('className', 'col-fhd-1').renderWith(renderIndex),
     DTColumnBuilder.newColumn('division').withTitle('Отдел').withOption('className', 'col-fhd-2'),
     DTColumnBuilder.newColumn('responsibles').withTitle('Ответственный').withOption('className', 'col-fhd-7'),
@@ -89,16 +89,16 @@ function WorkplaceCountIndexCtrl($controller, $scope, $compile, $uibModal, DTOpt
    * Отрендерить ссылку на редактирование записи.
    */
   function editRecord(data, type, full, meta) {
-    return '<a href="" class="default-color" disable-link=true ng-click="wpCount.openWpCountEditModal(' + data.workplace_count_id +
-      ')" uib-tooltip="Редактировать запись"><i class="fa fa-pencil-square-o fa-1g"></a>';
+    return '<a href="" class="default-color" disable-link=true ng-click="wpCount.openWpCountEditModal(' +
+      data.workplace_count_id + ')" uib-tooltip="Редактировать запись"><i class="fa fa-pencil-square-o fa-1g"></a>';
   }
 
   /**
    * Отрендерить ссылку на удаление данных.
    */
   function delRecord(data, type, full, meta) {
-    return '<a href="" class="text-danger" disable-link=true ng-click="wpCount.destroyRecord(' + data.workplace_count_id +
-      ')" uib-tooltip="Удалить запись"><i class="fa fa-trash-o fa-1g"></a>';
+    return '<a href="" class="text-danger" disable-link=true ng-click="wpCount.destroyRecord(' +
+      data.workplace_count_id + ')" uib-tooltip="Удалить запись"><i class="fa fa-trash-o fa-1g"></a>';
   }
 
 }
@@ -112,9 +112,9 @@ WorkplaceCountIndexCtrl.prototype._openWpCountEditModal = function (data) {
   var self = this;
 
   var modalInstance = self.$uibModal.open({
-    animation:    self.Config.global.modalAnimation,
-    templateUrl:  'editWpCount.haml',
-    controller:   'ModalWpCountController',
+    animation: self.Config.global.modalAnimation,
+    templateUrl: 'editWpCount.haml',
+    controller: 'ModalWpCountController',
     controllerAs: 'modal',
     resolve: {
       data: data
@@ -186,31 +186,31 @@ function ModalWpCountController($uibModalInstance, data, Server, Config, Flash, 
   // Установить имя формы для класса ModalWpCountController
   this.setFormName('workplace_count');
 
-  this.$uibModalInstance  = $uibModalInstance;
-  this.Server             = Server;
-  this.Flash              = Flash;
-  this.Error              = Error;
-  this.WorkplaceCount     = WorkplaceCount;
+  this.$uibModalInstance = $uibModalInstance;
+  this.Server = Server;
+  this.Flash = Flash;
+  this.Error = Error;
+  this.WorkplaceCount = WorkplaceCount;
 
   // Данные по отделу
-  this.data         = data.value;
+  this.data = data.value;
   // Метод передачи данных (POST, PATCH)
-  this.method       = data.method;
+  this.method = data.method;
   // Общие настройки календаря
-  this.dateOptions  = Config.global.datePicker;
+  this.dateOptions = Config.global.datePicker;
   // Настройка календаря 'time_start'
-  this.time_start   = {
+  this.time_start = {
     // Переменная определяющая начальное состояние календаря (false - скрыть, true - показать)
     openDatePicker: false,
     // Формат времени, который видит пользователь
-    format:         Config.global.datePicker.longFormat
+    format: Config.global.datePicker.longFormat
   };
   // Настройка календаря 'time_end'
-  this.time_end     = {
+  this.time_end = {
     // Переменная определяющая начальное состояние календаря (false - скрыть, true - показать)
     openDatePicker: false,
     // Формат времени, который видит пользователь
-    format:         Config.global.datePicker.longFormat
+    format: Config.global.datePicker.longFormat
   };
 }
 

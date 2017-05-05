@@ -2,32 +2,35 @@ app
   .controller('WorkplaceIndexCtrl', WorkplaceIndexCtrl)
   .controller('WorkplaceEditCtrl', WorkplaceEditCtrl);
 
-WorkplaceIndexCtrl.$inject  = ['$controller', 'DTOptionsBuilder', 'DTColumnBuilder'];
-WorkplaceEditCtrl.$inject   = ['Workplace'];
+WorkplaceIndexCtrl.$inject = ['$scope', '$compile', '$controller', 'DTOptionsBuilder', 'DTColumnBuilder'];
+WorkplaceEditCtrl.$inject = ['Workplace'];
 
 /**
  * Управление общей таблицей рабочих мест.
  *
  * @class SVT.WorkplaceIndexCtrl
  */
-function WorkplaceIndexCtrl($controller, DTOptionsBuilder, DTColumnBuilder) {
+function WorkplaceIndexCtrl($scope, $compile, $controller, DTOptionsBuilder, DTColumnBuilder) {
   var self = this;
+
+// =============================================== Инициализация =======================================================
 
   // Подключаем основные параметры таблицы
   $controller('DefaultDataTableCtrl', {});
 
   // Объект, содержащий данные отделов по инвентаризации (workplace_id => data)
-  self.workplaces   = {}
-  self.dtInstance   = {};
-  self.dtOptions    = DTOptionsBuilder
+  self.workplaces = {}
+  self.dtInstance = {};
+  self.dtOptions = DTOptionsBuilder
     .newOptions()
     .withOption('stateSave', true)
     .withOption('ajax', {
-      url:  '/inventory/workplaces.json',
+      url: '/inventory/workplaces.json',
       error: function (response) {
         // Error.response(response);
       }
     })
+    .withOption('createdRow', createdRow)
     .withDOM(
       '<"row"' +
         '<"col-sm-20 col-md-21 col-lg-21 col-fhd-21">' +
@@ -39,7 +42,7 @@ function WorkplaceIndexCtrl($controller, DTOptionsBuilder, DTColumnBuilder) {
         '<"col-fhd-12"p>>'
     );
 
-  self.dtColumns      = [
+  self.dtColumns = [
     DTColumnBuilder.newColumn(null).withTitle('').withOption('className', 'col-fhd-1').renderWith(renderIndex),
     DTColumnBuilder.newColumn('division').withTitle('Отдел').withOption('className', 'col-fhd-2'),
     DTColumnBuilder.newColumn('wp_type').withTitle('Тип').withOption('className', 'col-fhd-4'),
@@ -51,16 +54,33 @@ function WorkplaceIndexCtrl($controller, DTOptionsBuilder, DTColumnBuilder) {
     DTColumnBuilder.newColumn(null).withTitle('').notSortable().withOption('className', 'col-fhd-1 text-center').renderWith(delRecord)
   ];
 
+  /**
+   * Показать номер строки.
+   */
   function renderIndex(data, type, full, meta) {
     self.workplaces[data.workplace_id] = data;
     return meta.row + 1;
   }
 
-  function editRecord(data, type, full, meta) {
-    return '<a href="/inventory/workplaces/' + data.workplace_id + '/edit" class="default-color" disable-link=true' +
-      ' uib-tooltip=Редактировать запись"><i class="fa fa-pencil-square-o fa-1g"></a>';
+  /**
+   * Callback после создания каждой строки.
+   */
+  function createdRow(row, data, dataIndex) {
+    // Компиляция строки
+    $compile(angular.element(row))($scope);
   }
 
+  /**
+   * Отрендерить ссылку на редактирование записи.
+   */
+  function editRecord(data, type, full, meta) {
+    return '<a href="/inventory/workplaces/' + data.workplace_id + '/edit" class="default-color"' +
+      ' uib-tooltip="Редактировать запись"><i class="fa fa-pencil-square-o fa-1g"></a>';
+  }
+
+  /**
+   * Отрендерить ссылку на удаление данных.
+   */
   function delRecord(data, type, full, meta) {
     return '<a href="" class="text-danger" disable-link=true ng-click="wpIndex.destroyRecord(' + data.workplace_id +
       ')" uib-tooltip="Удалить запись"><i class="fa fa-trash-o fa-1g"></a>';

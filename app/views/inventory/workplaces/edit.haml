@@ -1,24 +1,48 @@
+= title "Редакитрование рабочего места"
+
 .container{ "ng-controller": "WorkplaceEditCtrl as wp", "ng-init": "wp.init(#{@workplace.workplace_id || 0})" }
   .well
     .row
-      .col-fhd-4
-        .form-group
-          = label_tag :workplace_id_tn, "ФИО ответственного", class: "control-label"
-          = text_field_tag "workplace[id_tn]", "", class: "form-control", "ng-model": "wp.workplace.id_tn"
-      .col-fhd-4
-        .form-group
-          = label_tag :workplace_workplace_type, "Тип рабочего места", class: "control-label"
-          = text_field_tag "workplace[workplace_type]", "", label: "Тип рабочего места", class: "form-control", |
-          "ng-model": "wp.workplace.id_tn"  |
-      .col-fhd-4
-        .form-group
-          = label_tag :workplace_workplace_specialization_id, "Вид выполняемое работы", class: "control-label"
-          = text_field_tag "workplace[workplace_specialization_id]", "", label: "Вид выполняемое работы", class: |
-          "form-control", "ng-model": "wp.workplace.id_tn" |
-      .col-fhd-4
-        .form-group
-          = label_tag :workplace_location, "Расположение", class: "control-label"
-          = text_field_tag "workplace[location]", "", label: "Расположение", class: "form-control", "ng-model": "wp |
-          .workplace.id_tn" |
+      .col-fhd-12
+        .row
+          %h4 Данные о рабочем месте
+        .row
+          .col-fhd-8
+            .form-group
+              = label_tag :workplace_id_tn, "ФИО ответственного", class: "control-label"
+              = text_field_tag "workplace[id_tn]", "", class: "form-control", "ng-model": "wp.workplace.id_tn"
+          .col-fhd-8
+            .form-group
+              = label_tag :workplace_workplace_type, "Тип рабочего места", class: "control-label"
+              = text_field_tag "workplace[workplace_type]", "", label: "Тип рабочего места", class: "form-control", |
+              "ng-model": "wp.workplace.id_tn"  |
+          .col-fhd-8
+            .form-group
+              = label_tag :workplace_workplace_specialization_id, "Вид выполняемое работы", class: "control-label"
+              = text_field_tag "workplace[workplace_specialization_id]", "", label: "Вид выполняемое работы", class: |
+              "form-control", "ng-model": "wp.workplace.id_tn" |
+      .col-fhd-12
+        .row
+          %h4 Расположение рабочего места
+        .row
+          .col-fhd-8
+            .form-group
+              = label_tag :workplace_location, "Площадка", class: "control-label"
+              = text_field_tag "workplace[location]", "", label: "Расположение", class: "form-control", "ng-model": "wp |
+              .workplace.id_tn" |
+          .col-fhd-8
+            .form-group
+              = label_tag :workplace_location, "Корпус", class: "control-label"
+              = text_field_tag "workplace[location]", "", label: "Расположение", class: "form-control", "ng-model": "wp |
+              .workplace.id_tn" |
+          .col-fhd-8
+            .form-group
+              = label_tag :workplace_location, "Комната", class: "control-label"
+              = text_field_tag "workplace[location]", "", label: "Расположение", class: "form-control", "ng-model": "wp |
+              .workplace.id_tn" |
+
+    .row
+      %h4 Состав рабочего места
+
     .row
       %pre{ "ng-bind": "wp.workplace | json" }

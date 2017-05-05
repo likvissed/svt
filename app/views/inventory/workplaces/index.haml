@@ -2,7 +2,6 @@
 
 .container{ "ng-controller": "WorkplaceIndexCtrl as wpIndex" }
   .well
-    .content-body
-      %datatable-wrapper
-        %table.table.table-striped.table-condensed{ datatable: "", "dt-options": "wpIndex.dtOptions",
-         "dt-columns": "wpIndex.dtColumns", "dt-instance": "wpIndex.dtInstance", width: "100%" }
+    %datatable-wrapper
+      %table.table.table-striped.table-condensed{ datatable: "", "dt-options": "wpIndex.dtOptions", "dt-columns": |
+      "wpIndex.dtColumns", "dt-instance": "wpIndex.dtInstance", width: "100%" } |
