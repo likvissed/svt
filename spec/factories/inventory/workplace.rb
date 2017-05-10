@@ -7,7 +7,7 @@ module Inventory
       iss_reference_building { loc_building }
       iss_reference_room { loc_room }
       comment ''
-      status { Workplace.statuses['В ожидании проверки'] }
+      status { Workplace.statuses['pending_verification'] }
 
       trait :rm_pk do
         workplace_type { WorkplaceType.find_by(name: 'rm_pk') }

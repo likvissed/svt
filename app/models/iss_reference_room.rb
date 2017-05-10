@@ -8,7 +8,7 @@ class IssReferenceRoom < Netadmin
 
   private
 
-  # Валидация, проверяющая уникальность табельного номера в рамках текущего workplace_count.
+  # Валидация, проверяющая уникальность номера комнаты в рамках текущего workplace_count.
   def name_uniqueness_per_building
     errors.add(:name, "Комната '#{name}' уже существует") if self.class.exists?(iss_reference_building:
       iss_reference_building, name: name)

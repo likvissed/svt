@@ -2,6 +2,21 @@ require 'rails_helper'
 
 module Inventory
   RSpec.describe InvItem, type: :model do
+    it { should have_many(:inv_property_values).order(:property_id).with_foreign_key('item_id').dependent(:destroy) }
+
+    it { should belong_to(:inv_type).with_foreign_key('type_id') }
+    it { should belong_to(:workplace) }
+    it { should belong_to(:inv_model).with_foreign_key('model_id') }
+
+    it { should validate_presence_of(:type_id) }
+    it { should validate_presence_of(:invent_num) }
+
+    it { should validate_numericality_of(:type_id).is_greater_than(0).only_integer }
+
+    it { should delegate_method(:inv_properties).to(:inv_type) }
+
+    it { should accept_nested_attributes_for(:inv_property_values).allow_destroy(true) }
+
     describe '#presence_model' do
       context 'when item_type belongs to array InvItem::PRESENCE_MODEL_EXCEPT' do
         InvItem::PRESENCE_MODEL_EXCEPT.each do |type|

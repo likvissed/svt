@@ -12,33 +12,30 @@ module Inventory
     belongs_to :iss_reference_building, foreign_key: 'location_building_id'
     belongs_to :iss_reference_room, foreign_key: 'location_room_id'
 
-    before_validation :check_id_tn
-
     validates :id_tn,
               presence: true,
-              numericality: { greater_than: 0, only_integer: true, message: 'введено с ошибкой. Проверьте' \
-' корректность введенного ФИО' },
-              unless: -> { errors.any? }
+              numericality: { greater_than: 0, only_integer: true },
+              reduce: true
+    validates :id_tn, user_iss_by_id_tn: true, unless: -> { errors.any? }
     validates :workplace_count_id,
               presence: true,
-              numericality: { greater_than: 0, only_integer: true, message: 'не указан' }
+              numericality: { greater_than: 0, only_integer: true }
     validates :workplace_type_id,
               presence: true,
-              numericality: { greater_than: 0, only_integer: true, message: 'не выбран' }
+              numericality: { greater_than: 0, only_integer: true }
     validates :workplace_specialization_id,
               presence: true,
-              numericality: { greater_than: 0, only_integer: true, message: 'не выбрано' }
+              numericality: { greater_than: 0, only_integer: true }
     validates :location_site_id,
-              presence: { message: 'не указана' },
-              numericality: { greater_than: 0, only_integer: true, message: 'не выбрана' }
+              presence: true,
+              numericality: { greater_than: 0, only_integer: true }
     validates :location_building_id,
-              presence: { message: 'не указан' },
-              numericality: { greater_than: 0, only_integer: true, message: 'не выбран' }
+              presence: true,
+              numericality: { greater_than: 0, only_integer: true }
     validates :location_room_id,
-              presence: { message: 'не указана' },
-              numericality: { greater_than: 0, only_integer: true, message: 'не указана' }
+              presence: true,
+              numericality: { greater_than: 0, only_integer: true }
     validate :check_workplace_conditions, unless: -> { workplace_type_id == -1 }
-    # validate  :compare_responsibles
 
     accepts_nested_attributes_for :inv_items, allow_destroy: true, reject_if: proc { |attr| attr['type_id'].to_i.zero? }
 
@@ -57,16 +54,6 @@ module Inventory
     end
 
     private
-
-    # Установить отрицательный id_tn, если он отсутствует. Это необходимо, чтобы пользователю выдалось корректное
-    # описание ошибки, если он ввел неверное ФИО. Без этой валидации если пользователь введет ФИО с ошибкой, id_tn
-    # отправится пустым и пользовтелю будет сказано о том, что необходимо заполнить ФИО. Но ФИО будет заполнено в поле,
-    # что может привести пользователя в тупик.
-    def check_id_tn
-      if id_tn.to_i.zero? || UserIss.find_by(id_tn: id_tn.to_i).nil?
-        errors.add(:base, 'Проверьте корректность введенного ФИО')
-      end
-    end
 
     # Проверка условий, которые должны выполняться при создании/редактировании рабочих мест.
     def check_workplace_conditions
@@ -107,26 +94,23 @@ module Inventory
            (count_all_types['notebook'] + count_all_types['tablet']) >= 1 ||
            (count_all_types['monitor'].zero? && count_all_types['allin1'].zero?) ||
            net_printer
-          errors.add(:base, 'Неправильный состав стационарного рабочего места')
+          errors.add(:base, :wrong_rm_pk_composition)
         end
 
         if (count_all_types['pc'] + count_all_types['allin1']) > 1
-          errors.add(:base, 'На одном стационарном рабочем месте может находиться только один системный блок или' \
-' моноблок.')
+          errors.add(:base, :rm_pk_only_one_pc_or_allin1)
         end
-        if count_all_types['pc'].zero? && count_all_types['allin1'].zero?
-          errors.add(:base, 'Необходимо создать хотя бы один системный блок или моноблок')
+        if (count_all_types['pc'] + count_all_types['allin1']).zero?
+          errors.add(:base, :rm_pk_at_least_one_pc_or_allin1)
         end
         if (count_all_types['notebook'] + count_all_types['tablet']) >= 1
-          errors.add(:base, 'На стационарном рабочем месте запрещено создавать ноутбук или планшет (их можно создать' \
-' только на мобильном рабочем месте).')
+          errors.add(:base, :rm_pk_forbid_notebook_and_tablet)
         end
         if count_all_types['monitor'].zero? && count_all_types['allin1'].zero?
-          errors.add(:base, 'Для системного блока необходимо создать хотя бы один монитор')
+          errors.add(:base, :rm_pk_at_least_one_monitor)
         end
         if net_printer
-          errors.add(:base, 'Для стационарного рабочего места запрещено создавать печатающие устройства с сетевым' \
-' типом подключения, измените тип подключения или тип рабочего места на "Рабочее место печати".')
+          errors.add(:base, :rm_pk_forbid_net_printer)
         end
 
       when 'rm_mob'
@@ -135,14 +119,19 @@ module Inventory
         # для мобильного РМ запрещено.
 
         if total_count > 1 && (count_all_types['notebook'] + count_all_types['tablet']) == total_count ||
-           total_count != 0 && total_count != (count_all_types['notebook'] + count_all_types['tablet'])
-          errors.add(:base, 'Неправильный состав мобильного рабочего места')
+           total_count != 0 && total_count != (count_all_types['notebook'] + count_all_types['tablet']) ||
+          (count_all_types['notebook'] + count_all_types['tablet']).zero?
+          errors.add(:base, :wrong_rm_mob_composition)
+        end
+
+        if (count_all_types['notebook'] + count_all_types['tablet']).zero?
+          errors.add(:base, :at_least_one_notebook_or_tablet)
         end
         if total_count > 1 && (count_all_types['notebook'] + count_all_types['tablet']) == total_count
-          errors.add(:base, 'На одном мобильном рабочем месте может находиться только один планшет или ноутбук')
+          errors.add(:base, :only_one_notebook_or_tablet)
         end
         if total_count != 0 && total_count != (count_all_types['notebook'] + count_all_types['tablet'])
-          errors.add(:base, 'Мобильное рабочее место может включать только ноутбук или планшет.')
+          errors.add(:base, :only_notebook_or_tablet)
         end
 
       when 'rm_net_print'
@@ -201,35 +190,31 @@ module Inventory
            (count_all_types['print_server'] + loc_printer_count) != total_count ||
            total_count != 0 && (net_printer_count + count_all_types['3d_printer'] + count_all_types['print_server'])
            .zero?
-          errors.add(:base, 'Неправильный состав рабочего места печати')
+          errors.add(:base, :wrong_rm_net_print_composition)
         end
 
         if net_printer_count > 1
-          errors.add(:base, 'На одном рабочем месте печати может находиться только одно печатающее устройство,' \
-' подключенное к локальной сети')
+          errors.add(:base, :only_one_net_print)
+
         elsif net_printer_count == 1 && net_printer_count != total_count
-          errors.add(:base, 'Совместно с печатающим устройством, подключенным к локальной сети, нельзя создавать' \
-' какое-либо устройство')
+          errors.add(:base, :net_print_without_any_devices)
         end
 
         if count_all_types['3d_printer'] > 1
-          errors.add(:base, 'На одном рабочем месте печати может находиться только один 3D-принтер')
+          errors.add(:base, :only_one_3d_printer)
         elsif count_all_types['3d_printer'] == 1 && total_count != count_all_types['3d_printer']
-          errors.add(:base, 'Совместно с 3D-принтером нельзя создать какое-либо устройство')
+          errors.add(:base, :_3d_printer_without_any_devices)
         end
 
         if count_all_types['print_server'] > 1
-          errors.add(:base, 'На одном рабочем месте печати может находиться только один принт-сервер')
+          errors.add(:base, :only_one_print_server)
         elsif count_all_types['print_server'] == 1 &&
               (count_all_types['print_server'] + loc_printer_count) != total_count
-          errors.add(:base, 'Совместно с принт-сервером на рабочем месте печати может находиться только печатающие'\
-' устройства с локальным подключением')
+          errors.add(:base, :only_local_print_with_print_server)
         end
 
-        if total_count != 0 &&
-           (net_printer_count + count_all_types['3d_printer'] + count_all_types['print_server']).zero?
-          errors.add(:base, 'В состав рабочего места печати необходимо добавить хотя бы одно печатающее устройство,' \
-' подключенное по сети, либо через принт-сервер.')
+        if (net_printer_count + count_all_types['3d_printer'] + count_all_types['print_server']).zero?
+          errors.add(:base, :at_least_one_print)
         end
 
       when 'rm_server'
@@ -245,24 +230,23 @@ module Inventory
            (count_all_types['pc'].zero? && count_all_types['allin1'].zero?) ||
            (count_all_types['notebook'] + count_all_types['tablet']) >= 1 ||
            net_printer
-          errors.add(:base, 'Неправильный состав серверного рабочего места')
+          errors.add(:base, :wrong_rm_server_composition)
         end
 
         if (count_all_types['pc'] + count_all_types['allin1']) > 1
-          errors.add(:base, 'На одном серверном рабочем месте может находиться только один системный блок или' \
-' моноблок.')
+          errors.add(:base, :rm_server_only_one_pc_or_allin1)
         end
         if count_all_types['pc'].zero? && count_all_types['allin1'].zero?
-          errors.add(:base, 'Необходимо создать хотя бы один системный блок или моноблок')
+          errors.add(:base, :rm_server_at_least_one_pc_or_allin1)
         end
         if (count_all_types['notebook'] + count_all_types['tablet']) >= 1
-          errors.add(:base, 'На серверном рабочем месте запрещено создавать ноутбук или планшет (их можно создать' \
-' только на мобильном рабочем месте).')
+          errors.add(:base, :rm_server_forbid_notebook_and_tablet)
         end
         if net_printer
-          errors.add(:base, 'Для серверного рабочего места запрещено создавать печатающие устройства с сетевым типом' \
-' подключения, измените тип подключения или тип рабочего места на "Рабочее место печати".')
+          errors.add(:base, :rm_server_forbid_net_printer)
         end
+      else
+        errors.add(:base, 'Неизвестнй тип рабочего места')
       end
     end
 
@@ -293,32 +277,6 @@ module Inventory
       end
 
       false
-    end
-
-    # Проверка, совпадает табельный номер ответственного за РМ с ответственным за системный блок.
-    def compare_responsibles
-      inv_type
-
-      inv_items.each do |item|
-        next unless item.type_id == @type.type_id
-
-        # Получаем данные о системном блоке
-        @host = HostIss.get_host(item.invent_num)
-        if @host
-          begin
-            @user = UserIss.find(id_tn)
-
-            unless @host['tn'] == @user.tn
-              errors.add(:base, 'Табельный номер ответственного за рабочее место не совпадает с табельным номером' \
-' ответственного за системный блок.')
-            end
-          rescue ActiveRecord::RecordNotFound
-            errors.add(:id_tn, 'не найден в базе данных отдела кадров, обратитесь к администратору')
-          end
-        end
-
-        break
-      end
     end
 
     # Создать переменную @type (класс InvType), если она не существует.

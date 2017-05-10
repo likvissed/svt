@@ -23,10 +23,10 @@ module Inventory
     belongs_to :workplace, optional: true
     belongs_to :inv_model, foreign_key: 'model_id'
 
-    validates :type_id, presence: true, numericality: { greater_than: 0, only_integer: true, message: 'не выбран' }
+    validates :type_id, presence: true, numericality: { greater_than: 0, only_integer: true }
     validates :invent_num, presence: true
-    validate  :presence_model
-    validate  :check_property_value
+    validate  :presence_model, unless: -> { errors.details[:type_id].any? }
+    validate  :check_property_value, unless: -> { errors.details[:type_id].any? }
 
     before_save :set_default_model
 
@@ -41,7 +41,7 @@ module Inventory
       # Если модель не задана
       if ((model_id.to_i.zero? && item_model.blank?) || model_id == -1) &&
          !PRESENCE_MODEL_EXCEPT.include?(inv_type.name)
-        errors.add(:model_id, 'не указана')
+        errors.add(:model_id, :blank)
       end
     end
 
@@ -89,8 +89,7 @@ module Inventory
 
         # Проверка наличия данных от аудита, либо отчета о конфигурации
         if !invent_num.blank? && !full_properties_flag && !file_name_exist
-          errors.add(:base, 'Сначала необходимо нажать кнопку "Получить данные автоматически" или "Ввод данных' \
-' вручную"')
+          errors.add(:base, :pc_data_not_received)
         end
 
         # Если имя файла пришло пустым (не будет работать при создании нового item, только во время редактирования).
@@ -122,7 +121,7 @@ module Inventory
       return unless property_value_invalid?(prop_val)
 
       field = @properties.find { |prop| prop.property_id == prop_val.property_id }.short_description
-      errors.add(:base, "Не заполнено поле \"#{field}\"")
+      errors.add(:base, :field_is_empty, empty_field: field)
     end
 
     def property_value_invalid?(prop_val)

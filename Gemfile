@@ -89,6 +89,7 @@ group :development, :test do
   # Testing
   gem 'factory_girl_rails'
   gem 'rspec-rails'
+  gem 'shoulda-matchers'
 end
 
 group :development do

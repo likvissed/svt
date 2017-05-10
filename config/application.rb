@@ -20,7 +20,8 @@ module Inv
     config.i18n.default_locale = :ru
 
     # Загрузка всех файлов из
-    # config.autoload_paths << Rails.root.join('lib').to_s
+    config.autoload_paths << Rails.root.join('app', 'services').to_s
+    config.autoload_paths << Rails.root.join('lib', 'validators').to_s
 
     # Provides support for Cross-Origin Resource Sharing (CORS)
     config.middleware.insert_before 0, Rack::Cors do
@@ -41,8 +42,14 @@ module Inv
     end
 
     config.generators do |g|
-      g.template_engine     :haml
-      g.test_framework      :rspec, fixtures: true, views: false # Дефолтный тестовый фреймворк
+      g.template_engine :haml
+      g.test_framework :rspec,
+                       fixtures: true,
+                       view_spec: false,
+                       helper_specs: false,
+                       routing_specs: false,
+                       request_specs: false,
+                       controller_spec: true
       g.fixture_replacement :factory_girl, dir: 'spec/factories'
     end
   end
