@@ -11,17 +11,45 @@ ru:
          one: "Невозможно удалить, так как данная запись используется в другой модели"
          many: "Невозможно удалить, так как данная запись используется в других моделях"
 
-#      models:
-#        real_server_detail:
-#          attributes:
-#            server_part_id:
-#              not_a_number: "не выбрана"
-#              greater_than: "не выбрана"
-#        template_server_detail:
-#          attributes:
-#            server_part_id:
-#              not_a_number: "не выбрана"
-#              greater_than: "не выбрана"
+      models:
+        inventory/workplace:
+          attributes:
+            id_tn:
+              blank: 'введено с ошибкой, проверьте корректность введенного ФИО'
+              greater_than: 'введено с ошибкой, проверьте корректность введенного ФИО'
+              not_an_integer: 'введено с ошибкой, проверьте корректность введенного ФИО'
+              not_a_number: 'введено с ошибкой, проверьте корректность введенного ФИО'
+              user_iss_by_id_tn: 'не найдено в базе данных отдела кадров.'
+            workplace_count_id:
+              blank: 'не указан'
+              greater_than: 'не указан'
+              not_an_integer: 'не указан'
+              not_a_number: 'не указан'
+            workplace_type_id:
+              blank: 'не выбран'
+              greater_than: 'не выбран'
+              not_an_integer: 'не выбран'
+              not_a_number: 'не выбран'
+            workplace_specialization_id:
+              blank: 'не выбрано'
+              greater_than: 'не выбрано'
+              not_an_integer: 'не выбрано'
+              not_a_number: 'не выбрано'
+            location_site_id:
+              blank: 'не выбрана'
+              greater_than: 'не выбрана'
+              not_an_integer: 'не выбрана'
+              not_a_number: 'не выбрана'
+            location_building_id:
+              blank: 'не выбран'
+              greater_than: 'не выбран'
+              not_an_integer: 'не выбран'
+              not_a_number: 'не выбран'
+            location_room_id:
+              blank: 'не указана'
+              greater_than: 'не указана'
+              not_an_integer: 'не указана'
+              not_a_number: 'не указана'
 
     models:
       inventory/workplace_count: "отделы"
@@ -44,9 +72,9 @@ ru:
         workplace_count_id: "Отдел, к которому привязано рабочее место,"
         workplace_type_id: "Тип рабочего места"
         workplace_specialization_id: "Направление деятельности"
-        iss_reference_site: "Площадка"
-        iss_reference_building: "Корпус"
-        iss_reference_room: "Комната"
+        location_site_id: "Площадка"
+        location_building_id: "Корпус"
+        location_room_id: "Комната"
         statuses:
           confirmed: "Подтверждено"
           pending_verification: "В ожидании проверки"
