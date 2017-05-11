@@ -42,6 +42,7 @@ module Inventory
     def prepare_to_render
       @workplace['location_room_name'] = @workplace['iss_reference_room']['name']
       @workplace['inv_items_attributes'] = @workplace['inv_items']
+
       @workplace.delete('inv_items')
       @workplace.delete('iss_reference_room')
       @workplace.delete('location_room_id')
@@ -49,11 +50,13 @@ module Inventory
       @workplace['inv_items_attributes'].each do |item|
         item['id'] = item['item_id']
         item['inv_property_values_attributes'] = item['inv_property_values']
+
         item.delete('item_id')
         item.delete('inv_property_values')
 
         item['inv_property_values_attributes'].each do |prop_val|
           prop_val['id'] = prop_val['property_value_id']
+
           prop_val.delete('property_value_id')
         end
       end

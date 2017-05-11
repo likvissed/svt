@@ -115,6 +115,14 @@ invent_workplace_count.division, invent_workplace_count.time_start, invent_workp
     end
 
     def data_from_audit
+      audit = LoadAuditData.new(params[:invent_num])
+
+      if audit.load
+        render json: audit.audit_data, status: 200
+      else
+        render json: { full_message: error_message }, status: 422
+      end
+=begin
       @host = HostIss.get_host(params[:invent_num])
 
       if @host.nil?
@@ -152,15 +160,12 @@ invent_workplace_count.division, invent_workplace_count.time_start, invent_workp
       else
         render json: { full_message: error_message }, status: 422
       end
+=end
     end
 
     # Создать РМ
     def create_workplace
-      unless create_or_get_room
-        render json: { full_message: @room.errors.full_messages.join('. ') }, status: 422
-        return
-      end
-
+      create_or_get_room
       @workplace = Workplace.new(workplace_params)
 
       # Логирование полученных данных
@@ -192,48 +197,14 @@ invent_workplace_count.division, invent_workplace_count.time_start, invent_workp
     end
 
     def edit_workplace
-      @workplace = Workplace
-                     .includes(:iss_reference_room)
-                     .find(params[:workplace_id])
+      wp = LoadSingleWorkplace.new(params[:workplace_id])
 
-      if @workplace.status == 'confirmed'
+      if wp.status_confirmed?
         render json: { full_message: 'Рабочее место уже подтверждено. Редактирование запрещено.' }, status: 422
-        return
+      else
+        wp.transform
+        render json: wp.workplace, status: 200
       end
-      unless @workplace
-        render json: { full_message: 'Рабочее место не найдено.' }, status: 404
-        return
-      end
-
-      @workplace = @workplace.as_json(
-        include: {
-          iss_reference_room: {},
-          inv_items: {
-            include: :inv_property_values
-          }
-        }
-      )
-
-      # Преобразование объекта.
-      @workplace['location_room_name'] = @workplace['iss_reference_room']['name']
-      @workplace['inv_items_attributes'] = @workplace['inv_items']
-      @workplace.delete('inv_items')
-      @workplace.delete('iss_reference_room')
-      @workplace.delete('location_room_id')
-
-      @workplace['inv_items_attributes'].each do |item|
-        item['id'] = item['item_id']
-        item['inv_property_values_attributes'] = item['inv_property_values']
-        item.delete('item_id')
-        item.delete('inv_property_values')
-
-        item['inv_property_values_attributes'].each do |prop_val|
-          prop_val['id'] = prop_val['property_value_id']
-          prop_val.delete('property_value_id')
-        end
-      end
-
-      render json: @workplace, status: 200
     end
 
     def update_workplace
@@ -313,18 +284,14 @@ invent_workplace_count.division, invent_workplace_count.time_start, invent_workp
                 .first
 
       if @room.nil?
-        @room = IssReferenceRoom.new(
+        @room = IssReferenceRoom.create(
           building_id: params[:workplace][:location_building_id],
           name: params[:workplace][:location_room_name]
         )
-
-        return false unless @room.save
       end
 
       params[:workplace].delete :location_room_name
       params[:workplace][:location_room_id] = @room.room_id
-
-      true
     end
 
     # Сохранить файл в файловой системе.

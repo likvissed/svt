@@ -35,56 +35,18 @@ module Inventory
     end
 
     def edit
-      @workplace = Workplace
-                     .includes(:iss_reference_room)
-                     .find(params[:workplace_id])
+      wp = LoadSingleWorkplace.new(params[:workplace_id])
 
       respond_to do |format|
-        format.html
+        format.html { @workplace = wp.workplace }
         format.json do
-          unless @workplace
-            render json: { full_message: 'Рабочее место не найдено.' }, status: 404
-            return
-          end
-
-          @workplace = @workplace.as_json(
-            include: {
-              iss_reference_room: {},
-              inv_items: {
-                include: :inv_property_values
-              }
-            }
-          )
-
-          # Преобразование объекта.
-          @workplace['location_room_name'] = @workplace['iss_reference_room']['name']
-          @workplace['inv_items_attributes'] = @workplace['inv_items']
-          @workplace.delete('inv_items')
-          @workplace.delete('iss_reference_room')
-          @workplace.delete('location_room_id')
-
-          @workplace['inv_items_attributes'].each do |item|
-            item['id'] = item['item_id']
-            item['inv_property_values_attributes'] = item['inv_property_values']
-            item.delete('item_id')
-            item.delete('inv_property_values')
-
-            item['inv_property_values_attributes'].each do |prop_val|
-              prop_val['id'] = prop_val['property_value_id']
-              prop_val.delete('property_value_id')
-            end
-          end
-
-          render json: @workplace, status: 200
+          wp.transform
+          render json: wp.workplace, status: 200
         end
       end
     end
 
     private
-
-    def workplace
-      @workplace = Workplace.find(params[:workplace_id]) unless @workplace
-    end
 
     def workplace_params
       params.require(:workplace).permit(

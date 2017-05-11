@@ -22,28 +22,25 @@ gem 'omniauth'
 
 # MySQL
 gem 'mysql2'
-
 # MSSQL
 gem 'activerecord-sqlserver-adapter'
 gem 'tiny_tds'
+
+# Other
+gem 'awesome_print'
+gem 'bootstrap-sass'
+gem 'colorize'
+gem 'font-awesome-rails'
+gem 'haml-rails'
+gem 'php_serialize'
+gem 'rails-i18n'
+gem 'rubocop', require: false
+gem 'simple_form'
 
 # Generate PDF
 gem 'wicked_pdf'
 gem 'wkhtmltopdf-binary'
 
-# PHP serialize/unserialize data
-gem 'php_serialize'
-# Icons
-gem 'font-awesome-rails'
-# gem 'font-awesome-rails'
-# Twitter Bootstrap
-gem 'bootstrap-sass'
-# Simple form
-gem 'simple_form'
-# haml
-gem 'haml-rails'
-# locale
-gem 'rails-i18n'
 # Bundle edge Rails instead: gem 'rails', github: 'rails/rails'
 gem 'rails', '~> 5.0.1'
 # Use Puma as the app server
@@ -68,18 +65,11 @@ gem 'jbuilder', '~> 2.5'
 # Use ActiveModel has_secure_password
 # gem 'bcrypt', '~> 3.1.7'
 
-# Use Capistrano for deployment
-# gem 'capistrano-rails', group: :development
-
-# For console
-gem 'awesome_print'
-# Colorize text
-gem 'colorize'
-# Code analyzer
-gem 'rubocop', require: false
-
 group :test do
+  gem 'capybara'
   gem 'database_cleaner'
+  gem 'launchy'
+  gem 'shoulda-matchers'
 end
 
 group :development, :test do
@@ -89,7 +79,6 @@ group :development, :test do
   # Testing
   gem 'factory_girl_rails'
   gem 'rspec-rails'
-  gem 'shoulda-matchers'
 end
 
 group :development do
@@ -104,8 +93,6 @@ group :development do
   # gem 'meta_request'
   # View errors
   gem 'better_errors'
-  # Quiet assets
-  # gem 'quiet_assets'
 
   # Deploy application
   gem 'capistrano'

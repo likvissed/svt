@@ -114,7 +114,6 @@ ru:
             model_id:
              blank: 'не указана'
 
-
     models:
       inventory/workplace_count: "отделы"
       inventory/workplace_responsible: "ответственные"
