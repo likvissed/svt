@@ -1,6 +1,8 @@
 FactoryGirl.define do
   factory :user do
     tn 101_101
+    # email nil
+    # login 'TestLK'
     fullname 'Тест Личного кабинета'
     password 'xxxx1234'
     association :role, factory: :admin_role

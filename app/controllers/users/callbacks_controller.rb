@@ -9,7 +9,12 @@ class Users::CallbacksController < Devise::OmniauthCallbacksController
       flash[:alert] = 'Доступ запрещен'
       redirect_to new_user_session_path
     else
-      fio_arr = user_params.fullname.split(' ')
+      if user_params.fullname.to_s.empty?
+        failure
+        return
+      else
+        fio_arr = user_params.fullname.split(' ')
+      end
       session[:user_fullname] = "#{fio_arr[0]} #{fio_arr[1][0]}. #{fio_arr[2][0]}."
 
       sign_in_and_redirect @user, event: :authentication
@@ -21,4 +26,5 @@ class Users::CallbacksController < Devise::OmniauthCallbacksController
     flash[:alert] = 'Ошибка авторизации. Обратитесь к администратору по тел. ***REMOVED***'
     redirect_to new_user_session_path
   end
+
 end
