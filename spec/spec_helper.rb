@@ -28,13 +28,10 @@ Dir[Rails.root.join('spec', 'models', 'shared_examples', '**', '*.rb')].each { |
 
 # See http://rubydoc.info/gems/rspec-core/RSpec/Core/Configuration
 RSpec.configure do |config|
-  # For FactoryGirl
   config.include FactoryGirl::Syntax::Methods
+  config.include OmniauthMacros
 
-  # For Devise
-  # config.include Devise::Test::ControllerHelpers, type: :controller
-  config.include Devise::TestHelpers, type: :controller
-  config.include Warden::Test::Helpers
+  # config.include Warden::Test::Helpers
 
   # rspec-expectations config goes here. You can use an alternate
   # assertion/expectation library such as wrong or the stdlib/minitest
