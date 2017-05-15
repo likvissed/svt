@@ -1,9 +1,19 @@
 require 'spec_helper'
+# require 'capybara/rspec'
+# require 'database_cleaner'
+
+# Checks for pending migration and applies them before tests are run.
+# If you are not using ActiveRecord, you can remove this line.
+ActiveRecord::Migration.maintain_test_schema!
 
 RSpec.configure do |config|
   Capybara.javascript_driver = :webkit
 
+  config.include FeatureMacros, type: :feature
+
   config.use_transactional_fixtures = false
+
+  OmniAuth.config.test_mode = true
 
   # Список таблиц, которые запрещено очищать
   keep_tables = %w[

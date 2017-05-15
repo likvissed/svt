@@ -1,7 +1,8 @@
 FactoryGirl.define do
   factory :user do
-    tn ***REMOVED***
-    info '***REMOVED***'
+    tn 101_101
+    fullname 'Тест Личного кабинета'
+    password 'xxxx1234'
     association :role, factory: :admin_role
   end
 

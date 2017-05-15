@@ -26,10 +26,6 @@ require 'rspec/rails'
 Dir[Rails.root.join('spec/support/**/*.rb')].each { |f| require f }
 Dir[Rails.root.join('spec', 'models', 'shared_examples', '**', '*.rb')].each { |f| require f }
 
-# Checks for pending migration and applies them before tests are run.
-# If you are not using ActiveRecord, you can remove this line.
-ActiveRecord::Migration.maintain_test_schema!
-
 # See http://rubydoc.info/gems/rspec-core/RSpec/Core/Configuration
 RSpec.configure do |config|
   # For FactoryGirl
@@ -39,7 +35,6 @@ RSpec.configure do |config|
   # config.include Devise::Test::ControllerHelpers, type: :controller
   config.include Devise::TestHelpers, type: :controller
   config.include Warden::Test::Helpers
-  config.include WaitForAjax, type: :feature
 
   # rspec-expectations config goes here. You can use an alternate
   # assertion/expectation library such as wrong or the stdlib/minitest

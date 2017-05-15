@@ -6,7 +6,8 @@ class User < ApplicationRecord
 
   belongs_to :role
 
-  attr_accessor :login
+  # Для тестов. Чтобы иметь возможность вводить доменное имя пользователя во время авторизации.
+  attr_accessor :login, :email
 
   def self.find_for_database_authentication(warden_conditions)
     conditions = warden_conditions.dup

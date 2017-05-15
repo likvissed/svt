@@ -10,7 +10,7 @@
 #
 # It's strongly recommended that you check this file into your version control system.
 
-ActiveRecord::Schema.define(version: 20170302034819) do
+ActiveRecord::Schema.define(version: 20170515061846) do
 
   create_table "detail_types", force: :cascade, options: "ENGINE=InnoDB DEFAULT CHARSET=utf8" do |t|
     t.string   "type_name",  limit: 50, null: false
@@ -80,7 +80,7 @@ ActiveRecord::Schema.define(version: 20170302034819) do
 
   create_table "users", force: :cascade, options: "ENGINE=InnoDB DEFAULT CHARSET=utf8" do |t|
     t.integer  "tn",                               null: false
-    t.string   "info"
+    t.string   "fullname"
     t.string   "encrypted_password",  default: "", null: false
     t.integer  "role_id"
     t.datetime "remember_created_at"

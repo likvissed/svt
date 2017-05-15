@@ -66,9 +66,6 @@ gem 'jbuilder', '~> 2.5'
 # gem 'bcrypt', '~> 3.1.7'
 
 group :test do
-  gem 'capybara'
-  gem 'database_cleaner'
-  gem 'launchy'
   gem 'shoulda-matchers'
 end
 
@@ -77,7 +74,11 @@ group :development, :test do
   gem 'byebug', platform: :mri
 
   # Testing
+  gem 'capybara'
+  gem 'capybara-webkit'
+  gem 'database_cleaner'
   gem 'factory_girl_rails'
+  gem 'rails-controller-testing'
   gem 'rspec-rails'
 end
 
