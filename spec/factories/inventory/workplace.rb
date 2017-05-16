@@ -68,10 +68,10 @@ module Inventory
       active
       id_tn { UserIss.where(dept: workplace_count.division).where('tn < 100000').first.id_tn }
 
-      factory :full_workplace_rm_pk,        traits: [:rm_pk]
-      factory :full_workplace_rm_mob,       traits: [:rm_mob]
+      factory :full_workplace_rm_pk, traits: [:rm_pk]
+      factory :full_workplace_rm_mob, traits: [:rm_mob]
       factory :full_workplace_rm_net_print, traits: [:net_print]
-      factory :full_workplace_rm_server,    traits: [:rm_server]
+      factory :full_workplace_rm_server, traits: [:rm_server]
     end
 
     # РМ с неверно заполненными аттрибутами.

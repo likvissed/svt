@@ -22,6 +22,7 @@ module Inventory
             wp['location'] = "Пл. '#{wp['iss_reference_site']['name']}', корп. #{wp['iss_reference_building']['name']},
 комн. #{wp['iss_reference_room']['name']}"
             wp['responsible'] = wp['user_iss']['fio_initials']
+            wp['status'] = Workplace.translate_enum(:status, wp['status'])
 
             wp.delete('iss_reference_site')
             wp.delete('iss_reference_building')

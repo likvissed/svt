@@ -38,8 +38,6 @@ RSpec.configure do |config|
   # Remove this line if you're not using ActiveRecord or ActiveRecord fixtures
   config.fixture_path = "#{::Rails.root}/spec/fixtures"
 
-  # config.include Warden::Test::Helpers
-
   # rspec-expectations config goes here. You can use an alternate
   # assertion/expectation library such as wrong or the stdlib/minitest
   # assertions if you prefer.

@@ -1,3 +1,5 @@
+require_relative './omniauth_macros'
+
 module FeatureMacros
   include OmniauthMacros
 

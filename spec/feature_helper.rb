@@ -1,6 +1,4 @@
 require 'spec_helper'
-# require 'capybara/rspec'
-# require 'database_cleaner'
 
 RSpec.configure do |config|
   Capybara.javascript_driver = :webkit

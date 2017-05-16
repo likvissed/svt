@@ -19,10 +19,11 @@ function WorkplaceIndexCtrl($scope, $compile, $controller, DTOptionsBuilder, DTC
   $controller('DefaultDataTableCtrl', {});
 
   // Объект, содержащий данные отделов по инвентаризации (workplace_id => data)
-  self.workplaces = {}
+  self.workplaces = {};
   self.dtInstance = {};
   self.dtOptions = DTOptionsBuilder
     .newOptions()
+    .withOption('initComplete', initComplete)
     .withOption('stateSave', true)
     .withOption('ajax', {
       url: '/inventory/workplaces.json',
@@ -53,6 +54,10 @@ function WorkplaceIndexCtrl($scope, $compile, $controller, DTOptionsBuilder, DTC
     DTColumnBuilder.newColumn(null).withTitle('').notSortable().withOption('className', 'col-fhd-1 text-center').renderWith(editRecord),
     DTColumnBuilder.newColumn(null).withTitle('').notSortable().withOption('className', 'col-fhd-1 text-center').renderWith(delRecord)
   ];
+
+  function initComplete(settings, json) {
+    console.log(json);
+  }
 
   /**
    * Показать номер строки.
