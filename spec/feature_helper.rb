@@ -2,10 +2,6 @@ require 'spec_helper'
 # require 'capybara/rspec'
 # require 'database_cleaner'
 
-# Checks for pending migration and applies them before tests are run.
-# If you are not using ActiveRecord, you can remove this line.
-ActiveRecord::Migration.maintain_test_schema!
-
 RSpec.configure do |config|
   Capybara.javascript_driver = :webkit
 
@@ -16,34 +12,52 @@ RSpec.configure do |config|
   OmniAuth.config.test_mode = true
 
   # Список таблиц, которые запрещено очищать
-  keep_tables = %w[
+  saved_tables = %w[
     invent_type invent_property_to_type invent_property invent_property_list invent_vendor invent_model
     invent_model_property_list invent_workplace_specialization invent_workplace_type
   ]
 
+  local_db = Rails.configuration.database_configuration[Rails.env]
+  invent_db = Rails.configuration.database_configuration["#{Rails.env}_invent"]
+
   # Выполняется перед запуском всего файла. Очищать с помощью truncation
   config.before(:suite) do
-    DatabaseCleaner.clean_with(:truncation, except: keep_tables)
+    ActiveRecord::Base.establish_connection invent_db
+    DatabaseCleaner.clean_with(:truncation, except: saved_tables)
+    ActiveRecord::Base.establish_connection local_db
+    DatabaseCleaner.clean_with(:truncation)
   end
 
   # Перед каждым тестом устанавливаем стратегию transaction. То есть данные не сохраняются в базу. Транзакция очищается
   # после завершения теста.
   config.before(:each) do
+    ActiveRecord::Base.establish_connection invent_db
+    DatabaseCleaner.strategy = :transaction 
+    ActiveRecord::Base.establish_connection local_db
     DatabaseCleaner.strategy = :transaction
   end
 
   # Для каждой спеки с js: true использовать truncation. Данные создаются, но после уничтожаются.
   config.before(:each, js: true) do
-    DatabaseCleaner.strategy = :truncation, { except: keep_tables }
+    ActiveRecord::Base.establish_connection invent_db
+    DatabaseCleaner.strategy = :truncation, { except: saved_tables }
+    ActiveRecord::Base.establish_connection local_db
+    DatabaseCleaner.strategy = :truncation
   end
 
   # Начать отслеживать изменения.
   config.before(:each) do
+    ActiveRecord::Base.establish_connection invent_db
+    DatabaseCleaner.start
+    ActiveRecord::Base.establish_connection local_db
     DatabaseCleaner.start
   end
 
   # Вызывать очистку после теста.
-  config.after(:each) do
+  config.append_after(:each) do
+    ActiveRecord::Base.establish_connection invent_db
+    DatabaseCleaner.clean_with(:truncation, except: saved_tables)
+    ActiveRecord::Base.establish_connection local_db
     DatabaseCleaner.clean
   end
 end

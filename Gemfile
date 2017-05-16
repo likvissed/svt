@@ -67,6 +67,7 @@ gem 'jbuilder', '~> 2.5'
 
 group :test do
   gem 'shoulda-matchers'
+  gem 'database_cleaner'
 end
 
 group :development, :test do
@@ -76,7 +77,6 @@ group :development, :test do
   # Testing
   gem 'capybara'
   gem 'capybara-webkit'
-  gem 'database_cleaner'
   gem 'factory_girl_rails'
   gem 'rails-controller-testing'
   gem 'rspec-rails'
