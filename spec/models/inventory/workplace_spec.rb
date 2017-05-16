@@ -2,39 +2,39 @@ require 'rails_helper'
 
 module Inventory
   RSpec.describe Workplace, type: :model do
-    it { should have_many(:inv_items).dependent(false) }
-    it { should belong_to(:workplace_type) }
-    it { should belong_to(:workplace_specialization) }
-    it { should belong_to(:workplace_count) }
-    it { should belong_to(:user_iss).with_foreign_key('id_tn') }
-    it { should belong_to(:iss_reference_site).with_foreign_key('location_site_id') }
-    it { should belong_to(:iss_reference_building).with_foreign_key('location_building_id') }
-    it { should belong_to(:iss_reference_room).with_foreign_key('location_room_id') }
+    it { is_expected.to have_many(:inv_items).dependent(false) }
+    it { is_expected.to belong_to(:workplace_type) }
+    it { is_expected.to belong_to(:workplace_specialization) }
+    it { is_expected.to belong_to(:workplace_count) }
+    it { is_expected.to belong_to(:user_iss).with_foreign_key('id_tn') }
+    it { is_expected.to belong_to(:iss_reference_site).with_foreign_key('location_site_id') }
+    it { is_expected.to belong_to(:iss_reference_building).with_foreign_key('location_building_id') }
+    it { is_expected.to belong_to(:iss_reference_room).with_foreign_key('location_room_id') }
 
-    it { should validate_presence_of(:id_tn) }
-    it { should validate_presence_of(:workplace_count_id) }
-    it { should validate_presence_of(:workplace_type_id) }
-    it { should validate_presence_of(:workplace_specialization_id) }
-    it { should validate_presence_of(:location_site_id) }
-    it { should validate_presence_of(:location_building_id) }
-    it { should validate_presence_of(:location_room_id) }
+    it { is_expected.to validate_presence_of(:id_tn) }
+    it { is_expected.to validate_presence_of(:workplace_count_id) }
+    it { is_expected.to validate_presence_of(:workplace_type_id) }
+    it { is_expected.to validate_presence_of(:workplace_specialization_id) }
+    it { is_expected.to validate_presence_of(:location_site_id) }
+    it { is_expected.to validate_presence_of(:location_building_id) }
+    it { is_expected.to validate_presence_of(:location_room_id) }
 
-    it { should validate_numericality_of(:id_tn).is_greater_than(0).only_integer }
-    it { should validate_numericality_of(:workplace_count_id).is_greater_than(0).only_integer }
-    it { should validate_numericality_of(:workplace_type_id).is_greater_than(0).only_integer }
-    it { should validate_numericality_of(:workplace_specialization_id).is_greater_than(0).only_integer }
-    it { should validate_numericality_of(:location_site_id).is_greater_than(0).only_integer }
-    it { should validate_numericality_of(:location_building_id).is_greater_than(0).only_integer }
-    it { should validate_numericality_of(:location_room_id).is_greater_than(0).only_integer }
+    it { is_expected.to validate_numericality_of(:id_tn).is_greater_than(0).only_integer }
+    it { is_expected.to validate_numericality_of(:workplace_count_id).is_greater_than(0).only_integer }
+    it { is_expected.to validate_numericality_of(:workplace_type_id).is_greater_than(0).only_integer }
+    it { is_expected.to validate_numericality_of(:workplace_specialization_id).is_greater_than(0).only_integer }
+    it { is_expected.to validate_numericality_of(:location_site_id).is_greater_than(0).only_integer }
+    it { is_expected.to validate_numericality_of(:location_building_id).is_greater_than(0).only_integer }
+    it { is_expected.to validate_numericality_of(:location_room_id).is_greater_than(0).only_integer }
 
-    it { should accept_nested_attributes_for(:inv_items).allow_destroy(true) }
+    it { is_expected.to accept_nested_attributes_for(:inv_items).allow_destroy(true) }
 
     describe '#destroy_from_***REMOVED***' do
       let!(:workplace) { create(:full_workplace_rm_pk, :add_items, items: %i[pc monitor monitor]) }
       before { workplace.destroy_from_***REMOVED*** }
 
       it 'should destroy all items in workplace' do
-        expect(workplace.inv_items.count).to eq(0)
+        expect(workplace.inv_items.count).to eq 0
       end
 
       it 'should destroy workplace' do
