@@ -25,7 +25,7 @@ module Inventory
       end
     end
 
-    describe 'GET #update' do
+    describe 'GET #edit' do
       let(:workplace) { create(:full_workplace_rm_pk, :add_items, items: %i[pc monitor]) }
 
       context 'when html request' do

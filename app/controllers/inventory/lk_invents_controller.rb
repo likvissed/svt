@@ -115,10 +115,10 @@ invent_workplace_count.division, invent_workplace_count.time_start, invent_workp
     end
 
     def data_from_audit
-      audit = LoadAuditData.new(params[:invent_num])
+      @audit = AuditService.new(params[:invent_num])
 
-      if audit.load
-        render json: audit.audit_data, status: 200
+      if @audit.load_data
+        render json: @audit.audit_data, status: 200
       else
         render json: { full_message: error_message }, status: 422
       end

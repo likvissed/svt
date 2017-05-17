@@ -1,11 +1,11 @@
-class LoadAuditData
+class AuditService
   attr_reader :audit_data
 
   def initialize(inv_num)
     @inv_num = inv_num
   end
 
-  def load
+  def load_data
     get_host_name unless @host
 
     begin
