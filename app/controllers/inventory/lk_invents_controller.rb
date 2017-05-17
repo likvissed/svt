@@ -122,45 +122,6 @@ invent_workplace_count.division, invent_workplace_count.time_start, invent_workp
       else
         render json: { full_message: error_message }, status: 422
       end
-=begin
-      @host = HostIss.get_host(params[:invent_num])
-
-      if @host.nil?
-        render json: { full_message: 'Данные по указанному инвентарному номеру не найдены. Проверьте корректность
-введенного номера или загрузите файл конфигурации нажав кнопку "Ввод данных вручную".' }, status: 422
-        return
-      end
-
-      error_message = 'Получить данные автоматически не удалось, вам необходимо ввести их вручную. Для этого вам
- необходимо нажать кнопку "Ввод данных вручную"'
-
-      # В течении 29 секунд пытаться выполнить запрос к Аудиту.
-      begin
-        Timeout.timeout(29) do
-          loop do
-            begin
-              @audit_data = Audit.get_data(@host['name'])
-              break
-            rescue Exception
-            end
-          end
-        end
-      rescue Timeout::Error
-        render json: { full_message: error_message }, status: 422
-        return
-      end
-
-      # Данных от аудита нет
-      if @audit_data.nil?
-        render json: { full_message: error_message }, status: 422
-        return
-      elsif Audit.relevance?(@audit_data)
-        # Проверяем актуальность данных по полю last_connection
-        render json: @audit_data, status: 200
-      else
-        render json: { full_message: error_message }, status: 422
-      end
-=end
     end
 
     # Создать РМ
@@ -197,7 +158,7 @@ invent_workplace_count.division, invent_workplace_count.time_start, invent_workp
     end
 
     def edit_workplace
-      wp = LoadSingleWorkplace.new(params[:workplace_id])
+      wp = SingleWorkplaceService.new(params[:workplace_id])
 
       if wp.status_confirmed?
         render json: { full_message: 'Рабочее место уже подтверждено. Редактирование запрещено.' }, status: 422

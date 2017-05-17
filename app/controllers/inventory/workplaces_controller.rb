@@ -36,13 +36,13 @@ module Inventory
     end
 
     def edit
-      wp = LoadSingleWorkplace.new(params[:workplace_id])
+      @wp = SingleWorkplaceService.new(params[:workplace_id])
 
       respond_to do |format|
-        format.html { @workplace = wp.workplace }
+        format.html { @workplace = @wp.workplace }
         format.json do
-          wp.transform
-          render json: wp.workplace, status: 200
+          @wp.transform
+          render json: @wp.workplace, status: 200
         end
       end
     end
