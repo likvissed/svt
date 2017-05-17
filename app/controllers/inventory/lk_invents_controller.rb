@@ -13,65 +13,12 @@ module Inventory
 
     # Получить список отделов, закрепленных за пользователем и список всех типов оборудования с их параметрами.
     def init
-      # Получить список отделов
-      @divisions = WorkplaceResponsible
-                     .left_outer_joins(:workplace_count)
-                     .select('invent_workplace_count.workplace_count_id, invent_workplace_count.workplace_count_id,
-invent_workplace_count.division, invent_workplace_count.time_start, invent_workplace_count.time_end')
-                     .where(id_tn: params[:id_tn])
-
-      # Проверка, прошел ли срок редактирования для каждого полученного отдела. Результат записывается в переменную
-      # allowed_time.
-      @divisions = @divisions.as_json.each do |division|
-        division['allowed_time'] = time_not_passed?(division['time_start'], division['time_end'])
-
-        division.delete('time_start')
-        division.delete('time_end')
+      @prop_service = PropertyService.new(params[:id_tn])
+      if @prop_service.load_data
+        render json: @prop_service.data, status: 200
+      else
+        render json: { full_message: 'Обратитесь к администратору, т.***REMOVED***' }, status: 422
       end
-
-      # Получить список типов оборудования с их свойствами и возможными значениями.
-      @inv_types = InvType
-                     .includes(:inv_models, inv_properties: { inv_property_lists: :inv_model_property_lists })
-                     .where('name != "unknown"')
-
-      # Получить список типов РМ.
-      @wp_types = WorkplaceType.all
-      @wp_types = @wp_types.as_json.each { |type| type['full_description'] = WorkplaceType::DESCR[type['name'].to_sym] }
-
-      # Получить список направлений.
-      @specs = WorkplaceSpecialization.all
-
-      # Получить список площадок и корпусов.
-      @iss_locations = IssReferenceSite.includes(:iss_reference_buildings)
-
-      # Исключить все свойства inv_property, где mandatory = false (исключение для системных блоков).
-      types = @inv_types.as_json(
-        include: {
-          inv_properties: {
-            include: {
-              inv_property_lists: {
-                include: :inv_model_property_lists
-              }
-            }
-          },
-          inv_models: {}
-        }
-      ).each do |type|
-        if InvPropertyValue::PROPERTY_WITH_FILES.none? { |val| val == type['name'] }
-          type['inv_properties'].delete_if { |prop| prop['mandatory'] == false }
-        end
-
-        type
-      end
-
-      data = {
-        divisions: @divisions,
-        eq_types: types,
-        wp_types: @wp_types,
-        specs: @specs,
-        iss_locations: @iss_locations.as_json(include: :iss_reference_buildings)
-      }
-      render json: data, status: 200
     end
 
     # Получить данные по выбранном отделу (список РМ, макс. число, список работников отдела).
@@ -80,8 +27,8 @@ invent_workplace_count.division, invent_workplace_count.time_start, invent_workp
       @workplaces = Workplace
                       .includes(:iss_reference_site, :iss_reference_building, :iss_reference_room, :user_iss)
                       .left_outer_joins(:workplace_count, :workplace_type)
-                      .select('invent_workplace.*, invent_workplace_type.name as type_name, invent_workplace_type' \
-'.short_description')
+                      .select('invent_workplace.*, invent_workplace_type.name as type_name, invent_workplace_type
+.short_description')
                       .where('invent_workplace_count.division = ?', params[:division])
                       .order(:workplace_id)
 
@@ -429,7 +376,7 @@ invent_workplace_count.division, invent_workplace_count.time_start, invent_workp
 
     # Проверка, входит ли текущее время в указанный интервал (true - если входит).
     def time_not_passed?(time_start, time_end)
-      Date.today >= time_start && Date.today <= time_end
+      Time.zone.today >= time_start && Time.zone.today <= time_end
     end
 
     # Создать переменную @workplace_count, если она не существует.

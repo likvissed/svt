@@ -1,5 +1,5 @@
 module Inventory
-  class LoadSingleWorkplace
+  class SingleWorkplaceService
     attr_reader :workplace
 
     def initialize(id)
