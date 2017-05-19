@@ -22,8 +22,8 @@ Rails.application.routes.draw do
     # Получить данные по выбранном отделу (список РМ, макс. число, список работников отдела)
     get '***REMOVED***_invents/show_division_data/:division', to: '***REMOVED***_invents#show_division_data', constraints: { division: /\d+/ }
     # Получить данные о системном блоке из аудита
-    get '***REMOVED***_invents/get_data_from_audit/:invent_num',
-        to: '***REMOVED***_invents#get_data_from_audit',
+    get '***REMOVED***_invents/data_from_audit/:invent_num',
+        to: '***REMOVED***_invents#data_from_audit',
         constraints: { invent_num: /.*/ }
     # Записать данные о РМ
     post '***REMOVED***_invents/create_workplace', to: '***REMOVED***_invents#create_workplace'
@@ -42,7 +42,7 @@ Rails.application.routes.draw do
     # Создать PDF файл со списком РМ для отдела
     get '***REMOVED***_invents/generate_pdf/:division', to: '***REMOVED***_invents#generate_pdf', constraints: { division: /\d+/ }
     # Скачать скрипт для генерации файла конфигурации ПК
-    get '***REMOVED***_invents/get_pc_script', to: '***REMOVED***_invents#send_pc_script'
+    get '***REMOVED***_invents/pc_script', to: '***REMOVED***_invents#send_pc_script'
   end
 
   # Эталоны

@@ -15,13 +15,12 @@ class Audit < SMSServer
   # Максимальное количество дней, по истечению которых данные от Аудита считаются устаревшими.
   MAX_RELENAVCE_TIME = 20
   # Время, отведенное для выполнения запроса
-  TIMEOUT_FOR_REQUEST = 29
+  TIMEOUT_FOR_REQUEST = 28
 
   # Выполнить хранимую процедуру на сервере smssvr.
   # pc_name - имя компьютера
   def self.get_data(pc_name)
     raw_data = execute_procedure('ISS_Get_HW_invent_inf', pc_name, 'f')
-
     logger.info "Raw data: #{raw_data.inspect}".blue
 
     return nil if raw_data.empty?
@@ -63,6 +62,6 @@ class Audit < SMSServer
 
   # Проверка актуальности данных по полю last_connection (всё, что более 20 дней - устаревшие данные).
   def self.relevance?(data)
-    Time.zone.parse(data['last_connection'].first) + MAX_RELENAVCE_TIME.days > Time.zone.now
+    Time.zone.parse(data[:last_connection].first) + MAX_RELENAVCE_TIME.days > Time.zone.now
   end
 end

@@ -10,6 +10,6 @@ class HostIss < Netadmin
   # end
 
   def self.get_host(inv_num)
-    connection.exec_query("SELECT * FROM #{table_name} WHERE id = #{sanitize(inv_num)}").first
+    connection.exec_query("SELECT * FROM #{table_name} WHERE id = #{sanitize(inv_num.to_s)}").first
   end
 end

@@ -6,7 +6,7 @@ module Inventory
       location 'Location'
       model_id 0
       item_model ''
-      invent_num '111111'
+      invent_num '764196'
       serial_num '222222'
       inv_type { InvType.find_by(name: type_name) }
 
