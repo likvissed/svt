@@ -80,6 +80,7 @@ group :development, :test do
   gem 'factory_girl_rails'
   gem 'rails-controller-testing'
   gem 'rspec-rails'
+  gem 'rspec-its'
 end
 
 group :development do

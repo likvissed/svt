@@ -1,34 +1,41 @@
 module Inventory
-  class PropertyService
+  # Загрузить все типы оборудования, типы РМ, их возможные свойства, виды деятельности и расположения.
+  # Опционально:
+  # - если установлен id_tn - загрузить список отделов, которые указанный пользователь может редактировать
+  # - если установлен division - загрузить список работников отдела.
+  class InitPropertiesService
     attr_reader :data
 
-    def initialize(id_tn = nil)
+    def initialize(id_tn = nil, division = nil)
       @data = {}
       @id_tn = id_tn
+      @division = division
     end
 
-    # Загрузить все типы оборудования, типы РМ, их возможные свойства, виды деятельности и расположения.
     # mandatory - свойство mandatory таблицы invent_property
-    def load_data(mandatory = false)
+    def run(mandatory = false)
       load_divisions if @id_tn
       load_inv_types
       load_workplace_types
       load_workplace_specializations
       load_locations
+      load_users if @division
 
       exclude_mandatory_fields unless mandatory
-    rescue
+    rescue Exception => e
+      Rails.logger.info e.inspect
+      Rails.logger.info e.backtrace.inspect
       false
     end
 
     private
 
-    # Получить список отделов, доступных для указанного пользователя.
+    # Получить список отделов, доступных на редактирование для указанного пользователя.
     def load_divisions
       @divisions = WorkplaceResponsible
                      .left_outer_joins(:workplace_count)
-                     .select('invent_workplace_count.workplace_count_id, invent_workplace_count.workplace_count_id,
-invent_workplace_count.division, invent_workplace_count.time_start, invent_workplace_count.time_end')
+                     .select('invent_workplace_count.workplace_count_id, invent_workplace_count.division,
+invent_workplace_count.time_start, invent_workplace_count.time_end')
                      .where(id_tn: @id_tn)
 
       add_allowed_time
@@ -96,6 +103,13 @@ invent_workplace_count.division, invent_workplace_count.time_start, invent_workp
 
         type
       end
+    end
+
+    # Получить список работников указанного отдела
+    def load_users
+      @data[:users] = UserIss
+                 .select(:id_tn, :fio)
+                 .where(dept: @division)
     end
   end
 end

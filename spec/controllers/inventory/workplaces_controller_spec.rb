@@ -12,7 +12,7 @@ module Inventory
         end
       end
 
-      context 'when user sends json request' do
+      context 'when json request' do
         before { create_list(:full_workplace_rm_pk, 1, :add_items, items: %i[pc monitor]) }
 
         it 'creates an array of workplace hashes which must includes %w[division wp_type responsible location count
