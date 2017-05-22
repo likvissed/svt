@@ -2,15 +2,25 @@ require 'rails_helper'
 
 module Inventory
   RSpec.describe LkInventsController, type: :controller do
-    # let(:user) { create :***REMOVED***_user }
-    # before { sign_in(user, scope: :user) }
-    # before { controller.class.skip_before_action :check_***REMOVED***_authorization }
+    let(:user) { build :user }
+    let!(:workplace_count) { create(:active_workplace_count, user: user) }
+    sign_in_through_***REMOVED***_user
+    before { allow(controller).to receive(:check_***REMOVED***_authorization).and_return(true) }
 
-    # describe 'GET #init' do
-      # subject { get :init, params: { tn: ***REMOVED*** } }
-      # before { subject }
-      # let(:data) { JSON.parse(subject.body) }
+    describe 'GET #init_properties' do
+      it 'creates instance of the InitPropertiesService class' do
+        get :init_properties, params: { id_tn: user.id_tn }
+        expect(assigns(:prop_service)).to be_instance_of LkInvents::InitProperties
+      end
+    end
 
-    # end
+    describe 'GET #pc_config_from_audit' do
+      let(:item) { build(:item) }
+
+      it 'creates instance of the LoadPcConfigService class' do
+        get :pc_config_from_audit, params: { id_tn: user.id_tn, invent_num: item.invent_num }
+        expect(assigns(:pc_config)).to be_instance_of LkInvents::PcConfigFromAudit
+      end
+    end
   end
 end

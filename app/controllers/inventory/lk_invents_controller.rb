@@ -1,3 +1,5 @@
+# require './app/services/inventory/init_properties.rb'
+
 module Inventory
   class LkInventsController < ApplicationController
     skip_before_action :authenticate_user!
@@ -5,16 +7,19 @@ module Inventory
     before_action :check_***REMOVED***_authorization
     authorize_resource class: false, param_method: :workplace_params
     before_action :check_workplace_count_access, only: %i[create_workplace update_workplace destroy_workplace]
-    before_action :check_timeout, except: %i[init show_division_data data_from_audit send_pc_script]
+    before_action :check_timeout, except: %i[init_properties show_division_data pc_config_from_audit send_pc_script]
     after_action -> { sign_out @user }
+
+    respond_to :json
 
     # Табельный номер пользователя в таблице users, от имени которого пользователи ЛК получают доступ в систему.
     @tn_***REMOVED***_user = 999_999
 
     # Получить список отделов, закрепленных за пользователем и список всех типов оборудования с их параметрами.
-    def init
-      @prop_service = PropertyService.new(params[:id_tn])
-      if @prop_service.load_data
+    def init_properties
+      @prop_service = LkInvents::InitProperties.new(params[:id_tn])
+
+      if @prop_service.run
         render json: @prop_service.data, status: 200
       else
         render json: { full_message: 'Обратитесь к администратору, т.***REMOVED***' }, status: 422
@@ -61,13 +66,13 @@ module Inventory
       render json: data, status: 200
     end
 
-    def data_from_audit
-      @audit = AuditService.new(params[:invent_num])
+    def pc_config_from_audit
+      @pc_config = LkInvents::PcConfigFromAudit.new(params[:invent_num])
 
-      if @audit.load_data
-        render json: @audit.audit_data, status: 200
+      if @pc_config.run
+        render json: @pc_config.data, status: 200
       else
-        render json: { full_message: error_message }, status: 422
+        render json: { full_message: @pc_config.errors.full_messages.join(', ') }, status: 422
       end
     end
 
@@ -367,8 +372,8 @@ module Inventory
       end
 =end
       else
-        render json: { full_message: 'Доступ запрещен, так как не удается определить, к какому отделу относится' \
-' запрашиваемая операция. Обратитесь к администратору' }, status: 403
+        render json: { full_message: 'Доступ запрещен, так как не удается определить, к какому отделу относится
+ запрашиваемая операция. Обратитесь к администратору' }, status: 403
 
         false
       end
