@@ -2,7 +2,7 @@ module Inventory
   FactoryGirl.define do
     factory :workplace, class: Workplace do
       workplace_specialization { WorkplaceSpecialization.last }
-      id_tn 0
+      id_tn { UserIss.where(dept: workplace_count.division).first.id_tn }
       iss_reference_site { loc_site }
       iss_reference_building { loc_building }
       iss_reference_room { loc_room }
@@ -23,10 +23,6 @@ module Inventory
 
       trait :rm_server do
         workplace_type { WorkplaceType.find_by(name: 'rm_server') }
-      end
-
-      trait :active do
-        association :workplace_count, factory: :active_workplace_count
       end
 
       transient do
@@ -61,24 +57,11 @@ module Inventory
           end
         end
       end
-    end
 
-    # РМ с верно заполненными аттрибутами.
-    factory :full_workplace, parent: :workplace do
-      active
-      id_tn { UserIss.where(dept: workplace_count.division).where('tn < 100000').first.id_tn }
-
-      factory :full_workplace_rm_pk, traits: [:rm_pk]
-      factory :full_workplace_rm_mob, traits: [:rm_mob]
-      factory :full_workplace_rm_net_print, traits: [:net_print]
-      factory :full_workplace_rm_server, traits: [:rm_server]
-    end
-
-    # РМ с неверно заполненными аттрибутами.
-    factory :workplace_with_wrong_id_tn, parent: :workplace do
-      active
-      rm_pk
-      id_tn 987_654_321
+      factory :workplace_pk, traits: [:rm_pk]
+      factory :workplace_mob, traits: [:rm_mob]
+      factory :workplace_net_print, traits: [:net_print]
+      factory :workplace_server, traits: [:rm_server]
     end
   end
 end

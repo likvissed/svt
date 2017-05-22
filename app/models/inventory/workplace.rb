@@ -14,7 +14,7 @@ module Inventory
 
     validates :id_tn,
               presence: true,
-              numericality: { greater_than: 0, only_integer: true },
+              numericality: { only_integer: true },
               reduce: true
     validates :id_tn, user_iss_by_id_tn: true, unless: -> { errors.any? }
     validates :workplace_count_id,
@@ -36,6 +36,8 @@ module Inventory
               presence: true,
               numericality: { greater_than: 0, only_integer: true }
     validate :check_workplace_conditions, unless: -> { workplace_type_id == -1 }
+
+    delegate :division, to: :workplace_count
 
     accepts_nested_attributes_for :inv_items, allow_destroy: true, reject_if: proc { |attr| attr['type_id'].to_i.zero? }
 
@@ -118,20 +120,20 @@ module Inventory
         # Должен содержать только один ноутбук/планшет (остальное запрещено). Создавать другие типы оборудования
         # для мобильного РМ запрещено.
 
-        if total_count > 1 && (count_all_types['notebook'] + count_all_types['tablet']) == total_count ||
+        if (count_all_types['notebook'] + count_all_types['tablet']).zero? ||
            total_count != 0 && total_count != (count_all_types['notebook'] + count_all_types['tablet']) ||
-          (count_all_types['notebook'] + count_all_types['tablet']).zero?
+           total_count > 1 && (count_all_types['notebook'] + count_all_types['tablet']) == total_count
           errors.add(:base, :wrong_rm_mob_composition)
         end
 
         if (count_all_types['notebook'] + count_all_types['tablet']).zero?
           errors.add(:base, :at_least_one_notebook_or_tablet)
         end
-        if total_count > 1 && (count_all_types['notebook'] + count_all_types['tablet']) == total_count
-          errors.add(:base, :only_one_notebook_or_tablet)
-        end
         if total_count != 0 && total_count != (count_all_types['notebook'] + count_all_types['tablet'])
           errors.add(:base, :only_notebook_or_tablet)
+        end
+        if total_count > 1 && (count_all_types['notebook'] + count_all_types['tablet']) == total_count
+          errors.add(:base, :only_one_notebook_or_tablet)
         end
 
       when 'rm_net_print'
@@ -181,7 +183,8 @@ module Inventory
           end
         end
 
-        if net_printer_count > 1 ||
+        if (net_printer_count + count_all_types['3d_printer'] + count_all_types['print_server']).zero? ||
+           net_printer_count > 1 ||
            net_printer_count == 1 && net_printer_count != total_count ||
            count_all_types['3d_printer'] > 1 ||
            count_all_types['3d_printer'] == 1 && total_count != count_all_types['3d_printer'] ||
@@ -191,6 +194,10 @@ module Inventory
            total_count != 0 && (net_printer_count + count_all_types['3d_printer'] + count_all_types['print_server'])
            .zero?
           errors.add(:base, :wrong_rm_net_print_composition)
+        end
+
+        if (net_printer_count + count_all_types['3d_printer'] + count_all_types['print_server']).zero?
+          errors.add(:base, :at_least_one_print)
         end
 
         if net_printer_count > 1
@@ -213,10 +220,6 @@ module Inventory
           errors.add(:base, :only_local_print_with_print_server)
         end
 
-        if (net_printer_count + count_all_types['3d_printer'] + count_all_types['print_server']).zero?
-          errors.add(:base, :at_least_one_print)
-        end
-
       when 'rm_server'
         # Для сервера условия такие же, как для стационарного РМ (только не требуется наличие монитора).
         # Должен быть создан системный блок (+ возможно монитор). Создавать планшет, ноутбук, все виды печатающих
@@ -227,8 +230,8 @@ module Inventory
         net_printer = check_net_printer
 
         if (count_all_types['pc'] + count_all_types['allin1']) > 1 ||
-           (count_all_types['pc'].zero? && count_all_types['allin1'].zero?) ||
            (count_all_types['notebook'] + count_all_types['tablet']) >= 1 ||
+           (count_all_types['pc'].zero? && count_all_types['allin1'].zero?) ||
            net_printer
           errors.add(:base, :wrong_rm_server_composition)
         end
@@ -236,11 +239,11 @@ module Inventory
         if (count_all_types['pc'] + count_all_types['allin1']) > 1
           errors.add(:base, :rm_server_only_one_pc_or_allin1)
         end
-        if count_all_types['pc'].zero? && count_all_types['allin1'].zero?
-          errors.add(:base, :rm_server_at_least_one_pc_or_allin1)
-        end
         if (count_all_types['notebook'] + count_all_types['tablet']) >= 1
           errors.add(:base, :rm_server_forbid_notebook_and_tablet)
+        end
+        if count_all_types['pc'].zero? && count_all_types['allin1'].zero?
+          errors.add(:base, :rm_server_at_least_one_pc_or_allin1)
         end
         if net_printer
           errors.add(:base, :rm_server_forbid_net_printer)

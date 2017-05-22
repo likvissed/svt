@@ -1,4 +1,4 @@
-require_relative './omniauth_macros'
+# require_relative './omniauth_macros'
 
 module ControllerMacros
   include OmniauthMacros

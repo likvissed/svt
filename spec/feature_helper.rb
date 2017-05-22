@@ -30,7 +30,7 @@ RSpec.configure do |config|
   # после завершения теста.
   config.before(:each) do
     ActiveRecord::Base.establish_connection invent_db
-    DatabaseCleaner.strategy = :transaction 
+    DatabaseCleaner.strategy = :transaction
     ActiveRecord::Base.establish_connection local_db
     DatabaseCleaner.strategy = :transaction
   end
@@ -58,10 +58,10 @@ RSpec.configure do |config|
     ActiveRecord::Base.establish_connection local_db
     DatabaseCleaner.clean
   end
-end
 
-Capybara::Webkit.configure do |config|
-  config.allow_unknown_urls
+  Capybara::Webkit.configure do |config|
+    config.allow_unknown_urls
+  end
 end
 
 # Описание настроек прокси:

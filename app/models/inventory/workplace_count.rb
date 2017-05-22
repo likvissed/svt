@@ -26,7 +26,7 @@ module Inventory
     # Проверка наличия ответственного
     def at_least_one_responsible
       errors.add(:base, 'Необходимо добавить ответственного') if workplace_responsibles.empty?
-      if workplace_responsibles.reject { |resp| resp._destroy == true }.empty?
+      if workplace_responsibles.reject { |resp| resp._destroy == true }.empty? && persisted?
         errors.add(:base, 'Необходимо оставить хотя бы одного ответственного')
       end
     end

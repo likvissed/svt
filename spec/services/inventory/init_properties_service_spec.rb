@@ -1,7 +1,7 @@
 require 'spec_helper'
 
 module Inventory
-  RSpec.describe InitPropertiesService, type: :service do
+  RSpec.describe InitPropertiesService, type: :model do
     let(:user) { create(:user) }
 
     context 'with id_tn' do
