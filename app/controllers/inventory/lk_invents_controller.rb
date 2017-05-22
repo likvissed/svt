@@ -15,55 +15,25 @@ module Inventory
     # Табельный номер пользователя в таблице users, от имени которого пользователи ЛК получают доступ в систему.
     @tn_***REMOVED***_user = 999_999
 
-    # Получить список отделов, закрепленных за пользователем и список всех типов оборудования с их параметрами.
     def init_properties
-      @prop_service = LkInvents::InitProperties.new(params[:id_tn])
+      @properties = LkInvents::InitProperties.new(params[:id_tn])
 
-      if @prop_service.run
-        render json: @prop_service.data, status: 200
+      if @properties.run
+        render json: @properties.data, status: 200
       else
         render json: { full_message: 'Обратитесь к администратору, т.***REMOVED***' }, status: 422
       end
     end
 
-    # Получить данные по выбранном отделу (список РМ, макс. число, список работников отдела).
+
     def show_division_data
-      # Получить рабочие места указанного отдела
-      @workplaces = Workplace
-                      .includes(:iss_reference_site, :iss_reference_building, :iss_reference_room, :user_iss)
-                      .left_outer_joins(:workplace_count, :workplace_type)
-                      .select('invent_workplace.*, invent_workplace_type.name as type_name, invent_workplace_type
-.short_description')
-                      .where('invent_workplace_count.division = ?', params[:division])
-                      .order(:workplace_id)
+      @division = LkInvents::ShowDivisionData.new(params[:division])
 
-      @workplaces = @workplaces.as_json(
-        include: %i[iss_reference_site iss_reference_building iss_reference_room user_iss]
-      ).each do |wp|
-        wp['status'] = Workplace.translate_enum(:status, wp['status'])
-        wp['location'] = "Пл. '#{wp['iss_reference_site']['name']}', корп. #{wp['iss_reference_building']['name']},
-комн. #{wp['iss_reference_room']['name']}"
-        wp['fio'] = wp['user_iss']['fio_initials']
-        wp['user_tn'] = wp['user_iss']['tn']
-        wp['duty'] = wp['user_iss']['duty']
-
-        wp.delete('iss_reference_site')
-        wp.delete('iss_reference_building')
-        wp.delete('iss_reference_room')
-        wp.delete('user_iss')
+      if @division.run
+        render json: @division.data, status: 200
+      else
+        render json: 'Обратитесь к администратору, т.***REMOVED***', status: 422
       end
-
-      # Получить список работников указанного отдела.
-      @users = UserIss
-                 .select(:id_tn, :fio)
-                 .where(dept: params[:division])
-
-      data = {
-        workplaces: @workplaces,
-        users: @users
-      }
-
-      render json: data, status: 200
     end
 
     def pc_config_from_audit
