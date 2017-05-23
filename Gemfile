@@ -97,11 +97,11 @@ group :development do
   gem 'better_errors'
 
   # Deploy application
-  gem 'capistrano'
-  gem 'capistrano-bundler'
-  gem 'capistrano-passenger'
-  gem 'capistrano-rails'
-  gem 'capistrano-rbenv'
+  gem 'capistrano', require: false
+  gem 'capistrano-bundler', require: false
+  gem 'capistrano-passenger', require: false
+  gem 'capistrano-rails', require: false
+  gem 'capistrano-rbenv', require: false
 end
 
 # Windows does not include zoneinfo files, so bundle the tzinfo-data gem
