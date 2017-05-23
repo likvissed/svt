@@ -3,7 +3,15 @@ module Inventory
   # name - номер комнаты
   # building_id - id корпуса
   class Room
-    attr_reader :building_id, :data
+    include ActiveModel::Validations
+
+    attr_reader :data
+
+    validate :building_exist?
+
+    define_model_callbacks :run
+
+    before_run :run_validations
 
     def initialize(name, building_id)
       @name = name
@@ -11,17 +19,27 @@ module Inventory
     end
 
     def run
-      create_room unless room
+      run_callbacks(:run) do
+        create_room unless room
 
-      true
-    rescue Exception => e
-      Rails.logger.info e.inspect
-      Rails.logger.info e.backtrace.inspect
-
+        true
+      end
+    rescue RuntimeError
       false
     end
 
     private
+
+    def run_validations
+      raise 'abort' unless valid?
+    end
+
+    # Проверка наличия указанного корпуса
+    def building_exist?
+      return if IssReferenceBuilding.where(building_id: @building_id).exists?
+
+      errors.add(:base, :building_not_found)
+    end
 
     # Определяем, существует ли комната.
     def room
