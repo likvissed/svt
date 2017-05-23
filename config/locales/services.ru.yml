@@ -1,14 +1,14 @@
 ru:
   activemodel:
     attributes:
-      load_pc_config_service:
+      inventory/***REMOVED***_invents/pc_config_from_audit:
         base: ''
         inv_num: 'Инвентарный номер'
         host: 'ПК'
 
     errors:
       models:
-        load_pc_config_service:
+        inventory/***REMOVED***_invents/pc_config_from_audit:
           not_found: 'с указанным инвентарным номером не найден'
           not_responded: 'Получить данные автоматически не удалось, вам необходимо ввести их вручную. Для этого вам
             необходимо нажать кнопку "Ввод данных вручную"'
@@ -16,3 +16,5 @@ ru:
             необходимо нажать кнопку "Ввод данных вручную"'
           not_relevant: 'Получить данные автоматически не удалось, вам необходимо ввести их вручную. Для этого вам
             необходимо нажать кнопку "Ввод данных вручную"'
+        inventory/room:
+          building_not_found: 'Корпус не найден'

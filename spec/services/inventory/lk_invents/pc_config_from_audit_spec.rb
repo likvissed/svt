@@ -65,6 +65,11 @@ module Inventory
         # PC 'unknown'
         subject { PcConfigFromAudit.new(1) }
 
+        it 'sets the :not_found error into :host key' do
+          subject.run
+          expect(subject.errors.details[:host]).to include(error: :not_found)
+        end
+
         it 'does not run load_data method' do
           expect(subject).not_to receive(:load_data)
           subject.run
