@@ -25,8 +25,10 @@ module Inventory
           expect(subject.data.keys).to include *data_keys
         end
 
-        it 'puts the :workplaces at least with %w[status location fio user_tn duty] keys' do
-          expect(subject.data[:workplaces].first).to include('status', 'location', 'fio', 'user_tn', 'duty')
+        it 'puts the :workplaces at least with %w[short_description fio duty location status] keys' do
+          expect(subject.data[:workplaces].first).to include(
+            'short_description', 'fio', 'duty', 'location', 'status'
+          )
         end
 
         it 'puts the :users at least with %w[id_tn fio] keys' do

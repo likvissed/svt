@@ -2,7 +2,7 @@ module Inventory
   module LkInvents
     # Получить данные по указанному отделу (список РМ, макс. число, список работников отдела).
     # division - отдел
-    class ShowDivisionData
+    class ShowDivisionData < BaseService
       attr_reader :data
 
       def initialize(division)
@@ -13,9 +13,8 @@ module Inventory
       def run
         load_workplace
         load_users
-      rescue Exception => e
-        Rails.logger.info e.inspect
-        Rails.logger.info e.backtrace.inspect
+      rescue RuntimeError
+
         false
       end
 
@@ -31,25 +30,13 @@ module Inventory
                   .where('invent_workplace_count.division = ?', @division)
                   .order(:workplace_id)
 
-        prepare_to_***REMOVED***_table
+        prepare_workplaces
       end
 
-      def prepare_to_***REMOVED***_table
+      def prepare_workplaces
         @data[:workplaces] = @data[:workplaces].as_json(
           include: %i[iss_reference_site iss_reference_building iss_reference_room user_iss]
-        ).each do |wp|
-          wp['status'] = Workplace.translate_enum(:status, wp['status'])
-          wp['location'] = "Пл. '#{wp['iss_reference_site']['name']}', корп. #{wp['iss_reference_building']['name']},
-комн. #{wp['iss_reference_room']['name']}"
-          wp['fio'] = wp['user_iss']['fio_initials']
-          wp['user_tn'] = wp['user_iss']['tn']
-          wp['duty'] = wp['user_iss']['duty']
-
-          wp.delete('iss_reference_site')
-          wp.delete('iss_reference_building')
-          wp.delete('iss_reference_room')
-          wp.delete('user_iss')
-        end
+        ).each { |wp| prepare_to_***REMOVED***_table(wp) }
       end
 
       # Получить список работников указанного отдела.
