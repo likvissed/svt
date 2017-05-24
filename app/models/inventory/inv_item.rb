@@ -64,10 +64,10 @@ module Inventory
         # Предполагаем, что все параметры ПК заданы (далее в цикле проверяем, так ли это).
         # true - если все параметры заданы.
         # false - если хотя бы один параметр отсутствует.
-        full_properties_flag  = true
+        full_properties_flag = true
         # Флаг наличия имени загружаемого файла
         # true - имя задано
-        file_name_exist       = false
+        file_name_exist = false
 
         inv_property_values.each do |prop_val|
           next if prop_val._destroy

@@ -19,14 +19,7 @@ module Inventory
 
     # Удалить директорию, содержащую файл с конфигурацией ПК.
     def destroy_file
-      path_to_file = Rails.root.join('public', 'uploads', property_value_id.to_s)
-      begin
-        logger.info "Удаление директории: #{path_to_file}".red
-        FileUtils.rm_r(path_to_file) if File.exist?(path_to_file)
-      rescue
-        # self.errors.add(:base, 'Не удалось удалить файл. Обратитесь к администратору')
-        throw(:abort)
-      end
+      throw(:abort) unless PcFile.new(property_value_id).destroy
     end
 
     private
