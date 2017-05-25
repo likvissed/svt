@@ -33,7 +33,7 @@ module Inventory
       end
     end
 
-    describe 'POST #create_controller' do
+    describe 'POST #create_workplace' do
       let(:workplace) { workplace_attributes }
       let(:file) do
         Rack::Test::UploadedFile.new(
@@ -41,18 +41,30 @@ module Inventory
           'text/plain'
         )
       end
-      before do
-        post :create_workplace,
-             params: { id_tn: user.id_tn, workplace: workplace.to_json, pc_file: file },
-             format: :json
-      end
+      before { post :create_workplace, params: { id_tn: user.id_tn, workplace: workplace.to_json, pc_file: file } }
 
       it 'create instance of the LkInvents::CreateWorkplace' do
         expect(assigns(:workplace)).to be_instance_of LkInvents::CreateWorkplace
       end
 
-      it 'returns json object with %w[workplace, full_message] keys' do
+      it 'returns object with %w[workplace, full_message] keys' do
         expect(response.body).to include('workplace', 'full_message')
+      end
+    end
+
+    describe 'GET #edit_workplace' do
+      let!(:workplace) do
+        create(:workplace_pk, :add_items, items: %i[pc monitor], workplace_count: workplace_count)
+      end
+      before { get :edit_workplace, params: { id_tn: user.id_tn, workplace_id: workplace.workplace_id } }
+
+      it 'create instance of the LkInvents::EditWorkplace' do
+        expect(assigns(:workplace)).to be_instance_of LkInvents::EditWorkplace
+      end
+
+      it 'returns object at_least with %w[workplace_id] keys' do
+        puts response.body.class.name
+        expect(response.body).to include('workplace_id')
       end
     end
   end

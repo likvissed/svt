@@ -32,7 +32,7 @@ module Inventory
       if @division.run
         render json: @division.data, status: 200
       else
-        render json: 'Обратитесь к администратору, т.***REMOVED***', status: 422
+        render json: { full_message: 'Обратитесь к администратору, т.***REMOVED***' }, status: 422
       end
     end
 
@@ -53,18 +53,17 @@ module Inventory
       if @workplace.run
         render json: { workplace: @workplace.data, full_message: 'Рабочее место создано.' }, status: 200
       else
-        render json: { full_message: @workplace.errors.full_messages.join('. ') }, status: 422
+        render json: { full_message: @workplace.errors.full_messages.join(', ') }, status: 422
       end
     end
 
     def edit_workplace
-      wp = SingleWorkplaceService.new(params[:workplace_id])
+      @workplace = LkInvents::EditWorkplace.new(params[:workplace_id])
 
-      if wp.status_confirmed?
-        render json: { full_message: 'Рабочее место уже подтверждено. Редактирование запрещено.' }, status: 422
+      if @workplace.run
+        render json: @workplace.data, status: 200
       else
-        wp.transform
-        render json: wp.workplace, status: 200
+        render json: { full_message: @workplace.errors.full_messages.join(', ') }, status: 422
       end
     end
 
