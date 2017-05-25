@@ -48,34 +48,12 @@ module Inventory
 
     # Создать РМ
     def create_workplace
-      create_or_get_room
-      @workplace = Workplace.new(workplace_params)
+      @workplace = LkInvents::CreateWorkplace.new(workplace_params, params[:pc_file])
 
-      # Логирование полученных данных
-      logger.info "WORKPLACE: #{@workplace.inspect}".red
-      @workplace.inv_items.each_with_index do |item, item_index|
-        logger.info "ITEM [#{item_index}]: #{item.inspect}".green
-
-        item.inv_property_values.each_with_index do |val, prop_index|
-          logger.info "PROP_VALUE [#{prop_index}]: #{val.inspect}".cyan
-        end
-      end
-
-      if @workplace.save
-        # Чтобы избежать N+1 запрос в методе 'transform_workplace' нужно создать объект ActiveRecord (например, вызвать
-        # find)
-        @workplace = transform_workplace(Workplace
-                                           .includes(inv_items: [:inv_type, { inv_property_values: :inv_property }])
-                                           .find(@workplace.workplace_id))
-
-        unless params[:pc_file] == 'null'
-          logger.info 'Получен файл для загрузки'.red
-          return false unless upload_file
-        end
-
-        render json: { workplace: @workplace, full_message: 'Рабочее место создано.' }, status: :ok
+      if @workplace.run
+        render json: { workplace: @workplace.data, full_message: 'Рабочее место создано.' }, status: 200
       else
-        render json: { full_message: @workplace.errors.full_messages.join('. ') }, status: :unprocessable_entity
+        render json: { full_message: @workplace.errors.full_messages.join('. ') }, status: 422
       end
     end
 
@@ -199,7 +177,7 @@ module Inventory
       end
 
       # Путь директории для записи загруженного файла.
-      path_to_file = Rails.root.join('public', 'uploads', property_value_id.to_s)
+      path_to_file = Rails.root.join('public', 'uploads', 'inventory', property_value_id.to_s)
 
       # Проверить, существует ли директория public/upload/<property_value_id>. Если нет - создать.
       FileUtils.mkdir_p(path_to_file) unless path_to_file.exist?
@@ -221,8 +199,8 @@ module Inventory
       logger.info 'Описание:'
       e.backtrace.each { |val| logger.info val }
 
-      render json: { workplace: @workplace, full_message: 'Рабочее место создано, но сохранить файл конфигурации не' \
-' удалось. Для загрузки файла свяжитесь с администратором сервиса.' }, status: 200
+      render json: { workplace: @workplace, full_message: 'Рабочее место создано, но сохранить файл конфигурации не
+ удалось. Для загрузки файла свяжитесь с администратором сервиса.' }, status: 200
 
       false
     end
@@ -252,6 +230,7 @@ module Inventory
       wp['fio'] = wp['user_iss']['fio_initials']
       wp['location'] = "Пл. '#{wp['iss_reference_site']['name']}', корп. #{wp['iss_reference_building']['name']},
 комн. #{wp['iss_reference_room']['name']}"
+      wp['status'] = Workplace.translate_enum(:status, wp['status'])
 
       wp.delete('iss_reference_site')
       wp.delete('iss_reference_building')

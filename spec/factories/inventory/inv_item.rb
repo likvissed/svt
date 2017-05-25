@@ -52,7 +52,7 @@ module Inventory
                 )
               when 'file'
                 item.inv_property_values << build(
-                  :property_value, inv_item: item, inv_property: prop, value: 'file_name.txt'
+                  :property_value, inv_item: item, inv_property: prop, value: 'old_pc_config.txt'
                 )
               end
             else
@@ -149,7 +149,7 @@ module Inventory
               )
             when 'file'
               item.inv_property_values << build(
-                :property_value, inv_item: item, inv_property: prop, value: 'file_name.txt'
+                :property_value, inv_item: item, inv_property: prop, value: 'old_pc_config.txt'
               )
             end
           end

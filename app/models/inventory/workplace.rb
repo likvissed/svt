@@ -37,6 +37,9 @@ module Inventory
               numericality: { greater_than: 0, only_integer: true }
     validate :check_workplace_conditions, unless: -> { workplace_type_id == -1 }
 
+    # Для тестов (от имени пользователя заполняется поле "Комната")
+    attr_accessor :location_room_name
+
     delegate :division, to: :workplace_count
 
     accepts_nested_attributes_for :inv_items, allow_destroy: true, reject_if: proc { |attr| attr['type_id'].to_i.zero? }

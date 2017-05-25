@@ -26,6 +26,7 @@ module Inventory
       rescue Exception => e
         Rails.logger.info e.inspect
         Rails.logger.info e.backtrace.inspect
+
         false
       end
 

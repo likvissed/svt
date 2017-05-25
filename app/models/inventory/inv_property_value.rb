@@ -14,15 +14,23 @@ module Inventory
     # validate  :presence_value, if: -> { self.errors[:property_id].blank? }
 
     before_save :set_default_property_list_id_to_nil
+    after_save :save_file, if: -> { :this_config_file? && !file.nil? }
     before_destroy :destroy_file, if: :this_config_file?
     after_initialize :set_default_property_list_id_to_zero
 
+    # Переменная содержит объект файл, который необходимо записать в файловую систему.
+    attr_accessor :file
+
     # Удалить директорию, содержащую файл с конфигурацией ПК.
     def destroy_file
-      throw(:abort) unless PcFile.new(property_value_id).destroy
+      raise 'abort' unless PcFile.new(property_value_id).destroy
     end
 
     private
+
+    def save_file
+      raise 'abort' unless PcFile.new(property_value_id, file).upload
+    end
 
     # Проверка наличия значений для свойства
     # def presence_value

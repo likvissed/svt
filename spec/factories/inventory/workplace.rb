@@ -6,6 +6,7 @@ module Inventory
       iss_reference_site { loc_site }
       iss_reference_building { loc_building }
       iss_reference_room { loc_room }
+      location_room_name { loc_room.name }
       comment ''
       status { Workplace.statuses['pending_verification'] }
 
