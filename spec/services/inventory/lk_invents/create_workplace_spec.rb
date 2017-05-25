@@ -58,8 +58,8 @@ module Inventory
           expect(subject.workplace).to be_an_instance_of Workplace
         end
 
-        include_examples 'runs methods', %w[create_or_get_room log_data save_workplace]
-        include_examples 'not runs methods', 'set_file_into_params'
+        include_examples 'run methods', %w[create_or_get_room log_data save_workplace]
+        include_examples 'not run methods', 'set_file_into_params'
 
         it 'saves the new workplace in the database' do
           expect { subject.run }.to change(Workplace, :count).by(1)
@@ -89,10 +89,7 @@ module Inventory
           end
           subject { CreateWorkplace.new(workplace, file) }
 
-          it 'runs the set_file_into_params method' do
-            expect(subject).to receive(:set_file_into_params)
-            subject.run
-          end
+          include_examples 'run methods', 'set_file_into_params'
 
           it 'adds file key to workplace' do
             subject.run
@@ -142,7 +139,7 @@ module Inventory
         context 'with invalid file' do
           subject { CreateWorkplace.new(workplace, 'wrong_param') }
 
-          include_examples 'not runs methods', 'set_file_into_params'
+          include_examples 'not run methods', 'set_file_into_params'
         end
 
         its(:run) { is_expected.to be_falsey }

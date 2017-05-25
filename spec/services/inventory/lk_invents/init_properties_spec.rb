@@ -9,12 +9,7 @@ module Inventory
         let!(:workplace_count) { create(:active_workplace_count, user: user) }
         subject { InitProperties.new(user.id_tn) }
 
-        %w[load_divisions load_inv_types load_workplace_types load_workplace_specializations load_locations exclude_mandatory_fields].each do |method|
-          it "runs #{method} method" do
-            expect(subject).to receive(method.to_sym)
-            subject.run
-          end
-        end
+        include_examples 'run methods', %w[load_divisions load_inv_types load_workplace_types load_workplace_specializations load_locations exclude_mandatory_fields]
 
         its(:data) { is_expected.not_to be_nil }
 

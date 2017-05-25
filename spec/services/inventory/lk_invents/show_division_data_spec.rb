@@ -10,12 +10,7 @@ module Inventory
 
       subject { ShowDivisionData.new(workplace_count.division) }
 
-      %w[load_workplace load_users].each do |method|
-        it "runs #{method} method" do
-          expect(subject).to receive(method.to_sym)
-          subject.run
-        end
-      end
+      include_examples 'run methods', %w[load_workplace load_users]
 
       context 'when @data is filling' do
         let!(:data_keys) { %i[workplaces users] }

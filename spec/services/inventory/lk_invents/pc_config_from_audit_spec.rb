@@ -10,17 +10,7 @@ module Inventory
       it { is_expected.not_to allow_value('').for(:inv_num) }
 
       context 'with valid inventory number' do
-        it 'runs validator' do
-          expect(subject).to receive(:run_validations)
-          subject.run
-        end
-
-        %w[get_host_name load_data].each do |method|
-          it "runs '#{method}' method" do
-            expect(subject).to receive(method.to_sym)
-            subject.run
-          end
-        end
+        include_examples 'run methods', %w[get_host_name load_data]
 
         context 'when Audit correctly works on the specified PC' do
           # PC 'mikhail'
