@@ -13,9 +13,7 @@ module Inventory
         expect(subject.data).to eq room
       end
 
-      it 'returns true' do
-        expect(subject.run).to be_truthy
-      end
+      its(:run) { is_expected.to be_truthy }
     end
 
     context 'when room not exists' do
@@ -30,22 +28,13 @@ module Inventory
         expect(subject.data).to eq building.iss_reference_rooms.last
       end
 
-      it 'returns true' do
-        expect(subject.run).to be_truthy
-      end
+      its(:run) { is_expected.to be_truthy }
     end
 
     context 'with invalid building_id' do
       subject { Room.new('Testing_name', 999999) }
 
-      it 'returns false' do
-        expect(subject.run).to be_falsey
-      end
-
-      it 'adds error to @data variable' do
-        subject.run
-        expect(subject.errors.details[:base]).to include(error: :building_not_found)
-      end
+      its(:run) { is_expected.to be_falsey }
     end
   end
 end

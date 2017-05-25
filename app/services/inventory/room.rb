@@ -38,7 +38,7 @@ module Inventory
     def building_exist?
       return if IssReferenceBuilding.where(building_id: @building_id).exists?
 
-      errors.add(:base, :building_not_found)
+      raise 'abort'
     end
 
     # Определяем, существует ли комната.
