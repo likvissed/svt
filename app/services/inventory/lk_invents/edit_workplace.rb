@@ -8,7 +8,7 @@ module Inventory
 
       # workplace_id - workplace_id рабочего места
       def initialize(workplace_id)
-        @workplace_id = id
+        @workplace_id = workplace_id
       end
 
       def run
