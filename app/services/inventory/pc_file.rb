@@ -25,6 +25,7 @@ module Inventory
       Rails.logger.info "Удаление директории: #{@path_to_file_dir}".red
 
       FileUtils.rm_r(@path_to_file_dir) if File.exist?(@path_to_file_dir)
+      true
     rescue
       false
     end

@@ -35,6 +35,7 @@ Dir[Rails.root.join('spec', 'models', 'shared_examples', '**', '*.rb')].each { |
 RSpec.configure do |config|
   config.include FactoryGirl::Syntax::Methods
   config.include OmniauthMacros
+  config.include ServiceMacros
 
   # Remove this line if you're not using ActiveRecord or ActiveRecord fixtures
   config.fixture_path = "#{::Rails.root}/spec/fixtures"
