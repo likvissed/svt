@@ -1,12 +1,12 @@
 module Inventory
   module LkInvents
     # Получить данные о выбранном рабочем месте.
-    # workplace_id - workplace_id рабочего места
     class EditWorkplace
       include ActiveModel::Validations
 
       attr_reader :data, :workplace_id
 
+      # workplace_id - workplace_id рабочего места
       def initialize(workplace_id)
         @workplace_id = id
       end

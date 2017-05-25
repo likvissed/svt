@@ -7,6 +7,8 @@ module Inventory
 
       attr_reader :workplace_params, :workplace, :data
 
+      # strong_params - параметры, пройденные фильтрацию 'strong_params'
+      # file - объект файл
       def initialize(strong_params, file = nil)
         @workplace_params = strong_params.with_indifferent_access
         @file = file

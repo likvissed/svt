@@ -1,5 +1,6 @@
 module Inventory
   module LkInvents
+    # Получить данные о конфигурации ПК от системы Аудит.
     class PcConfigFromAudit
       include ActiveModel::Validations
 
@@ -12,6 +13,7 @@ module Inventory
 
       before_run :run_validations
 
+      # Инвентарный номер ПК
       def initialize(inv_num)
         @inv_num = inv_num
       end

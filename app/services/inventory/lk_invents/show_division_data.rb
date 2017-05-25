@@ -1,10 +1,10 @@
 module Inventory
   module LkInvents
     # Получить данные по указанному отделу (список РМ, макс. число, список работников отдела).
-    # division - отдел
     class ShowDivisionData < BaseService
       attr_reader :data
 
+      # division - номер отдела
       def initialize(division)
         @division = division
         @data = {}
