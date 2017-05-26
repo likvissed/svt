@@ -78,20 +78,12 @@ module Inventory
     end
 
     def delete_workplace
-      workplace
-      if @workplace
-        if @workplace.status == 'confirmed'
-          render json: { full_message: 'Рабочее место уже подтверждено. Удаление запрещено.' }, status: 422
-          return
-        end
+      @workplace = LkInvents::DeleteWorkplace.new(params[:workplace_id])
 
-        if @workplace.destroy_from_***REMOVED***
-          render json: { full_message: 'Рабочее место удалено.' }, status: 200
-        else
-          render json: { full_message: @workplace.errors.full_messages.join('. ') }, status: 422
-        end
+      if @workplace.run
+        render json: { full_message: 'Рабочее место удалено' }, status: 200
       else
-        render json: { full_message: 'Рабочее место не найдено' }, status: 422
+        render json: { full_message: @workplace.errors.full_messages.join(', ') }, status: 422
       end
     end
 

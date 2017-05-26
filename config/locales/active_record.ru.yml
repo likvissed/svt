@@ -16,6 +16,7 @@ ru:
         inventory/workplace:
           attributes:
             base:
+              cant_destroy_items: 'Не удалось удалить запись (обратитесь к администратору, т. ***REMOVED***)'
               wrong_rm_pk_composition: 'Неправильный состав стационарного рабочего места'
               wrong_rm_mob_composition: 'Неправильный состав мобильного рабочего места'
               wrong_rm_net_print_composition: 'Неправильный состав рабочего места печати'

@@ -52,7 +52,7 @@ module Inventory
         begin
           destroy if inv_items.destroy_all
         rescue ActiveRecord::RecordNotDestroyed
-          errors.add(:base, 'Не удалось удалить запись. Обратитесь к администратору.')
+          errors.add(:base, :cant_destroy_items)
           raise ActiveRecord::Rollback
         end
       end

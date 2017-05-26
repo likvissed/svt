@@ -90,5 +90,16 @@ module Inventory
         expect(response.body).to include('workplace', 'full_message')
       end
     end
+
+    describe 'DELETE #delete_workplace' do
+      let!(:workplace) do
+        create(:workplace_pk, :add_items, items: %i[pc monitor], workplace_count: workplace_count)
+      end
+
+      it 'create instance of the LkInvents::DeleteWorkplace' do
+        delete :delete_workplace, params: { id_tn: user.id_tn, workplace_id: workplace.workplace_id }
+        expect(assigns(:workplace)).to be_instance_of LkInvents::DeleteWorkplace
+      end
+    end
   end
 end
