@@ -4,7 +4,7 @@ module Inventory
     class UpdateWorkplace < BaseService
       include ActiveModel::Validations
 
-      attr_reader :data, :workplace_params, :workplace
+      attr_reader :workplace_params, :workplace
 
       # workplace_id - workplace_id изменяемого рабочего места
       # strong_params - параметры, пройденные фильтрацию 'strong_params'
@@ -44,7 +44,7 @@ module Inventory
 
           prepare_workplace
         else
-          Rails.logger.info @workplace.errors.full_messages.inspect.blue
+          Rails.logger.error @workplace.errors.full_messages.inspect.red
 
           errors.add(:base, @workplace.errors.full_messages.join(', '))
           raise 'abort'

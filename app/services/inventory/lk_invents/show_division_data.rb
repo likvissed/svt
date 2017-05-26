@@ -2,8 +2,6 @@ module Inventory
   module LkInvents
     # Получить данные по указанному отделу (список РМ, макс. число, список работников отдела).
     class ShowDivisionData < BaseService
-      attr_reader :data
-
       # division - номер отдела
       def initialize(division)
         @division = division
@@ -14,7 +12,6 @@ module Inventory
         load_workplace
         load_users
       rescue RuntimeError
-
         false
       end
 

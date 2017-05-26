@@ -1,6 +1,8 @@
 module Inventory
   module LkInvents
     class BaseService
+      attr_reader :data
+
       # Записать файл в @workplace_params.
       # 1. Ищется 'item' с типом, который содержит свойство 'Отчет о конфигурации'
       # 2. В найденном 'item' ищется 'inv_property_value' со свойством 'Отчет о конфигурации'
@@ -49,25 +51,24 @@ module Inventory
           }
         )
 
-        prepare_to_***REMOVED***_table
+        @data = prepare_to_***REMOVED***_table(@data)
       end
 
-      # Создание необходимых для таблицы полей
-      def prepare_to_***REMOVED***_table
-        @data['short_description'] = @data['workplace_type']['short_description'] if @data['workplace_type']
-        @data['fio'] = @data['user_iss']['fio_initials']
-        @data['duty'] = @data['user_iss']['duty']
-        @data['location'] = "Пл. '#{@data['iss_reference_site']['name']}', корп.
-#{@data['iss_reference_building']['name']}, комн. #{@data['iss_reference_room']['name']}"
-        @data['status'] = Workplace.translate_enum(:status, @data['status'])
+      def prepare_to_***REMOVED***_table(wp)
+        wp['short_description'] = wp['workplace_type']['short_description'] if wp['workplace_type']
+        wp['fio'] = wp['user_iss']['fio_initials']
+        wp['duty'] = wp['user_iss']['duty']
+        wp['location'] = "Пл. '#{wp['iss_reference_site']['name']}', корп.
+#{wp['iss_reference_building']['name']}, комн. #{wp['iss_reference_room']['name']}"
+        wp['status'] = Workplace.translate_enum(:status, wp['status'])
 
-        @data.delete('iss_reference_site')
-        @data.delete('iss_reference_building')
-        @data.delete('iss_reference_room')
-        @data.delete('user_iss')
-        @data.delete('workplace_type')
+        wp.delete('iss_reference_site')
+        wp.delete('iss_reference_building')
+        wp.delete('iss_reference_room')
+        wp.delete('user_iss')
+        wp.delete('workplace_type')
 
-        @data
+        wp
       end
     end
   end

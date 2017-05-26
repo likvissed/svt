@@ -1,9 +1,7 @@
 module Inventory
   module LkInvents
     # Загрузить все типы оборудования, типы РМ, их возможные свойства, виды деятельности и расположения.
-    class InitProperties
-      attr_reader :data
-
+    class InitProperties < BaseService
       # Опционально:
       # - если установлен id_tn - загрузить список отделов, которые указанный пользователь может редактировать
       # - если установлен division - загрузить список работников отдела.
@@ -24,8 +22,8 @@ module Inventory
 
         exclude_mandatory_fields unless mandatory
       rescue Exception => e
-        Rails.logger.info e.inspect
-        Rails.logger.info e.backtrace.inspect
+        Rails.logger.error e.inspect.red
+        Rails.logger.error e.backtrace.inspect
 
         false
       end
