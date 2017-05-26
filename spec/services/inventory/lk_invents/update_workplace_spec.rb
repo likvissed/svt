@@ -28,20 +28,16 @@ module Inventory
         include_examples 'run methods', %w[create_or_get_room update_workplace]
         include_examples 'not run methods', 'set_file_into_params'
 
-        context 'with new parameters' do
-          before do
-            subject.run
-            old_workplace.reload
-          end
+        it 'changes workplace attributes' do
+          subject.run
+          old_workplace.reload
+          expect(old_workplace.iss_reference_room).to eq room
+          expect(old_workplace.id_tn).to eq user.id_tn
+        end
 
-          it 'changes workplace attributes' do
-            expect(old_workplace.iss_reference_room).to eq room
-            expect(old_workplace.id_tn).to eq user.id_tn
-          end
-
-          it 'changes inv_items count' do
-            expect(old_workplace.inv_items.count).to eq new_workplace['inv_items_attributes'].count
-          end
+        it 'changes inv_items count' do
+          expect { subject.run }.to change(old_workplace.inv_items, :count)
+                                      .by(new_workplace['inv_items_attributes'].count - old_workplace.inv_items.count)
         end
 
         it 'fills the @data at least with %w[short_description fio duty location status] keys' do
