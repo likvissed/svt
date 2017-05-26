@@ -8,7 +8,7 @@ module Inventory
       context 'with valid workplace params' do
         let(:room) { create :iss_room }
         let(:workplace) { create_workplace_attributes }
-        let(:item_count) do
+        let(:prop_val_count) do
           count = 0
           workplace[:inv_items_attributes].each { |item| count += item[:inv_property_values_attributes].count }
           count
@@ -37,7 +37,7 @@ module Inventory
         end
 
         it 'saves the new property_values in the database' do
-          expect { subject.run }.to change(InvPropertyValue, :count).by(item_count)
+          expect { subject.run }.to change(InvPropertyValue, :count).by(prop_val_count)
         end
 
         it 'fills the @data at least with %w[short_description fio duty location status] keys' do
