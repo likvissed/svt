@@ -51,7 +51,7 @@ module Inventory
       @workplace = LkInvents::CreateWorkplace.new(workplace_params, params[:pc_file])
 
       if @workplace.run
-        render json: { workplace: @workplace.data, full_message: 'Рабочее место создано.' }, status: 200
+        render json: { workplace: @workplace.data, full_message: 'Рабочее место создано' }, status: 200
       else
         render json: { full_message: @workplace.errors.full_messages.join(', ') }, status: 422
       end
@@ -68,32 +68,12 @@ module Inventory
     end
 
     def update_workplace
-      workplace
-      if @workplace
+      @workplace = LkInvents::UpdateWorkplace.new(params[:workplace_id], workplace_params, params[:pc_file])
 
-        create_or_get_room
-        if @workplace.update_attributes(workplace_params)
-          # Чтобы избежать N+1 запрос в методе 'transform_workplace' нужно создать объект ActiveRecord (например,
-          # вызвать find)
-          @workplace = transform_workplace(Workplace
-                                             .includes(
-                                               :iss_reference_site,
-                                               :iss_reference_building,
-                                               :iss_reference_room,
-                                               inv_items: { inv_property_values: :inv_property }
-                                             )
-                                             .find(@workplace.workplace_id))
-
-          unless params[:pc_file] == 'null'
-            return false unless upload_file
-          end
-
-          render json: { workplace: @workplace, full_message: 'Данные о рабочем месте обновлены.' }, status: :ok
-        else
-          render json: { full_message: @workplace.errors.full_messages.join('. ') }, status: 422
-        end
+      if @workplace.run
+        render json: { workplace: @workplace.data, full_message: 'Данные о рабочем месте обновлены' }, status: 200
       else
-        render json: { full_message: 'Рабочее место не найдено' }, status: 422
+        render json: { full_message: @workplace.errors.full_messages.join(', ') }, status: 422
       end
     end
 

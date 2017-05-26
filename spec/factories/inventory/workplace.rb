@@ -3,10 +3,14 @@ module Inventory
     factory :workplace, class: Workplace do
       workplace_specialization { WorkplaceSpecialization.last }
       id_tn { UserIss.where(dept: workplace_count.division).first.id_tn }
-      iss_reference_site { loc_site }
-      iss_reference_building { loc_building }
-      iss_reference_room { loc_room }
-      location_room_name { loc_room.name }
+      association :iss_reference_room, factory: :iss_room
+      iss_reference_building do
+        iss_reference_room.nil? ? IssReferenceBuilding.first : iss_reference_room.iss_reference_building
+      end
+      iss_reference_site do
+        iss_reference_building.nil? ? IssReferenceSite.first : iss_reference_building.iss_reference_site
+      end
+      location_room_name { iss_reference_room.nil? ? nil : iss_reference_room.name }
       comment ''
       status { Workplace.statuses['pending_verification'] }
 
@@ -24,12 +28,6 @@ module Inventory
 
       trait :rm_server do
         workplace_type { WorkplaceType.find_by(name: 'rm_server') }
-      end
-
-      transient do
-        loc_site { IssReferenceSite.first }
-        loc_building { loc_site.iss_reference_buildings.first }
-        loc_room { loc_building.iss_reference_rooms.first }
       end
 
       trait :add_items do

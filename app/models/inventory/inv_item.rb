@@ -103,7 +103,8 @@ module Inventory
             # Если имя файла изменилось и при этом ранее имя файла было указано (а сейчас оно отсутствует), файл
             # необходимо удалить из файловой системы.
             if file_obj.value_changed? && !file_obj.value_was.to_s.empty?
-              logger.info 'Вызов метода для удаления файла.'
+              logger.info 'Вызов метода для удаления файла'
+
               file_obj.destroy_file
             end
           end

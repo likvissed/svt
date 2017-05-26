@@ -25,7 +25,7 @@ module Inventory
     end
 
     describe 'GET #pc_config_from_audit' do
-      let(:item) { build(:item) }
+      let(:item) { build :item }
 
       it 'creates instance of the LkInvents::PcConfigFromAudit class' do
         get :pc_config_from_audit, params: { id_tn: user.id_tn, invent_num: item.invent_num }
@@ -34,13 +34,9 @@ module Inventory
     end
 
     describe 'POST #create_workplace' do
-      let(:workplace) { workplace_attributes }
-      let(:file) do
-        Rack::Test::UploadedFile.new(
-          Rails.root.join('spec', 'files', 'old_pc_config.txt'),
-          'text/plain'
-        )
-      end
+      let(:room) { build :iss_room }
+      let(:workplace) { create_workplace_attributes }
+      let(:file) { Rack::Test::UploadedFile.new(Rails.root.join('spec', 'files', 'old_pc_config.txt'), 'text/plain') }
       before { post :create_workplace, params: { id_tn: user.id_tn, workplace: workplace.to_json, pc_file: file } }
 
       it 'create instance of the LkInvents::CreateWorkplace' do
@@ -65,6 +61,33 @@ module Inventory
       it 'returns object at_least with %w[workplace_id] keys' do
         puts response.body.class.name
         expect(response.body).to include('workplace_id')
+      end
+    end
+
+    describe 'PATCH #update_workplace' do
+      let!(:workplace) do
+        create(:workplace_pk, :add_items, items: %i[pc monitor], workplace_count: workplace_count)
+      end
+      let(:room) { create :iss_room }
+      let(:file) { Rack::Test::UploadedFile.new(Rails.root.join('spec', 'files', 'old_pc_config.txt'), 'text/plain') }
+      let(:new_workplace) { update_workplace_attributes(workplace.workplace_id) }
+      before do
+        patch :update_workplace,
+              params: {
+                id_tn: user.id_tn,
+                workplace_id: workplace.workplace_id,
+                workplace: new_workplace.to_json,
+                pc_file: file
+              }
+      end
+
+      it 'create instance of the LkInvents::EditWorkplace' do
+        expect(assigns(:workplace)).to be_instance_of LkInvents::UpdateWorkplace
+      end
+
+      it 'returns object with %w[workplace full_message] keys' do
+        puts response.body.class.name
+        expect(response.body).to include('workplace', 'full_message')
       end
     end
   end

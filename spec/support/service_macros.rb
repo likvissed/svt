@@ -1,13 +1,14 @@
 module ServiceMacros
-  def workplace_attributes
-    # Устанавливаем iss_reference_room = nil, так как пользователь с личного кабинета присылает не id, а строковое
-    # значение (номер) комнаты.
+  def create_workplace_attributes
+    # Устанавливаем iss_reference_room = nil (Нельзя устанавливать location_room_id, так как пользователь вручную
+    # записывать номер комнаты, а не выбирает из готового списка)
     tmp = build(
       :workplace_pk,
       :add_items,
       items: %i[pc monitor],
       iss_reference_room: nil,
-      workplace_count: workplace_count
+      location_room_name: room.name,
+      workplace_count: workplace_count,
     ).as_json(
       include: {
         inv_items: {
@@ -27,5 +28,23 @@ module ServiceMacros
     tmp.delete(:inv_items)
 
     tmp.with_indifferent_access
+  end
+
+  def update_workplace_attributes(workplace_id)
+    wp = Inventory::LkInvents::EditWorkplace.new(workplace_id)
+    wp.run
+    # Меняем общие аттрибуты рабочего места
+    wp.data['location_room_name'] = room.name
+    wp.data['id_tn'] = user.id_tn
+
+    # Меняем состав рабочего места
+    new_mon = wp.data['inv_items_attributes'].deep_dup.last
+    new_mon['id'] = nil
+    new_mon['item_model'] = 'Monitor model 2'
+    new_mon['inv_property_values_attributes'].each { |prop_val| prop_val['id'] = nil }
+
+    wp.data['inv_items_attributes'] << new_mon
+
+    wp.data
   end
 end

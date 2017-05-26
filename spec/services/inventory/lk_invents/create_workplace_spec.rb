@@ -6,13 +6,8 @@ module Inventory
       let!(:workplace_count) { create(:active_workplace_count, user: build(:user)) }
 
       context 'with valid workplace params' do
-        let(:workplace) { workplace_attributes }
-        let(:room) do
-          IssReferenceRoom
-            .where(building_id: workplace[:location_building_id])
-            .where(name: workplace[:location_room_name])
-            .first
-        end
+        let(:room) { create :iss_room }
+        let(:workplace) { create_workplace_attributes }
         let(:item_count) do
           count = 0
           workplace[:inv_items_attributes].each { |item| count += item[:inv_property_values_attributes].count }
@@ -54,16 +49,13 @@ module Inventory
 
         context 'with file' do
           let(:file) do
-            Rack::Test::UploadedFile.new(
-              Rails.root.join('spec', 'files', 'old_pc_config.txt'),
-              'text/plain'
-            )
+            Rack::Test::UploadedFile.new(Rails.root.join('spec', 'files', 'old_pc_config.txt'), 'text/plain')
           end
           subject { CreateWorkplace.new(workplace, file) }
 
           include_examples 'run methods', 'set_file_into_params'
 
-          it 'adds file key to workplace' do
+          it 'adds "file" key to workplace' do
             subject.run
             expect(
               subject.workplace_params[:inv_items_attributes].any? do |item|
@@ -78,8 +70,8 @@ module Inventory
 
       context 'with invalid workplace params' do
         let(:workplace) do
-          # Устанавливаем iss_reference_room = nil, так как пользователь с личного кабинета присылает не id, а строковое
-          # значение (номер) комнаты.
+          # Устанавливаем iss_reference_room = nil (Нельзя устанавливать location_room_id, так как пользователь вручную
+          # записывать номер комнаты, а не выбирает из готового списка)
           tmp = build(
             :workplace,
             id_tn: nil,
