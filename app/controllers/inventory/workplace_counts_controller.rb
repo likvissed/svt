@@ -7,43 +7,13 @@ module Inventory
       respond_to do |format|
         format.html
         format.json do
-          @workplace_counts = WorkplaceCount
-                                .joins('LEFT OUTER JOIN invent_workplace r ON r.workplace_id = invent_workplace_count' \
-'.workplace_count_id and r.status = 0')
-                                .joins('LEFT OUTER JOIN invent_workplace w ON w.workplace_count_id =' \
-' invent_workplace_count.workplace_count_id and w.status = 1')
-                                .includes(:workplace_responsibles, :user_isses)
-                                .select('invent_workplace_count.*, COUNT(r.workplace_id) as ready, COUNT(w' \
-'.workplace_id) as waiting')
-                                .group('invent_workplace_count.workplace_count_id')
+          @index = WorkplaceCounts::Index.new
 
-          @workplace_counts = @workplace_counts.as_json(
-            include: {
-              workplace_responsibles: {
-                only: %i[id_tn phone],
-                include: {
-                  user_iss: {
-                    only: %i[tn fio]
-                  }
-                }
-              }
-            }
-          )
-                                .each do |c|
-            c['date-range']   = "#{c['time_start']} - #{c['time_end']}"
-            c['responsibles'] = []
-            c['phone']        = []
-
-            c['workplace_responsibles'].each do |resp|
-              c['responsibles'] << resp['user_iss']['fio'] unless resp['user_iss'].nil?
-              c['phone']        << resp['phone'] unless resp['phone'].empty?
-            end
-
-            c['responsibles'] = c['responsibles'].join(', ')
-            c['phone'] = c['phone'].join(', ')
+          if @index.run
+            render json: @workplace_counts
+          else
+            render json: { full_messages: 'Обратитесь к администратору, т.***REMOVED***' }, status: 422
           end
-
-          render json: @workplace_counts
         end
       end
     end
