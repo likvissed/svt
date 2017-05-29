@@ -12,7 +12,9 @@ FactoryGirl.define do
   end
 
   factory :***REMOVED***_user, class: User do
+    id_tn 1
     tn 999_999
+    phone '50-49'
     fullname 'Пользователь ЛК'
     association :role, factory: :***REMOVED***_user_role
   end

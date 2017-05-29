@@ -9,7 +9,7 @@ feature 'Show all workplaces', %q{
   given(:user) { create(:user) }
 
   scenario 'Authenticated user tries to see all workplaces', js: true do
-    sign_in user
+    sign_in user.as_json(methods: :fullname)
     visit inventory_workplaces_path
 
     expect(page).to have_css('#index_workplace')

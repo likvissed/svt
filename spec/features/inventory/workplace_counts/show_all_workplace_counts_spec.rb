@@ -2,7 +2,7 @@ require 'feature_helper'
 
 module Inventory
   module WorkplaceCounts
-    feature 'Show all workplace counts', %q{
+    feature 'Show all workplace_counts', %q{
       In order to see all divisions and responsible users
       As an authenticated user
       I want to be able to go to the index page
@@ -18,7 +18,8 @@ module Inventory
       end
 
       scenario 'Authenticated user tries to go to the index page', js: true do
-        sign_in user
+        sign_in user.as_json(methods: :fullname)
+        puts page.text.blue
         visit inventory_workplace_counts_path
 
         expect(page).to have_content 'Выход'

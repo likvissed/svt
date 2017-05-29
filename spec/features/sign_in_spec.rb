@@ -10,7 +10,7 @@ feature 'User sign in', %q(
   given(:unregistered_user) { attributes_for :***REMOVED***_user }
 
   scenario 'Registered user tries to sign in' do
-    sign_in user
+    sign_in user.as_json(methods: :fullname)
 
     expect(page).to have_selector 'body#svt_welcome'
     expect(page).to have_content 'Выход'
