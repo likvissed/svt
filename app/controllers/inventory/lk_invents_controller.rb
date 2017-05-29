@@ -13,7 +13,7 @@ module Inventory
     respond_to :json
 
     # Табельный номер пользователя в таблице users, от имени которого пользователи ЛК получают доступ в систему.
-    @tn_***REMOVED***_user = 999_999
+    # @tn_***REMOVED***_user = 999_999
 
     def init_properties
       @properties = LkInvents::InitProperties.new(params[:id_tn])
@@ -106,114 +106,21 @@ module Inventory
 
     private
 
-    # Если комната в базе не существует (в рамках указанного корпуса), создать комнату. Если комната в базе
-    # существует - получить id комнаты.
-    # Возвращает true, если ошибок нет; false - если не удалось создать комнату
-    def create_or_get_room
-      @room = IssReferenceRoom
-                .where(name: params[:workplace][:location_room_name])
-                .where(building_id: params[:workplace][:location_building_id])
-                .first
-
-      if @room.nil?
-        @room = IssReferenceRoom.create(
-          building_id: params[:workplace][:location_building_id],
-          name: params[:workplace][:location_room_name]
-        )
-      end
-
-      params[:workplace].delete :location_room_name
-      params[:workplace][:location_room_id] = @room.room_id
-    end
-
-    # Сохранить файл в файловой системе.
-    def upload_file
-      property_value_id = 0
-      # Получаем property_value_id, чтобы создать директорию.
-      @workplace['inv_items'].each do |item|
-        next if InvPropertyValue::PROPERTY_WITH_FILES.none? { |val| val == item['inv_type']['name'] }
-
-        property_value_id = item['inv_property_values'].find do |val|
-          val['inv_property']['name'] == 'config_file'
-        end['property_value_id']
-
-        break if property_value_id
-      end
-
-      unless property_value_id
-        render json: { workplace: @workplace, full_message: 'Рабочее место создано, но сохранить файл конфигурации не
-удалось. Для загрузки файла свяжитесь с администратором сервиса.' }, status: 200
-
-        return false
-      end
-
-      # Путь директории для записи загруженного файла.
-      path_to_file = Rails.root.join('public', 'uploads', 'inventory', property_value_id.to_s)
-
-      # Проверить, существует ли директория public/upload/<property_value_id>. Если нет - создать.
-      FileUtils.mkdir_p(path_to_file) unless path_to_file.exist?
-
-      # Удалить все существующие файлы из директории.
-      Dir.foreach(path_to_file) do |file|
-        FileUtils.rm_f("#{path_to_file}/#{file}") if file != '.' && file != '..'
-      end
-
-      # Запись файла
-      uploaded_io = params[:pc_file]
-      File.open("#{path_to_file}/#{uploaded_io.original_filename}", 'w:UTF-8:ASCII-8BIT') do |file|
-        file.write(uploaded_io.read)
-      end
-
-      true
-    rescue Exception => e
-      logger.info "Ошибка функции upload_file. #{e}".red
-      logger.info 'Описание:'
-      e.backtrace.each { |val| logger.info val }
-
-      render json: { workplace: @workplace, full_message: 'Рабочее место создано, но сохранить файл конфигурации не
- удалось. Для загрузки файла свяжитесь с администратором сервиса.' }, status: 200
-
-      false
-    end
-
-    # Преобразование объекта workplace в специальный вид, чтобы таблица могла отобразить данные.
-    def transform_workplace(wp)
-      wp = wp.as_json(
-        include: {
-          iss_reference_site: {},
-          iss_reference_building: {},
-          iss_reference_room: {},
-          user_iss: {},
-          workplace_type: {},
-          inv_items: {
-            include: {
-              inv_type: {},
-              inv_property_values: {
-                include: :inv_property
-              }
-            }
-          }
-        }
-      )
-
-      wp['short_description'] = wp['workplace_type']['short_description']
-      wp['duty'] = wp['user_iss']['duty']
-      wp['fio'] = wp['user_iss']['fio_initials']
-      wp['location'] = "Пл. '#{wp['iss_reference_site']['name']}', корп. #{wp['iss_reference_building']['name']},
-комн. #{wp['iss_reference_room']['name']}"
-      wp['status'] = Workplace.translate_enum(:status, wp['status'])
-
-      wp.delete('iss_reference_site')
-      wp.delete('iss_reference_building')
-      wp.delete('iss_reference_room')
-      wp.delete('user_iss')
-      wp.delete('workplace_type')
-
-      wp
-    end
-
     # Проверить SID в таблице user_sessions, чтобы знать, действительно ли пользователь авторизован в ЛК.
     def check_***REMOVED***_authorization
+      @***REMOVED***_auth = LkInvents::LkAuthorization.new(params[:sid])
+
+      if @***REMOVED***_auth.run
+        user = User.find_by(tn: @***REMOVED***_auth.***REMOVED***_user_tn)
+        sign_in :user, user
+
+        user_iss = UserIss.find_by(tn: @***REMOVED***_auth.data['user_id'])
+        session[:id_tn] = user_iss.id_tn
+      else
+        render json: { full_messages: @***REMOVED***_auth.data.errors.full_messages(', ') }, status: 403
+      end
+
+=begin
       if params[:sid]
         @user_session = UserSession.find(params[:sid])
         if @user_session.nil?
@@ -240,6 +147,7 @@ module Inventory
       else
         render json: { full_message: 'Доступ запрещен' }, status: 403
       end
+=end
     end
 
     # Проверить, есть ли у пользователя доступ на создание/редактирование/удаление рабочих мест указанного отдела.

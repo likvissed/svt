@@ -113,9 +113,37 @@ function WorkplaceEditCtrl(Workplace) {
 WorkplaceEditCtrl.prototype.init = function (id) {
   var self = this;
 
-  this.Workplace.init(id).then(function (workplace) {
+  this.Workplace.init(id).then(function () {
+    // Список типов РМ
+    self.wp_types = self.Workplace.wp_types;
+    // Типы оборудования на РМ с необходимыми для заполнения свойствами
+    self.eq_types = self.Workplace.eq_types;
+    // Направления деятельности
+    self.specs = self.Workplace.specs;
+    // Список отделов, прикрепленных к пользователю
+    self.divisions = self.Workplace.divisions;
+    // Список площадок и корпусов
+    self.iss_locations = self.Workplace.iss_locations;
+    // Список пользователей отдела
+    self.users = self.Workplace.users;
+
+    // Данные о рабочем месте
     self.workplace = self.Workplace.workplace;
   });
+};
+
+/**
+ * Функция для исправления бага в компоненте typeahead ui.bootstrap. Она возвращает ФИО выбранного пользователя вместо
+ * табельного номера.
+ *
+ * @param id_tn - id_tn выбранного ответственного.
+ */
+WorkplaceEditCtrl.prototype.formatLabel = function (id_tn) {
+  for (var i=0; i< this.users.length; i++) {
+    if (id_tn === this.users[i].id_tn) {
+      return this.users[i].fio;
+    }
+  }
 };
 
 // =====================================================================================================================

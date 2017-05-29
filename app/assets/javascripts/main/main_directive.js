@@ -4,11 +4,13 @@
   app
     .directive('disableLink', disableLink)
     .directive('datatableWrapper', datatableWrapper)
-    .directive('newRecord', newRecord);
+    .directive('newRecord', newRecord)
+    .directive('typeaheadOpenOnFocus', typeaheadOpenOnFocus);
 
-  disableLink.$inject       = [];
-  datatableWrapper.$inject  = ['$timeout', '$compile'];
-  newRecord.$inject         = [];
+  disableLink.$inject = [];
+  datatableWrapper.$inject = ['$timeout', '$compile'];
+  newRecord.$inject = [];
+  typeaheadOpenOnFocus.$inject = ['$parse', '$timeout'];
 
 // =====================================================================================================================
 
@@ -76,5 +78,27 @@
     }
   }
 
+  // Автооткрытие поля 'select' (на самом деле это поле input) для выбора значения из списка.
+  function typeaheadOpenOnFocus($parse, $timeout) {
+    return {
+      require: 'ngModel',
+      link: function(scope, element, attrs) {
+        element.on('click', function (event) {
+          var
+            ctrl = element.controller('ngModel'),
+            prev = ctrl.$modelValue || '';
+
+          if (prev) {
+            ctrl.$setViewValue('');
+            $timeout(function() {
+              ctrl.$setViewValue(prev);
+            });
+          } else {
+            ctrl.$setViewValue(' ');
+          }
+        })
+      }
+    }
+  }
 })();
 

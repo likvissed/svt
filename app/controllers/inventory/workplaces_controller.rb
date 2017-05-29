@@ -36,13 +36,13 @@ module Inventory
     end
 
     def edit
-      @prop_service = PropertyService.new
       @wp = SingleWorkplaceService.new(params[:workplace_id])
 
       respond_to do |format|
         format.html { @workplace = @wp.workplace }
         format.json do
-          @prop_service.load_data
+          @prop_service = InitPropertiesService.new(nil, @wp.workplace.division)
+          @prop_service.run
           @wp.transform
           render json: { prop_data: @prop_service.data, wp_data: @wp.workplace }, status: 200
         end

@@ -56,7 +56,7 @@ function WorkplaceCountIndexCtrl($controller, $scope, $compile, $uibModal, DTOpt
     DTColumnBuilder.newColumn(null).withTitle('').withOption('className', 'col-fhd-1').renderWith(renderIndex),
     DTColumnBuilder.newColumn('division').withTitle('Отдел').withOption('className', 'col-fhd-2'),
     DTColumnBuilder.newColumn('responsibles').withTitle('Ответственный').withOption('className', 'col-fhd-7'),
-    DTColumnBuilder.newColumn('phone').withTitle('Телефон').withOption('className', 'col-fhd-3'),
+    DTColumnBuilder.newColumn('phones').withTitle('Телефон').withOption('className', 'col-fhd-3'),
     // DTColumnBuilder.newColumn('count_wp').withTitle('Кол-во РМ').withOption('className', 'col-fhd-3 text-center'),
     DTColumnBuilder.newColumn('date-range').withTitle('Время доступа').withOption('className', 'col-fhd-5' +
       ' text-center'),

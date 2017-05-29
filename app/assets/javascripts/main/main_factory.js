@@ -72,7 +72,6 @@ function Error(Flash) {
       var descr;
 
       code = (response && response.status) ? parseInt(response.status): parseInt(status);
-
       switch(code) {
         case 401:
           Flash.alert('Ваш сеанс закончился. Пожалуйста, войдите в систему снова.');

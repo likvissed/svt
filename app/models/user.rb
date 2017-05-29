@@ -10,7 +10,7 @@ class User < ApplicationRecord
   belongs_to :user_iss, foreign_key: 'id_tn'
 
   # Для тестов.
-  attr_accessor :login, :email, :division, :tel
+  attr_accessor :login, :email, :division, :tel, :tn
 
   def self.find_for_database_authentication(warden_conditions)
     conditions = warden_conditions.dup
