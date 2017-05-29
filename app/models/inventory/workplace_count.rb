@@ -53,6 +53,7 @@ module Inventory
       @local_user = User.find_by(id_tn: @user.id_tn)
       if @local_user.nil?
         @local_user = User.create({
+          tn: tn,
           id_tn: @user.id_tn,
           role: Role.find_by(name: :***REMOVED***_user)
         })
