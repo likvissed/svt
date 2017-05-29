@@ -1,8 +1,6 @@
 module Inventory
   module LkInvents
-    class BaseService
-      attr_reader :data
-
+    class BaseService < ApplicationService
       # Записать файл в @workplace_params.
       # 1. Ищется 'item' с типом, который содержит свойство 'Отчет о конфигурации'
       # 2. В найденном 'item' ищется 'inv_property_value' со свойством 'Отчет о конфигурации'
