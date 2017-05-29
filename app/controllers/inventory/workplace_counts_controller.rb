@@ -10,7 +10,7 @@ module Inventory
           @index = WorkplaceCounts::Index.new
 
           if @index.run
-            render json: @workplace_counts
+            render json: @index.data
           else
             render json: { full_messages: 'Обратитесь к администратору, т.***REMOVED***' }, status: 422
           end
@@ -22,10 +22,10 @@ module Inventory
       @workplace_count = WorkplaceCount.new(workplace_count_params)
 
       if @workplace_count.save
-        render json: { full_message: "Отдел #{@workplace_count.division} добавлен." }, status: :created
+        render json: { full_message: "Отдел #{@workplace_count.division} добавлен." }
       else
-        render json: { object: @workplace_count.errors, full_message: "Ошибка. #{@workplace_count.errors
-          .full_messages.join(', ')}" }, status: :unprocessable_entity
+        render json: { object: @workplace_count.errors, full_message: "#{@workplace_count.errors
+          .full_messages.join(', ')}" }, status: 422
       end
     end
 

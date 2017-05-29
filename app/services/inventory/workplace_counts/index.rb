@@ -1,6 +1,8 @@
 module Inventory
   module WorkplaceCounts
     class Index < ApplicationService
+      attr_reader :workplace_counts
+
       def run
         workplace_counts
         transform_to_json

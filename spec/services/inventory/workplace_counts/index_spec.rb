@@ -11,6 +11,11 @@ module Inventory
           'division', 'responsibles', 'phones', 'date-range', 'waiting', 'ready'
         )
       end
+
+      it 'must create @workplace_counts variable' do
+        subject.run
+        expect(subject.instance_variable_get :@workplace_counts).not_to be_nil
+      end
     end
   end
 end
