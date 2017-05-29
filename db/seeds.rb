@@ -17,14 +17,10 @@ Role.create(
 User.create(
   [
     {
+      id_tn: ***REMOVED***,
       tn: ***REMOVED***,
       fullname: '***REMOVED***',
       role: Role.find_by(name: 'admin')
-    },
-    {
-      tn: 999_999,
-      fullname: 'Пользователь ЛК',
-      role: Role.find_by(name: '***REMOVED***_user')
     }
   ]
 )
