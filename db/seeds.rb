@@ -18,12 +18,12 @@ User.create(
   [
     {
       tn: ***REMOVED***,
-      info: '***REMOVED***',
+      fullname: '***REMOVED***',
       role: Role.find_by(name: 'admin')
     },
     {
       tn: 999_999,
-      info: 'Пользователь ЛК',
+      fullname: 'Пользователь ЛК',
       role: Role.find_by(name: '***REMOVED***_user')
     }
   ]

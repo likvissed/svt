@@ -4,10 +4,13 @@ class User < ApplicationRecord
   devise :database_authenticatable, :trackable, :timeoutable, :omniauthable,
          omniauth_providers: %i[open_id_***REMOVED*** check_***REMOVED***_auth], authentication_keys: [:login]
 
+  has_many :workplace_counts, through: :workplace_responsibles
+
   belongs_to :role
+  belongs_to :user_iss, foreign_key: 'id_tn'
 
   # Для тестов.
-  attr_accessor :login, :email, :id_tn, :division
+  attr_accessor :login, :email, :division, :tel
 
   def self.find_for_database_authentication(warden_conditions)
     conditions = warden_conditions.dup

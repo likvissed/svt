@@ -1,11 +1,12 @@
 module Inventory
   class WorkplaceCount < Invent
-    self.table_name = :invent_workplace_count
+    self.table_name = "#{Rails.configuration.database_configuration["#{Rails.env}_invent"]['database']}.invent_workplace_count"
+
     self.primary_key = :workplace_count_id
 
     has_many :workplaces
     has_many :workplace_responsibles, dependent: :destroy, inverse_of: :workplace_count
-    has_many :user_isses, through: :workplace_responsibles
+    has_many :users, through: :workplace_responsibles
 
     before_validation :set_user_data_in_nested_attrs
 
@@ -19,7 +20,7 @@ module Inventory
     enum status: { 'Разблокирован': 0, 'Заблокирован': 1 }, _prefix: :status
 
     # Для работы  метода get_user_data
-    attr_accessor :id_tn, :phone
+    attr_accessor :id_tn, :phone, :local_user
 
     private
 
@@ -36,8 +37,7 @@ module Inventory
       workplace_responsibles.each do |resp|
         get_user_data(resp.tn)
 
-        resp.id_tn = id_tn
-        resp.phone = phone if resp.phone.empty?
+        resp.user_id = @local_user.id
       end
     end
 
@@ -48,6 +48,14 @@ module Inventory
       if @user.nil?
         errors.add(:base, "Информация по табельному #{tn} не найдена")
         return
+      end
+
+      @local_user = User.find_by(id_tn: @user.id_tn)
+      if @local_user.nil?
+        @local_user = User.create({
+          id_tn: @user.id_tn,
+          role: Role.find_by(name: :***REMOVED***_user)
+        })
       end
 
       self.id_tn = @user.id_tn
