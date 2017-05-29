@@ -1,7 +1,8 @@
 FactoryGirl.define do
   factory :user do
-    tn 101_101
     id_tn 110
+    tn 101_101
+    phone '50-50'
     division ***REMOVED***
     email nil
     login 'TestLK'

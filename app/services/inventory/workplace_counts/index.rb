@@ -29,7 +29,7 @@ invent_workplace_count.workplace_count_id and w.status = 1')
             users: {
               include: {
                 user_iss: {
-                  only: %i[tn fio]
+                  only: %i[fio]
                 }
               }
             }
