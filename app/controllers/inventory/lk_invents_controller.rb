@@ -19,7 +19,7 @@ module Inventory
       @properties = LkInvents::InitProperties.new(params[:id_tn])
 
       if @properties.run
-        render json: @properties.data, status: 200
+        render json: @properties.data
       else
         render json: { full_message: 'Обратитесь к администратору, т.***REMOVED***' }, status: 422
       end
@@ -30,7 +30,7 @@ module Inventory
       @division = LkInvents::ShowDivisionData.new(params[:division])
 
       if @division.run
-        render json: @division.data, status: 200
+        render json: @division.data
       else
         render json: { full_message: 'Обратитесь к администратору, т.***REMOVED***' }, status: 422
       end
@@ -40,7 +40,7 @@ module Inventory
       @pc_config = LkInvents::PcConfigFromAudit.new(params[:invent_num])
 
       if @pc_config.run
-        render json: @pc_config.data, status: 200
+        render json: @pc_config.data
       else
         render json: { full_message: @pc_config.errors.full_messages.join(', ') }, status: 422
       end
@@ -51,7 +51,7 @@ module Inventory
       @workplace = LkInvents::CreateWorkplace.new(workplace_params, params[:pc_file])
 
       if @workplace.run
-        render json: { workplace: @workplace.data, full_message: 'Рабочее место создано' }, status: 200
+        render json: { workplace: @workplace.data, full_message: 'Рабочее место создано' }
       else
         render json: { full_message: @workplace.errors.full_messages.join(', ') }, status: 422
       end
@@ -61,7 +61,7 @@ module Inventory
       @workplace = LkInvents::EditWorkplace.new(params[:workplace_id])
 
       if @workplace.run
-        render json: @workplace.data, status: 200
+        render json: @workplace.data
       else
         render json: { full_message: @workplace.errors.full_messages.join(', ') }, status: 422
       end
@@ -71,7 +71,7 @@ module Inventory
       @workplace = LkInvents::UpdateWorkplace.new(params[:workplace_id], workplace_params, params[:pc_file])
 
       if @workplace.run
-        render json: { workplace: @workplace.data, full_message: 'Данные о рабочем месте обновлены' }, status: 200
+        render json: { workplace: @workplace.data, full_message: 'Данные о рабочем месте обновлены' }
       else
         render json: { full_message: @workplace.errors.full_messages.join(', ') }, status: 422
       end
@@ -81,7 +81,7 @@ module Inventory
       @workplace = LkInvents::DeleteWorkplace.new(params[:workplace_id])
 
       if @workplace.run
-        render json: { full_message: 'Рабочее место удалено' }, status: 200
+        render json: { full_message: 'Рабочее место удалено' }
       else
         render json: { full_message: @workplace.errors.full_messages.join(', ') }, status: 422
       end
