@@ -12,6 +12,18 @@ ru:
          many: "Невозможно удалить, так как данная запись используется в других моделях"
 
       models:
+        # Отдел, содержащий рабочие места
+        inventory/workplace_count:
+          attributes:
+            base:
+              add_at_least_one_responsible: 'Необходимо добавить ответственного'
+              save_at_least_one_responsible: 'Необходимо оставить хотя бы одного ответственного'
+
+        inventory/workplace_responsible:
+          attributes:
+            user_id:
+              already_exists: 'уже существует'
+
         # Рабочее место
         inventory/workplace:
           attributes:
@@ -126,10 +138,8 @@ ru:
         time_start: "Дата начала ввода данных"
         time_end: "Дата окончания ввода данных"
 
-      inventory/workplace_count/workplace_responsibles:
-        tn: "Табельный номер"
-        id_tn: "Табельный номер"
-        phone: "Номер телефона"
+      inventory/workplace_responsible:
+        user_id: 'Ответственный для данного отдела'
 
       inventory/workplace:
         id_tn: "ФИО ответственного"

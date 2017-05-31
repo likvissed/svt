@@ -54,21 +54,21 @@
             %td.col-sm-8.col-md-8.col-lg-6
               = label_tag :workplace_count_phone, class: "control-label" do
                 %b Телефон
-        %tbody.animate-repeat.animate-show{ "ng-repeat": "resp in modal.data.workplace_responsibles_attributes",
-        "ng-hide": "resp._destroy" }
+        %tbody.animate-repeat.animate-show{ "ng-repeat": "resp in modal.data.users_attributes", "ng-hide": |
+        "resp._destroy" } |
           %tr
             %td.col-sm-16.col-md-16.col-lg-5
               .form-group.required
-                = text_field_tag "workplace_count[workplace_responsibles.tn]", "", class: "form-control", "ng-model": |
+                = text_field_tag "workplace_count[users.tn]", "", class: "form-control", "ng-model": |
                  "resp.tn" |
             %td.col-lg-13
-              = text_field_tag "workplace_count[workplace_responsibles.fio", "", class: "form-control", "ng-model": |
+              = text_field_tag "workplace_count[users.fio", "", class: "form-control", "ng-model": |
               "resp.fio" , disabled: true |
             %td.col-sm-8.col-md-8.col-lg-6
               .col-sm-20.col-md-20.col-lg-20
                 -#.no-left-padding.no-right-padding
                 .form-group
-                  = text_field_tag "workplace_count[workplace_responsibles.phone]", "", class: "form-control", |
+                  = text_field_tag "workplace_count[users.phone]", "", class: "form-control", |
                   "ng-model": "resp.phone" |
               .col-sm-4.col-md-4.col-lg-4.no-right-padding
                 = fa_icon "minus-circle lg", class: "pointer", "tooltip-placement": "left", "uib-tooltip": "Удалить |

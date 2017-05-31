@@ -18,5 +18,5 @@ ru:
             необходимо нажать кнопку "Ввод данных вручную"'
         inventory/***REMOVED***_invents/***REMOVED***_authorization:
           access_denied: 'Доступ запрещен'
-#        inventory/room:
-#          building_not_found: 'Корпус не найден'
+        inventory/workplace_counts/create:
+          user_not_found: 'Информация по табельному %{tn} не найдена'

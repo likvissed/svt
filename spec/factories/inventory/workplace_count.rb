@@ -2,24 +2,18 @@ module Inventory
   FactoryGirl.define do
     factory :workplace_count, class: WorkplaceCount do
       status WorkplaceCount.statuses['Разблокирован']
-      division { user ? user.division : ***REMOVED*** }
+      division { users.empty? ? ***REMOVED*** : users.first.division }
 
       transient do
-        # Объект-пользователь, созданный фабрикой user.
-        user nil
+        # Массив пользователей, созданный фабрикой user.
+        users []
       end
 
       after(:build) do |workplace_count, evaluator|
-        if evaluator.user.nil?
-          workplace_count.workplace_responsibles << build(
-            :workplace_responsible, tn: UserIss.where(dept: evaluator.division).first.tn
-          )
-        else
-          workplace_count.workplace_responsibles << build(
-            :workplace_responsible, tn: evaluator.user.tn
-          )
-          #   UserIss.where(dept: workplace_count.division).where('tn < 100000').first.tn
-        end
+        # Если массив users пустой, добавить дефолтного тествого пользователя в качестве ответственного за отдел.
+        evaluator.users << build(:user) if evaluator.users.empty?
+
+        evaluator.users.each { |user| workplace_count.users << user }
       end
     end
 

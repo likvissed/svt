@@ -59,7 +59,6 @@ module Inventory
       end
 
       it 'returns object at_least with %w[workplace_id] keys' do
-        puts response.body.class.name
         expect(response.body).to include('workplace_id')
       end
     end
@@ -86,7 +85,6 @@ module Inventory
       end
 
       it 'returns object with %w[workplace full_message] keys' do
-        puts response.body.class.name
         expect(response.body).to include('workplace', 'full_message')
       end
     end

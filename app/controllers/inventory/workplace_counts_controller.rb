@@ -19,13 +19,12 @@ module Inventory
     end
 
     def create
-      @workplace_count = WorkplaceCount.new(workplace_count_params)
+      @create = WorkplaceCounts::Create.new(workplace_count_params)
 
-      if @workplace_count.save
-        render json: { full_message: "Отдел #{@workplace_count.division} добавлен." }
+      if @create.run
+        render json: { full_message: "Отдел #{@create.data.division} добавлен." }
       else
-        render json: { object: @workplace_count.errors, full_message: "#{@workplace_count.errors
-          .full_messages.join(', ')}" }, status: 422
+        render json: @create.error, status: 422
       end
     end
 
@@ -95,11 +94,8 @@ module Inventory
         :division,
         :time_start,
         :time_end,
-        workplace_responsibles_attributes: %i[
+        users_attributes: %i[
           id
-          workplace_responsible_id
-          workplace_count_id
-          id_tn
           tn
           phone
           _destroy

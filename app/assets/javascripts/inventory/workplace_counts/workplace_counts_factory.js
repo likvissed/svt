@@ -16,16 +16,14 @@ function WorkplaceCount(Server, Error) {
   this._templateValue = {
     workplace_count_id: null,
     division: '',
-    count_wp: '',
     time_start: '',
     time_end: '',
-    workplace_responsibles_attributes: []
+    users_attributes: []
   };
 
   // Шаблон объекта ответсвенного
-  this._template_responsible_attributes = {
+  this._template_users_attributes = {
     id: null,
-    workplace_count_id: null,
     tn: '',
     phone: ''
   };
@@ -75,8 +73,8 @@ WorkplaceCount.prototype.clearData = function () {
  * Добавить ответственного.
  */
 WorkplaceCount.prototype.addResponsible = function () {
-  this._data.value.workplace_responsibles_attributes.push(angular.copy(this._template_responsible_attributes));
-}
+  this._data.value.users_attributes.push(angular.copy(this._template_users_attributes));
+};
 
 /**
  * Удалить ответственного.
@@ -84,8 +82,8 @@ WorkplaceCount.prototype.addResponsible = function () {
  * @param obj - удаляемый объект.
  */
 WorkplaceCount.prototype.delResponsible = function (obj) {
-  if (obj.workplace_responsible_id)
+  if (obj.id)
     obj._destroy = 1;
   else
-    this._data.value.workplace_responsibles_attributes.splice($.inArray(obj, this._data.value.workplace_responsibles_attributes), 1);
-}
+    this._data.value.users_attributes.splice($.inArray(obj, this._data.value.users_attributes), 1);
+};

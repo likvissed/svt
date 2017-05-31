@@ -12,8 +12,8 @@ module Inventory
         end
 
         it 'returns to client @data variable' do
+          expect_any_instance_of(WorkplaceCounts::Index).to receive(:data)
           get :index, format: :json
-          allow_any_instance_of(WorkplaceCounts::Index).to receive(:data)
         end
       end
     end
