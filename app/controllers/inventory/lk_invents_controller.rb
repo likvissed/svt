@@ -6,7 +6,7 @@ module Inventory
     skip_before_action :verify_authenticity_token
     before_action :check_***REMOVED***_authorization
     authorize_resource class: false, param_method: :workplace_params
-    before_action :check_workplace_count_access, only: %i[create_workplace update_workplace destroy_workplace]
+    before_action :check_workplace_count_access, only: %i[create_workplace edit_workplace update_workplace delete_workplace]
     before_action :check_timeout, except: %i[init_properties show_division_data pc_config_from_audit send_pc_script]
     after_action -> { sign_out @user }
 
@@ -111,43 +111,10 @@ module Inventory
       @***REMOVED***_auth = LkInvents::LkAuthorization.new(params[:sid])
 
       if @***REMOVED***_auth.run
-        user = User.find_by(tn: @***REMOVED***_auth.***REMOVED***_user_tn)
-        sign_in :user, user
-
-        user_iss = UserIss.find_by(tn: @***REMOVED***_auth.data['user_id'])
-        session[:id_tn] = user_iss.id_tn
+        sign_in @***REMOVED***_auth.data[:user]
       else
-        render json: { full_messages: @***REMOVED***_auth.data.errors.full_messages(', ') }, status: 403
+        render json: { full_message: @***REMOVED***_auth.errors.full_messages.join(', ') }, status: 403
       end
-
-=begin
-      if params[:sid]
-        @user_session = UserSession.find(params[:sid])
-        if @user_session.nil?
-          render json: { full_message: 'Доступ запрещен' }, status: 403
-        else
-          data = PHP.unserialize(@user_session.data)
-          if data['authed'] && Time.zone.now < (Time.zone.at(@user_session.last_access) + @user_session.timeout)
-            @user = User.find_by(tn: 999_999)
-            if @user.nil?
-              render json: { full_message: 'Ошибка доступа. Обратитесь к администратору' }, status: 403
-            else
-              sign_in :user, @user
-              @user_iss = UserIss.find_by(tn: data['user_id'])
-              if @user_iss
-                session[:id_tn] = @user_iss.id_tn
-              else
-                render json: { full_message: 'Ошибка доступа. Обратитесь к администратору' }, status: 403
-              end
-            end
-          else
-            render json: { full_message: 'Доступ запрещен' }, status: 403
-          end
-        end
-      else
-        render json: { full_message: 'Доступ запрещен' }, status: 403
-      end
-=end
     end
 
     # Проверить, есть ли у пользователя доступ на создание/редактирование/удаление рабочих мест указанного отдела.
