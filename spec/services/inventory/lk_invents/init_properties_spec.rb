@@ -6,10 +6,11 @@ module Inventory
       let(:user) { build(:user) }
 
       context 'with id_tn' do
-        let!(:workplace_count) { create(:active_workplace_count, user: user) }
+        let!(:workplace_count) { create(:active_workplace_count, users: [user]) }
         subject { InitProperties.new(user.id_tn) }
 
-        include_examples 'run methods', %w[load_divisions load_inv_types load_workplace_types load_workplace_specializations load_locations exclude_mandatory_fields]
+        include_examples 'run methods', %w[load_divisions load_inv_types load_workplace_types
+load_workplace_specializations load_locations exclude_mandatory_fields]
 
         its(:data) { is_expected.not_to be_nil }
 

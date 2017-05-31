@@ -32,16 +32,8 @@ module Inventory
 
       # Получить список отделов, доступных на редактирование для указанного пользователя.
       def load_divisions
-        @divisions = WorkplaceResponsible
-                       .left_outer_joins(:workplace_count)
-                       .select('invent_workplace_count.workplace_count_id, invent_workplace_count.division,
-  invent_workplace_count.time_start, invent_workplace_count.time_end')
-                       .where(id_tn: @id_tn)
+        @divisions = User.find_by(id_tn: @id_tn).workplace_counts
 
-        add_allowed_time
-      end
-
-      def add_allowed_time
         @data[:divisions] = @divisions.as_json.each do |division|
           division['allowed_time'] = time_not_passed?(division['time_start'], division['time_end'])
 
