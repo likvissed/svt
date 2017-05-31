@@ -29,15 +29,15 @@ module Inv
         origins 'http://***REMOVED***', 'https://***REMOVED***.***REMOVED***.ru', 'https://***REMOVED***.npopm.ru',
                 'http://***REMOVED***.***REMOVED***.ru', 'http://***REMOVED***.npopm.ru', '***REMOVED***.npopm.ru',
                 '***REMOVED***.***REMOVED***.ru'
-        resource '/inventory/***REMOVED***_invents/init_properties/*', headers: :any, methods: [:get]
-        resource '/inventory/***REMOVED***_invents/show_division_data/*', headers: :any, methods: [:get]
-        resource '/inventory/***REMOVED***_invents/pc_config_from_audit/*', headers: :any, methods: [:get]
-        resource '/inventory/***REMOVED***_invents/create_workplace/', headers: :any, methods: [:post]
-        resource '/inventory/***REMOVED***_invents/edit_workplace/*', headers: :any, methods: [:get]
-        resource '/inventory/***REMOVED***_invents/update_workplace/*', headers: :any, methods: [:patch]
-        resource '/inventory/***REMOVED***_invents/delete_workplace/*', headers: :any, methods: [:delete]
-        resource '/inventory/***REMOVED***_invents/generate_pdf/*', headers: :any, methods: [:get]
-        resource '/inventory/***REMOVED***_invents/get_pc_script/', headers: :any, methods: [:get]
+        resource '/inventory/***REMOVED***_invents/init_properties*', headers: :any, methods: [:get]
+        resource '/inventory/***REMOVED***_invents/show_division_data*', headers: :any, methods: [:get]
+        resource '/inventory/***REMOVED***_invents/pc_config_from_audit*', headers: :any, methods: [:get]
+        resource '/inventory/***REMOVED***_invents/create_workplace*', headers: :any, methods: [:post]
+        resource '/inventory/***REMOVED***_invents/edit_workplace*', headers: :any, methods: [:get]
+        resource '/inventory/***REMOVED***_invents/update_workplace*', headers: :any, methods: [:patch]
+        resource '/inventory/***REMOVED***_invents/delete_workplace*', headers: :any, methods: [:delete]
+        resource '/inventory/***REMOVED***_invents/generate_pdf*', headers: :any, methods: [:get]
+        resource '/inventory/***REMOVED***_invents/get_pc_script*', headers: :any, methods: [:get]
       end
     end
 
