@@ -2,7 +2,7 @@ module Inventory
   # Класс определяет, существует ли комната в указанном корпусе. Если нет - создает комнату.
   # name - номер комнаты
   # building_id - id корпуса
-  class Room
+  class Room < ApplicationService
     attr_reader :data
 
     validate :building_exist?

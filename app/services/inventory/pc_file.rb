@@ -1,5 +1,5 @@
 module Inventory
-  class PcFile
+  class PcFile < ApplicationService
     attr_reader :default_dir, :path_to_file_dir, :path_to_file
 
     def initialize(property_value_id, uploaded_file = nil)
