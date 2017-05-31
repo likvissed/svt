@@ -3,8 +3,6 @@ module Inventory
     # Класс проверяет запись по указанному sid в таблице user_session. Это необходимо, чтобы убедиться, что
     # пользователь действительно авторизован в ЛК
     class LkAuthorization < BaseService
-      include ActiveModel::Validations
-
       attr_reader :user_session
 
       # sid - SID пользователя в ЛК

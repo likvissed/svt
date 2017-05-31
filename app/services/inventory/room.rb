@@ -3,8 +3,6 @@ module Inventory
   # name - номер комнаты
   # building_id - id корпуса
   class Room
-    include ActiveModel::Validations
-
     attr_reader :data
 
     validate :building_exist?

@@ -1,8 +1,6 @@
 module Inventory
   module LkInvents
     class DeleteWorkplace < BaseService
-      include ActiveModel::Validations
-
       def initialize(workplace_id)
         @workplace_id = workplace_id
       end

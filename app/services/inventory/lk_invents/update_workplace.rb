@@ -2,8 +2,6 @@ module Inventory
   module LkInvents
     # Обновить данные о рабочем месте.
     class UpdateWorkplace < BaseService
-      include ActiveModel::Validations
-
       attr_reader :workplace_params, :workplace
 
       # workplace_id - workplace_id изменяемого рабочего места

@@ -3,8 +3,6 @@ module Inventory
     # Создать рабочее место. Здесь устанавливаются все необходимые параметры (id комнаты, файл), выполняется логирование
     # полученных данных и создается рабочее место.
     class CreateWorkplace < BaseService
-      include ActiveModel::Validations
-
       attr_reader :workplace_params, :workplace
 
       # strong_params - параметры, пройденные фильтрацию 'strong_params'

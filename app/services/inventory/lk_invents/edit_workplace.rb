@@ -2,8 +2,6 @@ module Inventory
   module LkInvents
     # Получить данные о выбранном рабочем месте.
     class EditWorkplace < BaseService
-      include ActiveModel::Validations
-
       attr_reader :workplace_id
 
       # workplace_id - workplace_id рабочего места

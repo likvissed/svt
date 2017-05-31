@@ -2,8 +2,6 @@ module Inventory
   module LkInvents
     # Получить данные о конфигурации ПК от системы Аудит.
     class PcConfigFromAudit < BaseService
-      include ActiveModel::Validations
-
       attr_reader :host
       attr_accessor :inv_num
 
