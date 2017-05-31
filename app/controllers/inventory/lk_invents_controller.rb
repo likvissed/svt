@@ -8,12 +8,9 @@ module Inventory
     authorize_resource class: false, param_method: :workplace_params
     before_action :check_workplace_count_access, only: %i[create_workplace edit_workplace update_workplace delete_workplace]
     before_action :check_timeout, except: %i[init_properties show_division_data pc_config_from_audit send_pc_script]
-    after_action -> { sign_out @user }
+    after_action -> { sign_out @***REMOVED***_auth.data[:user] }
 
     respond_to :json
-
-    # Табельный номер пользователя в таблице users, от имени которого пользователи ЛК получают доступ в систему.
-    # @tn_***REMOVED***_user = 999_999
 
     def init_properties
       @properties = LkInvents::InitProperties.new(params[:id_tn])
@@ -42,7 +39,7 @@ module Inventory
       if @pc_config.run
         render json: @pc_config.data
       else
-        render json: { full_message: @pc_config.errors.full_messages.join(', ') }, status: 422
+        render json: { full_message: @pc_config.errors.full_messages.join('. ') }, status: 422
       end
     end
 
@@ -53,7 +50,7 @@ module Inventory
       if @workplace.run
         render json: { workplace: @workplace.data, full_message: 'Рабочее место создано' }
       else
-        render json: { full_message: @workplace.errors.full_messages.join(', ') }, status: 422
+        render json: { full_message: @workplace.errors.full_messages.join('. ') }, status: 422
       end
     end
 
@@ -63,7 +60,7 @@ module Inventory
       if @workplace.run
         render json: @workplace.data
       else
-        render json: { full_message: @workplace.errors.full_messages.join(', ') }, status: 422
+        render json: { full_message: @workplace.errors.full_messages.join('. ') }, status: 422
       end
     end
 
@@ -73,7 +70,7 @@ module Inventory
       if @workplace.run
         render json: { workplace: @workplace.data, full_message: 'Данные о рабочем месте обновлены' }
       else
-        render json: { full_message: @workplace.errors.full_messages.join(', ') }, status: 422
+        render json: { full_message: @workplace.errors.full_messages.join('. ') }, status: 422
       end
     end
 
@@ -83,7 +80,7 @@ module Inventory
       if @workplace.run
         render json: { full_message: 'Рабочее место удалено' }
       else
-        render json: { full_message: @workplace.errors.full_messages.join(', ') }, status: 422
+        render json: { full_message: @workplace.errors.full_messages.join('. ') }, status: 422
       end
     end
 
@@ -113,24 +110,24 @@ module Inventory
       if @***REMOVED***_auth.run
         sign_in @***REMOVED***_auth.data[:user]
       else
-        render json: { full_message: @***REMOVED***_auth.errors.full_messages.join(', ') }, status: 403
+        render json: { full_message: @***REMOVED***_auth.errors.full_messages.join('. ') }, status: 403
       end
     end
 
     # Проверить, есть ли у пользователя доступ на создание/редактирование/удаление рабочих мест указанного отдела.
     def check_workplace_count_access
       params[:workplace] = JSON.parse(params[:workplace])
-      unless params[:workplace]
-        render json: { full_message: 'Доступ запрещен' }, status: 403
-        return
-      end
+      # unless params[:workplace]
+      #   render json: { full_message: 'Доступ запрещен' }, status: 403
+      #   return
+      # end
 
-      workplace_count
-      if @workplace_count
-        unless @workplace_count.workplace_responsibles.any? { |resp| resp.id_tn == session[:id_tn] }
-          render json: { full_message: 'Доступ запрещен' }, status: 403
-        end
-      end
+      # workplace_count
+      # if @workplace_count
+      #   unless @workplace_count.workplace_responsibles.any? { |resp| resp.id_tn == session[:id_tn] }
+      #     render json: { full_message: 'Доступ запрещен' }, status: 403
+      #   end
+      # end
     end
 
     # Проверить, прошло ли разрешенное время редактирования для указанного отдела.
