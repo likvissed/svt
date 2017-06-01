@@ -16,10 +16,7 @@ module Inventory
       def run
         @workplace = Workplace.find(@workplace_id)
 
-        create_or_get_room
-        if @file.kind_of?(ActionDispatch::Http::UploadedFile) || @file.kind_of?(Rack::Test::UploadedFile)
-          set_file_into_params
-        end
+        prepare_params
         update_workplace
       rescue RuntimeError
         false

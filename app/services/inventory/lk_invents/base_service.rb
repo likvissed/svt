@@ -1,6 +1,16 @@
 module Inventory
   module LkInvents
     class BaseService < ApplicationService
+      private
+
+      # Подготовка параметров к записи: получение room_id, запись файла в параметры.
+      def prepare_params
+        create_or_get_room
+        if @file.kind_of?(ActionDispatch::Http::UploadedFile) || @file.kind_of?(Rack::Test::UploadedFile)
+          set_file_into_params
+        end
+      end
+
       # Записать файл в @workplace_params.
       # 1. Ищется 'item' с типом, который содержит свойство 'Отчет о конфигурации'
       # 2. В найденном 'item' ищется 'inv_property_value' со свойством 'Отчет о конфигурации'

@@ -8,15 +8,12 @@ module Inventory
       # strong_params - параметры, пройденные фильтрацию 'strong_params'
       # file - объект файл
       def initialize(strong_params, file = nil)
-        @workplace_params = strong_params.with_indifferent_access
+        @workplace_params = strong_params
         @file = file
       end
 
       def run
-        create_or_get_room
-        if @file.kind_of?(ActionDispatch::Http::UploadedFile) || @file.kind_of?(Rack::Test::UploadedFile)
-          set_file_into_params
-        end
+        prepare_params
         @workplace = Workplace.new(@workplace_params)
         log_data
         save_workplace

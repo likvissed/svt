@@ -25,7 +25,7 @@ module Inventory
           expect(subject.workplace_params[:location_room_id]).to eq room.room_id
         end
 
-        include_examples 'run methods', %w[create_or_get_room update_workplace]
+        include_examples 'run methods', %w[prepare_params create_or_get_room update_workplace]
         include_examples 'not run methods', 'set_file_into_params'
 
         it 'changes workplace attributes' do

@@ -25,7 +25,7 @@ module Inventory
           expect(subject.workplace).to be_an_instance_of Workplace
         end
 
-        include_examples 'run methods', %w[create_or_get_room log_data save_workplace]
+        include_examples 'run methods', %w[prepare_params create_or_get_room log_data save_workplace]
         include_examples 'not run methods', 'set_file_into_params'
 
         it 'saves the new workplace in the database' do
