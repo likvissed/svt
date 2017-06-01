@@ -18,7 +18,7 @@ Rails.application.routes.draw do
 
     # Запросы с ЛК
     # Инициализация
-    get '***REMOVED***_invents/init_properties/:id_tn', to: '***REMOVED***_invents#init_properties', constraints: { id_tn: /\d+/ }
+    get '***REMOVED***_invents/init_properties', to: '***REMOVED***_invents#init_properties'
     # Получить данные по выбранном отделу (список РМ, макс. число, список работников отдела)
     get '***REMOVED***_invents/show_division_data/:division', to: '***REMOVED***_invents#show_division_data', constraints: { division: /\d+/ }
     # Получить данные о системном блоке из аудита

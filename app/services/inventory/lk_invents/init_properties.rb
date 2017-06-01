@@ -3,17 +3,17 @@ module Inventory
     # Загрузить все типы оборудования, типы РМ, их возможные свойства, виды деятельности и расположения.
     class InitProperties < BaseService
       # Опционально:
-      # - если установлен id_tn - загрузить список отделов, которые указанный пользователь может редактировать
+      # - если установлен current_user - загрузить список отделов, которые указанный пользователь может редактировать
       # - если установлен division - загрузить список работников отдела.
-      def initialize(id_tn = nil, division = nil)
+      def initialize(current_user = nil, division = nil)
         @data = {}
-        @id_tn = id_tn
+        @current_user = current_user
         @division = division
       end
 
       # mandatory - свойство mandatory таблицы invent_property
       def run(mandatory = false)
-        load_divisions if @id_tn
+        load_divisions if @current_user
         load_inv_types
         load_workplace_types
         load_workplace_specializations
@@ -32,7 +32,7 @@ module Inventory
 
       # Получить список отделов, доступных на редактирование для указанного пользователя.
       def load_divisions
-        @divisions = User.find_by(id_tn: @id_tn).workplace_counts
+        @divisions = @current_user.workplace_counts
 
         @data[:divisions] = @divisions.as_json.each do |division|
           division['allowed_time'] = time_not_passed?(division['time_start'], division['time_end'])

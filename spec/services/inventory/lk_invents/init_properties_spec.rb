@@ -7,7 +7,7 @@ module Inventory
 
       context 'with id_tn' do
         let!(:workplace_count) { create(:active_workplace_count, users: [user]) }
-        subject { InitProperties.new(user.id_tn) }
+        subject { InitProperties.new(user) }
 
         include_examples 'run methods', %w[load_divisions load_inv_types load_workplace_types
 load_workplace_specializations load_locations exclude_mandatory_fields]
