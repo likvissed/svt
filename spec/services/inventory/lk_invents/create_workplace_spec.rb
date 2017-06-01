@@ -3,7 +3,7 @@ require 'spec_helper'
 module Inventory
   module LkInvents
     RSpec.describe CreateWorkplace, type: :model do
-      let!(:workplace_count) { create(:active_workplace_count, user: build(:user)) }
+      let!(:workplace_count) { create(:active_workplace_count, users: [build(:user)]) }
 
       context 'with valid workplace params' do
         let(:room) { create :iss_room }

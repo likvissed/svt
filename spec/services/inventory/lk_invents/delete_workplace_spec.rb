@@ -3,7 +3,7 @@ require 'spec_helper'
 module Inventory
   module LkInvents
     RSpec.describe DeleteWorkplace, type: :model do
-      let!(:workplace_count) { create(:active_workplace_count, user: build(:user)) }
+      let!(:workplace_count) { create(:active_workplace_count, users: [build(:user)]) }
       let!(:workplace) do
         create(:workplace_pk, :add_items, items: %i[pc monitor], workplace_count: workplace_count)
       end

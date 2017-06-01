@@ -4,7 +4,7 @@ module Inventory
   module LkInvents
     RSpec.describe EditWorkplace, type: :model do
       context 'when workplace is found' do
-        let(:workplace_count) { create(:active_workplace_count, user: build(:user)) }
+        let(:workplace_count) { create(:active_workplace_count, users: [build(:user)]) }
         let!(:workplace) do
           create(:workplace_pk, :add_items, items: %i[pc monitor], workplace_count: workplace_count)
         end
