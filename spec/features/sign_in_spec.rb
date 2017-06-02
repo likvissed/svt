@@ -7,7 +7,7 @@ feature 'User sign in', %q(
 ) do
 
   given(:user) { create :user }
-  given(:unregistered_user) { attributes_for :***REMOVED***_user }
+  given(:unregistered_user) { attributes_for :user }
 
   scenario 'Registered user tries to sign in' do
     sign_in user.as_json(methods: :fullname)
@@ -17,7 +17,7 @@ feature 'User sign in', %q(
   end
 
   scenario 'Unregistered user tries to sign in', js: true do
-    sign_in unregistered_user
+    sign_in unregistered_user.as_json(methods: :fullname)
 
     expect(page).to have_selector 'body#svt_sign_in'
     expect(page).to have_content 'Доступ запрещен'

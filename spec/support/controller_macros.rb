@@ -17,7 +17,7 @@ module ControllerMacros
 
   def sign_in_through_***REMOVED***_user
     before do
-      @***REMOVED***_user = create(:***REMOVED***_user)
+      @***REMOVED***_user = create(:user)
       @request.env['devise.mapping'] = Devise.mappings[:user]
       sign_in @***REMOVED***_user
     end
