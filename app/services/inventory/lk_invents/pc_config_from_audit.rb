@@ -38,11 +38,11 @@ module Inventory
         Timeout.timeout(Audit::TIMEOUT_FOR_REQUEST) do
           loop do
             begin
-              @data = Audit.get_data(@host[:name])
-              if @data.nil?
+              @data = Audit.get_data(host[:name])
+              if data.nil?
                 errors.add(:base, :empty_data)
                 return false
-              elsif !Audit.relevance?(@data)
+              elsif !Audit.relevance?(data)
                 errors.add(:base, :not_relevant)
                 return false
               end
@@ -59,9 +59,9 @@ module Inventory
       end
 
       def get_host_name
-        @host = HostIss.get_host(@inv_num)
+        @host = HostIss.get_host(inv_num)
 
-        if @host.nil?
+        if host.nil?
           errors.add(:host, :not_found)
           raise('abort')
         end

@@ -26,7 +26,7 @@ module Inventory
         return if @wpc_params['users_attributes'].nil?
 
         # Найти каждого пользователя в таблице UserIss.
-        @data.users.each do |resp|
+        data.users.each do |resp|
           @user = UserIss.find_by(tn: resp.tn)
 
           check_user(resp) if @user
@@ -47,10 +47,10 @@ module Inventory
 
       # Сохранить отдел
       def save_workplace
-        return true if @data.save
+        return true if data.save
 
-        error[:object] = @data.errors
-        error[:full_message] = @data.errors.full_messages.join('. ')
+        error[:object] = data.errors
+        error[:full_message] = data.errors.full_messages.join('. ')
 
         raise 'abort'
       end

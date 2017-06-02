@@ -25,10 +25,10 @@ module Inventory
 
       # Проверяем, действительно ли авторизован пользователь в ЛК.
       def check_timeout
-        @data[:session] = PHP.unserialize(@user_session.data)
+        @data[:session] = PHP.unserialize(user_session.data)
 
         unless @data[:session]['authed'] &&
-               Time.zone.now < (Time.zone.at(@user_session.last_access) + @user_session.timeout)
+               Time.zone.now < (Time.zone.at(user_session.last_access) + user_session.timeout)
           raise 'abort'
         end
       end

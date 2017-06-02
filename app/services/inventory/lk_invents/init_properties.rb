@@ -34,7 +34,7 @@ module Inventory
       def load_divisions
         @divisions = @current_user.workplace_counts
 
-        @data[:divisions] = @divisions.as_json.each do |division|
+        data[:divisions] = @divisions.as_json.each do |division|
           division['allowed_time'] = time_not_passed?(division['time_start'], division['time_end'])
 
           division.delete('time_start')
@@ -50,7 +50,7 @@ module Inventory
 
       # Получить список типов оборудования с их свойствами и возможными значениями.
       def load_inv_types
-        @data[:eq_types] = InvType
+        data[:eq_types] = InvType
                              .includes(:inv_models, inv_properties: { inv_property_lists: :inv_model_property_lists })
                              .where('name != "unknown"')
       end
@@ -58,26 +58,26 @@ module Inventory
       def load_workplace_types
         # Получить список типов РМ.
         @wp_types = WorkplaceType.all
-        @data[:wp_types] = @wp_types.as_json.each do |type|
+        data[:wp_types] = @wp_types.as_json.each do |type|
           type['full_description'] = WorkplaceType::DESCR[type['name'].to_sym]
         end
       end
 
       # Получить список направлений.
       def load_workplace_specializations
-        @data[:specs] = WorkplaceSpecialization.all
+        data[:specs] = WorkplaceSpecialization.all
       end
 
       # Получить список площадок и корпусов.
       def load_locations
-        @data[:iss_locations] = IssReferenceSite
+        data[:iss_locations] = IssReferenceSite
                                   .includes(:iss_reference_buildings)
                                   .as_json(include: :iss_reference_buildings)
       end
 
       # Исключить все свойства inv_property, где mandatory = false (исключение для системных блоков).
       def exclude_mandatory_fields
-        @data[:eq_types] = @data[:eq_types].as_json(
+        data[:eq_types] = data[:eq_types].as_json(
           include: {
             inv_properties: {
               include: {
@@ -99,7 +99,7 @@ module Inventory
 
       # Получить список работников указанного отдела
       def load_users
-        @data[:users] = UserIss
+        data[:users] = UserIss
                    .select(:id_tn, :fio)
                    .where(dept: @division)
       end

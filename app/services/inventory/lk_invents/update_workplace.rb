@@ -25,7 +25,7 @@ module Inventory
       private
 
       def update_workplace
-        if @workplace.update(@workplace_params)
+        if workplace.update(workplace_params)
           # Чтобы избежать N+1 запрос в методе 'transform_workplace' нужно создать объект ActiveRecord (например,
           # вызвать find)
           @workplace = Workplace
@@ -35,13 +35,13 @@ module Inventory
                            :iss_reference_room,
                            inv_items: { inv_property_values: :inv_property }
                          )
-                         .find(@workplace.workplace_id)
+                         .find(workplace.workplace_id)
 
           prepare_workplace
         else
-          Rails.logger.error @workplace.errors.full_messages.inspect.red
+          Rails.logger.error workplace.errors.full_messages.inspect.red
 
-          errors.add(:base, @workplace.errors.full_messages.join(', '))
+          errors.add(:base, workplace.errors.full_messages.join(', '))
           raise 'abort'
         end
       end
