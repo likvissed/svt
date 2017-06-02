@@ -3,7 +3,7 @@ require 'spec_helper'
 module Inventory
   module WorkplaceCounts
     RSpec.describe Create, type: :model do
-      let!(:role) { create :***REMOVED***_user_role }
+      # let!(:role) { create :***REMOVED***_user_role }
       let(:test_user) { build :user }
       let(:***REMOVED***_user) { build :***REMOVED***_user }
       let(:workplace_count) do
@@ -13,7 +13,7 @@ module Inventory
         tmp['users_attributes'].each do |resp|
           # Удаляем все ключи кроме 'tn'. Ключ 'phone' удалили, чтобы проверить, будет ли сервис автоматически
           # вставлять номер телефона из таблицы UserIss
-          resp.keys.each { |key| resp.delete(key) unless key.to_s == 'tn' }
+          resp.keys.each { |key| resp.delete(key) unless %w[id tn].include? key.to_s }
         end
         tmp.delete('users')
 
@@ -36,16 +36,16 @@ module Inventory
         end
 
         context 'when one user exists and second user not exists in database' do
-          let!(:test_user) { create :user }
+          let!(:***REMOVED***_user) { create :***REMOVED***_user }
 
-          it 'saves a user in database' do
-            expect { subject.run }.to change(User, :count).from(1).to(2)
-          end
-
-          it 'adds the :***REMOVED***_user role to created user' do
-            subject.run
-            expect(User.last.role).to eq role
-          end
+          # it 'saves a user in database' do
+          #   expect { subject.run }.to change(User, :count).from(1).to(2)
+          # end
+          #
+          # it 'adds the :***REMOVED***_user role to created user' do
+          #   subject.run
+          #   expect(User.last.role).to eq Role.find_by(name: :***REMOVED***_user)
+          # end
         end
 
         context 'when users not exists yet in database' do
@@ -63,7 +63,7 @@ module Inventory
           context 'without phone in the received params'
         end
 
-        context 'with multiple identical users' do
+        context 'with multiple valid identical users' do
           let(:workplace_count) do
             tmp = build(:active_workplace_count, users: [test_user, test_user]).as_json(include: :users)
 
@@ -78,26 +78,9 @@ module Inventory
           end
           subject { Create.new(workplace_count) }
 
-          context 'when user already exists in database' do
-            let!(:test_user) { create :user }
-
-            it 'creates only one record in the workplace_responsible table' do
-              expect { subject.run }.to change(WorkplaceResponsible, :count).by(1)
-            end
-
-            it 'does not create user in the users table' do
-              expect { subject.run }.not_to change(User, :count)
-            end
-          end
-
-          context 'when user not exists yet in database' do
-            it 'creates only one record in the workplace_responsible table' do
-              expect { subject.run }.to change(WorkplaceResponsible, :count).by(1)
-            end
-
-            it 'create only one user in the users table' do
-              expect { subject.run }.to change(User, :count).by(1)
-            end
+          it 'adds :multiple_user error to the :base key' do
+            subject.run
+            expect(subject.data.errors.details[:base]).to include(error: :multiple_user, tn: test_user.tn)
           end
         end
 
@@ -122,6 +105,10 @@ module Inventory
               subject.run
               expect(User.last.phone).to eq test_user.phone
             end
+          end
+
+          context 'when user exists' do
+            it 'change phone number'
           end
         end
 
@@ -156,6 +143,33 @@ module Inventory
           it 'adds :add_at_least_one_responsible error to the :base object' do
             subject.run
             expect(subject.error[:object].details[:base]).to include(error: :add_at_least_one_responsible)
+          end
+        end
+
+        context 'with multiple invalid identical users' do
+          let(:test_user) { build :user, tn: 123321 }
+          let(:workplace_count) do
+            tmp = build(:active_workplace_count, users: [test_user, test_user]).as_json(include: :users)
+
+            tmp['users_attributes'] = tmp['users']
+            tmp['users_attributes'].each do |resp|
+              # Удаляем все лишние ключи
+              resp.keys.each { |key| resp.delete(key) unless key.to_s == 'tn' }
+              # resp['tn'] = '123321'
+            end
+            tmp.delete('users')
+
+            tmp
+          end
+          subject { Create.new(workplace_count) }
+          before { subject.run }
+
+          it 'adds :multiple_user error to the :base key' do
+            expect(subject.data.errors.details[:base]).to include(error: :multiple_user, tn: test_user.tn)
+          end
+
+          it 'adds :user_not_found error to the :base key' do
+            expect(subject.data.errors.details[:base]).to include(error: :user_not_found, tn: test_user.tn.to_s)
           end
         end
 

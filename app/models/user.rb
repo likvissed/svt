@@ -13,10 +13,7 @@ class User < ApplicationRecord
   validates :id_tn, :tn, presence: true, uniqueness: true
 
   # Для тестов.
-  attr_accessor :login, :email, :division, :tel, :fullname
-  # Необходимо для того, чтобы во время создания отдела (сервис WorkplaceCounts::Create/Update) определять, нужно ли
-  # создавать пользователя или он уже создан
-  attr_accessor :reject
+  attr_accessor :login, :email, :division, :tel
 
   def self.find_for_database_authentication(warden_conditions)
     conditions = warden_conditions.dup

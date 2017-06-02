@@ -16,7 +16,6 @@ ru:
             необходимо нажать кнопку "Ввод данных вручную"'
           not_relevant: 'Получить данные автоматически не удалось, вам необходимо ввести их вручную. Для этого вам
             необходимо нажать кнопку "Ввод данных вручную"'
+
         inventory/***REMOVED***_invents/***REMOVED***_authorization:
           access_denied: 'Доступ запрещен'
-        inventory/workplace_counts/create:
-          user_not_found: 'Информация по табельному %{tn} не найдена'
