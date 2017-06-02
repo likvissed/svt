@@ -1,6 +1,8 @@
 require 'application_responder'
 
 class ApplicationController < ActionController::Base
+  include Pundit
+
   self.responder = ApplicationResponder
 
   layout :layout
@@ -9,7 +11,7 @@ class ApplicationController < ActionController::Base
   before_action :authenticate_user!
 
   # Обрабтка случаев, когда у пользователя нет доступа на выполнение запрашиваемых действий
-  rescue_from CanCan::AccessDenied do |exception|
+  rescue_from Pundit::NotAuthorizedError do |exception|
     respond_to do |format|
       format.html { render_403 }
       format.json { render json: { full_message: 'Доступ запрещен' }, status: 403 }

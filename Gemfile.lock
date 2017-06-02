@@ -63,7 +63,6 @@ GEM
       sass (>= 3.3.4)
     builder (3.2.3)
     byebug (9.0.6)
-    cancancan (1.16.0)
     capistrano (3.8.1)
       airbrussh (>= 1.0.0)
       i18n
@@ -177,6 +176,8 @@ GEM
     powerpack (0.1.1)
     public_suffix (2.0.5)
     puma (3.8.2)
+    pundit (1.1.0)
+      activesupport (>= 3.0.0)
     rack (2.0.2)
     rack-cors (0.4.1)
     rack-protection (2.0.0)
@@ -321,7 +322,6 @@ DEPENDENCIES
   binding_of_caller
   bootstrap-sass
   byebug
-  cancancan
   capistrano
   capistrano-bundler
   capistrano-passenger
@@ -343,6 +343,7 @@ DEPENDENCIES
   omniauth
   php_serialize
   puma (~> 3.0)
+  pundit
   rack-cors
   rails (~> 5.0.1)
   rails-controller-testing

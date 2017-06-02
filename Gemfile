@@ -16,9 +16,9 @@ gem 'responders'
 gem 'sidekiq'
 
 # Authorization
-gem 'cancancan'
 gem 'devise'
 gem 'omniauth'
+gem 'pundit'
 
 # MySQL
 gem 'mysql2'
