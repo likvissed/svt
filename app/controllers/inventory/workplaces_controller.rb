@@ -1,7 +1,6 @@
 module Inventory
   class WorkplacesController < ApplicationController
     protect_from_forgery except: :create
-    load_and_authorize_resource
 
     def index
       respond_to do |format|

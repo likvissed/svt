@@ -3,7 +3,7 @@ require 'rails_helper'
 module Inventory
   RSpec.describe WorkplacesController, type: :controller do
     sign_in_user
-    let!(:workplace_count) { create(:active_workplace_count, user: @user) }
+    let!(:workplace_count) { create(:active_workplace_count, users: [@user]) }
 
     describe 'GET #index' do
       context 'when html request' do

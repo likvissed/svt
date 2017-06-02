@@ -3,12 +3,13 @@ require 'spec_helper'
 module Inventory
   module LkInvents
     RSpec.describe ShowDivisionData, type: :model do
-      let(:workplace_count) { create(:active_workplace_count, users: [build(:user)]) }
+      let(:user) { build :user }
+      let(:workplace_count) { create(:active_workplace_count, users: [user]) }
       let!(:workplace) do
         create(:workplace_pk, :add_items, items: %i[pc monitor], workplace_count: workplace_count)
       end
 
-      subject { ShowDivisionData.new(workplace_count.division) }
+      subject { ShowDivisionData.new(user,workplace_count.division) }
 
       include_examples 'run methods', %w[load_workplace load_users]
 

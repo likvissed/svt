@@ -5,15 +5,16 @@ module Inventory
     skip_before_action :authenticate_user!
     skip_before_action :verify_authenticity_token
     before_action :check_***REMOVED***_authorization
-    authorize_resource class: false, param_method: :workplace_params
-    before_action :check_workplace_count_access, only: %i[create_workplace edit_workplace update_workplace delete_workplace]
-    before_action :check_timeout, except: %i[init_properties show_division_data pc_config_from_audit send_pc_script]
+    # authorize_resource class: false, param_method: :workplace_params
+    # before_action :check_workplace_count_access, only: %i[create_workplace edit_workplace update_workplace delete_workplace]
+    # before_action :check_timeout, except: %i[init_properties show_division_data pc_config_from_audit send_pc_script]
+    # after_action :verify_authorized, except: %i[init_properties pc_config_from_audit]
     after_action -> { sign_out @***REMOVED***_auth.data[:user] }
 
     respond_to :json
 
     def init_properties
-      @properties = LkInvents::InitProperties.new(params[:id_tn])
+      @properties = LkInvents::InitProperties.new(current_user)
 
       if @properties.run
         render json: @properties.data
@@ -22,9 +23,8 @@ module Inventory
       end
     end
 
-
     def show_division_data
-      @division = LkInvents::ShowDivisionData.new(params[:division])
+      @division = LkInvents::ShowDivisionData.new(current_user, params[:division])
 
       if @division.run
         render json: @division.data
@@ -56,6 +56,7 @@ module Inventory
 
     def edit_workplace
       @workplace = LkInvents::EditWorkplace.new(params[:workplace_id])
+      # authorize @workplace, :run?
 
       if @workplace.run
         render json: @workplace.data
@@ -187,6 +188,7 @@ module Inventory
     end
 
     def workplace_params
+      params[:workplace] = JSON.parse(params[:workplace])
       params.require(:workplace).permit(
         :workplace_count_id,
         :workplace_type_id,
