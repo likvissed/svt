@@ -86,7 +86,7 @@ FormValidationController.prototype._setValidations = function (array, flag) {
 
   $.each(array, function (key, value) {
     $.each(value, function (index, message) {
-      if (key != 'base')
+      if (self.form[self._formName + '[' + key + ']'])
         self.form[self._formName + '[' + key + ']'].$setValidity(message, flag);
     });
   });
