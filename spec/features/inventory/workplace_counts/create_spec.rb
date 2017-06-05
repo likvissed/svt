@@ -19,7 +19,7 @@ module Inventory
 
       context 'Authenticated user' do
         background do
-          sign_in user.as_json(methods: :fullname)
+          sign_in user
           visit inventory_workplace_counts_path
 
           click_button 'Добавить'

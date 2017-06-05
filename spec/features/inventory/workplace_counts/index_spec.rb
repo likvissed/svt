@@ -18,7 +18,7 @@ module Inventory
       end
 
       scenario 'Authenticated user tries to go to the index page', js: true do
-        sign_in user.as_json(methods: :fullname)
+        sign_in user
         visit inventory_workplace_counts_path
 
         expect(page).to have_content 'Выход'
