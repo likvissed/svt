@@ -9,7 +9,9 @@
         = label_tag :workplace_count_division, class: "control-label" do
           %abbr{ title: "Обязательное поле" } *
           %b Отдел
-        = text_field_tag "workplace_count[division]", "", class: "form-control", "ng-model": "modal.data.division"
+        = text_field_tag "workplace_count[division]", "{{ modal.data.division }}", class: "form-control", "ng-model": |
+        "modal.data.division" |
+        -#
         %span.help-block{ "ng-show": "modal.form['workplace_count[division]'].$invalid", "ng-bind": "modal |
             .errorMessage('workplace_count[division]')" } |
 
@@ -17,10 +19,11 @@
         = label_tag :workplace_count_time_start, class: "control-label" do
           %abbr{ title: "Обязательное поле" } *
           %b Дата начала ввода данных
-        = text_field_tag "workplace_count[time_start]", "", class: "form-control", "ng-model": "modal.data |
-        .time_start", "uib-datepicker-popup": "{{ modal.time_start.format }}", "ng-model-options": "{ timezone: 'utc' |
-         }", "ng-focus": "modal.openDatePicker('time_start')", "datepicker-options": "modal.dateOptions", "is-open": |
-         "modal.time_start.openDatePicker", "popup-placement": "bottom-left", "show-button-bar": false |
+        = text_field_tag "workplace_count[time_start]", "{{ modal.data.time_start }}", class: "form-control", |
+         "ng-model": "modal.data.time_start", "uib-datepicker-popup": "{{ modal.time_start.format }}", |
+         "ng-model-options": "{ timezone: 'utc' }", "ng-focus": "modal.openDatePicker('time_start')", |
+         "datepicker-options": "modal.dateOptions", "is-open": "modal.time_start.openDatePicker", "popup-placement": |
+         "bottom-left", "show-button-bar": false |
         -#
         %span.help-block{ "ng-show": "modal.form['workplace_count[time_start]'].$invalid", "ng-bind": "modal |
             .errorMessage('workplace_count[time_start]')" } |
@@ -29,10 +32,11 @@
         = label_tag :workplace_count_time_end, class: "control-label" do
           %abbr{ title: "Обязательное поле" } *
           %b Дата окончания ввода данных
-        = text_field_tag "workplace_count[time_end]", "", class: "form-control", "ng-model": "modal.data.time_end", |
-        "uib-datepicker-popup": "{{ modal.time_end.format }}", "ng-model-options": "{ timezone: 'utc' }", "ng-focus": |
-        "modal.openDatePicker('time_end')", "datepicker-options": "modal.dateOptions", "is-open": "modal.time_end |
-        .openDatePicker", "popup-placement": "bottom-left", "show-button-bar": false |
+        = text_field_tag "workplace_count[time_end]", "{{ modal.data.time_end }}", class: "form-control", "ng-model": |
+        "modal.data.time_end", "uib-datepicker-popup": "{{ modal.time_end.format }}", "ng-model-options": |
+        "{ timezone: 'utc' }", "ng-focus": "modal.openDatePicker('time_end')", "datepicker-options": |
+        "modal.dateOptions", "is-open": "modal.time_end.openDatePicker", "popup-placement": "bottom-left", |
+        "show-button-bar": false |
         -#
         %span.help-block{ "ng-show": "modal.form['workplace_count[time_end]'].$invalid", "ng-bind": "modal |
             .errorMessage('workplace_count[time_end]')" } |
@@ -48,7 +52,7 @@
             %td.col-sm-16.col-md-16.col-lg-5
               = label_tag "workplace_count_workplace_responsibles.tn", class: "control-label" do
                 %abbr{ title: "Обязательное поле" } *
-                %b Табельный номер
+                %b Таб. номер
             %td.col-lg-13
               %b ФИО
             %td.col-sm-8.col-md-8.col-lg-6
@@ -59,16 +63,16 @@
           %tr
             %td.col-sm-16.col-md-16.col-lg-5
               .form-group.required
-                = text_field_tag "workplace_count[users.tn]", "", class: "form-control", "ng-model": |
-                 "resp.tn" |
+                = text_field_tag "workplace_count[users.tn]", "{{ resp.tn }}", class: "form-control", "ng-model": |
+                "resp.tn" |
             %td.col-lg-13
-              = text_field_tag "workplace_count[users.fio", "", class: "form-control", "ng-model": |
-              "resp.fio" , disabled: true |
+              = text_field_tag "workplace_count[users.fullname]", "{{ resp.fullname }}", class: "form-control", |
+              "ng-model": "resp.fullname", disabled: true |
             %td.col-sm-8.col-md-8.col-lg-6
               .col-sm-20.col-md-20.col-lg-20
                 -#.no-left-padding.no-right-padding
                 .form-group
-                  = text_field_tag "workplace_count[users.phone]", "", class: "form-control", |
+                  = text_field_tag "workplace_count[users.phone]", "{{ resp.phone }}", class: "form-control", |
                   "ng-model": "resp.phone" |
               .col-sm-4.col-md-4.col-lg-4.no-right-padding
                 = fa_icon "minus-circle lg", class: "pointer", "tooltip-placement": "left", "uib-tooltip": "Удалить |

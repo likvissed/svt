@@ -28,38 +28,13 @@ module Inventory
     end
 
     def show
-      @workplace_count = WorkplaceCount
-                           .includes(:workplace_responsibles, :user_isses)
-                           .select('invent_workplace_count.*')
-                           .where(workplace_count_id: params[:workplace_count_id])
-                           .first
+      @show = WorkplaceCounts::Show.new(params[:workplace_count_id])
 
-      @workplace_count = @workplace_count.as_json(
-        include: {
-          workplace_responsibles: {
-            include: {
-              user_iss: { only: %i[id_tn tn fio_initials] }
-            }
-          }
-        }
-      )
-
-      @workplace_count['workplace_responsibles'] = @workplace_count['workplace_responsibles'].each do |resp|
-        resp['id'] = resp['workplace_responsible_id']
-        resp['tn'] = resp['user_iss']['tn']
-        resp['fio'] = resp['user_iss']['fio_initials']
-
-        resp.delete('user_iss')
-        resp.delete('id_tn')
+      if @show.run
+        render json: @show.data
+      else
+        render json: { full_message: @show.errors.full_messages.join('. ') }, status: 422
       end
-
-      @workplace_count['workplace_responsibles_attributes'] = @workplace_count['workplace_responsibles']
-      @workplace_count.delete('workplace_responsibles')
-      # hash = @workplace_count.as_json.delete_if { |key, value| ['id_tn', 'tn', 'status'].include? key }
-      # hash['tn'] = hash['user_tn']
-      # hash.delete('user_tn')
-
-      render json: @workplace_count
     end
 
     def update
