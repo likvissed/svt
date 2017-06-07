@@ -93,7 +93,7 @@ module Inventory
         show.data if show.run
       end
       subject do
-        WorkplaceCount.includes(:users).find(new_workplace_count['workplace_count_id'])
+        WorkplaceCount.includes(:users).find(loaded_workplace_count['workplace_count_id'])
       end
 
 
@@ -226,6 +226,17 @@ module Inventory
         it 'update user data with new phone number' do
           subject.update(new_workplace_count.with_indifferent_access)
           expect(subject.users.first.phone).to eq '11-11'
+        end
+      end
+
+      context 'when user full name was changed in the user_iss table' do
+        let(:user_iss) { build :user_iss, fio: 'Фамилия Имя Отчество' }
+
+        it 'update fullname attribute in local table of users' do
+          allow(UserIss).to receive(:find_by).with(tn: initial_user.tn).and_return user_iss
+
+          subject.update(loaded_workplace_count.with_indifferent_access)
+          expect(subject.users.first.fullname).to eq user_iss.fio
         end
       end
     end

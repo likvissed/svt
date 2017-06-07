@@ -39,12 +39,13 @@ module Inventory
             next
           end
 
+          user['fullname'] = @user_iss.fio
           user['phone'] = user_values[:phone].empty? ? @user_iss.tel : user_values[:phone]
 
         # Если id не задан, но пользователь существует в таблице 'users'.
         elsif user = User.where(tn: user_values[:tn]).first
-          user.phone = user_values[:phone].empty? ? @user_iss.tel : user_values[:phone]
           user.fullname = @user_iss.fio
+          user.phone = user_values[:phone].empty? ? @user_iss.tel : user_values[:phone]
 
           users << user
 
