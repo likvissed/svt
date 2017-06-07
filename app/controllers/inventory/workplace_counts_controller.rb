@@ -1,7 +1,5 @@
 module Inventory
   class WorkplaceCountsController < ApplicationController
-    before_action :find_by_id, only: %i[destroy]
-
     def index
       respond_to do |format|
         format.html
@@ -48,19 +46,16 @@ module Inventory
     end
 
     def destroy
+      @workplace_count = WorkplaceCount.find(params[:workplace_count_id])
+
       if @workplace_count.destroy
-        render json: { full_message: 'Отдел удален.' }, status: :ok
+        render json: { full_message: 'Отдел удален' }
       else
-        render json: { full_message: "Ошибка. #{@workplace_count.errors.full_messages.join(', ')}" }, status:
-          :unprocessable_entity
+        render json: { full_message: "Ошибка. #{@workplace_count.errors.full_messages.join(', ')}" }, status: 422
       end
     end
 
     private
-
-    def find_by_id
-      @workplace_count = WorkplaceCount.find(params[:workplace_count_id])
-    end
 
     def workplace_count_params
       params.require(:workplace_count).permit(
