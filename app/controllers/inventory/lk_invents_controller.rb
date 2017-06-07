@@ -45,7 +45,7 @@ module Inventory
 
     # Создать РМ
     def create_workplace
-      @workplace = LkInvents::CreateWorkplace.new(workplace_params, params[:pc_file])
+      @workplace = LkInvents::CreateWorkplace.new(current_user, workplace_params, params[:pc_file])
 
       if @workplace.run
         render json: { workplace: @workplace.data, full_message: 'Рабочее место создано' }

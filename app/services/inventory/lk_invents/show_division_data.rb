@@ -21,14 +21,13 @@ module Inventory
 
       # Получить рабочие места указанного отдела
       def load_workplace
-        data[:workplaces] = Workplace
+        data[:workplaces] = policy_scope(Workplace)
                               .includes(:iss_reference_site, :iss_reference_building, :iss_reference_room, :user_iss)
                               .left_outer_joins(:workplace_count, :workplace_type)
                               .select('invent_workplace.*, invent_workplace_type.name as type_name,
 invent_workplace_type.short_description')
                               .where('invent_workplace_count.division = ?', @division)
                               .order(:workplace_id)
-        authorize data[:workplaces].first, :load_workplace?
 
         prepare_workplaces
       end

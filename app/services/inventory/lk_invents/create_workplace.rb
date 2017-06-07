@@ -5,17 +5,22 @@ module Inventory
     class CreateWorkplace < BaseService
       attr_reader :workplace_params, :workplace
 
+      # current_user - текущий пользователь
       # strong_params - параметры, пройденные фильтрацию 'strong_params'
       # file - объект файл
-      def initialize(strong_params, file = nil)
+      def initialize(current_user, strong_params, file = nil)
+        @current_user = current_user
         @workplace_params = strong_params
         @file = file
       end
 
       def run
         prepare_params
+
         @workplace = Workplace.new(workplace_params)
         log_data
+
+        authorize @workplace, :create?
         save_workplace
       rescue RuntimeError
         false

@@ -17,5 +17,10 @@ module Inventory
       time_start 10.days.ago
       time_end Time.zone.now + 10.days
     end
+
+    factory :inactive_workplace_count, parent: :workplace_count do
+      time_start 10.days.ago
+      time_end 5.days.ago
+    end
   end
 end
