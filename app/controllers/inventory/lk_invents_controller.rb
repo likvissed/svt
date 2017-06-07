@@ -43,7 +43,6 @@ module Inventory
       end
     end
 
-    # Создать РМ
     def create_workplace
       @workplace = LkInvents::CreateWorkplace.new(current_user, workplace_params, params[:pc_file])
 

@@ -50,8 +50,7 @@ module Inventory
     end
 
     permissions :create? do
-      let(:room) { create :iss_room }
-      let(:workplace) { create_workplace_attributes }
+      let(:workplace) { create_workplace_attributes(room: create(:iss_room)) }
 
       context 'with valid user' do
         context 'when in allowed time' do
@@ -127,7 +126,6 @@ module Inventory
 
     permissions :update? do
       let(:workplace_count) { create :active_workplace_count, users: [***REMOVED***_user] }
-      let(:room) { create :iss_room }
       let(:workplace) { create :workplace_mob, :add_items, items: %i[tablet], workplace_count: workplace_count }
 
       include_examples 'workplace policy with :***REMOVED***_user role'

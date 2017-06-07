@@ -13,7 +13,7 @@ module Inventory
         let(:room) { create :iss_room }
         # ***REMOVED***
         let(:user_iss) { UserIss.find_by(tn: 15173) }
-        let(:new_workplace) { update_workplace_attributes(user, old_workplace.workplace_id) }
+        let(:new_workplace) { update_workplace_attributes(user, old_workplace.workplace_id, room: room, user_iss: user_iss) }
         subject { UpdateWorkplace.new(user, old_workplace.workplace_id, new_workplace) }
 
         it 'creates a @workplace variable' do

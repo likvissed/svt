@@ -8,7 +8,7 @@ module Inventory
 
       context 'with valid workplace params' do
         let(:room) { create :iss_room }
-        let(:workplace) { create_workplace_attributes }
+        let(:workplace) { create_workplace_attributes(room: room) }
         let(:prop_val_count) do
           count = 0
           workplace[:inv_items_attributes].each { |item| count += item[:inv_property_values_attributes].count }
