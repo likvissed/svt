@@ -3,17 +3,18 @@ require 'spec_helper'
 module Inventory
   module LkInvents
     RSpec.describe EditWorkplace, type: :model do
-      let!(:workplace_count) { create(:active_workplace_count, users: [build(:user)]) }
+      let(:user) { create :user }
+      let(:workplace_count) { create :active_workplace_count, users: [user] }
       let!(:old_workplace) do
-        create(:workplace_pk, :add_items, items: %i[pc monitor], workplace_count: workplace_count)
+        create :workplace_pk, :add_items, items: %i[pc monitor], workplace_count: workplace_count
       end
 
       context 'with valid workplace params' do
         let(:room) { create :iss_room }
         # ***REMOVED***
-        let(:user) { UserIss.find_by(tn: 15173) }
-        let(:new_workplace) { update_workplace_attributes(old_workplace.workplace_id) }
-        subject { UpdateWorkplace.new(old_workplace.workplace_id, new_workplace) }
+        let(:user_iss) { UserIss.find_by(tn: 15173) }
+        let(:new_workplace) { update_workplace_attributes(user, old_workplace.workplace_id) }
+        subject { UpdateWorkplace.new(user, old_workplace.workplace_id, new_workplace) }
 
         it 'creates a @workplace variable' do
           subject.run
@@ -32,7 +33,7 @@ module Inventory
           subject.run
           old_workplace.reload
           expect(old_workplace.iss_reference_room).to eq room
-          expect(old_workplace.id_tn).to eq user.id_tn
+          expect(old_workplace.id_tn).to eq user_iss.id_tn
         end
 
         it 'changes inv_items count' do
@@ -54,7 +55,7 @@ module Inventory
               'text/plain'
             )
           end
-          subject { UpdateWorkplace.new(old_workplace.workplace_id, new_workplace, file) }
+          subject { UpdateWorkplace.new(user, old_workplace.workplace_id, new_workplace, file) }
 
           include_examples 'run methods', 'set_file_into_params'
 
@@ -73,7 +74,7 @@ module Inventory
 
       context 'with invalid workplace params' do
         let(:new_workplace) do
-          wp = EditWorkplace.new(old_workplace.workplace_id)
+          wp = EditWorkplace.new(user, old_workplace.workplace_id)
           wp.run
           # Меняем общие аттрибуты рабочего места
           wp.data['id_tn'] = nil
@@ -90,10 +91,10 @@ module Inventory
 
           wp.data
         end
-        subject { UpdateWorkplace.new(old_workplace.workplace_id, new_workplace) }
+        subject { UpdateWorkplace.new(user, old_workplace.workplace_id, new_workplace) }
 
         context 'with invalid file' do
-          subject { UpdateWorkplace.new(old_workplace.workplace_id, new_workplace, 'wrong_param') }
+          subject { UpdateWorkplace.new(user, old_workplace.workplace_id, new_workplace, 'wrong_param') }
 
           include_examples 'not run methods', 'set_file_into_params'
         end

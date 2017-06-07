@@ -4,10 +4,12 @@ module Inventory
     class UpdateWorkplace < BaseService
       attr_reader :workplace_params, :workplace
 
+      # current_user - текущий пользователь
       # workplace_id - workplace_id изменяемого рабочего места
       # strong_params - параметры, пройденные фильтрацию 'strong_params'
       # file - объект файл
-      def initialize(workplace_id, strong_params, file = nil)
+      def initialize(current_user, workplace_id, strong_params, file = nil)
+        @current_user = current_user
         @workplace_id = workplace_id
         @workplace_params = strong_params.with_indifferent_access
         @file = file
@@ -15,6 +17,7 @@ module Inventory
 
       def run
         @workplace = Workplace.find(@workplace_id)
+        authorize @workplace, :update?
 
         prepare_params
         update_workplace

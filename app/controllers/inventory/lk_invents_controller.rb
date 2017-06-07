@@ -65,7 +65,9 @@ module Inventory
     end
 
     def update_workplace
-      @workplace = LkInvents::UpdateWorkplace.new(params[:workplace_id], workplace_params, params[:pc_file])
+      @workplace = LkInvents::UpdateWorkplace.new(
+        current_user, params[:workplace_id], workplace_params, params[:pc_file]
+      )
 
       if @workplace.run
         render json: { workplace: @workplace.data, full_message: 'Данные о рабочем месте обновлены' }

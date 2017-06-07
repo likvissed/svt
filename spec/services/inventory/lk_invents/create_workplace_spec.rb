@@ -3,7 +3,8 @@ require 'spec_helper'
 module Inventory
   module LkInvents
     RSpec.describe CreateWorkplace, type: :model do
-      let!(:workplace_count) { create(:active_workplace_count, users: [build(:user)]) }
+      let(:user) { create :user }
+      let!(:workplace_count) { create :active_workplace_count, users: [user] }
 
       context 'with valid workplace params' do
         let(:room) { create :iss_room }
@@ -13,7 +14,7 @@ module Inventory
           workplace[:inv_items_attributes].each { |item| count += item[:inv_property_values_attributes].count }
           count
         end
-        subject { CreateWorkplace.new(workplace) }
+        subject { CreateWorkplace.new(user, workplace) }
 
         it 'sets location_room_id variable' do
           subject.run
@@ -51,7 +52,7 @@ module Inventory
           let(:file) do
             Rack::Test::UploadedFile.new(Rails.root.join('spec', 'files', 'old_pc_config.txt'), 'text/plain')
           end
-          subject { CreateWorkplace.new(workplace, file) }
+          subject { CreateWorkplace.new(user, workplace, file) }
 
           include_examples 'run methods', 'set_file_into_params'
 
@@ -98,10 +99,10 @@ module Inventory
 
           tmp.with_indifferent_access
         end
-        subject { CreateWorkplace.new(workplace) }
+        subject { CreateWorkplace.new(user, workplace) }
 
         context 'with invalid file' do
-          subject { CreateWorkplace.new(workplace, 'wrong_param') }
+          subject { CreateWorkplace.new(user, workplace, 'wrong_param') }
 
           include_examples 'not run methods', 'set_file_into_params'
         end

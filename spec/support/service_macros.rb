@@ -30,12 +30,12 @@ module ServiceMacros
     tmp.with_indifferent_access
   end
 
-  def update_workplace_attributes(workplace_id)
-    wp = Inventory::LkInvents::EditWorkplace.new(workplace_id)
+  def update_workplace_attributes(current_user, workplace_id)
+    wp = Inventory::LkInvents::EditWorkplace.new(current_user, workplace_id)
     wp.run
     # Меняем общие аттрибуты рабочего места
     wp.data['location_room_name'] = room.name
-    wp.data['id_tn'] = user.id_tn
+    wp.data['id_tn'] = user_iss.id_tn
 
     # Меняем состав рабочего места
     new_mon = wp.data['inv_items_attributes'].deep_dup.last
