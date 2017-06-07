@@ -22,7 +22,7 @@ module Inventory
       end
 
       context 'with invalid user' do
-        let(:workplace_count) { create :active_workplace_count }
+        let(:workplace_count) { create :active_workplace_count, users: [user] }
         let(:workplace) { create :workplace_pk, :add_items, items: %i[pc monitor], workplace_count: workplace_count }
 
         it do
