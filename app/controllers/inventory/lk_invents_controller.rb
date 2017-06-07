@@ -55,8 +55,7 @@ module Inventory
     end
 
     def edit_workplace
-      @workplace = LkInvents::EditWorkplace.new(params[:workplace_id])
-      # authorize @workplace, :run?
+      @workplace = LkInvents::EditWorkplace.new(current_user, params[:workplace_id])
 
       if @workplace.run
         render json: @workplace.data

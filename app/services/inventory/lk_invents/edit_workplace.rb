@@ -2,8 +2,10 @@ module Inventory
   module LkInvents
     # Получить данные о выбранном рабочем месте.
     class EditWorkplace < BaseService
+      # current_user - текущий пользователь
       # workplace_id - workplace_id рабочего места
-      def initialize(workplace_id)
+      def initialize(current_user, workplace_id)
+        @current_user = current_user
         @workplace_id = workplace_id
       end
 
@@ -15,16 +17,12 @@ module Inventory
 
       private
 
-      # Проверка статуса рабочего места. True, если статус = "Подтвержден". (Возможно будет перенесено в Ability)
-      # def status_confirmed?
-      #   @workplace.status == 'confirmed'
-      # end
-
       # Получить данные из БД.
       def load_workplace
         @data = Workplace
                   .includes(:iss_reference_room, { inv_items: :inv_property_values })
                   .find(@workplace_id)
+        authorize @data, :edit?
 
         transform_to_json
         prepare_to_render
