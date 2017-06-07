@@ -3,17 +3,13 @@ module Inventory
     factory :workplace_count, class: WorkplaceCount do
       status WorkplaceCount.statuses['Разблокирован']
       division { users.empty? ? ***REMOVED*** : users.first.division }
+      users []
 
-      transient do
-        # Массив пользователей, созданный фабрикой user.
-        users []
-      end
-
-      after(:build) do |workplace_count, evaluator|
-        # Если массив users пустой, добавить дефолтного тествого пользователя в качестве ответственного за отдел.
-        evaluator.users << build(:user) if evaluator.users.empty?
-
-        evaluator.users.each { |user| workplace_count.users << user }
+      trait :default_user do
+        after(:build) do |workplace_count, evaluator|
+          # Если массив users пустой, добавить дефолтного тествого пользователя в качестве ответственного за отдел.
+          workplace_count.users << build(:user) if workplace_count.users.empty?
+        end
       end
     end
 

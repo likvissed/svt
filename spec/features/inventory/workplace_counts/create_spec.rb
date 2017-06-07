@@ -36,7 +36,7 @@ module Inventory
             end
           end
 
-          scenario 'tries to create a new workplace_count', js: true do
+          scenario 'tries to create a new workplace_count (and user with custom phone)', js: true do
             within '.modal-content' do
               find('i.fa.fa-plus-circle.pointer').trigger('click')
               within '.internal-table' do
@@ -55,15 +55,17 @@ module Inventory
             end
 
             expect(page).to have_content 'Отдел ***REMOVED*** добавлен'
-            expect(page).to have_content '***REMOVED***'
-            expect(page).to have_content '***REMOVED***'
-            expect(page).to have_content '***REMOVED***'
-            expect(page).to have_content '***REMOVED***'
-            expect(page).to have_content '***REMOVED***'
-            expect(page).to have_content '12-34'
+
+            within '.table' do
+              expect(page).to have_content '***REMOVED***'
+              expect(page).to have_content '***REMOVED***'
+              expect(page).to have_content '***REMOVED***'
+              expect(page).to have_content '***REMOVED***'
+              expect(page).to have_content '12-34'
+            end
           end
 
-          scenario 'tries to add the the same user several times', js: true do
+          scenario 'tries to add the the same responsible several times', js: true do
             within '.modal-content' do
               find('i.fa.fa-plus-circle.pointer').trigger('click')
               within '.internal-table' do
@@ -95,7 +97,8 @@ module Inventory
               click_button 'Готово'
             end
 
-            expect(page).to have_content 'Информация по табельному "123321" не найдена'
+            expect(page)
+              .to have_content 'Табельный номер "123321" не существует, проверьте корректность введенного номера'
           end
 
           context 'when workplace_count exists' do

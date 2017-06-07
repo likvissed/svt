@@ -122,7 +122,7 @@ function Server($resource) {
     /**
      * Ресурс модели отделов с количеством рабочих мест
      */
-    WorkplaceCount: $resource('/inventory/workplace_counts/:workplace_count_id.json', {}, { update: { method: 'PATCH' } })
+    WorkplaceCount: $resource('/inventory/workplace_counts/:workplace_count_id.json', {}, { update: { method: 'PUT' } })
   }
 }
 

@@ -7,7 +7,7 @@ feature 'Edit workplace', %q{
 } do
 
   given(:user) { create(:user) }
-  given!(:workplace_count) { create(:active_workplace_count) }
+  given!(:workplace_count) { create(:active_workplace_count, :default_user) }
   given!(:workplace) { create(:workplace_pk, :add_items, items: %i[pc monitor], workplace_count: workplace_count) }
 
   scenario 'Unauthenticated user tries to check configuration', js: true do

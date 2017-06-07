@@ -2,7 +2,7 @@
   %form{ role: "form", "name": "modal.form", "data-method": "modal.method" }
     .modal-header
       %h4{ "ng-show": "modal.method == 'POST'" } Добавить отдел
-      %h4{ "ng-show": "modal.method == 'PATCH'" } Редактировать отдел
+      %h4{ "ng-show": "modal.method == 'PUT'" } Редактировать отдел
 
     .modal-body
       .form-group.required{ "ng-class": "modal.errorClass('workplace_count[division]')" }
@@ -64,7 +64,7 @@
             %td.col-sm-16.col-md-16.col-lg-5
               .form-group.required
                 = text_field_tag "workplace_count[users.tn]", "{{ resp.tn }}", class: "form-control", "ng-model": |
-                "resp.tn" |
+                "resp.tn", "ng-disabled": "modal.method == 'PUT' && resp.id" |
             %td.col-lg-13
               = text_field_tag "workplace_count[users.fullname]", "{{ resp.fullname }}", class: "form-control", |
               "ng-model": "resp.fullname", disabled: true |

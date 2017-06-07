@@ -2,7 +2,7 @@ require 'rails_helper'
 
 module Inventory
   RSpec.describe Workplace, type: :model do
-    let!(:workplace_count) { create :active_workplace_count }
+    let!(:workplace_count) { create :active_workplace_count, :default_user }
 
     it { is_expected.to have_many(:inv_items).dependent(false) }
     it { is_expected.to belong_to(:workplace_type) }

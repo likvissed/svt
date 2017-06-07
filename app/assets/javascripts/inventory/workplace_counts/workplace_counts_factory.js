@@ -53,7 +53,7 @@ WorkplaceCount.prototype.getDivision = function (id) {
   var self = this;
 
   return this.Server.WorkplaceCount.get({ workplace_count_id: id }).$promise.then(function (data) {
-    self._data.method = 'PATCH';
+    self._data.method = 'PUT';
     self._data.value = angular.copy(data);
     self._data.value.time_start = new Date(angular.copy(data.time_start));
     self._data.value.time_end = new Date(angular.copy(data.time_end));

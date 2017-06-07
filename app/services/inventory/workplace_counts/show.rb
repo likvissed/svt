@@ -12,18 +12,14 @@ module Inventory
       end
 
       def load_workplace_count
-        @data = WorkplaceCount.includes(:workplace_responsibles, :users).find(@workplace_count_id)
+        @data = WorkplaceCount.includes(:users).find(@workplace_count_id)
 
         transform_to_json
         prepare_to_render
       end
 
       def transform_to_json
-        @data = data.as_json(
-          include: {
-            users: { only: %i[id tn fullname phone] }
-          }
-        )
+        @data = data.as_json(include: { users: { only: %i[id tn fullname phone] } })
       end
 
       def prepare_to_render

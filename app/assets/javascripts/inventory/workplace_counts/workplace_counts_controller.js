@@ -113,6 +113,7 @@ WorkplaceCountIndexCtrl.prototype._openWpCountEditModal = function (data) {
 
   var modalInstance = self.$uibModal.open({
     animation: self.Config.global.modalAnimation,
+    backdrop: 'static',
     templateUrl: 'editWpCount.haml',
     controller: 'ModalWpCountController',
     controllerAs: 'modal',
@@ -194,7 +195,7 @@ function ModalWpCountController($uibModalInstance, data, Server, Config, Flash, 
 
   // Данные по отделу
   this.data = data.value;
-  // Метод передачи данных (POST, PATCH)
+  // Метод передачи данных (POST, PUT)
   this.method = data.method;
   // Общие настройки календаря
   this.dateOptions = Config.global.datePicker;
@@ -257,13 +258,17 @@ ModalWpCountController.prototype.ok = function () {
       }
     )
   } else {
-    self.Server.WorkplaceCount.update({ workplace_count_id: self.data.workplace_count_id}, { workplace_count: self.data },
+    self.Server.WorkplaceCount.update(
+      { workplace_count_id: self.data.workplace_count_id },
+      { workplace_count: self.data },
       function success(response) {
         self.$uibModalInstance.close();
 
         self.Flash.notice(response.full_message);
       },
       function error(response) {
+        console.log(response);
+
         self.Error.response(response);
         self.errorResponse(response);
       }

@@ -1,6 +1,6 @@
 module Inventory
   class WorkplaceCountsController < ApplicationController
-    before_action :find_by_id, only: %i[update destroy]
+    before_action :find_by_id, only: %i[destroy]
 
     def index
       respond_to do |format|
@@ -21,7 +21,7 @@ module Inventory
       @create = WorkplaceCounts::Create.new(workplace_count_params)
 
       if @create.run
-        render json: { full_message: "Отдел #{@create.data.division} добавлен." }
+        render json: { full_message: "Отдел #{@create.data.division} добавлен" }
       else
         render json: @create.error, status: 422
       end
@@ -38,11 +38,12 @@ module Inventory
     end
 
     def update
-      if @workplace_count.update_attributes(workplace_count_params)
-        render json: { full_message: 'Данные обновлены.' }, status: :ok
+      @update = WorkplaceCounts::Update.new(params[:workplace_count_id], workplace_count_params)
+
+      if @update.run
+        render json: { full_message: "Данные одела #{@update.data.division} обновлены" }
       else
-        render json: { object: @workplace_count.errors, full_message: "Ошибка. #{@workplace_count.errors
-          .full_messages.join(', ')}" }, status: :unprocessable_entity
+        render json: @update.error, status: 422
       end
     end
 

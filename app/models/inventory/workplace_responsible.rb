@@ -6,6 +6,12 @@ module Inventory
     belongs_to :workplace_count, inverse_of: :workplace_responsibles
     belongs_to :user, inverse_of: :workplace_responsibles
 
-    validates :user_id, uniqueness: { scope: :workplace_count_id, message: :already_exists }
+    validate :uniq_user_per_workplace_count
+
+    def uniq_user_per_workplace_count
+      if self.class.exists?(workplace_count: workplace_count, user: user) && new_record?
+        errors.add(:user_id, :already_exists, tn: user.tn)
+      end
+    end
   end
 end

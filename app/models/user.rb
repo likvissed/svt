@@ -10,7 +10,8 @@ class User < ApplicationRecord
   belongs_to :role
   belongs_to :user_iss, foreign_key: 'id_tn'
 
-  validates :id_tn, :tn, presence: true, uniqueness: true
+  validates :tn, presence: true, uniqueness: true
+  validates :id_tn, uniqueness: { message: :tn_already_exists }
 
   # Для тестов.
   attr_accessor :login, :email, :division, :tel

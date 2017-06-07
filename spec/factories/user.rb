@@ -21,4 +21,8 @@ FactoryGirl.define do
     fullname '***REMOVED***'
     association :role, factory: :***REMOVED***_user_role
   end
+
+  factory :invalid_user, class: User do
+    tn 123321
+  end
 end
