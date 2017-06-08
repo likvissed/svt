@@ -4,7 +4,11 @@ module Inventory
 
     def initialize(property_value_id, uploaded_file = nil)
       # Основная директория
-      @default_dir = Rails.root.join('public', 'uploads', 'inventory')
+      @default_dir = if Rails.env == 'test'
+                       Rails.root.join('spec', 'uploads', 'inventory')
+                     else
+                       Rails.root.join('public', 'uploads', 'inventory')
+                     end
       # Директория, содержащая записываемый файл
       @path_to_file_dir = @default_dir.join(property_value_id.to_s)
       # Записываемый файл
