@@ -1,7 +1,7 @@
 module Inventory
   module LkInvents
     # Удалить рабочее место.
-    class DeleteWorkplace < BaseService
+    class DestroyWorkplace < BaseService
       # current_user - текущий пользователь
       # workplace_id - workplace_id удаляемого рабочего места
       def initialize(current_user, workplace_id)

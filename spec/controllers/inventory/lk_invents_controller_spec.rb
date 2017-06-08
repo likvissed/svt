@@ -94,9 +94,9 @@ module Inventory
         create(:workplace_pk, :add_items, items: %i[pc monitor], workplace_count: workplace_count)
       end
 
-      it 'create instance of the LkInvents::DeleteWorkplace' do
+      it 'create instance of the LkInvents::DestroyWorkplace' do
         delete :delete_workplace, params: { id_tn: @***REMOVED***_user.id_tn, workplace_id: workplace.workplace_id }
-        expect(assigns(:workplace)).to be_instance_of LkInvents::DeleteWorkplace
+        expect(assigns(:workplace)).to be_instance_of LkInvents::DestroyWorkplace
       end
     end
   end

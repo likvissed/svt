@@ -5,9 +5,7 @@ module Inventory
     skip_before_action :authenticate_user!
     skip_before_action :verify_authenticity_token
     before_action :check_***REMOVED***_authorization
-    # authorize_resource class: false, param_method: :workplace_params
     # before_action :check_timeout, except: %i[init_properties show_division_data pc_config_from_audit send_pc_script]
-    # after_action :verify_authorized, except: %i[init_properties pc_config_from_audit]
     after_action -> { sign_out @***REMOVED***_auth.data[:user] }
 
     respond_to :json
@@ -74,8 +72,8 @@ module Inventory
       end
     end
 
-    def delete_workplace
-      @workplace = LkInvents::DeleteWorkplace.new(current_user, params[:workplace_id])
+    def destroy_workplace
+      @workplace = LkInvents::DestroyWorkplace.new(current_user, params[:workplace_id])
 
       if @workplace.run
         render json: { full_message: 'Рабочее место удалено' }
