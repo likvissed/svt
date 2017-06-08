@@ -55,6 +55,7 @@ config/redis.yml
 /public/uploads
 /public/downloads
 /spec/tmp/*
+/spec/uploads/*
 /cache
 /capybara*
 /capybara-*.html

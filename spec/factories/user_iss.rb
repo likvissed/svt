@@ -18,4 +18,24 @@ FactoryGirl.define do
     dept_kadr 0
     decret false
   end
+
+  factory :***REMOVED***_user_iss, class: UserIss do
+    tn ***REMOVED***
+    dept ***REMOVED***
+    fio '***REMOVED***'
+    room '3а-321а'
+    tel '***REMOVED***'
+    wname ''
+    email ''
+    comment ''
+    duty 'инженер-программист 3 категории'
+    status 'changed'
+    datereg 5.years.ago
+    duty_code 0
+    fio_initials '***REMOVED*** Р.Ф.'
+    category 4
+    id_tn 12880
+    dept_kadr ***REMOVED***
+    decret false
+  end
 end
