@@ -5,7 +5,6 @@ module Inventory
     skip_before_action :authenticate_user!
     skip_before_action :verify_authenticity_token
     before_action :check_***REMOVED***_authorization
-    # before_action :check_timeout, except: %i[init_properties show_division_data pc_config_from_audit send_pc_script]
     after_action -> { sign_out @***REMOVED***_auth.data[:user] }
 
     respond_to :json
@@ -84,12 +83,20 @@ module Inventory
 
     def generate_pdf
       @workplace_count = WorkplaceCount
-                           .includes(workplaces: [:workplace_type, :user_iss, { inv_items: :inv_type }])
+                           .includes(
+                             workplaces: [
+                               :iss_reference_site,
+                               :iss_reference_building,
+                               :iss_reference_room,
+                               :workplace_type,
+                               :user_iss, { inv_items: :inv_type }
+                             ]
+                           )
                            .find_by(division: params[:division])
       authorize @workplace_count, :generate_pdf?
 
       render pdf: 'test',
-             template: 'templates/workplace.haml',
+             template: 'templates/workplace_list.haml',
              locals: { workplace_count: @workplace_count },
              encoding: 'UTF-8'
       # disposition: 'attachment'
@@ -110,62 +117,6 @@ module Inventory
       else
         render json: { full_message: @***REMOVED***_auth.errors.full_messages.join('. ') }, status: 403
       end
-    end
-
-    # Проверить, прошло ли разрешенное время редактирования для указанного отдела.
-    def check_timeout
-      # Для случаев, когда workplace_id существует (например, редактирование или удаление записи)
-      if params[:workplace_id]
-        workplace
-        unless time_not_passed?(@workplace.workplace_count.time_start, @workplace.workplace_count.time_end)
-          render json: { full_message: "Время для работы с отделом #{@workplace.workplace_count.division} истекло" },
-                 status: 403
-
-          return false
-        end
-        # Для случаев, когда workplace_id не существует (создается новая запись), но задан workplace_count_id
-      elsif params[:workplace] && params[:workplace][:workplace_count_id]
-        workplace_count
-
-        unless time_not_passed?(@workplace_count.time_start, @workplace_count.time_end)
-          render json: { full_message: "Время для работы с отделом #{@workplace_count.division} истекло" }, status: 403
-
-          return false
-        end
-        # Для случая, когда задан отдел, запрос отправлен для генерации PDF. Здесь, наоборот, необходимо разрешить
-        # доступ, только если прошло разрешенное время редактирования.
-      elsif params[:division]
-=begin
-      @workplace_count = WorkplaceCount.find_by(division: params[:division])
-
-      if (time_not_passed?(@workplace_count.time_start, @workplace_count.time_end))
-        render json: { full_message: "Время для работы с отделом #{@workplace_count.division} не истекло.  Экспорт в PDF
-файл станет доступен #{@workplace_count.time_end + 1.day}" }, status: 403
-
-        return false
-      end
-=end
-      else
-        render json: { full_message: 'Доступ запрещен, так как не удается определить, к какому отделу относится
- запрашиваемая операция. Обратитесь к администратору' }, status: 403
-
-        false
-      end
-    end
-
-    # Проверка, входит ли текущее время в указанный интервал (true - если входит).
-    def time_not_passed?(time_start, time_end)
-      Time.zone.today >= time_start && Time.zone.today <= time_end
-    end
-
-    # Создать переменную @workplace_count, если она не существует.
-    def workplace_count
-      @workplace_count = WorkplaceCount.find(params[:workplace][:workplace_count_id]) unless @workplace_count
-    end
-
-    # Создать переменную @workplace, если она не существует.
-    def workplace
-      @workplace = Workplace.find(params[:workplace_id]) unless @workplace
     end
 
     def workplace_params

@@ -40,9 +40,7 @@ invent_workplace_type.short_description')
 
       # Получить список работников указанного отдела.
       def load_users
-        data[:users] = UserIss
-                         .select(:id_tn, :fio)
-                         .where(dept: @division)
+        data[:users] = UserIss.select(:id_tn, :fio).where(dept: @division)
       end
     end
   end

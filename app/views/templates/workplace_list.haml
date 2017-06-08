@@ -39,7 +39,8 @@
               %td{ align: "center" }= index + +1
               %td= wp.workplace_type.short_description + " (инв. №№: #{items.join(', ')})"
               %td= wp.user_iss.fio_initials
-              %td= wp.location
+              %td= "Пл. '#{wp.iss_reference_site.name}', корп. #{wp.iss_reference_building.name}, комн. |
+              #{wp.iss_reference_room.name}" |
 
     .footer
       %table
