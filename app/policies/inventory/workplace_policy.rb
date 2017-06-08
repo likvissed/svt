@@ -8,7 +8,11 @@ module Inventory
     # Если роль '***REMOVED***_user': есть ли у пользователя доступ на редактирование РМ указанного отдела.
     # Иначе: доступ есть.
     def edit?
-      @user.has_role?(:***REMOVED***_user) ? division_access? && allowed_time? && !confirmed? : true
+      if @user.has_role? :***REMOVED***_user
+        division_access? && allowed_time? && !confirmed?
+      else
+        true
+      end
     end
 
     # Если роль '***REMOVED***_user': есть ли у пользователя доступ на редактирование РМ указанного отдела.
@@ -16,12 +20,22 @@ module Inventory
     #   есть
     # Для остальных: можно обновлять данные только по истечении разрешенного пользователям ЛК времени редактирования.
     def update?
-      if @user.has_role?(:***REMOVED***_user)
+      if @user.has_role? :***REMOVED***_user
         division_access? && allowed_time? && !confirmed?
       elsif division_access?
         true
       else
         !allowed_time?
+      end
+    end
+
+    # Если роль '***REMOVED***_user': есть ли у пользователя доступ на редактирование РМ указанного отдела.
+    # Иначе: доступ есть.
+    def destroy?
+      if @user.has_role? :***REMOVED***_user
+        division_access? && allowed_time? && !confirmed?
+      else
+        true
       end
     end
 

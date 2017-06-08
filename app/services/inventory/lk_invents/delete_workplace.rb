@@ -1,12 +1,18 @@
 module Inventory
   module LkInvents
+    # Удалить рабочее место.
     class DeleteWorkplace < BaseService
-      def initialize(workplace_id)
+      # current_user - текущий пользователь
+      # workplace_id - workplace_id удаляемого рабочего места
+      def initialize(current_user, workplace_id)
+        @current_user = current_user
         @workplace_id = workplace_id
       end
 
       def run
         @data = Workplace.find(@workplace_id)
+        authorize @data, :destroy?
+
         destroy_workplace
       rescue RuntimeError
         false

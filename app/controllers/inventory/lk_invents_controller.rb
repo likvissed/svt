@@ -76,7 +76,7 @@ module Inventory
     end
 
     def delete_workplace
-      @workplace = LkInvents::DeleteWorkplace.new(params[:workplace_id])
+      @workplace = LkInvents::DeleteWorkplace.new(current_user, params[:workplace_id])
 
       if @workplace.run
         render json: { full_message: 'Рабочее место удалено' }
