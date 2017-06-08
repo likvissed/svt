@@ -5,7 +5,7 @@ module Inventory
     skip_before_action :authenticate_user!
     skip_before_action :verify_authenticity_token
     before_action :check_***REMOVED***_authorization
-    after_action -> { sign_out @***REMOVED***_auth.data[:user] }
+    after_action -> { sign_out @***REMOVED***_auth.data }
 
     respond_to :json
 
@@ -113,7 +113,7 @@ module Inventory
       @***REMOVED***_auth = LkInvents::LkAuthorization.new(params[:sid])
 
       if @***REMOVED***_auth.run
-        sign_in @***REMOVED***_auth.data[:user]
+        sign_in @***REMOVED***_auth.data
       else
         render json: { full_message: @***REMOVED***_auth.errors.full_messages.join('. ') }, status: 403
       end

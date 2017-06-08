@@ -56,10 +56,11 @@ function WorkplaceCountIndexCtrl($controller, $scope, $compile, $uibModal, DTOpt
     DTColumnBuilder.newColumn(null).withTitle('').withOption('className', 'col-fhd-1').renderWith(renderIndex),
     DTColumnBuilder.newColumn('division').withTitle('Отдел').withOption('className', 'col-fhd-2'),
     DTColumnBuilder.newColumn('responsibles').withTitle('Ответственный').withOption('className', 'col-fhd-7'),
-    DTColumnBuilder.newColumn('phones').withTitle('Телефон').withOption('className', 'col-fhd-3'),
+    DTColumnBuilder.newColumn('phones').withTitle('Телефон').withOption('className', 'col-fhd-2'),
     // DTColumnBuilder.newColumn('count_wp').withTitle('Кол-во РМ').withOption('className', 'col-fhd-3 text-center'),
     DTColumnBuilder.newColumn('date-range').withTitle('Время доступа').withOption('className', 'col-fhd-5' +
       ' text-center'),
+    DTColumnBuilder.newColumn('status').withTitle('Статус').notSortable().withOption('className', 'col-fhd-1').renderWith(statusRecord),
     DTColumnBuilder.newColumn('waiting').withTitle('Ожидают').withOption('className', 'text-center col-fhd-2'),
     DTColumnBuilder.newColumn('ready').withTitle('Подтверждено').withOption('className', 'text-center col-fhd-2'),
     DTColumnBuilder.newColumn(null).withTitle('').notSortable().withOption('className', 'text-center col-fhd-1').renderWith(editRecord),
@@ -83,6 +84,13 @@ function WorkplaceCountIndexCtrl($controller, $scope, $compile, $uibModal, DTOpt
   function createdRow(row, data, dataIndex) {
     // Компиляция строки
     $compile(angular.element(row))($scope);
+  }
+
+  function statusRecord(data, type, full, meta) {
+    if (data == 'allow')
+      return '<span class="label label-success">Доступ открыт</span>';
+    else
+      return '<span class="label label-warning">Доступ закрыт</span>';
   }
 
   /**
@@ -251,8 +259,6 @@ ModalWpCountController.prototype.ok = function () {
         self.Flash.notice(response.full_message);
       },
       function error(response) {
-        console.log(response);
-
         self.Error.response(response);
         self.errorResponse(response);
       }
@@ -267,8 +273,6 @@ ModalWpCountController.prototype.ok = function () {
         self.Flash.notice(response.full_message);
       },
       function error(response) {
-        console.log(response);
-
         self.Error.response(response);
         self.errorResponse(response);
       }

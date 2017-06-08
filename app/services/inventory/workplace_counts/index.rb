@@ -17,8 +17,8 @@ module Inventory
 
       def workplace_counts
         @workplace_counts = WorkplaceCount
-                              .joins('LEFT OUTER JOIN invent_workplace r ON r.workplace_id = invent_workplace_count
-.workplace_count_id and r.status = 0')
+                              .joins('LEFT OUTER JOIN invent_workplace r ON r.workplace_count_id =
+invent_workplace_count.workplace_count_id and r.status = 0')
                               .joins('LEFT OUTER JOIN invent_workplace w ON w.workplace_count_id =
 invent_workplace_count.workplace_count_id and w.status = 1')
                               .includes(users: :user_iss)
@@ -56,6 +56,7 @@ invent_workplace_count.workplace_count_id and w.status = 1')
 
           c['responsibles'] = c['responsibles'].join(', ')
           c['phones'] = c['phones'].join(', ')
+          c['status'] = Time.zone.today.between?(c['time_start'], c['time_end']) ? 'allow' : 'deny'
         end
       end
     end
