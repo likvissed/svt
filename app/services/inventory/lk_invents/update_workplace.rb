@@ -11,7 +11,7 @@ module Inventory
       def initialize(current_user, workplace_id, strong_params, file = nil)
         @current_user = current_user
         @workplace_id = workplace_id
-        @workplace_params = strong_params.with_indifferent_access
+        @workplace_params = strong_params.deep_symbolize_keys
         @file = file
       end
 

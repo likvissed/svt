@@ -103,10 +103,10 @@ module Inventory
           loaded_workplace_count
         end
 
-        it { expect { subject.update!(new_workplace_count.with_indifferent_access) }
+        it { expect { subject.update!(new_workplace_count.deep_symbolize_keys) }
                .to raise_error ActiveRecord::RecordInvalid }
         it 'adds :save_at_least_one_responsible error to the :base key' do
-          subject.update(new_workplace_count.with_indifferent_access)
+          subject.update(new_workplace_count.deep_symbolize_keys)
           expect(subject.errors.details[:base].first).to include(error: :save_at_least_one_responsible)
         end
       end
@@ -120,7 +120,7 @@ module Inventory
           loaded_workplace_count
         end
 
-        it { expect { subject.update(new_workplace_count.with_indifferent_access) }
+        it { expect { subject.update(new_workplace_count.deep_symbolize_keys) }
                .to raise_error ActiveRecord::RecordInvalid, /Ответственный для данного отдела с табельным ***REMOVED*** уже существует \(либо вы его задали несколько раз\)/ }
       end
 
@@ -131,7 +131,7 @@ module Inventory
           loaded_workplace_count
         end
 
-        it { expect { subject.update(new_workplace_count.with_indifferent_access) }
+        it { expect { subject.update(new_workplace_count.deep_symbolize_keys) }
                .to raise_error ActiveRecord::RecordInvalid, /Ответственный для данного отдела с табельным 101101 уже существует \(либо вы его задали несколько раз\)/ }
       end
 
@@ -146,9 +146,9 @@ module Inventory
             loaded_workplace_count
           end
 
-          it { expect { subject.update(new_workplace_count.with_indifferent_access) }
+          it { expect { subject.update(new_workplace_count.deep_symbolize_keys) }
                  .not_to change(User, :count) }
-          it { expect { subject.update(new_workplace_count.with_indifferent_access) }
+          it { expect { subject.update(new_workplace_count.deep_symbolize_keys) }
                  .to change(WorkplaceResponsible, :count).by(1) }
         end
 
@@ -161,9 +161,9 @@ module Inventory
             loaded_workplace_count
           end
 
-          it { expect { subject.update(new_workplace_count.with_indifferent_access) }
+          it { expect { subject.update(new_workplace_count.deep_symbolize_keys) }
                  .to change(User, :count).by(1) }
-          it { expect { subject.update(new_workplace_count.with_indifferent_access) }
+          it { expect { subject.update(new_workplace_count.deep_symbolize_keys) }
                  .to change(WorkplaceResponsible, :count).by(1) }
         end
       end
@@ -175,12 +175,12 @@ module Inventory
           loaded_workplace_count
         end
 
-        it { expect { subject.update(new_workplace_count.with_indifferent_access) }
+        it { expect { subject.update(new_workplace_count.deep_symbolize_keys) }
                .not_to change(User, :count) }
-        it { expect { subject.update(new_workplace_count.with_indifferent_access) }
+        it { expect { subject.update(new_workplace_count.deep_symbolize_keys) }
                .not_to change(WorkplaceResponsible, :count) }
         it 'adds :user_not_found error to the :base key' do
-          subject.update(new_workplace_count.with_indifferent_access)
+          subject.update(new_workplace_count.deep_symbolize_keys)
           expect(subject.errors.details[:base].first)
             .to include(error: :user_not_found, tn: invalid_user[:tn].to_s )
         end
@@ -198,7 +198,7 @@ module Inventory
           loaded_workplace_count
         end
 
-        it { expect { subject.update(new_workplace_count.with_indifferent_access) }
+        it { expect { subject.update(new_workplace_count.deep_symbolize_keys) }
                .to raise_error ActiveRecord::RecordInvalid, /Ответственный для данного отдела с табельным 101101 уже существует \(либо вы его задали несколько раз\)/ }
       end
 
@@ -212,7 +212,7 @@ module Inventory
         it 'search phone number in UserIss table' do
           allow(UserIss).to receive(:find_by).with(tn: initial_user.tn).and_return user_iss
 
-          subject.update(new_workplace_count.with_indifferent_access)
+          subject.update(new_workplace_count.deep_symbolize_keys)
           expect(subject.users.first.phone).to eq user_iss.tel
         end
       end
@@ -224,7 +224,7 @@ module Inventory
         end
 
         it 'update user data with new phone number' do
-          subject.update(new_workplace_count.with_indifferent_access)
+          subject.update(new_workplace_count.deep_symbolize_keys)
           expect(subject.users.first.phone).to eq '11-11'
         end
       end
@@ -235,7 +235,7 @@ module Inventory
         it 'update fullname attribute in local table of users' do
           allow(UserIss).to receive(:find_by).with(tn: initial_user.tn).and_return user_iss
 
-          subject.update(loaded_workplace_count.with_indifferent_access)
+          subject.update(loaded_workplace_count.deep_symbolize_keys)
           expect(subject.users.first.fullname).to eq user_iss.fio
         end
       end

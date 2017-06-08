@@ -86,7 +86,7 @@ module Inventory
               }
             },
             methods: :location_room_name
-          ).with_indifferent_access
+          ).deep_symbolize_keys
 
           tmp[:inv_items_attributes] = tmp[:inv_items]
           tmp[:inv_items_attributes].each do |item|
@@ -97,7 +97,7 @@ module Inventory
 
           tmp.delete(:inv_items)
 
-          tmp.with_indifferent_access
+          tmp.deep_symbolize_keys
         end
         subject { CreateWorkplace.new(user, workplace) }
 

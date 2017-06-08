@@ -11,6 +11,6 @@ class HostIss < Netadmin
 
   def self.get_host(inv_num)
     data = connection.exec_query("SELECT * FROM #{table_name} WHERE id = #{sanitize(inv_num.to_s)}").first
-    data.nil? ? nil : data.with_indifferent_access
+    data.nil? ? nil : data.symbolize_keys
   end
 end
