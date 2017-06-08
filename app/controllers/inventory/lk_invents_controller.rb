@@ -6,7 +6,6 @@ module Inventory
     skip_before_action :verify_authenticity_token
     before_action :check_***REMOVED***_authorization
     # authorize_resource class: false, param_method: :workplace_params
-    # before_action :check_workplace_count_access, only: %i[create_workplace edit_workplace update_workplace delete_workplace]
     # before_action :check_timeout, except: %i[init_properties show_division_data pc_config_from_audit send_pc_script]
     # after_action :verify_authorized, except: %i[init_properties pc_config_from_audit]
     after_action -> { sign_out @***REMOVED***_auth.data[:user] }
@@ -113,22 +112,6 @@ module Inventory
       else
         render json: { full_message: @***REMOVED***_auth.errors.full_messages.join('. ') }, status: 403
       end
-    end
-
-    # Проверить, есть ли у пользователя доступ на создание/редактирование/удаление рабочих мест указанного отдела.
-    def check_workplace_count_access
-      params[:workplace] = JSON.parse(params[:workplace])
-      # unless params[:workplace]
-      #   render json: { full_message: 'Доступ запрещен' }, status: 403
-      #   return
-      # end
-
-      # workplace_count
-      # if @workplace_count
-      #   unless @workplace_count.workplace_responsibles.any? { |resp| resp.id_tn == session[:id_tn] }
-      #     render json: { full_message: 'Доступ запрещен' }, status: 403
-      #   end
-      # end
     end
 
     # Проверить, прошло ли разрешенное время редактирования для указанного отдела.
