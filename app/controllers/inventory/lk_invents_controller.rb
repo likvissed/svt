@@ -85,8 +85,8 @@ module Inventory
     def generate_pdf
       @workplace_count = WorkplaceCount
                            .includes(workplaces: [:workplace_type, :user_iss, { inv_items: :inv_type }])
-                           .where(division: params[:division])
-                           .first
+                           .find_by(division: params[:division])
+      authorize @workplace_count, :generate_pdf?
 
       render pdf: 'test',
              template: 'templates/workplace.haml',
