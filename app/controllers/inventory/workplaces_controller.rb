@@ -6,30 +6,13 @@ module Inventory
       respond_to do |format|
         format.html
         format.json do
-          @workplaces = Workplace
-                          .includes(:iss_reference_site, :iss_reference_building, :iss_reference_room, :user_iss)
-                          .left_outer_joins(:workplace_type)
-                          .left_outer_joins(:workplace_count)
-                          .left_outer_joins(:inv_items)
-                          .select('invent_workplace.*, invent_workplace_count.division, invent_workplace_type
-.short_description as wp_type, count(invent_item.item_id) as count')
-                          .group(:workplace_id)
+          @index = Workplaces::Index.new
 
-          @workplaces = @workplaces.as_json(
-            include: %i[iss_reference_site iss_reference_building iss_reference_room user_iss]
-          ).each do |wp|
-            wp['location'] = "Пл. '#{wp['iss_reference_site']['name']}', корп. #{wp['iss_reference_building']['name']},
-комн. #{wp['iss_reference_room']['name']}"
-            wp['responsible'] = wp['user_iss']['fio_initials']
-            wp['status'] = Workplace.translate_enum(:status, wp['status'])
-
-            wp.delete('iss_reference_site')
-            wp.delete('iss_reference_building')
-            wp.delete('iss_reference_room')
-            wp.delete('user_iss')
+          if @index.run
+            render json: @index.data
+          else
+            render json: { full_messages: 'Обратитесь к администратору, т.***REMOVED***' }, status: 422
           end
-
-          render json: @workplaces
         end
       end
     end

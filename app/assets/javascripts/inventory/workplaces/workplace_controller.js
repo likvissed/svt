@@ -47,10 +47,10 @@ function WorkplaceIndexCtrl($scope, $compile, $controller, DTOptionsBuilder, DTC
     DTColumnBuilder.newColumn(null).withTitle('').withOption('className', 'col-fhd-1').renderWith(renderIndex),
     DTColumnBuilder.newColumn('division').withTitle('Отдел').withOption('className', 'col-fhd-2'),
     DTColumnBuilder.newColumn('wp_type').withTitle('Тип').withOption('className', 'col-fhd-4'),
-    DTColumnBuilder.newColumn('responsible').withTitle('Ответственный').withOption('className', 'col-fhd-6'),
-    DTColumnBuilder.newColumn('location').withTitle('Расположение').withOption('className', 'col-fhd-4'),
+    DTColumnBuilder.newColumn('responsible').withTitle('Ответственный').withOption('className', 'col-fhd-5'),
+    DTColumnBuilder.newColumn('location').withTitle('Расположение').withOption('className', 'col-fhd-5'),
     DTColumnBuilder.newColumn('count').withTitle('Кол-во техники').withOption('className', 'col-fhd-2'),
-    DTColumnBuilder.newColumn('status').withTitle('Статус').withOption('className', 'col-fhd-3'),
+    DTColumnBuilder.newColumn('status').withTitle('Статус').notSortable().withOption('className', 'col-fhd-3').renderWith(statusRecord),
     DTColumnBuilder.newColumn(null).withTitle('').notSortable().withOption('className', 'col-fhd-1 text-center').renderWith(editRecord),
     DTColumnBuilder.newColumn(null).withTitle('').notSortable().withOption('className', 'col-fhd-1 text-center').renderWith(delRecord)
   ];
@@ -73,6 +73,23 @@ function WorkplaceIndexCtrl($scope, $compile, $controller, DTOptionsBuilder, DTC
   function createdRow(row, data, dataIndex) {
     // Компиляция строки
     $compile(angular.element(row))($scope);
+  }
+
+  function statusRecord(data, type, full, meta) {
+    var labelClass;
+
+    switch(data) {
+      case 'Подтверждено':
+        labelClass = 'label-success';
+        break;
+      case 'В ожидании проверки':
+        labelClass = 'label-warning';
+        break;
+      case 'Отклонено':
+        labelClass = 'label-danger';
+    }
+
+    return '<span class="label ' + labelClass + '">' + data + '</span>';
   }
 
   /**
