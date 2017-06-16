@@ -1,7 +1,7 @@
 app
   .service('Flash', Flash)    // Сервис уведомлений пользователя (как об успешных операциях, так и об ошибках).
   .factory('Error', Error)    // Сервис обработки ошибок.
-  .factory('Server', Server)  // Фабрика для работы с CRUD экшнами.
+  .factory('Server', Server);  // Фабрика для работы с CRUD экшнами.
 
 Flash.$inject   = ['$timeout'];
 Error.$inject   = ['Flash'];
@@ -31,7 +31,7 @@ function Flash($timeout) {
 Flash.prototype.notice = function (message) {
   var self = this;
 
-  this.flash.alert  = null;
+  this.flash.alert = null;
   this.flash.notice = message;
 
   this.$timeout(function () {
@@ -46,7 +46,7 @@ Flash.prototype.notice = function (message) {
  */
 Flash.prototype.alert = function (message) {
   this.flash.notice = null;
-  this.flash.alert  = message;
+  this.flash.alert = message;
 };
 
 // =====================================================================================================================
@@ -66,10 +66,11 @@ function Error(Flash) {
      * параметре "response")
      */
     response: function (response, status) {
-      // Код ответа
-      var code;
-      // Расшифровка статуса ошибки.
-      var descr;
+      var
+        // Код ответа
+        code,
+        // Расшифровка статуса ошибки.
+        descr;
 
       code = (response && response.status) ? parseInt(response.status): parseInt(status);
       switch(code) {
@@ -83,19 +84,15 @@ function Error(Flash) {
           Flash.alert('Запись не найдена.');
           break;
         case 422:
-          descr = (response && response.statusText) ? ' (' + response.statusText + ')' : '';
+          var message = response.data ? response.data.full_message : response.full_message;
 
-          if (response.data) {
-            if (response.data.full_message)
-              Flash.alert(response.data.full_message);
-            else
-              Flash.alert('Ошибка. Код: ' + code + descr + '. Обратитесь к администратору (тел. ***REMOVED***).');
+          if (message) {
+            Flash.alert(message);
           } else {
-            if (response.data.full_message)
-              Flash.alert(response.full_message);
-            else
-              Flash.alert('Ошибка. Код: ' + code + descr + '. Обратитесь к администратору (тел. ***REMOVED***).');
+            descr = (response && response.statusText) ? ' (' + response.statusText + ')' : '';
+            Flash.alert('Ошибка. Код: ' + code + descr + '. Обратитесь к администратору (тел. ***REMOVED***).');
           }
+
           break;
         default:
           descr = (response && response.statusText) ? ' (' + response.statusText + ')' : '';
@@ -118,7 +115,13 @@ function Server($resource) {
     /**
      * Ресурс модели рабочих мест
      */
-    Workplace: $resource('/inventory/workplaces/:workplace_id.json', {}, { update: { method: 'PATCH' } }),
+    Workplace: $resource('/inventory/workplaces/:workplace_id.json', {}, {
+      update: {
+        method: 'PUT',
+        headers: { 'Content-Type': undefined },
+        transformRequest: angular.identity
+      }
+    }),
     /**
      * Ресурс модели отделов с количеством рабочих мест
      */

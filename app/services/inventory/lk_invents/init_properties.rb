@@ -18,6 +18,7 @@ module Inventory
         load_workplace_types
         load_workplace_specializations
         load_locations
+        load_statuses
         load_users if @division
 
         exclude_mandatory_fields unless mandatory
@@ -75,6 +76,11 @@ module Inventory
                                   .as_json(include: :iss_reference_buildings)
       end
 
+      # Получить список возможных статусов РМ.
+      def load_statuses
+        data[:statuses] = Workplace.statuses.map{ |key, val| [Workplace.translate_enum(:status, key), key] }.to_h
+      end
+
       # Исключить все свойства inv_property, где mandatory = false (исключение для системных блоков).
       def exclude_mandatory_fields
         data[:eq_types] = data[:eq_types].as_json(
@@ -95,13 +101,6 @@ module Inventory
 
           type
         end
-      end
-
-      # Получить список работников указанного отдела
-      def load_users
-        data[:users] = UserIss
-                   .select(:id_tn, :fio)
-                   .where(dept: @division)
       end
     end
   end

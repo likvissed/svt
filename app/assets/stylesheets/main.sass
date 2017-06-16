@@ -23,8 +23,8 @@
 body
   background-color: $main-bg-color
 
-button
-  @extend .btn, .btn-default
+button, input[type='submit']
+  @extend .btn
 
 textarea
   resize: none
@@ -50,6 +50,29 @@ a.default-color
 
 .pointer
   cursor: pointer
+
+.context-info
+  padding: $default-size
+
+.disabled
+  @extend .disabled
+
+  a
+    color: $gray-light !important
+
+    &:hover
+      background-color: $bgDefault !important
+
+.btn-toolbar
+  clear: both
+  margin: .8333em 0 0
+  position: relative
+
+.hidden-attachment
+  position: absolute !important
+  height: 0
+  width: 0
+  overflow: hidden
 
 /* ================================================ Страницы входа на сайт ========================================== */
 
@@ -82,7 +105,7 @@ a.default-color
   width: 100%
 
   tr.empty
-    height: 15px
+    height: $default-size
 
   //.fa
     cursor: pointer

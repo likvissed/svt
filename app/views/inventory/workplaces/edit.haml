@@ -1,61 +1,14 @@
 = title "Редактирование рабочего места"
 
 .container{ "ng-controller": "WorkplaceEditCtrl as wp", "ng-init": "wp.init(#{@workplace.workplace_id || 0})" }
-  .well
-    .row
-      %h4 Данные о рабочем месте
-    .row
-      .col-fhd-4
-        .form-group
-          = label_tag :workplace_id_tn, "ФИО ответственного", class: "control-label"
-          = text_field_tag "workplace[id_tn]", "", class: "form-control", autocomplete: "off", placeholder: |
-          "Введите ФИО", "ng-model": "wp.workplace.id_tn", "uib-typeahead": "user.id_tn as user.fio for user in |
-          wp.users | filter:$viewValue", "typeahead-show-hint": true, "typeahead-min-length": 0, |
-          "typeahead-input-formatter": "wp.formatLabel($model)" |
-      .col-fhd-4
-        .form-group
-          = label_tag :workplace_workplace_type, 'Тип рабочего места', class: "control-label"
-          = select_tag "workplace[workplace_type_id]", "", class: "form-control", "ng-model": |
-          "wp.workplace.workplace_type", "ng-change": "wp.setWorkplaceType()", "ng-options": |
-          "wp_type as wp_type.long_description disable when wp_type.workplace_type_id == -1 for wp_type in |
-          wp.wp_types track by wp_type.workplace_type_id" |
-      .col-fhd-4
-        .form-group
-          = label_tag :workplace_workplace_specialization_id, "Вид выполняемой работы", class: "control-label"
-          = select_tag "workplace[workplace_specialization_id]", "", class: "form-control", "ng-model": |
-          "wp.workplace.workplace_specialization_id", "ng-options": "spec.workplace_specialization_id as |
-          spec.short_description disable when spec.workplace_specialization_id == -1 for spec in wp.specs" |
-      .col-fhd-4
-        .form-group
-          = label_tag :workplace_location, "Площадка", class: "control-label"
-          = select_tag "workplace[location]", "", class: "form-control", "ng-model": |
-          "wp.workplace.location_site", "ng-change": "wp.setLocationSite(); wp.setDefaultLocation('building')", |
-          "ng-options": "loc_site.name disable when loc_site.site_id == -1 for loc_site in wp.iss_locations track |
-          by loc_site.site_id" |
-      .col-fhd-4
-        .form-group
-          = label_tag :workplace_location, "Корпус", class: "control-label"
-          = select_tag "workplace[location]", "", class: "form-control", "ng-disabled": |
-          "wp.workplace.location_site.site_id == -1", "ng-model": "wp.workplace.location_building_id", |
-          "ng-change": "wp.setDefaultLocation('room')", "ng-options": "loc_building.building_id as |
-          loc_building.name disable when loc_building.building_id == -1 for loc_building in |
-          wp.workplace.location_site.iss_reference_buildings" |
-      .col-fhd-4
-        .form-group
-          = label_tag :workplace_location, "Комната", class: "control-label"
-          = text_field_tag "workplace[location]", "", class: "form-control", "ng-disabled": |
-          "wp.workplace.location_building_id == -1", "ng-model": "wp.workplace.location_room_name", |
-          "ng-value": "wp.workplace.location_room_name" |
+  .well-main
+    %form{ "ng-submit": "wp.saveWorkplace()" }
+      = render partial: 'workplace_header'
+      .well-content
+        .row
+          .col-md-7.col-lg-6.col-xlg-6
+            = render partial: 'common_data'
+          .col-md-17.col-lg-18.col-xlg-18
+            = render partial: 'item_list'
 
-    .row
-      %h4 Состав рабочего места
-
-    .row
-      %form.tab-form-demo{ name: "verify_workplace" }
-        %uib-tabset{ active: 0 }
-          %uib-tab{ "ng-repeat": "item in wp.workplace.inv_items_attributes", heading: "{{item.type.short_description}}", index: "$index" }
-            .form-group
-              content
-
-    .row
-      %pre{ "ng-bind": "wp.workplace | json" }
+= render partial: 'manually_pc_modal'

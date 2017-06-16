@@ -1,17 +1,19 @@
 app
   .service('Workplace', Workplace);
 
-Workplace.$inject = ['$http', 'Server', 'Error'];
+Workplace.$inject = ['$window', '$http', 'Server', 'Error', 'Item'];
 
 /**
  * Сервис для редактирования(подтверждения или отклонения) РМ.
  *
  * @class SVT.Workplace
  */
-function Workplace($http, Server, Error) {
+function Workplace($window, $http, Server, Error, Item) {
+  this.$window = $window;
   this.$http = $http;
   this.Server = Server;
   this.Error = Error;
+  this.Item = Item;
 
   // ====================================== Данные с сервера =============================================================
 
@@ -30,8 +32,6 @@ function Workplace($http, Server, Error) {
 
   // Копия объекта this.workplace, который отправится на сервер.
   this.workplaceCopy = null;
-  // Файл конфигурации ПК, связанный с текущим РМ.
-  this.pcFile = null;
 
 // ====================================== Шаблоны данных ===============================================================
 
@@ -71,83 +71,44 @@ function Workplace($http, Server, Error) {
     // Состав РМ
     inv_items_attributes: []
   };
-  // Шаблон экземпляра техники, добавляемого к РМ
-  this._templateItem = {
-    id:             null,
-    // item_id: null,
-    type_id: 0,
-    workplace_id: 0,
-    location: '',
-    invent_num: '',
-    model_id: 0,
-    item_model: '',
-    inv_property_values_attributes: [],
-    // По умолчанию показать пользователю "Выберите тип"
-    type: this.eq_types[0],
-    // Выбранная модель
-    model: null
-  };
-  // Шаблон объекта значения свойства выбранного экземпляра техники
-  this._templatePropertyValue = {
-    id: null,
-    property_id: 0,
-    item_id: 0,
-    property_list_id: 0,
-    value: '',
-    // Массив возможных значений отфильтрованных по модели и свойству
-    filteredList: []
-  };
-  //
-  this._templateSelectModel = [
-    { model_id: -1, item_model: 'Выберите модель' },
-    { model_id: 0, item_model: 'Ввести модель вручную...' }
-  ];
-  this._templateSelectProp = [
-    // Для строки "Выберите тип"
-    { property_list_id: -1, short_description: ''},
-    // Для строки "Ввести вручную..."
-    { property_list_id: 0, short_description: ''}
-  ];
 
 // =====================================================================================================================
 }
 
-Workplace.prototype._addBeforeEdit = function () {
-  var
-    self = this,
-    // Наличие в списке оборудования системного блока, моноблока, ноутбука (true если существует)
-    changeAuditData = false;
+/**
+ * Добавить объекты, связанные с выбранным типом оборудования, моделями и т.д. (обратная операция _clearBeforeSend).
+ */
+Workplace.prototype._addObjects = function () {
+  var self = this;
 
   // Находим объект с workplace_type_id
   this.workplace.workplace_type = $.grep(angular.copy(this.wp_types), function (el) {
-    return self.workplace.workplace_type_id == el.workplace_type_id
+    return self.workplace.workplace_type_id == el.workplace_type_id;
   })[0];
 
   this.workplace.location_site = $.grep(angular.copy(this.iss_locations), function (el) {
-    return self.workplace.location_site_id == el.site_id
+    return self.workplace.location_site_id == el.site_id;
   })[0];
 
-  $.each(this.workplace.inv_items_attributes, function (item_index, item_val) {
-    var self_item = this;
-
-    // Проходим по массиву eq_types, сравнивая type_id.
-    $.each(self.eq_types, function (eq_index, eq_value) {
-      if (item_val.type_id == eq_value.type_id) {
-        self_item.type = angular.copy(eq_value);
-
-        // Если длина массивов inv_property_values_attributes и inv_properties отличается, значит текущий
-        // экземпляр техники имеет несколько значений для некоторых свойств (например, несколько жестких
-        // дисков для системного блока). Необходимо создать копии соответсвующих элементов массива
-        // inv_properties и поместить их в этот же массив. Иначе пользователь увидит, например, только один
-        // жесткий диск.
-        if (self_item.inv_property_values_attributes.length != self_item.type.inv_properties.length) {
-
-        }
-      }
-    });
-  });
+  angular.forEach(this.workplace.inv_items_attributes, function (item) { self.Item.addProperties(item); })
 };
 
+/**
+ * Очистить копию массива workplace от справочных данных для отправления на сервер.
+ */
+Workplace.prototype._delObjects = function () {
+  var self = this;
+  this.workplaceCopy = angular.copy(this.workplace);
+
+  delete(this.workplaceCopy.workplace_type);
+  delete(this.workplaceCopy.location_site);
+
+  angular.forEach(this.workplaceCopy.inv_items_attributes, function (item) { self.Item.delProperties(item); });
+};
+
+/**
+ * Получить данные о РМ.
+ */
 Workplace.prototype.init = function (id) {
   var self = this;
 
@@ -156,19 +117,124 @@ Workplace.prototype.init = function (id) {
     .success(function (data) {
       self.workplace = angular.copy(data.wp_data);
 
-      $.each(data.prop_data.iss_locations, function (index, value) {
-        this.iss_reference_buildings = [{ building_id: -1, name: 'Выберите корпус' }].concat(this.iss_reference_buildings);
+      angular.forEach(data.prop_data.iss_locations, function (value) {
+        value.iss_reference_buildings = [{ building_id: -1, name: 'Выберите корпус' }].concat(value.iss_reference_buildings);
       });
-      self.eq_types = angular.copy(self.eq_types.concat(data.prop_data.eq_types));
+      self.Item.setTypes(data.prop_data.eq_types);
       self.wp_types = angular.copy(self.wp_types.concat(data.prop_data.wp_types));
       self.specs = angular.copy(self.specs.concat(data.prop_data.specs));
       self.iss_locations = angular.copy(self.iss_locations.concat(data.prop_data.iss_locations));
       self.users = angular.copy(data.prop_data.users);
+      self.statuses = angular.copy(data.prop_data.statuses);
 
-      self._addBeforeEdit();
+      self._addObjects();
     })
     .error(function (response, status) {
       self.Error.response(response, status);
     });
 };
 
+/**
+ * Установить начальное значение для корпуса при изменении площадки.
+ *
+ * @param type - Тип очищения: если building - очистить корпус и комнату, иначе - только комнату.
+ */
+Workplace.prototype.setDefaultLocation = function (type) {
+  if (type == 'building')
+    this.workplace.location_building_id = -1;
+
+  this.workplace.location_room_name = '';
+};
+
+/**
+ * Запросить скрипт для генерации отчета о конфигурации ПК.
+ */
+Workplace.prototype.downloadPcScript = function () {
+  this.$window.open('/inventory/workplaces/pc_script', '_blank');
+};
+
+/**
+ * Получить данные от системы Аудит по указанному инвентарному номеру.
+ *
+ * @param item
+ */
+Workplace.prototype.getAuditData = function (item) {
+  var self = this;
+
+  this.$http
+    .get('/inventory/workplaces/pc_config_from_audit/' + item.invent_num)
+    .success(function (data) {
+      self.Item.setPcProperties(item, data);
+    })
+    .error(function (response, status) {
+      self.Error.response(response, status);
+    });
+};
+
+/**
+ * Сохранить данные о РМ на сервере.
+ */
+Workplace.prototype.saveWorkplace = function () {
+  var self = this;
+  // this._clearBeforeSend();
+  this._delObjects();
+
+  var formData = new FormData();
+
+  // Данные о создаваемом РМ
+  formData.append('workplace', angular.toJson(this.workplaceCopy));
+  // Прикрепленный файл, показывающий состав системного блока
+  formData.append('pc_file', this.Item.getPcFile());
+
+  if (this.workplaceCopy.workplace_id) {
+    this.Server.Workplace.update(
+      { workplace_id: self.workplace.workplace_id },
+      formData,
+      function success(response) {
+        console.log('success');
+        console.log(response);
+      },
+      function error(response) {
+        console.log('error');
+        console.log(response);
+        self.Flash.alert(response);
+      }
+    );
+
+
+    // return this.$http
+    //   .put('/inventory/workplaces/' + this.workplace.workplace_id + '.json',
+    //     formData,
+    //     {
+    //       headers: { 'Content-Type': undefined },
+    //       transformRequest: angular.identity
+    //     }
+    //   )
+    //   .success(function (response) {
+    //     console.log('success');
+    //     console.log(response);
+    //   })
+    //   .error(function (response) {
+    //     console.log('error');
+    //     console.log(response);
+    //   })
+  } else {
+    // return this.$http
+    //   .post(this._host + 'create_workplace',
+    //     formData,
+    //     {
+    //       headers: { 'Content-Type': undefined },
+    //       transformRequest: angular.identity
+    //     }
+    //   )
+    //   .success(function (response) {
+    //     self.getDivision('workplaces').push(response.workplace);
+    //
+    //     if (response.full_message)
+    //       self.$dialogs.notify(response.full_message);
+    //   })
+    //   .error(function (response) {
+    //     self.$dialogs.error(response.full_message);
+    //   })
+  }
+};

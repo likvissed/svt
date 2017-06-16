@@ -15,10 +15,10 @@ load_workplace_specializations load_locations exclude_mandatory_fields]
         its(:data) { is_expected.not_to be_nil }
 
         context 'when @data is filling' do
-          let!(:data_keys) { %i[divisions eq_types wp_types specs iss_locations] }
+          let!(:data_keys) { %i[divisions eq_types wp_types specs iss_locations statuses] }
           before { subject.run }
 
-          it 'fills the @data hash with %i[divisions eq_types wp_types specs iss_locations] keys' do
+          it 'fills the @data hash with %i[divisions eq_types wp_types specs iss_locations statuses] keys' do
             expect(subject.data.keys).to include *data_keys
           end
 

@@ -20,12 +20,6 @@
 [role="navigation-main"]
   $dropDown: true
 
-  //.dropdown-menu
-    @include
-
-  //ul.nav li.dropdown:hover > ul.dropdown-menu
-    display: block
-
   .navbar-nav
     > li
       > a
@@ -44,3 +38,14 @@
               &:hover, &:focus
                 color: $main-corp-color
                 background-color: transparent
+
+[role="navigation-content"]
+  @extend [role="navigation-main"]
+
+  border-top-left-radius: $border-radius-base
+  border-top-right-radius: $border-radius-base
+  border:
+    top: 0
+    left: 0
+    right: 0
+  margin-bottom: 0

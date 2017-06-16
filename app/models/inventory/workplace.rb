@@ -38,7 +38,7 @@ module Inventory
     validate :check_workplace_conditions, unless: -> { workplace_type_id == -1 }
 
     # Для тестов (от имени пользователя заполняется поле "Комната")
-    attr_accessor :location_room_name
+    attr_accessor :location_room_name, :division
 
     delegate :division, to: :workplace_count
 

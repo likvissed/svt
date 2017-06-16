@@ -86,6 +86,9 @@ function WorkplaceCountIndexCtrl($controller, $scope, $compile, $uibModal, DTOpt
     $compile(angular.element(row))($scope);
   }
 
+  /**
+   * Вывести статус в формате label.
+   */
   function statusRecord(data, type, full, meta) {
     if (data == 'allow')
       return '<span class="label label-success">Доступ открыт</span>';

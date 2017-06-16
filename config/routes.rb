@@ -14,7 +14,14 @@ Rails.application.routes.draw do
     # Отделы
     resources :workplace_counts, param: :workplace_count_id, except: :edit
     # Рабочие места
-    resources :workplaces, param: :workplace_id
+    resources :workplaces, param: :workplace_id do
+      collection do
+        # Получить данные о системном блоке из аудита
+        get 'pc_config_from_audit/:invent_num', to: 'workplaces#pc_config_from_audit', constraints: { invent_num: /.*/ }
+        # Скачать скрипт для генерации файла конфигурации ПК
+        get 'pc_script', to: 'workplaces#send_pc_script'
+      end
+    end
 
     # Запросы с ЛК
     # Инициализация

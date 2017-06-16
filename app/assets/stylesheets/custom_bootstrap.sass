@@ -1,10 +1,15 @@
 .well
-  //padding: 0
   background-color: $main-bg-color
 
-.well-pad
-  padding: 15px
-  background-color: $main-bg-color
+.well-main
+  @extend .well
+  padding: 0
+
+.well-content
+  @extend .well-main
+  //padding-top: 0
+  border: 0
+  box-shadow: none
 
 .alert
   @include border-radius(0)
@@ -13,3 +18,13 @@
 .dropdown-menu
   max-height: 300px
   overflow-y: auto
+
+.tab-content
+  padding: $default-size
+
+.well-main .well-content
+  margin: $default-size
+
+//.row
+  @extend .row
+  margin: 0

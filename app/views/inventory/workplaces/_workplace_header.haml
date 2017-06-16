@@ -1,0 +1,31 @@
+.navbar.navbar-default{ "role": "navigation-content" }
+  .navbar-header
+    = button_tag "", class: "navbar-toggle", "data-toggle": "collapse", "data-target": ".navbar-collapse-content" do
+      %span.sr-only Toggle navigation
+      %span.icon-bar
+      %span.icon-bar
+      %span.icon-bar
+
+  .collapse.navbar-collapse.navbar-collapse-content
+    .navbar-form.navbar-left
+      .form-group
+        Отдел:
+        = text_field_tag "workplace[division]", "", class: "form-control", "ng-model": "wp.workplace.division"
+      .form-group
+        = button_tag type: :button, class: "btn-default" do
+          = fa_icon "download"
+          Файл конфигурации
+    .navbar-form.navbar-right
+      .btn-group
+        = button_tag "Готово", class: "btn-success"
+        = link_to "Отмена", inventory_workplaces_path, class: "btn btn-default"
+
+      -#%li.dropdown
+        = link_to "", class: "dropdown-toggle", "data-toggle": "dropdown" do
+          Инвентаризация
+          %b.caret
+        %ul.dropdown-menu
+          %li
+            = link_to "Просмотр ПК", inventory_workplaces_path
+          %li
+            = link_to "Настройки доступа", inventory_workplace_counts_path

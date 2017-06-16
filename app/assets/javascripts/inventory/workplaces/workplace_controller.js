@@ -1,9 +1,11 @@
 app
   .controller('WorkplaceIndexCtrl', WorkplaceIndexCtrl)
-  .controller('WorkplaceEditCtrl', WorkplaceEditCtrl);
+  .controller('WorkplaceEditCtrl', WorkplaceEditCtrl)
+  .controller('ManuallyPcDialogCtrl', ManuallyPcDialogCtrl);
 
 WorkplaceIndexCtrl.$inject = ['$scope', '$compile', '$controller', 'DTOptionsBuilder', 'DTColumnBuilder'];
-WorkplaceEditCtrl.$inject = ['Workplace'];
+WorkplaceEditCtrl.$inject = ['$filter', '$uibModal', 'Flash', 'Config', 'Workplace', 'Item'];
+ManuallyPcDialogCtrl.$inject = ['$uibModalInstance', 'Flash', 'Workplace', 'Item', 'item'];
 
 /**
  * Управление общей таблицей рабочих мест.
@@ -75,6 +77,9 @@ function WorkplaceIndexCtrl($scope, $compile, $controller, DTOptionsBuilder, DTC
     $compile(angular.element(row))($scope);
   }
 
+  /**
+   * Вывести статус в формате label.
+   */
   function statusRecord(data, type, full, meta) {
     var labelClass;
 
@@ -106,7 +111,7 @@ function WorkplaceIndexCtrl($scope, $compile, $controller, DTOptionsBuilder, DTC
   function delRecord(data, type, full, meta) {
     return '<a href="" class="text-danger" disable-link=true ng-click="wpIndex.destroyRecord(' + data.workplace_id +
       ')" uib-tooltip="Удалить запись"><i class="fa fa-trash-o fa-1g"></a>';
-  };
+  }
 }
 
 /**
@@ -123,18 +128,25 @@ WorkplaceIndexCtrl.prototype.destroyRecord = function () {
  *
  * @class SVT.WorkplaceEditCtrl
  */
-function WorkplaceEditCtrl(Workplace) {
+function WorkplaceEditCtrl($filter, $uibModal, Flash, Config, Workplace, Item) {
+  this.$filter = $filter;
+  this.$uibModal = $uibModal;
+  this.Flash = Flash;
+  this.Config = Config;
   this.Workplace = Workplace;
+  this.Item = Item;
 }
 
 WorkplaceEditCtrl.prototype.init = function (id) {
   var self = this;
 
+  self.additional = self.Item.getAdditional();
+
   this.Workplace.init(id).then(function () {
     // Список типов РМ
     self.wp_types = self.Workplace.wp_types;
     // Типы оборудования на РМ с необходимыми для заполнения свойствами
-    self.eq_types = self.Workplace.eq_types;
+    self.eq_types = self.Item.getTypes();
     // Направления деятельности
     self.specs = self.Workplace.specs;
     // Список отделов, прикрепленных к пользователю
@@ -143,9 +155,13 @@ WorkplaceEditCtrl.prototype.init = function (id) {
     self.iss_locations = self.Workplace.iss_locations;
     // Список пользователей отдела
     self.users = self.Workplace.users;
+    // Список возможных статусов РМ
+    self.statuses = self.Workplace.statuses;
 
     // Данные о рабочем месте
     self.workplace = self.Workplace.workplace;
+    console.log('РМ: ');
+    console.log(self.workplace);
   });
 };
 
@@ -156,6 +172,8 @@ WorkplaceEditCtrl.prototype.init = function (id) {
  * @param id_tn - id_tn выбранного ответственного.
  */
 WorkplaceEditCtrl.prototype.formatLabel = function (id_tn) {
+  if (!this.users) { return ''; }
+
   for (var i=0; i< this.users.length; i++) {
     if (id_tn === this.users[i].id_tn) {
       return this.users[i].fio;
@@ -163,4 +181,163 @@ WorkplaceEditCtrl.prototype.formatLabel = function (id_tn) {
   }
 };
 
+/**
+ * Установить workplace_type_id рабочего места.
+ */
+WorkplaceEditCtrl.prototype.setWorkplaceType = function () {
+  this.workplace.workplace_type_id = angular.copy(this.workplace.workplace_type.workplace_type_id);
+};
+
+/**
+ * Установить location_site_id рабочего места.
+ */
+WorkplaceEditCtrl.prototype.setLocationSite = function () {
+  this.workplace.location_site_id = angular.copy(this.workplace.location_site.site_id);
+};
+
+/**
+ * Установить начальное значение для корпуса при изменении площадки.
+ */
+WorkplaceEditCtrl.prototype.setDefaultLocation = function (type) {
+  this.Workplace.setDefaultLocation(type);
+};
+
+/**
+ * Проверить, совпадает ли инвентарный номер с сохраненным (после потери фокуса поля "Инвентарный").
+ *
+ * @param item - объект item массива inv_atems_attributes.
+ */
+WorkplaceEditCtrl.prototype.checkPcInvnum = function (item) {
+  if (
+    // Относится ли текущий тип оборудования к тем, что указаны в массиве pcTypes.
+    !this.$filter('contains')(this.additional.pcTypes, item.type.name)
+    // Совпадает ли инв. номер с сохраненным
+    || this.additional.invent_num == item.invent_num
+  ) { return false; }
+
+  // Очистить состав ПК
+  this.Item.clearPropertyValues(item);
+  // Удалить загруженный файл
+  this.Item.setPcFile(null);
+  // Убрать флаг
+  this.additional.auditData = false;
+};
+
+/**
+ * Отправить запрос в Аудит для получения конфигурации оборудования.
+ *
+ * @param item
+ */
+WorkplaceEditCtrl.prototype.getAuditData = function (item) {
+  if (item.invent_num) {
+    this.additional.invent_num = angular.copy(item.invent_num);
+    this.Workplace.getAuditData(item);
+  } else {
+    this.Flash.alert('Сначала необходимо ввести инвентарный номер');
+  }
+};
+
+/**
+ * Запустить диалоговое окно "Ввод данных вручную".
+ */
+WorkplaceEditCtrl.prototype.runManuallyPcDialog = function (item) {
+  if (item.invent_num) {
+    this.$uibModal.open({
+      animation: this.Config.global.modalAnimation,
+      templateUrl: 'manuallyPcDialog.html',
+      controller: 'ManuallyPcDialogCtrl',
+      controllerAs: 'manually',
+      size: 'md',
+      backdrop: 'static',
+      resolve: {
+        item: function () { return item; }
+      }
+    });
+  } else {
+    this.Flash.alert('Сначала необходимо ввести инвентарный номер');
+  }
+};
+
+/**
+ * Очистить инвентарный номер, данные, полученные от аудита, а также удалить загруженный файл.
+ *
+ * @param item
+ */
+WorkplaceEditCtrl.prototype.changeAuditData = function (item) {
+  this.Item.clearPcMetadata(item);
+  this.Item.clearPropertyValues(item);
+};
+
+/**
+ * Записать в модель workplace.inv_items данные о выбранной модели выбранного типа оборудования.
+ *
+ * @param item - экземпляр техники, у которого изменили модель
+ */
+WorkplaceEditCtrl.prototype.changeItemModel = function (item) {
+  this.Item.changeModel(item);
+};
+
+/**
+ * Отправить данные на сервер для сохранения и закрыть Wizzard.
+ */
+WorkplaceEditCtrl.prototype.saveWorkplace = function () {
+  this.Workplace.saveWorkplace()
+};
+
 // =====================================================================================================================
+
+/**
+ * Ввод данных о составе СБ, Моноблока, Ноутбука вручную.
+ *
+ * @class SVT.WorkplaceEditCtrl
+ */
+function ManuallyPcDialogCtrl($uibModalInstance, Flash, Workplace, Item, item) {
+  this.$uibModalInstance = $uibModalInstance;
+  this.Flash = Flash;
+  this.Workplace = Workplace;
+  this.Item = Item;
+  this.item = item;
+}
+
+/**
+ * Скачать скрипт.
+ */
+ManuallyPcDialogCtrl.prototype.downloadPcScript = function () {
+  this.Workplace.downloadPcScript();
+};
+
+/**
+ * Закрыть модальное окно.
+ */
+ManuallyPcDialogCtrl.prototype.close = function () {
+  this.$uibModalInstance.close();
+};
+
+/**
+ * Сохранить файл в общую структуру данных.
+ *
+ * @param file
+ */
+ManuallyPcDialogCtrl.prototype.setPcFile = function (file) {
+  var self = this;
+
+  if (!this.Item.fileValidationPassed(file)) {
+    console.log('File validation not passed');
+    this.Flash.alert('Необходимо загрузить текстовый файл, полученный в результате работы скачанной вами программы');
+
+    return false;
+  }
+
+  this.Item.setPcFile(file);
+  this.Item.setAdditional('auditData', true);
+  this.Item.setFileName(this.item, file.name);
+
+  var reader = new FileReader();
+  reader.onload = function (event) {
+    self.Item.matchDataFromUploadedFile(self.item, event.target.result);
+    self.Item.setAdditional('invent_num', angular.copy(self.item.invent_num));
+    self.Flash.notice('Файл добавлен');
+    self.$uibModalInstance.close();
+  };
+  reader.readAsText(file);
+};
