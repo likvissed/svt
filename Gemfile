@@ -31,11 +31,11 @@ gem 'awesome_print'
 gem 'bootstrap-sass'
 gem 'colorize'
 gem 'font-awesome-rails'
-gem 'haml-rails'
 gem 'php_serialize'
 gem 'rails-i18n'
 gem 'rubocop', require: false
 gem 'simple_form'
+gem 'slim'
 
 # Generate PDF
 gem 'wicked_pdf'

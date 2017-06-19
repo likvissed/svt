@@ -1,0 +1,5 @@
+div ng-controller="FlashMessageCtrl" data-notice=flash[:notice] data-alert=flash[:alert]
+  .alert.alert-success.text-center.ng-hide.animate-show ng-show="flash.notice" ng-bind="flash.notice"
+  .alert.alert-danger.alert-dismissable.text-center.ng-hide.animate-show ng-show="flash.alert"
+    = button_tag "&times;".html_safe, class: "close", "aria-hidden": "true", "ng-click": "disableAlert()"
+    div ng-bind="flash.alert"

@@ -96,7 +96,7 @@ module Inventory
       authorize @workplace_count, :generate_pdf?
 
       render pdf: 'test',
-             template: 'templates/workplace_list.haml',
+             template: 'templates/workplace_list',
              locals: { workplace_count: @workplace_count },
              encoding: 'UTF-8'
       # disposition: 'attachment'

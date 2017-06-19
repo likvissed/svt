@@ -1,8 +1,8 @@
 = title "Редактирование рабочего места"
 
-.container{ "ng-controller": "WorkplaceEditCtrl as wp", "ng-init": "wp.init(#{@workplace.workplace_id || 0})" }
+.container ng-controller="WorkplaceEditCtrl as wp" ng-init="wp.init(#{@workplace.workplace_id || 0})"
   .well-main
-    %form{ "ng-submit": "wp.saveWorkplace()" }
+    form ng-submit="wp.saveWorkplace()"
       = render partial: 'workplace_header'
       .well-content
         .row
