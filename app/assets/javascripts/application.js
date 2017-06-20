@@ -14,6 +14,6 @@
 //= require libs/angularjs/ui-bootstrap-tpls-2.5.0.js
 //= require libs/angularjs/angular-locale_ru
 
-//= require_tree ./main
+//= require_tree ./app
 //= require_tree ./inventory
 //= require_tree ./standart

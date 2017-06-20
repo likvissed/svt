@@ -374,7 +374,7 @@ function Item($filter, PropertyValue) {
             // элемента, чтобы вывести пользователю для заполнения, а сам элемент скроем. Остальные элементы
             // массива будут только скрыты с флагом _destroy = 1.
             if (!virtualObj.index) {
-              tmpPropValue = angular.copy(PropertyValue.getTemplatePropertyValue());
+              tmpPropValue = PropertyValue.getTemplatePropertyValue();
               tmpPropValue.property_id = tmpProp.property_id;
 
               copiedProp.push(angular.copy(item.type.inv_properties[index]));

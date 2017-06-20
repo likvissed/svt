@@ -43,7 +43,7 @@ module Inventory
     # end
 
     def set_default_property_list_id_to_nil
-      self.property_list_id = nil if property_list_id.to_i.zero?
+      self.property_list_id = nil if property_list_id.to_i <= 0
     end
 
     def set_default_property_list_id_to_zero

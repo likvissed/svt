@@ -73,11 +73,10 @@
                       = text_field_tag "", "", class: "form-control",
                         "ng-disabled": "wp.additional.pcTypes | contains:item.type.name",
                         "ng-model": "item.inv_property_values_attributes[$index].value"
-                      -#"ng-value": "item.inv_property_values_attributes[$index].value"
 
                     div ng-switch-when="list"
                       = select_tag "", "", class: "form-control",
-                      "ng-disabled": "item.inv_property_values_attributes[$index].filteredList.length == 1",
+                        "ng-disabled": "item.inv_property_values_attributes[$index].filteredList.length == 1",
                         "ng-model": "item.inv_property_values_attributes[$index].property_list_id",
                         "ng-options": "prop_list.property_list_id as prop_list.short_description disable when prop_list.property_list_id == -1 for prop_list in item.inv_property_values_attributes[$index].filteredList"
 
@@ -90,5 +89,4 @@
                       div ng-if="!item.model_id && !item.inv_property_values_attributes[$index].property_list_id"
                         label Введите {{prop.short_description}}
                         = text_field_tag "workplace[items][][property_values][value]", "", class: "form-control",
-                          "ng-model": "item.inv_property_values_attributes[$index].value",
-                          "ng-value": "item.inv_property_values_attributes[$index].value"
+                          "ng-model": "item.inv_property_values_attributes[$index].value"

@@ -90,7 +90,7 @@ Workplace.prototype._addObjects = function () {
     return self.workplace.location_site_id == el.site_id;
   })[0];
 
-  angular.forEach(this.workplace.inv_items_attributes, function (item) { self.Item.addProperties(item); })
+  angular.forEach(this.workplace.inv_items_attributes, function (item) { self.Item.addProperties(item); });
 };
 
 /**

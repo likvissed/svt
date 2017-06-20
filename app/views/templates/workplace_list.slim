@@ -32,8 +32,8 @@ html
           th width='25' Ответственный
           th width='20' Расположение
         tbody
-          - workplace_count.workplaces.each_with_index do |wp, index|
-            - items = wp.inv_items.map{ |item| item.invent_num }
+          - workplace_count.workplaces.where(status: :confirmed).each_with_index do |wp, index|
+            - items = wp.inv_items.map(&:invent_num)
 
             tr
               td align="center"= index + +1

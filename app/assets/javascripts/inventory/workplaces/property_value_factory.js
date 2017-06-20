@@ -25,7 +25,7 @@ function PropertyValue() {
     /**
      * Получить объект-шаблон property_value.
      */
-    getTemplatePropertyValue: function () { return templatePropertyValue; },
+    getTemplatePropertyValue: function () { return angular.copy(templatePropertyValue); },
     /**
      * Проверить тип указанного свойства. (Вернуть true, если тип 'list')
      *
@@ -41,9 +41,9 @@ function PropertyValue() {
     /**
      * Получить элемент массива inv_property_values_attributes.
      *
-     * @param item
-     * @param prop_index
-     * @param name
+     * @param item - экземпляр техники
+     * @param prop_index - индекс элемента в массиве inv_property_values_attributes
+     * @param name - имя ключа
      */
     getPropertyValue: function (item, prop_index, name) {
       return item.inv_property_values_attributes[prop_index][name];
