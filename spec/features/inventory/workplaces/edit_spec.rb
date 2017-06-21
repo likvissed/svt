@@ -28,10 +28,12 @@ module Inventory
         expect(page).to have_select 'Площадка', selected: workplace.iss_reference_site.name
         expect(page).to have_select 'Корпус', selected: workplace.iss_reference_building.name
         expect(page).to have_field 'Комната', with: workplace.iss_reference_room.name
+        expect(page).to have_select 'Статус', selected: Workplace.translate_enum(:status, workplace.status)
 
         expect(page).to have_content 'Состав рабочего места'
+        expect(page).to have_content WorkplaceType::DESCR[workplace.workplace_type.name]
         within '#wp_item_list' do
-          expect(all('li').count).to eq workplace.inv_items.count
+          expect(all('li').count).to eq workplace.inv_items.count + 1
           expect(page).to have_field 'Инвентарный номер', with: workplace.inv_items.first.invent_num
           expect(page).to have_content 'Модель'
 

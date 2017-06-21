@@ -27,26 +27,26 @@
 .row
   .col-xlg-24
     .form-group
-      = label_tag :workplace_location, "Площадка", class: "control-label"
-      = select_tag "workplace[location]", "", class: "form-control", "ng-model": "wp.workplace.location_site",
+      = label_tag :workplace_location_site_id, "Площадка", class: "control-label"
+      = select_tag "workplace[location_site_id]", "", class: "form-control", "ng-model": "wp.workplace.location_site",
         "ng-change": "wp.setLocationSite(); wp.setDefaultLocation('building')",
         "ng-options": "loc_site.name disable when loc_site.site_id == -1 for loc_site in wp.iss_locations track by loc_site.site_id"
 .row
   .col-xlg-24
     .form-group
-      = label_tag :workplace_location, "Корпус", class: "control-label"
-      = select_tag "workplace[location]", "", class: "form-control", "ng-model": "wp.workplace.location_building_id",
+      = label_tag :workplace_location_building_id, "Корпус", class: "control-label"
+      = select_tag "workplace[location_building_id]", "", class: "form-control", "ng-model": "wp.workplace.location_building_id",
         "ng-disabled": "wp.workplace.location_site.site_id == -1", "ng-change": "wp.setDefaultLocation()",
         "ng-options": "loc_building.building_id as loc_building.name disable when loc_building.building_id == -1 for loc_building in wp.workplace.location_site.iss_reference_buildings"
 .row
   .col-xlg-24
     .form-group
-      = label_tag :workplace_location, "Комната", class: "control-label"
-      = text_field_tag "workplace[location]", "", class: "form-control", "ng-model": "wp.workplace.location_room_name",
+      = label_tag :workplace_location_room, "Комната", class: "control-label"
+      = text_field_tag "workplace[location_room]", "", class: "form-control", "ng-model": "wp.workplace.location_room_name",
         "ng-disabled": "wp.workplace.location_building_id == -1", "ng-value": "wp.workplace.location_room_name"
 .row
   .col-xlg-24
     .form-group
-      = label_tag :workplace_location, "Статус", class: "control-label"
+      = label_tag :workplace_status, "Статус", class: "control-label"
       = select_tag "workplace[status]", "", class: "form-control", "ng-model": "wp.workplace.status",
         "ng-options": "status for (status, value) in wp.statuses track by value"
