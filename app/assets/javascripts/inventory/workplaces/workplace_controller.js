@@ -1,11 +1,13 @@
 app
   .controller('WorkplaceIndexCtrl', WorkplaceIndexCtrl)
   .controller('WorkplaceEditCtrl', WorkplaceEditCtrl)
-  .controller('ManuallyPcDialogCtrl', ManuallyPcDialogCtrl);
+  .controller('ManuallyPcDialogCtrl', ManuallyPcDialogCtrl)
+  .controller('SelectItemTypeCtrl', SelectItemTypeCtrl);
 
 WorkplaceIndexCtrl.$inject = ['$scope', '$compile', '$controller', 'DTOptionsBuilder', 'DTColumnBuilder'];
-WorkplaceEditCtrl.$inject = ['$filter', '$uibModal', 'Flash', 'Config', 'Workplace', 'Item'];
+WorkplaceEditCtrl.$inject = ['$filter', '$timeout', '$uibModal', 'Flash', 'Config', 'Workplace', 'Item'];
 ManuallyPcDialogCtrl.$inject = ['$uibModalInstance', 'Flash', 'Workplace', 'Item', 'item'];
+SelectItemTypeCtrl.$inject = ['$uibModalInstance', 'data', 'Workplace'];
 
 /**
  * Управление общей таблицей рабочих мест.
@@ -128,8 +130,9 @@ WorkplaceIndexCtrl.prototype.destroyRecord = function () {
  *
  * @class SVT.WorkplaceEditCtrl
  */
-function WorkplaceEditCtrl($filter, $uibModal, Flash, Config, Workplace, Item) {
+function WorkplaceEditCtrl($filter, $timeout, $uibModal, Flash, Config, Workplace, Item) {
   this.$filter = $filter;
+  this.$timeout = $timeout;
   this.$uibModal = $uibModal;
   this.Flash = Flash;
   this.Config = Config;
@@ -160,8 +163,6 @@ WorkplaceEditCtrl.prototype.init = function (id) {
 
     // Данные о рабочем месте
     self.workplace = self.Workplace.workplace;
-    console.log('РМ: ');
-    console.log(self.workplace);
   });
 };
 
@@ -244,7 +245,7 @@ WorkplaceEditCtrl.prototype.runManuallyPcDialog = function (item) {
   if (item.invent_num) {
     this.$uibModal.open({
       animation: this.Config.global.modalAnimation,
-      templateUrl: 'manuallyPcDialog.html',
+      templateUrl: 'manuallyPcDialog.slim',
       controller: 'ManuallyPcDialogCtrl',
       controllerAs: 'manually',
       size: 'md',
@@ -282,6 +283,48 @@ WorkplaceEditCtrl.prototype.changeItemModel = function (item) {
  */
 WorkplaceEditCtrl.prototype.saveWorkplace = function () {
   this.Workplace.saveWorkplace()
+};
+
+/**
+ * Запустить диалоговое окно "Выбор типа устройства".
+ */
+WorkplaceEditCtrl.prototype.showSelectItemType = function () {
+  var self = this;
+
+  var modalInstance = this.$uibModal.open({
+    animation: this.Config.global.modalAnimation,
+    templateUrl: 'newItem.slim',
+    controller: 'SelectItemTypeCtrl',
+    controllerAs: 'select',
+    size: 'md',
+    backdrop: 'static',
+    resolve: {
+      data: function () {
+        return { eq_types: self.eq_types };
+      }
+    }
+  });
+
+  modalInstance.result.then(
+    function (selectedType) {
+      self.Workplace.createItem(selectedType);
+    },
+    function () {
+      self.Workplace.setFirstActiveTab()
+    });
+};
+
+/**
+ * Удалить выбранное оборудование из состава РМ.
+ *
+ * @param item - удаляемый элемент.
+ * @param $event - объект события.
+ */
+WorkplaceEditCtrl.prototype.delItem = function (item, $event) {
+  $event.stopPropagation();
+  $event.preventDefault();
+
+  this.Workplace.delItem(item);
 };
 
 // =====================================================================================================================
@@ -322,7 +365,6 @@ ManuallyPcDialogCtrl.prototype.setPcFile = function (file) {
   var self = this;
 
   if (!this.Item.fileValidationPassed(file)) {
-    console.log('File validation not passed');
     this.Flash.alert('Необходимо загрузить текстовый файл, полученный в результате работы скачанной вами программы');
 
     return false;
@@ -340,4 +382,32 @@ ManuallyPcDialogCtrl.prototype.setPcFile = function (file) {
     self.$uibModalInstance.close();
   };
   reader.readAsText(file);
+};
+
+// =====================================================================================================================
+
+function SelectItemTypeCtrl($uibModalInstance, data, Workplace) {
+  this.$uibModalInstance = $uibModalInstance;
+  // Типы оборудования
+  this.eq_types = data.eq_types;
+  // Выбранный тип устройства
+  this.selected = angular.copy(this.eq_types[0]);
+  this.Workplace = Workplace
+}
+
+/**
+ * Проверка валидаций выбранного типа оборудования.
+ */
+SelectItemTypeCtrl.prototype.validateSelectedType = function () {
+  if (!this.Workplace.validateType(this.selected))
+    this.selected = angular.copy(this.eq_types[0]);
+};
+
+SelectItemTypeCtrl.prototype.ok = function () {
+  if (this.Workplace.validateType(this.selected))
+    this.$uibModalInstance.close(this.selected);
+};
+
+SelectItemTypeCtrl.prototype.cancel = function () {
+  this.$uibModalInstance.dismiss();
 };

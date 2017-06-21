@@ -1,19 +1,22 @@
 app
   .service('Workplace', Workplace);
 
-Workplace.$inject = ['$window', '$http', 'Server', 'Error', 'Item'];
+Workplace.$inject = ['$window', '$http', '$timeout', 'Server', 'Flash', 'Error', 'Item', 'PropertyValue'];
 
 /**
  * Сервис для редактирования(подтверждения или отклонения) РМ.
  *
  * @class SVT.Workplace
  */
-function Workplace($window, $http, Server, Error, Item) {
+function Workplace($window, $http, $timeout, Server, Flash, Error, Item, PropertyValue) {
   this.$window = $window;
   this.$http = $http;
+  this.$timeout = $timeout;
   this.Server = Server;
+  this.Flash = Flash;
   this.Error = Error;
   this.Item = Item;
+  this.PropertyValue = PropertyValue;
 
   // ====================================== Данные с сервера =============================================================
 
@@ -73,6 +76,8 @@ function Workplace($window, $http, Server, Error, Item) {
   };
 
 // =====================================================================================================================
+
+  this.additional = this.Item.getAdditional();
 }
 
 /**
@@ -104,6 +109,28 @@ Workplace.prototype._delObjects = function () {
   delete(this.workplaceCopy.location_site);
 
   angular.forEach(this.workplaceCopy.inv_items_attributes, function (item) { self.Item.delProperties(item); });
+};
+
+/**
+ * Добавить шаблон оборудования к РМ.
+ */
+Workplace.prototype._addNewItem = function () {
+  this.workplace.inv_items_attributes.push(this.Item.getTemplateItem());
+  this.additional.visibleCount ++;
+};
+
+/**
+ * Установить новый активный экземпляр техники в табах.
+ */
+Workplace.prototype._setFirstActiveTab = function () {
+  var
+    self = this,
+    visibleArr = [];
+
+  visibleArr = $.grep(this.workplace.inv_items_attributes, function (el) { if (!el._destroy) return true; });
+  this.$timeout(function () {
+    self.additional.activeTab = self.workplace.inv_items_attributes.indexOf(visibleArr[0]);
+  }, 0);
 };
 
 /**
@@ -191,33 +218,12 @@ Workplace.prototype.saveWorkplace = function () {
       { workplace_id: self.workplace.workplace_id },
       formData,
       function success(response) {
-        console.log('success');
-        console.log(response);
+        self.$window.location.href = response.location;
       },
       function error(response) {
-        console.log('error');
-        console.log(response);
         self.Flash.alert(response);
       }
     );
-
-
-    // return this.$http
-    //   .put('/inventory/workplaces/' + this.workplace.workplace_id + '.json',
-    //     formData,
-    //     {
-    //       headers: { 'Content-Type': undefined },
-    //       transformRequest: angular.identity
-    //     }
-    //   )
-    //   .success(function (response) {
-    //     console.log('success');
-    //     console.log(response);
-    //   })
-    //   .error(function (response) {
-    //     console.log('error');
-    //     console.log(response);
-    //   })
   } else {
     // return this.$http
     //   .post(this._host + 'create_workplace',
@@ -237,4 +243,118 @@ Workplace.prototype.saveWorkplace = function () {
     //     self.$dialogs.error(response.full_message);
     //   })
   }
+};
+
+/**
+ * Создать новое оборудования, установить начальные значения для данного типа.
+ */
+Workplace.prototype.createItem = function (selectedType) {
+  var self = this;
+  
+  // Создать шаблон нового оборудования на рабочем месте для заполнения данными.
+  self._addNewItem();
+
+  var
+    // Получаем индекс созданного элемента
+    length = self.workplace.inv_items_attributes.length - 1,
+    // Созданный элемент
+    item = self.workplace.inv_items_attributes[length];
+
+  self.workplace.inv_items_attributes[length].type = angular.copy(selectedType);
+  self.Item.setItemDefaultMetadata(item);
+
+  if (item.type_id != 0) {
+    // Установить метаданные для модели
+    self.Item.setModelDefaultMetadata(item, 'new');
+
+    // Заполнить начальными данными массив inv_property_values_attributes.
+    angular.forEach(item.type.inv_properties, function (prop_value, prop_index) {
+      self.Item.addNewPropertyValue(item);
+      self.PropertyValue.setPropertyValue(item, prop_index, 'property_id', prop_value.property_id);
+      self.Item.createFilteredList(item, prop_index, prop_value);
+      self.Item.setInitPropertyListId(item, prop_index);
+    });
+  }
+
+  // Сделать созданный элемент активным в табах.
+  self.$timeout(function () {
+    self.additional.activeTab = length;
+  }, 0);
+};
+
+/**
+ * Удалить элемент из массива inv_items_attributes.
+ *
+ * @param item - удаляемый элемент
+ */
+Workplace.prototype.delItem = function (item) {
+  // Если удаляется ПК и т.п., очистить параметры объекта additional
+  if (this.Item.pcValidationPassed(item.type.name)) {
+    this.Item.clearPcAdditionalData(item);
+  }
+
+  if (item.id) {
+    item._destroy = 1;
+    this.setFirstActiveTab(item);
+  } else {
+    this.setFirstActiveTab(item);
+    this.workplace.inv_items_attributes.splice($.inArray(item, this.workplace.inv_items_attributes), 1);
+    this.Item.clearPcMetadata(item);
+  }
+
+  
+  
+  this.additional.visibleCount --;
+};
+
+/**
+ * Установить новый активный экземпляр техники в табах взависимости от удаляемого элемента. Если удаляется активный
+ * элемент - установить активным самый первый элемент, не помеченный флагом _destroy.
+ *
+ * @param item - удаляемый экземпляр техники (необязательный параметр). Если задан - то новый активный элемент будет 
+ * установлен только в том случае, если удаляется активный экземпляр техники.
+ */
+Workplace.prototype.setFirstActiveTab = function (item) {
+  if (item) {
+    if (this.workplace.inv_items_attributes.indexOf(item) == this.additional.activeTab) {
+      this._setFirstActiveTab();
+    } 
+  } else {
+    this._setFirstActiveTab();
+  }
+};
+
+/**
+ * Проверка различных условий для текущего типа оборудования. Например, для одного РМ возможно наличие только
+ * одного системного блока.
+ *
+ * @param type - объект-тип оборудования.
+ */
+Workplace.prototype.validateType = function (type) {
+  var self = this;
+
+  // Проверка, выбрал ли пользователь тип
+  if (type.type_id == -1) {
+    this.Flash.alert('Необходимо выбрать тип создаваемого устройства.');
+
+    return false;
+  }
+
+  if (self.Item.typeValidationPassed(type.name)) {
+    var countPc = 0;
+
+    // Считаем количество СБ/моноблоков/ноутбуков на текущем РМ.
+    $.each(this.workplace.inv_items_attributes, function (index, value) {
+      if (self.Item.typeValidationPassed(value.type.name) && !value._destroy)
+        countPc ++;
+    });
+
+    if (countPc >= 1) {
+      this.Flash.alert('Одно рабочее место может содержать только один из указанных видов техники: системный блок, моноблок, ноутбук, планшет.');
+
+      return false;
+    }
+  }
+
+  return true;
 };

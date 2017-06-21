@@ -8,7 +8,7 @@ function Item($filter, PropertyValue) {
     // Типы оборудования на РМ с необходимыми для заполнения свойствами
     eq_types = [{ type_id: -1, short_description: 'Выберите тип' }],
     // Шаблон экземпляра техники, добавляемого к РМ
-    _templateItem = {
+    templateItem = {
       id:             null,
       // item_id: null,
       type_id: 0,
@@ -26,12 +26,14 @@ function Item($filter, PropertyValue) {
     // Файл конфигурации ПК, связанный с текущим РМ.
     pcFile = null,
     // Начальные данные для select тэга модели.
-    _templateSelectModel = [
+    templateSelectModel = [
       { model_id: -1, item_model: 'Выберите модель' },
       { model_id: 0, item_model: 'Ввести модель вручную...' }
     ],
     // Дополнительные данные
     additional = {
+      // Активный таб
+      activeTab: 0,
       // Если true - получены корректные данные от аудита, либо загружен (подготовлен для загрузки) файл, либо файл
       // уже загружен
       auditData: false,
@@ -180,7 +182,7 @@ function Item($filter, PropertyValue) {
     // Если массив моделей не пустой (модели существуют)
     if (item.type.inv_models[0]) {
       // Добавить к моделям запись "Выберите модель" и "Другое"
-      item.type.inv_models = angular.copy(this._templateSelectModel.concat(item.type.inv_models));
+      item.type.inv_models = angular.copy(this.templateSelectModel.concat(item.type.inv_models));
 
       item.model = angular.copy(item.type.inv_models[0]);
       item.model_id = angular.copy(item.model.model_id);
@@ -205,6 +207,10 @@ function Item($filter, PropertyValue) {
   }
 
   return {
+    /**
+     * Получить шаблонный объект экземпляра техники.
+     */
+    getTemplateItem: function () { return angular.copy(templateItem); },
     /**
      * Установить значение для объекта pcFile.
      *
@@ -266,7 +272,7 @@ function Item($filter, PropertyValue) {
 
         // Добавить к моделям запись "Выберите модель" и "Другое", если для данного типа оборудования задан список моделей.
         if (item.type.inv_models.length)
-          item.type.inv_models = _templateSelectModel.concat(item.type.inv_models);
+          item.type.inv_models = templateSelectModel.concat(item.type.inv_models);
 
         // Если model_id задан, находим соответствующий объект model из массива inv_models.
         if (item.model_id) {
@@ -277,7 +283,7 @@ function Item($filter, PropertyValue) {
             return false;
           });
         } else {
-          item.model = angular.copy(_templateSelectModel[1]);
+          item.model = angular.copy(templateSelectModel[1]);
         }
 
         // Создаем массив filteredList
@@ -433,13 +439,15 @@ function Item($filter, PropertyValue) {
         return false;
       });
     },
+    setPcProperties: _setPcProperties,
     /**
-     * Установить значения свойств (CPU, HDD, ...) для ПК.
+     * Проверить наличие значения в массиве singleItems.
      *
-     * @param item - изменяемый объект
-     * @param data - объект данных { cpu: [], hdd: [], mb: [], ... }
+     * value - проверяемое значение
      */
-    setPcProperties: function (item, data) { _setPcProperties(item, data); },
+    typeValidationPassed: function (value) {
+      return $filter('contains')(additional.singleItems, value);
+    },
     /**
      * Проверить тип загруженного файла.
      *
@@ -447,6 +455,22 @@ function Item($filter, PropertyValue) {
      */
     fileValidationPassed: function (file) {
       return $filter('contains')(additional.fileFormats, file.type);
+    },
+    /**
+     * Проверить наличие значения в массиве pcTypes.
+     *
+     * @param value - проверяемое значение
+     */
+    pcValidationPassed: function (value) {
+      return $filter('contains')(additional.pcTypes, value);
+    },
+    /**
+     * Очистить параметры массива additional, связанные с ПК.
+     */
+    clearPcAdditionalData: function () {
+      additional.invent_num = '';
+      additional.auditData = false;
+      pcFile = null;
     },
     /**
      * Установить имя файла в качестве значения для свойства 'config_file'.
@@ -503,6 +527,53 @@ function Item($filter, PropertyValue) {
         _createFilteredList(item, prop_index, prop_value);
         _setInitPropertyListId(item, prop_index);
       });
-    }
+    },
+    /**
+     * Для указанного объекта item установить связанные с ним параметры типа оборудования.
+     *
+     * @param item - изменяемый объект массива inv_items_attributes.
+     */
+    setItemDefaultMetadata: function (item) {
+      item.type_id = angular.copy(item.type.type_id);
+
+      // if (!item.destroy_property_values && !flag) {
+      //     item.destroy_property_values = $.grep(item.inv_property_values_attributes, function (el) { if (el.id) return true; });
+      //     $.each(item.destroy_property_values, function (index, value) {
+      //         this._destroy = 1;
+      //     });
+      // }
+    },
+    /**
+     * Для указанного объекта item установить начальные связанные с ним параметры модели.
+     *
+     * @param item - изменяемый объект массива inv_items_attributes
+     * @param flag - флаг (необязательный параметр). Если 'new' - установить начальное значение модели.
+     */
+    setModelDefaultMetadata: function (item, flag) {
+      if (flag == 'new') {
+        // Если массив моделей не пустой (модели существуют)
+        if (item.type.inv_models[0]) {
+          // Добавить к моделям запись "Выберите модель" и "Другое"
+          item.type.inv_models = angular.copy(templateSelectModel.concat(item.type.inv_models));
+
+          item.model = angular.copy(item.type.inv_models[0]);
+          item.model_id = angular.copy(item.model.model_id);
+        } else {
+          item.model = null;
+          item.model_id = null;
+        }
+      } else {
+        item.model_id = item.model.model_id;
+      }
+    },
+    /**
+     * Добавить новый элемент к массиву inv_property_values_attributes элемента item.
+     *
+     * @param item
+     */
+    addNewPropertyValue: function (item) {
+      item.inv_property_values_attributes.push(PropertyValue.getTemplatePropertyValue());
+    },
+    setInitPropertyListId: _setInitPropertyListId
   };
 }

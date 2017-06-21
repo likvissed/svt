@@ -47,16 +47,13 @@ module Inventory
     end
 
     def update
-      # respond_to do |format|
-      #   format.json { render json: { data: inventory_workplaces_path } }
-      # end
-
       @workplace = LkInvents::UpdateWorkplace.new(
         current_user, params[:workplace_id], workplace_params, params[:pc_file]
       )
 
       if @workplace.run
-        render json: { workplace: @workplace.data, full_message: 'Данные о рабочем месте обновлены' }
+        flash[:notice] = 'Данные о рабочем месте обновлены'
+        render json: { location: inventory_workplaces_path }
       else
         render json: { full_message: @workplace.errors.full_messages.join('. ') }, status: 422
       end

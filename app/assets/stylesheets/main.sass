@@ -28,9 +28,6 @@ button, input[type='submit']
 
 textarea
   resize: none
-
-.test
-  margin-left: 5px
   
 /* ================================================ Основной контент ================================================ */
 
@@ -76,7 +73,7 @@ a.default-color
   height: 0
   width: 0
   overflow: hidden
-
+  
 /* ================================================ Страницы входа на сайт ========================================== */
 
 .auth-header
@@ -134,3 +131,15 @@ a.default-color
   .dataTables_filter
     label
       width: 100% !important
+
+/* ================================================ Стили для табов ================================================= */
+
+ul.nav-tabs
+  li.uib-tab.manage > a
+    color: $gray-base
+    border: 1px solid $nav-tabs-border-color
+    
+  li.uib-tab i.destroy-item:hover
+    color: $btn-danger-bg
+    cursor: pointer
+  
