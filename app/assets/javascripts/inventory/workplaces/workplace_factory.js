@@ -222,7 +222,7 @@ Workplace.prototype.saveWorkplace = function () {
         self.$window.location.href = response.location;
       },
       function error(response) {
-        self.Flash.alert(response);
+        self.Error.response(response);
       }
     );
   } else {
