@@ -20,6 +20,7 @@ module Inventory
         load_locations
         load_statuses
         load_users if @division
+        load_pc_config_key
 
         exclude_mandatory_fields unless mandatory
       rescue Exception => e
@@ -101,6 +102,10 @@ module Inventory
 
           type
         end
+      end
+      
+      def load_pc_config_key
+        data[:pc_config_key] = ENV['PC_CONFIG_KEY']
       end
     end
   end

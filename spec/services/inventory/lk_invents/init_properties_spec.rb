@@ -10,7 +10,7 @@ module Inventory
         subject { InitProperties.new(user) }
 
         include_examples 'run methods', %w[load_divisions load_inv_types load_workplace_types
-load_workplace_specializations load_locations exclude_mandatory_fields]
+load_workplace_specializations load_locations load_pc_config_key exclude_mandatory_fields]
 
         its(:data) { is_expected.not_to be_nil }
 
