@@ -68,3 +68,4 @@ config/redis.yml
 /cached_pages/*
 
 .lib/AuditBot/var/auditbot.log
+.env

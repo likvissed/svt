@@ -31,6 +31,7 @@ gem 'awesome_print'
 gem 'bootstrap-sass'
 gem 'colorize'
 gem 'font-awesome-rails'
+gem 'dotenv-rails', groups: [:development, :test]
 gem 'php_serialize'
 gem 'rails-i18n'
 gem 'rubocop', require: false
