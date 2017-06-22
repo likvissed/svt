@@ -1,24 +1,20 @@
 .navbar.navbar-inverse role="navigation-top"
   .container
-    .row
-      .col-lg-24
-        .navbar-header
-          = button_tag "", class: "navbar-toggle", "data-toggle": "collapse", "data-target": ".navbar-collapse-head" do
-            span.sr-only Toggle navigation
-            span.icon-bar
-            span.icon-bar
-            span.icon-bar
+    .navbar-header
+      = button_tag "", class: "navbar-toggle", "data-toggle": "collapse", "data-target": ".navbar-collapse-head" do
+        span.sr-only Toggle navigation
+        span.icon-bar
+        span.icon-bar
+        span.icon-bar
 
-        = link_to root_path, class: "navbar-brand" do
-          /= image_tag ""
-          | Вычислительная техника
-        /.navbar-text Инвентаризация
+      = link_to root_path, class: "navbar-brand" do
+        | Вычислительная техника
 
-        .collapse.navbar-collapse.navbar-collapse-head
-          .navbar-text.navbar-right.pull-right
-            = "***REMOVED*** Р.Ф. | "
-            = link_to destroy_user_session_path, method: :delete, class: "navbar-link" do
-              | Выход
+    .collapse.navbar-collapse.navbar-collapse-head
+      .navbar-text.navbar-right.pull-right
+        = "***REMOVED*** Р.Ф. | "
+        = link_to destroy_user_session_path, method: :delete, class: "navbar-link" do
+          | Выход
 
 .navbar.navbar-default role="navigation-main"
   .container
@@ -31,10 +27,10 @@
 
     .collapse.navbar-collapse.navbar-collapse-main
       ul.nav.navbar-nav
-        li= link_to "Техника", ""
+        li= link_to "Главная", ""
         li.dropdown
           = link_to "", class: "dropdown-toggle", "data-toggle": "dropdown" do
-            | Инвентаризация
+            | Инвентаризация 
             b.caret
           ul.dropdown-menu
             li= link_to "Просмотр ПК", inventory_workplaces_path
