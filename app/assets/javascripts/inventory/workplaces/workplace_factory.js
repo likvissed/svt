@@ -151,9 +151,10 @@ Workplace.prototype.init = function (id) {
       self.wp_types = angular.copy(self.wp_types.concat(data.prop_data.wp_types));
       self.specs = angular.copy(self.specs.concat(data.prop_data.specs));
       self.iss_locations = angular.copy(self.iss_locations.concat(data.prop_data.iss_locations));
-      self.users = angular.copy(data.prop_data.users);
-      self.statuses = angular.copy(data.prop_data.statuses);
-
+      self.users = data.prop_data.users;
+      self.statuses = data.prop_data.statuses;
+      self.additional.fileKey = parseInt(data.prop_data.pc_config_key);
+      
       self._addObjects();
     })
     .error(function (response, status) {

@@ -32,6 +32,8 @@ function Item($filter, PropertyValue) {
     ],
     // Дополнительные данные
     additional = {
+      // Ключ
+      fileKey: null,
       // Активный таб
       activeTab: 0,
       // Если true - получены корректные данные от аудита, либо загружен (подготовлен для загрузки) файл, либо файл
@@ -48,7 +50,7 @@ function Item($filter, PropertyValue) {
       // Список типов оборудования, которые не могут встречаться дважды или пересекаться между собой в рамках одного рабочего места.
       singleItems: ['pc', 'allin1', 'notebook', 'tablet'],
       // Разрешенные форматы загружаемого файла.
-      fileFormats: ['text/plain'],
+      fileFormats: [''],
       // Доп. описание модели
       model_descr: 'Под моделью понимается совокупность наименования производителя указанного вами оборудования (обычно самая большая надпись на корпусе), а также наименования конкретного вида оборудования. Например, Zalman Z3, Samsung S23C350 и т.п.'
     };
@@ -491,16 +493,24 @@ function Item($filter, PropertyValue) {
      * Распарсить загруженный файл, найти в нем все параметры, необходимые для ПК.
      *
      * @param item - объект техники, для которого пользователь загружает файл.
-     * @param data - данные, прочитанные из файла.
+     * @param encrypted_data - данные, прочитанные из файла.
      */
-    matchDataFromUploadedFile: function (item, data) {
-      var matchedObj = {};
+    matchDataFromUploadedFile: function (item, encrypted_data) {
+      var
+        res = '',
+        sym = '',
+        matchedObj = {};
 
-      matchedObj.video = data.match(/\[video\]\s+(.*)\s+\[mb\]/m);
-      matchedObj.mb = data.match(/\[mb\]\s+(.*)\s+\[cpu\]/m);
-      matchedObj.cpu = data.match(/\[cpu\]\s+(.*)\s+\[ram\]/m);
-      matchedObj.ram = data.match(/\[ram\]\s+(.*)\s+\[hdd\]/m);
-      matchedObj.hdd = data.match(/\[hdd\]\s+(.*)/m);
+      for (var i = 0, len = encrypted_data.length; i < len; i++) {
+        sym = event.target.result[i].charCodeAt(0);
+        res += String.fromCharCode(sym ^ additional.fileKey);
+      }
+      
+      matchedObj.video = res.match(/\[video\]\s+(.*)\s+\[mb\]/m);
+      matchedObj.mb = res.match(/\[mb\]\s+(.*)\s+\[cpu\]/m);
+      matchedObj.cpu = res.match(/\[cpu\]\s+(.*)\s+\[ram\]/m);
+      matchedObj.ram = res.match(/\[ram\]\s+(.*)\s+\[hdd\]/m);
+      matchedObj.hdd = res.match(/\[hdd\]\s+(.*)/m);
 
       angular.forEach(additional.pcAttrs, function (attr_value) {
         if (matchedObj[attr_value]) {

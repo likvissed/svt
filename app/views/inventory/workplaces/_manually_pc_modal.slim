@@ -10,7 +10,7 @@ script type="text/ng-template" id="manuallyPcDialog.slim"
         .btn-toolbar
           = button_tag type: :button, class: "btn-default btn-sm", "ng-click": "manually.downloadPcScript()" do
             = fa_icon "download"
-            | Скачать программу
+            |  Скачать программу
 
     dl.dl-horizontal
       dt Шаг 2.
@@ -19,12 +19,12 @@ script type="text/ng-template" id="manuallyPcDialog.slim"
     dl.dl-horizontal
       dt Шаг 2.
       dd
-        | Загрузите полученный файл.
+        | Загрузите полученный файл.  
         .btn-toolbar
           = label_tag :pc_report do
             span.btn.btn-default.btn-sm
               = fa_icon "folder-open"
-              | Загрузить файл конфигурации
+              |  Загрузить файл конфигурации
           = file_field_tag "pc_report", class: "hidden-attachment", "file-upload": true
 
   .modal-footer
