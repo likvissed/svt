@@ -6,8 +6,10 @@ var app = angular
     'ngResource',
     'ngAnimate',
     'datatables',
+    'datatables.bootstrap',
     'ui.bootstrap'
-  ]);
+  ]);  
+
 
 app
   // Настройка ресурсов

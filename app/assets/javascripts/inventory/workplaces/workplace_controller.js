@@ -27,6 +27,7 @@ function WorkplaceIndexCtrl($scope, $compile, $controller, DTOptionsBuilder, DTC
   self.dtInstance = {};
   self.dtOptions = DTOptionsBuilder
     .newOptions()
+    .withBootstrap()
     .withOption('initComplete', initComplete)
     .withOption('stateSave', true)
     .withOption('ajax', {

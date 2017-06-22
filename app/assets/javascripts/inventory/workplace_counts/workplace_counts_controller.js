@@ -31,6 +31,7 @@ function WorkplaceCountIndexCtrl($controller, $scope, $compile, $uibModal, DTOpt
   self.dtInstance = {};
   self.dtOptions = DTOptionsBuilder
     .newOptions()
+    .withBootstrap()
     .withOption('stateSave', true)
     .withOption('ajax', {
       url: '/inventory/workplace_counts.json',
