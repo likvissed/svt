@@ -5,6 +5,7 @@
   "repository": "deployer@dc:/var/repos/inv.git",
   "author": "Bayburin R.F. <b***REMOVED***>",
   "license": "MIT",
+  "private": true,
   "dependencies": {
     "angular": "1.5.x",
     "angular-animate": "1.5.x",
