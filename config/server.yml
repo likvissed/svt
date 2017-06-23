@@ -1,11 +1,11 @@
 development:
-  hostname: inv-dev
+  hostname: inv-dev.***REMOVED***.ru
 
 test:
-  hostname: inv-dev
+  hostname: inv-dev.***REMOVED***.ru
 
 staging:
-  hostname: staging-svt
+  hostname: staging-svt.***REMOVED***.ru
 
 production:
-  hostname: svt
+  hostname: svt.***REMOVED***.ru

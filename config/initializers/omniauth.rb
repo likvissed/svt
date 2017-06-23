@@ -10,7 +10,7 @@ module OmniAuth
       option :identity, nil
       option :mandatory_fields, []
 
-      option :sign_in, "http://#{SERVER_CONFIG['hostname']}/users/sign_in"
+      option :sign_in, "https://#{SERVER_CONFIG['hostname']}/users/sign_in"
 
       uid { request.params['openid.assoc_handle'] }
 
@@ -25,10 +25,10 @@ module OmniAuth
       def generate_url
         params = {}
 
-        params['openid.return_to']      = options.identity.to_s
-        params['openid.mode']           = 'checkid_setup'
-        params['openid.identity']       = options.identity.to_s
-        params['openid.trust_root']     = options.identity.to_s
+        params['openid.return_to'] = options.identity.to_s
+        params['openid.mode'] = 'checkid_setup'
+        params['openid.identity']  = options.identity.to_s
+        params['openid.trust_root'] = options.identity.to_s
         params['openid.sreg.required']  = options.mandatory_fields.join(',')
 
         options.server.to_s + '?' + array_to_url(params)

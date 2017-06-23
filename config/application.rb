@@ -12,6 +12,9 @@ module Inv
     config.app_generators.scaffold_controller :responders_controller
 
     config.assets.enabled = true
+    
+    config.force_ssl = true
+    config.ssl_options = { domain: '***REMOVED***.ru' }
 
     # Settings in config/environments/* take precedence over those specified here.
     # Application configuration should go into files in config/initializers
