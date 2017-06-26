@@ -59,4 +59,5 @@ Rails.application.configure do
 
   # config.web_console.whitelisted_ips = '10.1.8.26'
 
+  config.action_cable.url = 'wss://inv-dev.***REMOVED***.ru/cable'
 end

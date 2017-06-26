@@ -7,7 +7,8 @@ var app = angular
     'ngAnimate',
     'datatables',
     'datatables.bootstrap',
-    'ui.bootstrap'
+    'ui.bootstrap',
+    'ngActionCable'
   ]);  
 
 

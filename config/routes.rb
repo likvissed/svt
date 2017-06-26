@@ -8,7 +8,7 @@ Rails.application.routes.draw do
   devise_scope :user do
     root 'devise/sessions#new'
   end
-
+  
   # Инвентаризация
   namespace :inventory do
     # Отделы
@@ -59,4 +59,6 @@ Rails.application.routes.draw do
 
   # Получить html-код кнопки "Добавить запись"
   get 'link/new_record', to: 'application#link_to_new_record'
+
+  mount ActionCable.server, at: '/cable'
 end

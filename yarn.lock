@@ -2,6 +2,13 @@
 # yarn lockfile v1
 
 
+angular-actioncable@^1.1.1:
+  version "1.1.1"
+  resolved "https://registry.yarnpkg.com/angular-actioncable/-/angular-actioncable-1.1.1.tgz#dd1d7052338732fb78a974a2a088a71162f0b31a"
+  dependencies:
+    angular "<2.0.0"
+    angular-websocket "^2.0.0"
+
 angular-animate@1.5.x:
   version "1.5.11"
   resolved "https://registry.yarnpkg.com/angular-animate/-/angular-animate-1.5.11.tgz#1baa43c303d1b93c4e6aa89453b39114b7a1c669"
@@ -31,7 +38,14 @@ angular-ui-bootstrap@2.5.x:
   version "2.5.0"
   resolved "https://registry.yarnpkg.com/angular-ui-bootstrap/-/angular-ui-bootstrap-2.5.0.tgz#2facefb915386655dc5f44150258032517236d01"
 
-angular@1.5.x, angular@>=1.3.0:
+angular-websocket@^2.0.0, angular-websocket@^2.0.1:
+  version "2.0.1"
+  resolved "https://registry.yarnpkg.com/angular-websocket/-/angular-websocket-2.0.1.tgz#0fb4d60ed9018be583d031eec4e56b457cb8dcee"
+  dependencies:
+    angular "*"
+    ws "^1.0.0"
+
+angular@*, angular@1.5.x, angular@<2.0.0, angular@>=1.3.0:
   version "1.5.11"
   resolved "https://registry.yarnpkg.com/angular/-/angular-1.5.11.tgz#8c5ba7386f15965c9acf3429f6881553aada30d6"
 
@@ -51,3 +65,18 @@ datatables.net@>=1.10.9, datatables.net@^1.10.11:
 jquery@>=1.11.0, jquery@>=1.7:
   version "3.2.1"
   resolved "https://registry.yarnpkg.com/jquery/-/jquery-3.2.1.tgz#5c4d9de652af6cd0a770154a631bba12b015c787"
+
+options@>=0.0.5:
+  version "0.0.6"
+  resolved "https://registry.yarnpkg.com/options/-/options-0.0.6.tgz#ec22d312806bb53e731773e7cdaefcf1c643128f"
+
+ultron@1.0.x:
+  version "1.0.2"
+  resolved "https://registry.yarnpkg.com/ultron/-/ultron-1.0.2.tgz#ace116ab557cd197386a4e88f4685378c8b2e4fa"
+
+ws@^1.0.0:
+  version "1.1.4"
+  resolved "https://registry.yarnpkg.com/ws/-/ws-1.1.4.tgz#57f40d036832e5f5055662a397c4de76ed66bf61"
+  dependencies:
+    options ">=0.0.5"
+    ultron "1.0.x"

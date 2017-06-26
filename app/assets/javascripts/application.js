@@ -12,6 +12,8 @@
 //= require angular-bootstrap
 //= require angular-ui-bootstrap/dist/ui-bootstrap-tpls
 //= require angular-i18n/angular-locale_ru
+//= require angular-websocket/dist/angular-websocket
+//= require angular-actioncable
 
 // DataTables
 //= require datatables.net/js/jquery.dataTables
