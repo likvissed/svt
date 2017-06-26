@@ -21,6 +21,7 @@ module Inventory
 
         prepare_params
         update_workplace
+        broadcast_workplaces
       rescue RuntimeError
         false
       end

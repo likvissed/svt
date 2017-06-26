@@ -14,6 +14,7 @@ module Inventory
         authorize @data, :destroy?
 
         destroy_workplace
+        broadcast_workplaces
       rescue RuntimeError
         false
       end

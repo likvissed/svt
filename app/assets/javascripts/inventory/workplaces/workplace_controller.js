@@ -4,7 +4,7 @@ app
   .controller('ManuallyPcDialogCtrl', ManuallyPcDialogCtrl)
   .controller('SelectItemTypeCtrl', SelectItemTypeCtrl);
 
-WorkplaceIndexCtrl.$inject = ['$scope', '$compile', '$controller', 'DTOptionsBuilder', 'DTColumnBuilder'];
+WorkplaceIndexCtrl.$inject = ['$scope', '$compile', '$controller', 'DTOptionsBuilder', 'DTColumnBuilder', 'ActionCableChannel'];
 WorkplaceEditCtrl.$inject = ['$filter', '$timeout', '$uibModal', 'Flash', 'Config', 'Workplace', 'Item'];
 ManuallyPcDialogCtrl.$inject = ['$uibModalInstance', 'Flash', 'Workplace', 'Item', 'item'];
 SelectItemTypeCtrl.$inject = ['$uibModalInstance', 'data', 'Workplace'];
@@ -14,7 +14,7 @@ SelectItemTypeCtrl.$inject = ['$uibModalInstance', 'data', 'Workplace'];
  *
  * @class SVT.WorkplaceIndexCtrl
  */
-function WorkplaceIndexCtrl($scope, $compile, $controller, DTOptionsBuilder, DTColumnBuilder) {
+function WorkplaceIndexCtrl($scope, $compile, $controller, DTOptionsBuilder, DTColumnBuilder, ActionCableChannel) {
   var self = this;
 
 // =============================================== Инициализация =======================================================
@@ -61,7 +61,11 @@ function WorkplaceIndexCtrl($scope, $compile, $controller, DTOptionsBuilder, DTC
   ];
 
   function initComplete(settings, json) {
-    console.log(json);
+    // Создание подписки на канал WorkplacesChannel для обновления автоматического обновления таблицы.
+    var consumer = new ActionCableChannel('WorkplacesChannel');
+    consumer.subscribe(function () {
+      self.dtInstance.reloadData(null, false);
+    });
   }
 
   /**

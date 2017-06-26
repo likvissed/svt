@@ -16,12 +16,11 @@ module Inventory
 
       def run
         prepare_params
-
         @workplace = Workplace.new(workplace_params)
         log_data
-
         authorize @workplace, :create?
         save_workplace
+        broadcast_workplaces
       rescue RuntimeError
         false
       end
