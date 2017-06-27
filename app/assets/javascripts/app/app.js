@@ -8,7 +8,9 @@ var app = angular
     'datatables',
     'datatables.bootstrap',
     'ui.bootstrap',
-    'ngActionCable'
+    'ngActionCable',
+    'ngSanitize',
+    'ui.select'
   ]);  
 
 

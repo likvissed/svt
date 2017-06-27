@@ -14,6 +14,8 @@
 //= require angular-i18n/angular-locale_ru
 //= require angular-websocket/dist/angular-websocket
 //= require angular-actioncable
+//= require angular-sanitize
+//= require ui-select
 
 // DataTables
 //= require datatables.net/js/jquery.dataTables

@@ -14,7 +14,9 @@
     "angular-datatables": "0.5.x",
     "angular-i18n": "1.5.x",
     "angular-resource": "1.5.x",
+    "angular-sanitize": "1.5.x",
     "angular-ui-bootstrap": "2.5.x",
-    "angular-websocket": "^2.0.1"
+    "angular-websocket": "^2.0.1",
+    "ui-select": "^0.19.8"
   }
 }
