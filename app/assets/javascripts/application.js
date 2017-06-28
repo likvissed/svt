@@ -16,6 +16,7 @@
 //= require angular-actioncable
 //= require angular-sanitize
 //= require ui-select
+//= require angular-cookies
 
 // DataTables
 //= require datatables.net/js/jquery.dataTables

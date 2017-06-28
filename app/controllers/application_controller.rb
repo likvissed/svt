@@ -67,10 +67,10 @@ class ApplicationController < ActionController::Base
   def create_link_to_new_record(type, object, params)
     # if can? :manage, object
     if type == :modal
-      "<button class='btn btn-primary btn-block' #{params}>Добавить</button>"
+      "<button class='btn btn-primary btn-block btn-sm' #{params}>Добавить</button>"
     elsif type == :page
       "<form class='button_to' method='get' action='#{params}'>
-        <input class='btn btn-primary btn-block' type='submit' value='Добавить'>
+        <input class='btn btn-primary btn-block btn-sm' type='submit' value='Добавить'>
       </form>"
     end
   end

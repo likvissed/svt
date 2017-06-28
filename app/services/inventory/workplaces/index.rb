@@ -2,9 +2,21 @@ module Inventory
   module Workplaces
     # Загрузить все рабочие места.
     class Index < ApplicationService
+      # init_filters- флаг, определяющий, нужно ли загрузить данные для фильтров.
+      # filters - объект, содержащий выбранные фильтры.
+      def initialize(init_filters = false, filters)
+        @data = {}
+        @init_filters = init_filters
+        @filters = filters
+      end
+      
       def run
         load_workplace
+        run_filters if @filters
         prepare_to_render
+        load_filters if @init_filters
+        
+        true
       end
 
       private
@@ -19,9 +31,16 @@ module Inventory
 .short_description as wp_type, count(invent_item.item_id) as count')
                         .group(:workplace_id)
       end
+      
+      # Отфильтровать полученные данные
+      def run_filters
+        unless @filters['workplace_count_id'].to_i.zero?
+          @workplaces = @workplaces.where(workplace_count_id: @filters['workplace_count_id'])
+        end
+      end
 
       def prepare_to_render
-        @data = @workplaces.as_json(
+        @data[:workplaces] = @workplaces.as_json(
           include: %i[iss_reference_site iss_reference_building iss_reference_room user_iss]
         ).each do |wp|
           wp['location'] = "Пл. '#{wp['iss_reference_site']['name']}', корп. #{wp['iss_reference_building']['name']},
@@ -34,6 +53,12 @@ module Inventory
           wp.delete('iss_reference_room')
           wp.delete('user_iss')
         end
+      end
+      
+      # Загрузить данные для фильтров
+      def load_filters
+        @data[:filters] = {}
+        @data[:filters][:divisions] = WorkplaceCount.select(:workplace_count_id, :division)
       end
     end
   end

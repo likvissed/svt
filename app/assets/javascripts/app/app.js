@@ -10,7 +10,8 @@ var app = angular
     'ui.bootstrap',
     'ngActionCable',
     'ngSanitize',
-    'ui.select'
+    'ui.select',
+    'ngCookies'
   ]);  
 
 

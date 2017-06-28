@@ -48,6 +48,7 @@
         function compileElements() {
           $timeout(function () {
             $compile(element.find('.new-record'))(scope);
+            $compile(element.find('.workplaces-division-filter'))(scope);
           }, 0, false);
         }
 
@@ -55,6 +56,9 @@
 
         scope.$watch(
           function (scope) {
+            if (scope.wpIndex) {
+              return [scope.wpIndex.selectedDivisionFilter]
+            }
           },
           function () {
             compileElements();

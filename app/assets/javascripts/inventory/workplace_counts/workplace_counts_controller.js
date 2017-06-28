@@ -42,9 +42,9 @@ function WorkplaceCountIndexCtrl($controller, $scope, $compile, $uibModal, DTOpt
     .withOption('createdRow', createdRow)
     .withDOM(
       '<"row"' +
-        '<"col-sm-4 col-md-3 col-lg-2 col-fhd-2"' +
+        '<"col-sm-4 col-md-3 col-lg-2 col-xlg-2 col-fhd-2"' +
           '<"#workplace_counts.new-record">>' +
-        '<"col-sm-16 col-md-18 col-lg-19 col-fhd-19">' +
+        '<"col-sm-16 col-md-18 col-lg-19 col-xlg-19 col-fhd-19">' +
         '<"col-sm-4 col-md-3 col-lg-3 col-fhd-3"f>>' +
       '<"row"' +
         '<"col-fhd-24"t>>' +

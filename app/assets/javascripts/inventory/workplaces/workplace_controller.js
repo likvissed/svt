@@ -4,7 +4,7 @@ app
   .controller('ManuallyPcDialogCtrl', ManuallyPcDialogCtrl)
   .controller('SelectItemTypeCtrl', SelectItemTypeCtrl);
 
-WorkplaceIndexCtrl.$inject = ['$scope', '$compile', '$controller', 'DTOptionsBuilder', 'DTColumnBuilder', 'ActionCableChannel'];
+WorkplaceIndexCtrl.$inject = ['$scope', '$compile', '$controller', 'DTOptionsBuilder', 'DTColumnBuilder', 'ActionCableChannel', 'Error', 'Cookies'];
 WorkplaceEditCtrl.$inject = ['$filter', '$timeout', '$uibModal', 'Flash', 'Config', 'Workplace', 'Item'];
 ManuallyPcDialogCtrl.$inject = ['$uibModalInstance', 'Flash', 'Workplace', 'Item', 'item'];
 SelectItemTypeCtrl.$inject = ['$uibModalInstance', 'data', 'Workplace'];
@@ -14,14 +14,25 @@ SelectItemTypeCtrl.$inject = ['$uibModalInstance', 'data', 'Workplace'];
  *
  * @class SVT.WorkplaceIndexCtrl
  */
-function WorkplaceIndexCtrl($scope, $compile, $controller, DTOptionsBuilder, DTColumnBuilder, ActionCableChannel) {
+function WorkplaceIndexCtrl($scope, $compile, $controller, DTOptionsBuilder, DTColumnBuilder, ActionCableChannel, Error, Cookies) {
   var self = this;
 
 // =============================================== Инициализация =======================================================
-
+  
+  self.Error = Error;
+  self.Cookies = Cookies;
+  self.Cookies.Workplace.init();
+  // Фильтр по отделам
+  self.divisionFilters = [
+    {
+      workplace_count_id: 0,
+      division: 'Все отделы'
+    }
+  ];
+  
   // Подключаем основные параметры таблицы
   $controller('DefaultDataTableCtrl', {});
-
+  
   // Объект, содержащий данные отделов по инвентаризации (workplace_id => data)
   self.workplaces = {};
   self.dtInstance = {};
@@ -30,17 +41,28 @@ function WorkplaceIndexCtrl($scope, $compile, $controller, DTOptionsBuilder, DTC
     .withBootstrap()
     .withOption('initComplete', initComplete)
     .withOption('stateSave', true)
+    .withDataProp('workplaces')
     .withOption('ajax', {
       url: '/inventory/workplaces.json',
+      data: {
+        // Флаг, необходимый, чтобы получить данные для всех фильтров.
+        init_filters: true,
+        // Сохраненные фильтры.
+        filters: {
+          workplace_count_id: self.Cookies.Workplace.get('tableDivisionFilter') || self.divisionFilters[0].workplace_count_id
+        }
+      }, 
       error: function (response) {
-        // Error.response(response);
+        self.Error.response(response);
       }
     })
     .withOption('createdRow', createdRow)
     .withDOM(
       '<"row"' +
-        '<"col-sm-20 col-md-21 col-lg-21 col-fhd-21">' +
-        '<"col-sm-4 col-md-3 col-lg-3 col-fhd-3"f>>' +
+        '<"col-sm-16 col-md-18 col-lg-18 col-xlg-18 col-fhd-19">' +
+        '<"col-sm-4 col-md-3 col-lg-3 col-xlg-3 col-fhd-2"' +
+          '<"workplaces-division-filter">>' +
+        '<"col-sm-4 col-md-3 col-lg-3 col-xlg-3 col-fhd-3"f>>' +
       '<"row"' +
         '<"col-fhd-24"t>>' +
       '<"row"' +
@@ -66,6 +88,17 @@ function WorkplaceIndexCtrl($scope, $compile, $controller, DTOptionsBuilder, DTC
     consumer.subscribe(function () {
       self.dtInstance.reloadData(null, false);
     });
+    
+    // Заполнение данных о фильтрах
+    if (json.filters) {
+      self.divisionFilters = self.divisionFilters.concat(json.filters.divisions);
+      var cookieVal = self.Cookies.Workplace.get('tableDivisionFilter');
+      if (angular.isUndefined(cookieVal)) {
+        self.selectedDivisionFilter = self.divisionFilters[0];
+      } else {
+        self.selectedDivisionFilter = $.grep(self.divisionFilters, function (el) { return el.workplace_count_id == cookieVal })[0];
+      }
+    }
   }
 
   /**
@@ -108,7 +141,7 @@ function WorkplaceIndexCtrl($scope, $compile, $controller, DTOptionsBuilder, DTC
    * Отрендерить ссылку на редактирование записи.
    */
   function editRecord(data, type, full, meta) {
-    return '<a href="/inventory/workplaces/' + data.workplace_id + '/edit" class="default-color"' +
+    return '<a href="/inventory/workplaces/' + data.workplace_id + '/edit" class="default-color pointer"' +
       ' uib-tooltip="Редактировать запись"><i class="fa fa-pencil-square-o fa-1g"></a>';
   }
 
@@ -116,10 +149,25 @@ function WorkplaceIndexCtrl($scope, $compile, $controller, DTOptionsBuilder, DTC
    * Отрендерить ссылку на удаление данных.
    */
   function delRecord(data, type, full, meta) {
-    return '<a href="" class="text-danger" disable-link=true ng-click="wpIndex.destroyRecord(' + data.workplace_id +
-      ')" uib-tooltip="Удалить запись"><i class="fa fa-trash-o fa-1g"></a>';
+    return '<a href="" class="text-danger pointer" disable-link=true ng-click="wpIndex.destroyRecord(' + 
+      data.workplace_id + ')" uib-tooltip="Удалить запись"><i class="fa fa-trash-o fa-1g"></a>';
   }
 }
+
+/**
+ * Обновить данные таблицы с учетом фильтров.
+ */
+WorkplaceIndexCtrl.prototype.changeFilter = function () {
+  this.Cookies.Workplace.set('tableDivisionFilter', this.selectedDivisionFilter.workplace_count_id);
+  
+  this.dtInstance.changeData({
+    data: {
+      filters: {
+        workplace_count_id: this.selectedDivisionFilter.workplace_count_id
+      } 
+    }
+  });
+};
 
 /**
  * Удалить рабочее место.

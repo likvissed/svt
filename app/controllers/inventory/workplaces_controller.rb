@@ -6,12 +6,12 @@ module Inventory
       respond_to do |format|
         format.html
         format.json do
-          @index = Workplaces::Index.new
+          @index = Workplaces::Index.new(params[:init_filters], params[:filters])
 
           if @index.run
             render json: @index.data
           else
-            render json: { full_messages: 'Обратитесь к администратору, т.***REMOVED***' }, status: 422
+            render json: { full_message: 'Обратитесь к администратору, т.***REMOVED***' }, status: 422
           end
         end
       end
