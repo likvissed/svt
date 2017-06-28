@@ -79,7 +79,7 @@ module Inventory
 
       # Получить список возможных статусов РМ.
       def load_statuses
-        data[:statuses] = Workplace.statuses.map{ |key, val| [Workplace.translate_enum(:status, key), key] }.to_h
+        data[:statuses] = statuses
       end
 
       # Исключить все свойства inv_property, где mandatory = false (исключение для системных блоков).

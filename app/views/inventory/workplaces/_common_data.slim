@@ -49,4 +49,4 @@
     .form-group
       = label_tag :workplace_status, "Статус", class: "control-label"
       = select_tag "workplace[status]", "", class: "form-control", "ng-model": "wp.workplace.status",
-        "ng-options": "status for (status, value) in wp.statuses track by value"
+        "ng-options": "status as translated for (status, translated) in wp.statuses"

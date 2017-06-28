@@ -4,7 +4,7 @@ module Inventory
     class Index < ApplicationService
       # init_filters- флаг, определяющий, нужно ли загрузить данные для фильтров.
       # filters - объект, содержащий выбранные фильтры.
-      def initialize(init_filters = false, filters)
+      def initialize(init_filters = false, filters = false)
         @data = {}
         @init_filters = init_filters
         @filters = filters
@@ -37,6 +37,10 @@ module Inventory
         unless @filters['workplace_count_id'].to_i.zero?
           @workplaces = @workplaces.where(workplace_count_id: @filters['workplace_count_id'])
         end
+        
+        unless @filters['status'] == 'all'
+          @workplaces = @workplaces.where(status: @filters['status'])
+        end
       end
 
       def prepare_to_render
@@ -59,6 +63,7 @@ module Inventory
       def load_filters
         @data[:filters] = {}
         @data[:filters][:divisions] = WorkplaceCount.select(:workplace_count_id, :division)
+        @data[:filters][:statuses] = statuses
       end
     end
   end

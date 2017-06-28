@@ -15,6 +15,8 @@ module Inventory
 
         destroy_workplace
         broadcast_workplaces
+        
+        true
       rescue RuntimeError
         false
       end

@@ -29,6 +29,8 @@ function WorkplaceIndexCtrl($scope, $compile, $controller, DTOptionsBuilder, DTC
       division: 'Все отделы'
     }
   ];
+  // Фильтр по статусам
+  self.statusFilters = { 'all': 'Все статусы' };
   
   // Подключаем основные параметры таблицы
   $controller('DefaultDataTableCtrl', {});
@@ -49,7 +51,8 @@ function WorkplaceIndexCtrl($scope, $compile, $controller, DTOptionsBuilder, DTC
         init_filters: true,
         // Сохраненные фильтры.
         filters: {
-          workplace_count_id: self.Cookies.Workplace.get('tableDivisionFilter') || self.divisionFilters[0].workplace_count_id
+          workplace_count_id: self.Cookies.Workplace.get('tableDivisionFilter') || self.divisionFilters[0].workplace_count_id,
+          status: self.Cookies.Workplace.get('tableStatusFilter') || Object.keys(this.statusFilters)[0]
         }
       }, 
       error: function (response) {
@@ -59,9 +62,11 @@ function WorkplaceIndexCtrl($scope, $compile, $controller, DTOptionsBuilder, DTC
     .withOption('createdRow', createdRow)
     .withDOM(
       '<"row"' +
-        '<"col-sm-16 col-md-18 col-lg-18 col-xlg-18 col-fhd-19">' +
+        '<"col-sm-12 col-md-15 col-lg-15 col-xlg-15 col-fhd-17">' +
         '<"col-sm-4 col-md-3 col-lg-3 col-xlg-3 col-fhd-2"' +
           '<"workplaces-division-filter">>' +
+        '<"col-sm-4 col-md-3 col-lg-3 col-xlg-3 col-fhd-2"' +
+          '<"workplaces-status-filter">>' +
         '<"col-sm-4 col-md-3 col-lg-3 col-xlg-3 col-fhd-3"f>>' +
       '<"row"' +
         '<"col-fhd-24"t>>' +
@@ -88,16 +93,9 @@ function WorkplaceIndexCtrl($scope, $compile, $controller, DTOptionsBuilder, DTC
     consumer.subscribe(function () {
       self.dtInstance.reloadData(null, false);
     });
-    
-    // Заполнение данных о фильтрах
+
     if (json.filters) {
-      self.divisionFilters = self.divisionFilters.concat(json.filters.divisions);
-      var cookieVal = self.Cookies.Workplace.get('tableDivisionFilter');
-      if (angular.isUndefined(cookieVal)) {
-        self.selectedDivisionFilter = self.divisionFilters[0];
-      } else {
-        self.selectedDivisionFilter = $.grep(self.divisionFilters, function (el) { return el.workplace_count_id == cookieVal })[0];
-      }
+      self._setFilters(json.filters);
     }
   }
 
@@ -155,15 +153,52 @@ function WorkplaceIndexCtrl($scope, $compile, $controller, DTOptionsBuilder, DTC
 }
 
 /**
- * Обновить данные таблицы с учетом фильтров.
+ * Заполнить данные фильтров.
+ * 
+ * @param data - данные фильтров, полученные с сервера
+ */
+WorkplaceIndexCtrl.prototype._setFilters = function (data) {
+  var cookieVal;
+  
+  this.divisionFilters = this.divisionFilters.concat(data.divisions);
+  Object.assign(this.statusFilters, data.statuses);
+  
+  // Установить выбранный фильтр по отделам
+  cookieVal = this.Cookies.Workplace.get('tableDivisionFilter');
+  if (angular.isUndefined(cookieVal)) {
+    this.selectedDivisionFilter = this.divisionFilters[0];
+  } else {
+    this.selectedDivisionFilter = $.grep(this.divisionFilters, function (el) { return el.workplace_count_id == cookieVal })[0];
+  }
+
+  // Установить выбранный фильтр по статусам РМ
+  cookieVal = this.Cookies.Workplace.get('tableStatusFilter');
+  if (angular.isUndefined(cookieVal)) {
+    this.selectedStatusFilter = Object.keys(this.statusFilters)[0];
+  } else {
+    this.selectedStatusFilter = cookieVal;
+  }
+};
+
+/**
+ * Записать выбранные фильтры в cookies. 
+ */
+WorkplaceIndexCtrl.prototype._setFilterCookies = function () {
+  this.Cookies.Workplace.set('tableDivisionFilter', this.selectedDivisionFilter.workplace_count_id);
+  this.Cookies.Workplace.set('tableStatusFilter', this.selectedStatusFilter);
+};
+
+/**
+ * Сохранить фильтры и обновить данные таблицы с учетом фильтров.
  */
 WorkplaceIndexCtrl.prototype.changeFilter = function () {
-  this.Cookies.Workplace.set('tableDivisionFilter', this.selectedDivisionFilter.workplace_count_id);
+  this._setFilterCookies();
   
   this.dtInstance.changeData({
     data: {
       filters: {
-        workplace_count_id: this.selectedDivisionFilter.workplace_count_id
+        workplace_count_id: this.selectedDivisionFilter.workplace_count_id,
+        status: this.selectedStatusFilter
       } 
     }
   });

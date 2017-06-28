@@ -1,9 +1,11 @@
 app
   .directive('fileUpload', fileUpload)
-  .directive('workplacesDivisionFilter', workplacesDivisionFilter);
+  .directive('workplacesDivisionFilter', workplacesDivisionFilter)
+  .directive('workplacesStatusFilter', workplacesStatusFilter);
 
 fileUpload.$inject = [];
 workplacesDivisionFilter.$inject = [];
+workplacesStatusFilter.$inject = [];
 
 function fileUpload(){
   return {
@@ -21,12 +23,23 @@ function workplacesDivisionFilter() {
   return {
     restrict: 'C',
     template: 
-    '<div class="form-input-sm">' +
-      '<ui-select ng-model="wpIndex.selectedDivisionFilter" on-select="wpIndex.changeFilter()" theme="bootstrap">' +
-        '<ui-select-match>{{ $select.selected.division }}</ui-select-match>' +
-        '<ui-select-choices repeat="obj in wpIndex.divisionFilters | filter: $select.search">' +
-          '<div ng-bind-html="obj.division | highlight: $select.search">' +
-        '</ui-select-choices>' +
-      '</ui-select>' + '</div>'
+      '<div class="form-input-sm">' +
+        '<ui-select ng-model="wpIndex.selectedDivisionFilter" on-select="wpIndex.changeFilter()" theme="bootstrap">' +
+          '<ui-select-match>{{ $select.selected.division }}</ui-select-match>' +
+          '<ui-select-choices repeat="obj in wpIndex.divisionFilters | filter: $select.search">' +
+            '<div ng-bind-html="obj.division | highlight: $select.search">' +
+          '</ui-select-choices>' +
+        '</ui-select>' +
+      '</div>'
+  }
+}
+
+// Фильтр по отделам
+function workplacesStatusFilter() {
+  return {
+    restrict: 'C',
+    template:
+      '<select class="form-control input-sm" ng-model="wpIndex.selectedStatusFilter" ng-options="status as ' +
+      'translated for (status, translated) in wpIndex.statusFilters" ng-change="wpIndex.changeFilter()"></select>'
   }
 }
