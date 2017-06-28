@@ -9,7 +9,7 @@
 .row#wp_item_list ng-if="wp.workplace"
   .col-xlg-24
     uib-tabset active="wp.additional.activeTab"
-      uib-tab index="$index" ng-repeat="item in wp.workplace.inv_items_attributes" ng-hide="item._destroy"
+      uib-tab.animate-repeat index="$index" ng-repeat="item in wp.workplace.inv_items_attributes" ng-hide="item._destroy"
         uib-tab-heading
           span ng-bind="item.type.short_description"
           |  

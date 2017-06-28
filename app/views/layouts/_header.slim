@@ -11,7 +11,11 @@
         | Вычислительная техника
 
     .collapse.navbar-collapse.navbar-collapse-head
-      .navbar-text.navbar-right.pull-right
+      .navbar-form.navbar-left.animate-show ng-controller="AjaxLoadingCtrl as ajax" ng-show="ajax.requests.count != 0"
+        .form-group
+          = fa_icon "spinner pulse 2x fw"
+          
+      .navbar-text.navbar-right
         = "***REMOVED*** Р.Ф. | "
         = link_to destroy_user_session_path, method: :delete, class: "navbar-link" do
           | Выход

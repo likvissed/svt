@@ -2,11 +2,13 @@ app
   .service('Flash', Flash) // Сервис уведомлений пользователя (как об успешных операциях, так и об ошибках).
   .factory('Error', Error) // Сервис обработки ошибок.
   .factory('Server', Server) // Фабрика для работы с CRUD экшнами.
+  .factory('myHttpInterceptor', myHttpInterceptor) // Фабрика для настройки параметрв для индикатора выполнения
   .factory('Cookies', Cookies);
 
 Flash.$inject = ['$timeout'];
 Error.$inject = ['Flash'];
 Server.$inject = ['$resource'];
+myHttpInterceptor.$inject = ['$q'];
 Cookies.$inject = ['$cookies'];
 
 // =====================================================================================================================
@@ -129,6 +131,65 @@ function Server($resource) {
      */
     WorkplaceCount: $resource('/inventory/workplace_counts/:workplace_count_id.json', {}, { update: { method: 'PUT' } })
   }
+}
+
+// =====================================================================================================================
+
+/**
+ * Фабрика для настройки параметрв для индикатора выполнения ajax запросов
+ *
+ * @class SVT.myHttpInterceptor
+ */
+function myHttpInterceptor($q) {
+  var self = this;
+
+  self.requests = {
+    count: 0
+  };
+
+  /**
+   * Увеличить счетчик запросов.
+   */
+  function incCount() {
+    self.requests.count ++;
+  }
+
+  /**
+   * Уменьшить счетчик запросов.
+   */
+  function decCount() {
+    self.requests.count --;
+  }
+
+  return {
+    getRequestsCount: self.requests,
+    incCount: function () {
+      incCount();
+    },
+    decCount: function () {
+      decCount();
+    },
+    request: function(config) {
+      incCount();
+
+      return config;
+    },
+    requestError: function(rejection) {
+      decCount();
+
+      return $q.reject(rejection);
+    },
+    response: function(response) {
+      decCount();
+
+      return response;
+    },
+    responseError: function(rejection) {
+      decCount();
+
+      return $q.reject(rejection);
+    }
+  };
 }
 
 // =====================================================================================================================

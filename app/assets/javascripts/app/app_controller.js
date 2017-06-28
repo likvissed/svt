@@ -1,10 +1,12 @@
 app
-  .controller('FlashMessageCtrl', FlashMessageCtrl)                   // Связывает переменные уведомлений с фабрикой
-  .controller('DefaultDataTableCtrl', DefaultDataTableCtrl)           // Основные настройки таблицы angular-datatable
-  .controller('FormValidationController', FormValidationController);  // Функции вывода ошибок валидаций форм
+  .controller('FlashMessageCtrl', FlashMessageCtrl) // Связывает переменные уведомлений с фабрикой
+  .controller('DefaultDataTableCtrl', DefaultDataTableCtrl) // Основные настройки таблицы angular-datatable
+  .controller('FormValidationController', FormValidationController) // Функции вывода ошибок валидаций форм
+  .controller('AjaxLoadingCtrl', AjaxLoadingCtrl); // Связывает переменные индикатора загрузки с фабрикой
 
-FlashMessageCtrl.$inject      = ['$scope', '$attrs', 'Flash'];
-DefaultDataTableCtrl.$inject  = ['DTDefaultOptions'];
+FlashMessageCtrl.$inject = ['$scope', '$attrs', 'Flash'];
+DefaultDataTableCtrl.$inject = ['DTDefaultOptions'];
+AjaxLoadingCtrl.$inject = ['$scope', 'myHttpInterceptor'];
 
 // =====================================================================================================================
 
@@ -146,3 +148,28 @@ FormValidationController.prototype.errorMessage = function (name) {
 };
 
 // =====================================================================================================================
+
+/**
+ * Контроллер для управления индикатором выполнения ajax запросов.
+ *
+ * @class SVT.AjaxLoadingCtrl
+ */
+function AjaxLoadingCtrl($scope, myHttpInterceptor) {
+  var self = this;
+
+  self.requests = myHttpInterceptor.getRequestsCount; // Число запросов
+
+  // Настройка ajax запросов, посланных с помощью jQuery (например, в datatables).
+  $.ajaxSetup({
+    beforeSend: function () {
+      myHttpInterceptor.incCount();
+    },
+    complete: function () {
+      myHttpInterceptor.decCount();
+
+      self.requests = myHttpInterceptor.getRequestsCount;
+
+      $scope.$apply();
+    }
+  });
+}
