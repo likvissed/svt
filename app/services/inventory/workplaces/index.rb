@@ -41,6 +41,10 @@ module Inventory
         unless @filters['status'] == 'all'
           @workplaces = @workplaces.where(status: @filters['status'])
         end
+        
+        unless @filters['workplace_type_id'].to_i.zero?
+          @workplaces = @workplaces.where(workplace_type_id: @filters['workplace_type_id'])
+        end
       end
 
       def prepare_to_render
@@ -64,6 +68,7 @@ module Inventory
         @data[:filters] = {}
         @data[:filters][:divisions] = WorkplaceCount.select(:workplace_count_id, :division)
         @data[:filters][:statuses] = statuses
+        @data[:filters][:types] = WorkplaceType.select(:workplace_type_id, :short_description)
       end
     end
   end

@@ -7,10 +7,9 @@ html
     = csrf_meta_tags
     = action_cable_meta_tag
     = stylesheet_link_tag 'application', media: 'all'
+    = javascript_include_tag 'application'
   body#svt_welcome ng-app="SVT"
     = render partial: "layouts/flash"
     = render partial: "layouts/header"
     .bg-content
       = yield
-      
-    = javascript_include_tag 'application'

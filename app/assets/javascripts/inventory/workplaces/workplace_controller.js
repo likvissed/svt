@@ -31,6 +31,13 @@ function WorkplaceIndexCtrl($scope, $compile, $controller, DTOptionsBuilder, DTC
   ];
   // Фильтр по статусам
   self.statusFilters = { 'all': 'Все статусы' };
+  // Фильтр по типам РМ
+  self.typeFilters = [
+    {
+      workplace_type_id: 0,
+      short_description: 'Все типы'
+    }
+  ];
   
   // Подключаем основные параметры таблицы
   $controller('DefaultDataTableCtrl', {});
@@ -52,7 +59,8 @@ function WorkplaceIndexCtrl($scope, $compile, $controller, DTOptionsBuilder, DTC
         // Сохраненные фильтры.
         filters: {
           workplace_count_id: self.Cookies.Workplace.get('tableDivisionFilter') || self.divisionFilters[0].workplace_count_id,
-          status: self.Cookies.Workplace.get('tableStatusFilter') || Object.keys(this.statusFilters)[0]
+          status: self.Cookies.Workplace.get('tableStatusFilter') || Object.keys(this.statusFilters)[0],
+          workplace_type_id: self.Cookies.Workplace.get('tableTypeFilter') || self.typeFilters[0].workplace_type_id
         }
       }, 
       error: function (response) {
@@ -62,7 +70,9 @@ function WorkplaceIndexCtrl($scope, $compile, $controller, DTOptionsBuilder, DTC
     .withOption('createdRow', createdRow)
     .withDOM(
       '<"row"' +
-        '<"col-sm-12 col-md-15 col-lg-15 col-xlg-15 col-fhd-17">' +
+        '<"col-sm-8 col-md-12 col-lg-12 col-xlg-12 col-fhd-15">' +
+        '<"col-sm-4 col-md-3 col-lg-3 col-xlg-3 col-fhd-2"' +
+          '<"workplaces-type-filter">>' +
         '<"col-sm-4 col-md-3 col-lg-3 col-xlg-3 col-fhd-2"' +
           '<"workplaces-division-filter">>' +
         '<"col-sm-4 col-md-3 col-lg-3 col-xlg-3 col-fhd-2"' +
@@ -162,6 +172,7 @@ WorkplaceIndexCtrl.prototype._setFilters = function (data) {
   
   this.divisionFilters = this.divisionFilters.concat(data.divisions);
   Object.assign(this.statusFilters, data.statuses);
+  this.typeFilters = this.typeFilters.concat(data.types);
   
   // Установить выбранный фильтр по отделам
   cookieVal = this.Cookies.Workplace.get('tableDivisionFilter');
@@ -178,6 +189,14 @@ WorkplaceIndexCtrl.prototype._setFilters = function (data) {
   } else {
     this.selectedStatusFilter = cookieVal;
   }
+  
+  // Установить выбранный фильтр по типам РМ
+  cookieVal = this.Cookies.Workplace.get('tableTypeFilter');
+  if (angular.isUndefined(cookieVal)) {
+    this.selectedTypeFilter = this.typeFilters[0];
+  } else {
+    this.selectedTypeFilter = $.grep(this.typeFilters, function (el) { return el.workplace_type_id == cookieVal })[0];
+  }
 };
 
 /**
@@ -186,6 +205,7 @@ WorkplaceIndexCtrl.prototype._setFilters = function (data) {
 WorkplaceIndexCtrl.prototype._setFilterCookies = function () {
   this.Cookies.Workplace.set('tableDivisionFilter', this.selectedDivisionFilter.workplace_count_id);
   this.Cookies.Workplace.set('tableStatusFilter', this.selectedStatusFilter);
+  this.Cookies.Workplace.set('tableTypeFilter', this.selectedTypeFilter.workplace_type_id);
 };
 
 /**
@@ -198,7 +218,8 @@ WorkplaceIndexCtrl.prototype.changeFilter = function () {
     data: {
       filters: {
         workplace_count_id: this.selectedDivisionFilter.workplace_count_id,
-        status: this.selectedStatusFilter
+        status: this.selectedStatusFilter,
+        workplace_type_id: this.selectedTypeFilter.workplace_type_id
       } 
     }
   });

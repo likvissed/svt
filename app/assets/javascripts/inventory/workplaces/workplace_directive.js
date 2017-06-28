@@ -1,11 +1,13 @@
 app
   .directive('fileUpload', fileUpload)
   .directive('workplacesDivisionFilter', workplacesDivisionFilter)
-  .directive('workplacesStatusFilter', workplacesStatusFilter);
+  .directive('workplacesStatusFilter', workplacesStatusFilter)
+  .directive('workplacesTypeFilter', workplacesTypeFilter);
 
 fileUpload.$inject = [];
 workplacesDivisionFilter.$inject = [];
 workplacesStatusFilter.$inject = [];
+workplacesTypeFilter.$inject = [];
 
 function fileUpload(){
   return {
@@ -18,7 +20,7 @@ function fileUpload(){
   };
 }
 
-// Фильтр по отделам
+// Фильтр РМ по отделам
 function workplacesDivisionFilter() {
   return {
     restrict: 'C',
@@ -34,12 +36,28 @@ function workplacesDivisionFilter() {
   }
 }
 
-// Фильтр по отделам
+// Фильтр РМ по статусам
 function workplacesStatusFilter() {
   return {
     restrict: 'C',
     template:
       '<select class="form-control input-sm" ng-model="wpIndex.selectedStatusFilter" ng-options="status as ' +
       'translated for (status, translated) in wpIndex.statusFilters" ng-change="wpIndex.changeFilter()"></select>'
+  }
+}
+
+// Фильтр РМ по типам
+function workplacesTypeFilter() {
+  return {
+    restrict: 'C',
+    template:
+      '<div class="form-input-sm">' +
+        '<ui-select ng-model="wpIndex.selectedTypeFilter" on-select="wpIndex.changeFilter()" theme="bootstrap">' +
+          '<ui-select-match>{{ $select.selected.short_description }}</ui-select-match>' +
+          '<ui-select-choices repeat="obj in wpIndex.typeFilters | filter: $select.search">' +
+            '<div ng-bind-html="obj.short_description | highlight: $select.search">' +
+          '</ui-select-choices>' +
+        '</ui-select>' +
+      '</div>'
   }
 }

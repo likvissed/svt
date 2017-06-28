@@ -17,8 +17,8 @@ module Inventory
       context 'with init_filters' do
         subject { Index.new(true) }
         
-        it 'assigns :divisions to the :filters key' do
-          expect(subject.data[:filters][:divisions].first).to eq workplace_count
+        it 'assigns %i[divisions statuses types] to the :filters key' do
+          expect(subject.data[:filters]).to include(:divisions, :statuses, :types)
         end
 
         its(:run) { is_expected.to be_truthy }
@@ -41,7 +41,8 @@ module Inventory
           let(:filter) do
             { 
               workplace_count_id: workplace_count.workplace_count_id,
-              status: 'all'
+              status: 'all',
+              workplace_type_id: 0
             }
           end
           subject { Index.new(false, filter.as_json) }
@@ -56,7 +57,8 @@ module Inventory
           let(:filter) do
             {
               workplace_count_id: 0,
-              status: 'confirmed'
+              status: 'confirmed',
+              workplace_type_id: 0
             }
           end
           subject { Index.new(false, filter.as_json) }
@@ -64,6 +66,22 @@ module Inventory
           it 'returns filtered data' do
             expect(subject.data[:workplaces].count).to eq 1
             expect(subject.data[:workplaces].first['workplace_count_id']).to eq workplace_***REMOVED***.workplace_count_id
+          end
+        end
+
+        context 'with type filter' do
+          let(:filter) do
+            {
+              workplace_count_id: 0,
+              status: 'all',
+              workplace_type_id: workplace.workplace_type_id
+            }
+          end
+          subject { Index.new(false, filter.as_json) }
+
+          it 'returns filtered data' do
+            expect(subject.data[:workplaces].count).to eq 1
+            expect(subject.data[:workplaces].first['workplace_type_id']).to eq workplace.workplace_type_id
           end
         end
       end

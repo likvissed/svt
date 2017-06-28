@@ -150,10 +150,12 @@ function Cookies($cookies) {
     switch (name) {
       case 'workplace':
         obj = {
-          // Фильтр отделов
+          // Фильтр по отделам
           tableDivisionFilter: '0',
-          // Фильтр статусов
-          tableStatusFilter: 'all'
+          // Фильтр по статусам
+          tableStatusFilter: 'all',
+          // Фильтр по типам
+          tableTypeFilter: '0'
         };
         break;
     }

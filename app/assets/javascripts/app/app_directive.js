@@ -50,6 +50,7 @@
             $compile(element.find('.new-record'))(scope);
             $compile(element.find('.workplaces-division-filter'))(scope);
             $compile(element.find('.workplaces-status-filter'))(scope);
+            $compile(element.find('.workplaces-type-filter'))(scope);
           }, 0, false);
         }
 
@@ -60,7 +61,8 @@
             if (scope.wpIndex) {
               return [
                 scope.wpIndex.selectedDivisionFilter,
-                scope.wpIndex.selectedStatusFilter
+                scope.wpIndex.selectedStatusFilter,
+                scope.wpIndex.selectedTypeFilter
               ]
             }
           },
