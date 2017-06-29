@@ -23,10 +23,12 @@ module Inventory
         load_pc_config_key
 
         exclude_mandatory_fields unless mandatory
+      rescue Pundit::NotAuthorizedError
+        false
       rescue Exception => e
         Rails.logger.error e.inspect.red
         Rails.logger.error e.backtrace.inspect
-
+        
         false
       end
 
@@ -35,6 +37,9 @@ module Inventory
       # Получить список отделов, доступных на редактирование для указанного пользователя.
       def load_divisions
         @divisions = @current_user.workplace_counts
+        if @divisions.empty?
+          raise Pundit::NotAuthorizedError, 'Access denied'
+        end
 
         data[:divisions] = @divisions.as_json.each do |division|
           division['allowed_time'] = time_not_passed?(division['time_start'], division['time_end'])
