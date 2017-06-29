@@ -3,8 +3,6 @@
 
   /**
    * Конфигурационные данные.
-   *
-   * @class SVT.Config
    */
   var config = {
     // Глобальные настройки
@@ -24,6 +22,9 @@
       }
     },
     workplace_count: {
+      reloadPaging: false
+    },
+    workplace: {
       reloadPaging: false
     }
   };
