@@ -51,13 +51,7 @@ function workplacesTypeFilter() {
   return {
     restrict: 'C',
     template:
-      '<div class="form-input-sm">' +
-        '<ui-select ng-model="wpIndex.selectedTypeFilter" on-select="wpIndex.changeFilter()" theme="bootstrap">' +
-          '<ui-select-match>{{ $select.selected.short_description }}</ui-select-match>' +
-          '<ui-select-choices repeat="obj in wpIndex.typeFilters | filter: $select.search">' +
-            '<div ng-bind-html="obj.short_description | highlight: $select.search">' +
-          '</ui-select-choices>' +
-        '</ui-select>' +
-      '</div>'
+      '<select class="form-control input-sm" ng-model="wpIndex.selectedTypeFilter" ng-options="type as ' +
+      'type.short_description for type in wpIndex.typeFilters" ng-change="wpIndex.changeFilter()"></select>'
   }
 }
