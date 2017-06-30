@@ -114,9 +114,19 @@
 
 [role="navigation-main"]
   $dropDown: true
-
+  background-color: $navbar-main-bg-color
+  border-color: $navbar-main-bg-color
+  min-height: $navbar-main-height !important
+  height: $navbar-main-height !important
+  
+  .container
+    height: 100%
+    
+  .navbar-collapse-main
+    height: 100% !important
+  
   .dropdown:hover
-    background-color: $navbar-main-hover-bg-color
+    background-color: $sec-corp-color
     
     .dropdown-menu
       display: block
@@ -124,25 +134,16 @@
   .navbar-nav
     > li
       > a
-
-        &:hover, &:focus
-          color: $main-corp-color
-
-      @if $dropDown
-        > .dropdown-menu
-          margin-top: 1px
-          border-top: 0
-          @include box-shadow(0, 0, 0, 0)
-
-          > li
-            > a
-              &:hover, &:focus
-                color: $main-corp-color
-                background-color: transparent
+        padding:
+          top: 10px
+          bottom: 9px
+        color: white
+        
+        &:hover
+          background-color: $sec-corp-color
+          color: white
 
 [role="navigation-content"]
-  @extend [role="navigation-main"]
-
   border-top-left-radius: $border-radius-base
   border-top-right-radius: $border-radius-base
   border:
