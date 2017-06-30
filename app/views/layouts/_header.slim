@@ -1,24 +1,35 @@
-.navbar.navbar-inverse role="navigation-top"
+.navbar role="navigation-top"
   .container
     .navbar-header
-      = button_tag "", class: "navbar-toggle", "data-toggle": "collapse", "data-target": ".navbar-collapse-head" do
-        span.sr-only Toggle navigation
-        span.icon-bar
-        span.icon-bar
-        span.icon-bar
+      .navbar-header-brand
+        .navbar-brand-logo
+          = image_tag "logo_iss_rus.png"
+        .navbar-brand-title
+          .navbar-brand-title-content
+            = link_to root_path do
+              | Вычислительная техника
 
-      = link_to root_path, class: "navbar-brand" do
-        | Вычислительная техника
-
-    .collapse.navbar-collapse.navbar-collapse-head
-      .navbar-form.navbar-left.animate-show ng-controller="AjaxLoadingCtrl as ajax" ng-show="ajax.requests.count != 0"
-        .form-group
+      .navbar-header-info          
+        .navbar-user-info
+          .navbar-user-info-content
+            span data-role="user-type" администратор:
+            span data-role="user-name"
+              = current_user.fullname
+              
+        .navbar-loading.animate-show ng-controller="AjaxLoadingCtrl as ajax" ng-show="ajax.requests.count != 0"
           = fa_icon "spinner pulse 2x fw"
-          
-      .navbar-text.navbar-right
-        = "***REMOVED*** Р.Ф. | "
-        = link_to destroy_user_session_path, method: :delete, class: "navbar-link" do
-          | Выход
+        
+      .navbar-header-menu
+        .navbar-collapse
+          ul.nav.navbar-nav.navbar-right
+            li
+              = link_to "" do
+                = fa_icon "bell-o"
+                | Уведомления
+            li
+              = link_to destroy_user_session_path, method: :delete do
+                = fa_icon "sign-out"
+                | Выход
 
 .navbar.navbar-default role="navigation-main"
   .container
