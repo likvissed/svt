@@ -5,6 +5,7 @@
   height: 70px
   background-color: #fafafa 
   margin-bottom: 0
+  color: $navbar-main-bg-color
   
   .container
     height: 100%
@@ -98,7 +99,7 @@
           
         a
           line-height: 1em
-          color: $navbar-default-color
+          color: $navbar-main-bg-color
           padding: 0
           
           &:hover
@@ -134,9 +135,10 @@
   .navbar-nav
     > li
       > a
+        margin-top: -1px
         padding:
           top: 10px
-          bottom: 9px
+          bottom: 10px
         color: white
         
         &:hover
