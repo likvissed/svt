@@ -2,7 +2,7 @@
   @include border-radius(0)
 
 .navbar-sign-in
-  border-bottom: 1px solid $table-border-color
+  border-bottom: 1px solid $navbar-border-color
   
 [role="navigation-top"]
   height: 70px
@@ -39,8 +39,8 @@
       .navbar-brand-title-content
         padding: 10px 25px
         border:
-          left: 1px solid $table-border-color
-          right: 1px solid $table-border-color
+          left: 1px solid $navbar-border-color
+          right: 1px solid $navbar-border-color
         
         a
           display: block
@@ -95,7 +95,7 @@
       li
         display: inline-block
         padding: 0 10px
-        border-left: 1px solid $table-border-color
+        border-left: 1px solid $navbar-border-color
         
         &:first-child
           border-left: none
@@ -117,7 +117,6 @@
           color: $main-corp-color
 
 [role="navigation-main"]
-  $dropDown: true
   background-color: $navbar-main-bg-color
   border-color: $navbar-main-bg-color
   min-height: $navbar-main-height !important
@@ -130,24 +129,44 @@
   .navbar-collapse-main
     height: 100% !important
   
-  .dropdown:hover
-    background-color: $sec-corp-color
-    
-    .dropdown-menu
-      display: block
-  
+  // Выделенное меню текущей страницы.
+  .active > a
+    color: $navbar-main-text-color !important
+    background-color: #373737 !important
+
+  .open:not(.active) > a
+    background-color: $navbar-top-bg-color !important
+    color: $main-font-color !important
+      
+  // Первый уровень меню
   .navbar-nav
     > li
+      margin-top: -1px
+      
       > a
-        margin-top: -1px
         padding:
           top: 10px
           bottom: 10px
-        color: white
+        color: $navbar-main-text-color
         
+        // Случай, когда пользователь дважды подряд кликает на dropdown-menu и убирает фокус с меню (цвет текста должен
+        // остаться темным)
+        &:focus:not(:hover)
+          color: $navbar-main-text-color
+          
         &:hover
-          background-color: $sec-corp-color
-          color: white
+          background-color: $navbar-top-bg-color
+          
+  // Второй уровень меню (если выбранный dropdown неактивный)
+  .dropdown:hover:not(.active)
+    @include navbar-show-dropdown-menu
+
+    > a
+      color: $main-font-color !important
+          
+  // Второй уровень меню (если выбранный dropdown активный)
+  .dropdown:hover
+    @include navbar-show-dropdown-menu
 
 [role="navigation-content"]
   border-top-left-radius: $border-radius-base

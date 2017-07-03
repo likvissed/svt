@@ -42,8 +42,9 @@
 
     .collapse.navbar-collapse.navbar-collapse-main
       ul.nav.navbar-nav
-        li= link_to "Главная", ""
-        li.dropdown
+        li
+          = link_to "Главная", ""
+        li.dropdown class="#{active_class('/inventory/workplace')}"
           = link_to "", class: "dropdown-toggle", "data-toggle": "dropdown" do
             | Инвентаризация 
             b.caret
