@@ -51,8 +51,7 @@ module Inventory
         @data[:workplaces] = @workplaces.as_json(
           include: %i[iss_reference_site iss_reference_building iss_reference_room user_iss]
         ).each do |wp|
-          wp['location'] = "Пл. '#{wp['iss_reference_site']['name']}', корп. #{wp['iss_reference_building']['name']},
-комн. #{wp['iss_reference_room']['name']}"
+          wp['location'] = wp_location_string(wp)
           wp['responsible'] = wp['user_iss']['fio']
           wp['status'] = Workplace.translate_enum(:status, wp['status'])
 

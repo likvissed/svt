@@ -21,6 +21,7 @@ module Inventory
         authorize @workplace, :create?
         save_workplace
         broadcast_workplaces
+        broadcast_workplace_list
         
         true
       rescue RuntimeError

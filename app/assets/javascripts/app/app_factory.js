@@ -127,6 +127,10 @@
           method: 'PUT',
           headers: { 'Content-Type': undefined },
           transformRequest: angular.identity
+        },
+        confirm: {
+          method: 'PUT',
+          url: '/inventory/workplaces/confirm'
         }
       }),
       /**
@@ -219,7 +223,9 @@
             // Фильтр по статусам
             tableStatusFilter: 'all',
             // Фильтр по типам
-            tableTypeFilter: '0'
+            tableTypeFilter: '0',
+            // Фильтр списка РМ по отделам
+            tableListDivisionFilter: '0'
           };
           break;
       }

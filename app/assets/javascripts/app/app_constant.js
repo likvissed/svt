@@ -19,12 +19,8 @@
         locale: 'ru',
         // Форматы даты. Пример: 17-февраля-2017
         longFormat: 'dd-MMMM-yyyy'
-      }
-    },
-    workplace_count: {
-      reloadPaging: false
-    },
-    workplace: {
+      },
+      // При обновлении таблицы DataTables не сбрасывать нумерацию страниц.
       reloadPaging: false
     }
   };

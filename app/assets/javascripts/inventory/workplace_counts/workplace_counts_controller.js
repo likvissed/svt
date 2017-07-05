@@ -182,7 +182,7 @@
       function (response) {
         self.Flash.notice(response.full_message);
 
-        self.dtInstance.reloadData(null, self.Config.workplace_count.reloadPaging);
+        self.dtInstance.reloadData(null, self.Config.global.reloadPaging);
       },
       // Error
       function (response) {

@@ -17,6 +17,21 @@ module Inventory
       end
     end
 
+    def list_wp
+      respond_to do |format|
+        format.html
+        format.json do
+          @list_wp = Workplaces::ListWp.new(params[:init_filters], params[:filters])
+
+          if @list_wp.run
+            render json: @list_wp.data
+          else
+            render json: { full_message: 'Обратитесь к администратору, т.***REMOVED***' }, status: 422
+          end
+        end
+      end
+    end
+    
     def pc_config_from_audit
       @pc_config = LkInvents::PcConfigFromAudit.new(params[:invent_num])
 
@@ -47,15 +62,24 @@ module Inventory
     end
 
     def update
-      @workplace = LkInvents::UpdateWorkplace.new(
+      @update = LkInvents::UpdateWorkplace.new(
         current_user, params[:workplace_id], workplace_params, params[:pc_file]
       )
 
-      if @workplace.run
+      if @update.run
         flash[:notice] = 'Данные о рабочем месте обновлены'
         render json: { location: inventory_workplaces_path }
       else
-        render json: { full_message: @workplace.errors.full_messages.join('. ') }, status: 422
+        render json: { full_message: @update.errors.full_messages.join('. ') }, status: 422
+      end
+    end
+    
+    def confirm
+      @confirm = Workplaces::Confirm.new(params[:type], params[:ids])
+      if @confirm.run
+        render json: { full_message: @confirm.data }
+      else
+        render json: { full_message: @confirm.errors.full_messages.join('. ') }, status: 422
       end
     end
 

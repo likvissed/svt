@@ -83,11 +83,6 @@ module Inventory
       def load_users
         data[:users] = UserIss.select(:id_tn, :fio).where(dept: @division)
       end
-
-      # Разослать сообщение о необходимости обновления сводной таблицы рабочих мест.
-      def broadcast_workplaces
-        ActionCable.server.broadcast 'workplaces', nil
-      end
     end
   end
 end

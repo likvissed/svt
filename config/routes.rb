@@ -16,6 +16,10 @@ Rails.application.routes.draw do
     # Рабочие места
     resources :workplaces, param: :workplace_id do
       collection do
+        # Вывести все РМ списком
+        get 'list_wp', to: 'workplaces#list_wp'
+        # Подтвердить/отклонить конфигурацию РМ
+        put 'confirm', to: 'workplaces#confirm'
         # Получить данные о системном блоке из аудита
         get 'pc_config_from_audit/:invent_num', to: 'workplaces#pc_config_from_audit', constraints: { invent_num: /.*/ }
         # Скачать скрипт для генерации файла конфигурации ПК

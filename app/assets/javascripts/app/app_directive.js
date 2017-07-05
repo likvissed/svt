@@ -51,6 +51,8 @@
             $compile(element.find('.workplaces-division-filter'))(scope);
             $compile(element.find('.workplaces-status-filter'))(scope);
             $compile(element.find('.workplaces-type-filter'))(scope);
+            $compile(element.find('.workplace-list-approve'))(scope);
+            $compile(element.find('.workplace-list-division-filter'))(scope);
           }, 0, false);
         }
 
@@ -58,12 +60,20 @@
 
         scope.$watch(
           function (scope) {
+            // Для таблицы РМ
             if (scope.wpIndex) {
               return [
                 scope.wpIndex.selectedDivisionFilter,
                 scope.wpIndex.selectedStatusFilter,
                 scope.wpIndex.selectedTypeFilter
-              ]
+              ];
+            }
+            
+            // Для списка РМ
+            if (scope.wpList) {
+              return [
+                scope.wpList.selectedDivisionFilter
+              ];
             }
           },
           function () {
