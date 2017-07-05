@@ -29,11 +29,12 @@
   
 // Показать dropdown меню
 @mixin navbar-show-dropdown-menu
-  background-color: $navbar-top-bg-color !important
+  @media (min-width: 768px)
+    background-color: $navbar-top-bg-color !important
+    
+    .dropdown-menu
+      display: block
   
-  .dropdown-menu
-    display: block
-
-    > li
-      > a:hover
-        background-color: $navbar-border-color
+      > li
+        > a:hover
+          background-color: $navbar-border-color

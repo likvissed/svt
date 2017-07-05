@@ -23,6 +23,9 @@
   .navbar-header-brand
     display: table-cell
     min-width: 407px
+
+    @-moz-document url-prefix()
+      min-width: 414px
     
     .navbar-brand-logo
       display: table-cell
@@ -120,13 +123,12 @@
   background-color: $navbar-main-bg-color
   border-color: $navbar-main-bg-color
   min-height: $navbar-main-height !important
-  height: $navbar-main-height !important
   letter-spacing: .025em
   
-  .container
+  //.container
     height: 100%
     
-  .navbar-collapse-main
+  //.navbar-collapse-main
     height: 100% !important
   
   // Выделенное меню текущей страницы.
@@ -141,7 +143,9 @@
   // Первый уровень меню
   .navbar-nav
     > li
-      margin-top: -1px
+      margin:
+        top: -1px
+        bottom: -1px
       
       > a
         padding:
@@ -167,6 +171,26 @@
   // Второй уровень меню (если выбранный dropdown активный)
   .dropdown:hover
     @include navbar-show-dropdown-menu
+    
+  .navbar-header
+    height: 100%
+    
+    // Иконка, всплывающая на xs экранах
+    .navbar-toggle
+      margin: 5px 10px
+      padding: 6px 5px
+
+      .icon-bar
+        background-color: $navbar-main-text-color
+      
+      &:hover
+        background-color: $navbar-top-bg-color
+
+        .icon-bar
+          background-color: $navbar-main-bg-color
+        
+  .dropdown-menu
+    background-color: $navbar-top-bg-color !important
 
 [role="navigation-content"]
   border-top-left-radius: $border-radius-base
