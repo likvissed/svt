@@ -39,7 +39,7 @@ script type="text/ng-template" id="editWpCount.haml"
         span.help-block ng-show="modal.form['workplace_count[time_end]'].$invalid" ng-bind="modal.errorMessage('workplace_count[time_end]')"
 
       h4
-        | Список ответственных
+        | Список ответственных 
         = fa_icon "plus-circle", class: "pointer", "tooltip-placement": "top", "uib-tooltip": "Добавить ответственного", "ng-click": "modal.addResponsible()"
 
       table.internal-table
@@ -47,7 +47,7 @@ script type="text/ng-template" id="editWpCount.haml"
           tr
             td.col-sm-16.col-md-16.col-lg-5
               = label_tag "workplace_count_workplace_responsibles.tn", class: "control-label" do
-                abbr title="Обязательное поле"  *
+                abbr title="Обязательное поле" * 
                 b Таб. номер
             td.col-lg-13
               b ФИО
