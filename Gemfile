@@ -96,6 +96,7 @@ group :development do
   # gem 'meta_request'
   # View errors
   gem 'better_errors'
+  gem 'bullet'
 
   # Deploy application
   gem 'capistrano', require: false

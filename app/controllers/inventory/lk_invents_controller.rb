@@ -86,21 +86,11 @@ module Inventory
     end
 
     def generate_pdf
-      @workplace_count = WorkplaceCount
-                           .includes(
-                             workplaces: [
-                               :iss_reference_site,
-                               :iss_reference_building,
-                               :iss_reference_room,
-                               :workplace_type,
-                               :user_iss, { inv_items: :inv_type }
-                             ]
-                           )
-                           .find_by(division: params[:division])
+      @workplace_count = WorkplaceCount.find_by(division: params[:division])
       authorize @workplace_count, :generate_pdf?
 
       render pdf: 'test',
-             template: 'templates/workplace_list',
+             template: 'templates/approved_workplace_list',
              locals: { workplace_count: @workplace_count },
              encoding: 'UTF-8'
       # disposition: 'attachment'

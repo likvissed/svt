@@ -42,21 +42,21 @@ module Inventory
       # Преобразование объекта workplace в специальный вид, чтобы таблица могла отобразить данные.
       def prepare_workplace
         @data = @workplace.as_json(
-          include: {
-            iss_reference_site: {},
-            iss_reference_building: {},
-            iss_reference_room: {},
-            user_iss: {},
-            workplace_type: {},
+          include: [
+            :iss_reference_site,
+            :iss_reference_building,
+            :iss_reference_room,
+            :user_iss,
+            :workplace_type,
             inv_items: {
-              include: {
-                inv_type: {},
+              include: [
+                :inv_type,
                 inv_property_values: {
                   include: :inv_property
                 }
-              }
+              ]
             }
-          }
+          ]
         )
 
         @data = prepare_to_***REMOVED***_table(@data)

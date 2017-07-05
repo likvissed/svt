@@ -47,7 +47,6 @@ module Inventory
         
         it 'adds error message to the service' do
           subject.run
-          puts subject.errors.full_messages.inspect
           expect(subject.errors.full_messages.first).to eq 'Указанное действие неразрешено'
         end
         

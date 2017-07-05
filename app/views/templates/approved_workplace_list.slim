@@ -32,7 +32,7 @@ html
           th width='25' Ответственный
           th width='20' Расположение
         tbody
-          - workplace_count.workplaces.where(status: :confirmed).each_with_index do |wp, index|
+          - workplace_count.workplaces.includes(:iss_reference_site, :iss_reference_building, :iss_reference_room, :workplace_type, :user_iss, :inv_items).where(status: :confirmed).each_with_index do |wp, index|
             - items = wp.inv_items.map(&:invent_num)
 
             tr

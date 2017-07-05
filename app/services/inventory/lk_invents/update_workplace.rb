@@ -16,7 +16,7 @@ module Inventory
       end
 
       def run
-        @workplace = Workplace.find(@workplace_id)
+        @workplace = Workplace.includes(inv_items: [:inv_type, :inv_property_values]).find(@workplace_id)
         authorize @workplace, :update?
 
         prepare_params
@@ -40,7 +40,7 @@ module Inventory
                            :iss_reference_site,
                            :iss_reference_building,
                            :iss_reference_room,
-                           inv_items: { inv_property_values: :inv_property }
+                           inv_items: [:inv_type, inv_property_values: :inv_property]
                          )
                          .find(workplace.workplace_id)
 
