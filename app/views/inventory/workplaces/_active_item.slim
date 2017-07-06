@@ -81,6 +81,6 @@
 
               div ng-if="!item.model_id && !item.inv_property_values_attributes[$index].property_list_id"
                 .form-group
-                  label Введите {{prop.short_description}}
+                  label Введите {{prop.short_description | lowercase }}
                   = text_field_tag "workplace[items][][property_values][value]", "", class: "form-control",
                     "ng-model": "item.inv_property_values_attributes[$index].value"

@@ -107,8 +107,8 @@ module Inventory
             build(
               :workplace_pk,
               :add_items,
-              items: [:pc, :monitor, { printer: [{ connection_type: { inv_property_list: InvProperty.find_by(name:
-                :connection_type).inv_property_lists.find_by(value: :network) } }] }],
+              items: [:pc, :monitor, { printer: [connection_type: { inv_property_list: InvProperty.find_by(name:
+                :connection_type).inv_property_lists.find_by(value: :network) }] }],
               workplace_count: workplace_count
             )
           end
@@ -135,8 +135,8 @@ module Inventory
             build(
               :workplace_pk,
               :add_items,
-              items: [:pc, :monitor, { printer: [{ connection_type: { inv_property_list: InvProperty.find_by(name:
-                :connection_type).inv_property_lists.find_by(value: :local) } }] }],
+              items: [:pc, :monitor, { printer: [connection_type: { inv_property_list: InvProperty.find_by(name:
+                :connection_type).inv_property_lists.find_by(value: :local) }] }],
               workplace_count: workplace_count
             )
           end

@@ -6,7 +6,12 @@ module Inventory
       let(:user) { create :user }
       let(:workplace_count) { create :active_workplace_count, users: [user] }
       let(:workplace_count_***REMOVED***) { create :active_workplace_count, division: ***REMOVED***, users: [user] }
-      let!(:workplace) { create :workplace_pk, :add_items, items: %i[pc monitor], workplace_count: workplace_count }
+      let!(:workplace) do
+        create :workplace_pk,
+               :add_items,
+               items: [:pc, monitor: [diagonal: { inv_property_list: nil, value: 'Manually diagonal' }]],
+               workplace_count: workplace_count
+      end
       let!(:workplace_***REMOVED***) { create :workplace_mob, :add_items, items: %i[notebook], status: :confirmed, workplace_count: workplace_count_***REMOVED*** }
       before { subject.run }
 
@@ -26,6 +31,11 @@ module Inventory
 
       it 'must create @workplaces variable' do
         expect(subject.instance_variable_get :@workplaces).not_to be_nil
+      end
+      
+      it 'wraps the values entered manually with <span class=\'manually\'></span> tag' do
+        expect(subject.data[:workplaces].first[:items].last).to match /<span class='manually'>Модель: #{workplace.inv_items.first.item_model}<\/span>/
+        expect(subject.data[:workplaces].first[:items].last).to match /<span class='manually'>Диагональ экрана: Manually diagonal<\/span>/
       end
 
       context 'with init_filters' do

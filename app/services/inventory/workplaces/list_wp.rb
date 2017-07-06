@@ -60,7 +60,8 @@ module Inventory
             }
           ]
         ).map do |wp|
-          workplace = "ФИО: #{wp['user_iss']['fio']}; Отдел: #{wp['workplace_count']['division']}; #{wp['workplace_type']['short_description']}; #{wp_location_string(wp)}"
+          workplace = "ФИО: #{wp['user_iss']['fio']}; Отдел: #{wp['workplace_count']['division']}; 
+#{wp['workplace_type']['short_description']}; Расположение: #{wp_location_string(wp)}"
           items = wp['inv_items'].map { |item| item_info(item) }
           
           {
@@ -73,17 +74,35 @@ module Inventory
       
       # Преобразовать данные о составе РМ в массив строк.
       def item_info(item)
-        model = item['inv_model'] ? item['inv_model']['item_model'] : item['item_model']
+        model = if item['inv_model'] 
+                  "Модель: #{item['inv_model']['item_model']}" 
+                else
+                  "<span class='manually'>Модель: #{item['item_model']}</span>"
+                end
         property_values = item['inv_property_values'].map { |prop_val| property_value_info(prop_val) }
         
-        "#{item['inv_type']['short_description']}: Инв №: #{item['invent_num']}; Модель: #{model}; Конфигурация: #{property_values.join('; ')}"
+        "#{item['inv_type']['short_description']}: Инв №: #{item['invent_num']}; #{model}; Конфигурация: 
+#{property_values.join('; ')}"
       end
       
       # Преобразовать данные о составе экземпляра техники.
       def property_value_info(prop_val)
-        value = prop_val['inv_property_list'] ? prop_val['inv_property_list']['short_description'] : prop_val['value']
+        # Флаг показывает, содержится ли значение свойства в поле value (true, если содержится).
+        value_flag = false
+        if prop_val['inv_property_list']
+          value = prop_val['inv_property_list']['short_description']
+        else
+          value = prop_val['value']
+          value_flag = true
+        end
         
-        "#{prop_val['inv_property']['short_description']}: #{value}"
+        result = "#{prop_val['inv_property']['short_description']}: #{value}"
+        
+        if prop_val['inv_property']['property_type'] == 'list_plus' && value_flag
+          "<span class='manually'>#{result}</span>"
+        else
+          result
+        end
       end
 
       # Загрузить данные для фильтров

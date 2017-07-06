@@ -38,7 +38,11 @@ module Inventory
           # Если Hash:
           #   - ключ: имя типа создаваемого оборудования в соответствии с полем name таблицы invent_type
           #   - значение: массив, содержащий объекты Hash, у которых ключ - это имя свойства создаваемого типа
-          #       оборудования, а значение - значение свойства.
+          #       оборудования, а значение - значение свойства (могут быть: 1. Объекты модели InvPropertyList. 
+          #       2. Строковые значения).
+          # 
+          # item.keys[0] - ключ хэша
+          # item[item.keys[0]] - значение ключа
           items []
         end
 
@@ -47,8 +51,7 @@ module Inventory
             case item
             when Hash
               workplace.inv_items << build(
-                :item_with_item_model, :with_property_values, type_name: item.keys[0], property_values: item[item
-                .keys[0]]
+                :item_with_item_model, :with_property_values, type_name: item.keys[0], property_values: item[item.keys[0]]
               )
             when Symbol || String
               workplace.inv_items << build(:item_with_item_model, :with_property_values, type_name: item)
