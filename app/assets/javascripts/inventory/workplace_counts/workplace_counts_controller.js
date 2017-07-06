@@ -139,7 +139,7 @@
 
     modalInstance.result.then(function () {
       // Обновить таблицу после того, как пользователь нажал кнопку "Готово".
-      self.dtInstance.reloadData(null, self.Config.workplace_count.reloadPaging);
+      self.dtInstance.reloadData(null, self.Config.global.reloadPaging);
     }, function () {
       // Закрыли модальное окно (все остальные случаи)
       self.WorkplaceCount.clearData();

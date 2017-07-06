@@ -17,13 +17,9 @@ module Inventory
 
       def workplace_counts
         @workplace_counts = WorkplaceCount
-                              .joins('LEFT OUTER JOIN invent_workplace r ON r.workplace_count_id =
-invent_workplace_count.workplace_count_id and r.status = 0')
-                              .joins('LEFT OUTER JOIN invent_workplace w ON w.workplace_count_id =
-invent_workplace_count.workplace_count_id and w.status = 1')
-                              .includes(users: :user_iss)
-                              .select('invent_workplace_count.*, COUNT(r.workplace_id) as ready, COUNT(w
-.workplace_id) as waiting')
+                              .left_outer_joins(:workplaces)
+                              .select('invent_workplace_count.*, SUM(CASE WHEN invent_workplace.status = 0 THEN 1 ELSE
+ 0 END) AS ready, SUM(CASE WHEN invent_workplace.status = 1 THEN 1 ELSE 0 END) AS waiting')
                               .group('invent_workplace_count.workplace_count_id')
       end
 
