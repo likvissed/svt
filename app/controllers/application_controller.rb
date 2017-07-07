@@ -9,6 +9,7 @@ class ApplicationController < ActionController::Base
   protect_from_forgery with: :exception
   after_action :set_csrf_cookie_for_ng
   before_action :authenticate_user!
+  before_action :authorization, if: -> { current_user }
 
   # Обрабтка случаев, когда у пользователя нет доступа на выполнение запрашиваемых действий
   rescue_from Pundit::NotAuthorizedError do |exception|
@@ -80,5 +81,10 @@ class ApplicationController < ActionController::Base
   # Определяем, какой layout выводить: для входа в систему или основной
   def layout
     is_a?(Devise::SessionsController) ? 'sign_in_app' : 'application'
+  end
+  
+  # Проверка роли перед доступом к контроллерам
+  def authorization
+    authorize :application, :authorization?
   end
 end

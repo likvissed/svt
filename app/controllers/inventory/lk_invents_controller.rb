@@ -4,6 +4,7 @@ module Inventory
   class LkInventsController < ApplicationController
     skip_before_action :authenticate_user!
     skip_before_action :verify_authenticity_token
+    skip_before_action :authorization
     before_action :check_***REMOVED***_authorization
     after_action -> { sign_out @***REMOVED***_auth.data }
 
