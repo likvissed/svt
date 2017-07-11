@@ -55,6 +55,3 @@ module Inv
     end
   end
 end
-
-# Настройка серверных переменных окружения
-SERVER_CONFIG = YAML.load_file(Rails.root.join('config', 'server.yml'))[Rails.env]

@@ -69,3 +69,4 @@ config/redis.yml
 
 .lib/AuditBot/var/auditbot.log
 .env
+config/secrets.yml
