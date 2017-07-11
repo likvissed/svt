@@ -18,14 +18,14 @@ module Inventory
         expect(page).to have_content 'Авторизоваться через Личный Кабинет'
       end
 
-      scenario 'Authenticatd user tries to go to the index page', js: true do
-        sign_in user
-        visit inventory_workplaces_path
-
-        expect(page).to have_content 'Выход'
-        expect(page).to have_content workplace.division
-        expect(page).to have_content workplace.user_iss.fio
-      end
+      # scenario 'Authenticatd user tries to go to the index page', js: true do
+      #   sign_in user
+      #   visit inventory_workplaces_path
+      # 
+      #   expect(page).to have_content 'Выход'
+      #   expect(page).to have_content workplace.division
+      #   expect(page).to have_content workplace.user_iss.fio
+      # end
     end
   end
 end
