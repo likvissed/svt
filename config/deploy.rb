@@ -1,5 +1,5 @@
 # config valid only for current version of Capistrano
-lock "3.8.0"
+lock "3.8.2"
 
 # set :application, "my_app_name"
 # set :repo_url, "git@example.com:me/my_repo.git"
@@ -43,7 +43,7 @@ set :repo_url, '/var/repos/inv.git'
 set :branch, 'master'
 set :rbenv_map_bins, %w[rake gem bundle ruby rails]
 
-set :keep_releases, 10
+set :keep_releases, 5
 
 set :deploy_via, :remote_cache
 set :use_sudo, false

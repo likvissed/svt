@@ -13,7 +13,7 @@ gem 'binding_of_caller'
 gem 'responders'
 
 # Background processing
-gem 'sidekiq'
+# gem 'sidekiq'
 
 # Authorization
 gem 'devise'
@@ -30,8 +30,8 @@ gem 'tiny_tds'
 gem 'awesome_print'
 gem 'bootstrap-sass'
 gem 'colorize'
+gem 'dotenv-rails'
 gem 'font-awesome-rails'
-gem 'dotenv-rails', groups: [:development, :test]
 gem 'php_serialize'
 gem 'rails-i18n'
 gem 'rubocop', require: false
@@ -74,7 +74,7 @@ end
 group :development, :test do
   # Call 'byebug' anywhere in the code to stop execution and get a debugger console
   gem 'byebug', platform: :mri
-
+  
   # Testing
   gem 'capybara'
   gem 'capybara-webkit'

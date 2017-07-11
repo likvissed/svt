@@ -41,15 +41,13 @@ class Audit < SMSServer
 
         # Перевести значения ОЗУ из Кб в Гб. Округление по 512Мб.
         if type == 'ram'
-          tmp_ram = val.to_f / 1024 / 1024
-          val = format('%.1f', tmp_ram)
-          mod_part = val.split('.')
-
-          if mod_part[1].to_i <= 5
+          tmp_ram = (val.to_f / 1024 / 1024).round(1)
+          mod_part = tmp_ram.to_s.split('.')
+          if mod_part[1].to_i <= 5 && mod_part[1].to_i != 0
             mod_part[1] = 5
             val = eval(mod_part.join('.'))
           else
-            val = val.to_f.ceil
+            val = tmp_ram.ceil.to_f
           end
         end
 
