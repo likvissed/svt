@@ -1,0 +1,10 @@
+script type="text/ng-template" id="newItem.slim"
+  .modal-header
+    h4 Выбор типа создаваемого устройства
+    .modal-body
+      .form-group
+        = select_tag "", "", class: "form-control", "ng-change": "select.validateSelectedType()", "ng-model": "select.selected", 
+          "ng-options": "type as type.short_description disable when type.type_id == -1 for type in select.eq_types track by type.type_id"
+    .modal-footer
+      = button_tag "Готово", type: :button, class: "btn-success", "ng-click": "select.ok()"
+      = button_tag "Отмена", type: :button, class: "btn-default", "ng-click": "select.cancel()"

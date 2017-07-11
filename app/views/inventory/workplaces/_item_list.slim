@@ -1,0 +1,21 @@
+.row
+  .col-xlg-24
+    h4 Состав рабочего места
+
+.row.ng-hide ng-show="wp.workplace.workplace_type"
+  .col-xlg-24
+    p.bg-info.context-info ng-bind="wp.workplace.workplace_type.full_description"
+
+.row#wp_item_list ng-if="wp.workplace"
+  .col-xlg-24
+    uib-tabset active="wp.additional.activeTab"
+      uib-tab.animate-repeat index="$index" ng-repeat="item in wp.workplace.inv_items_attributes" ng-hide="item._destroy"
+        uib-tab-heading
+          span ng-bind="item.type.short_description"
+          |  
+          = fa_icon "times-circle lg", class: "destroy-item", "ng-click": "wp.delItem(item, $event)", 
+            "uib-tooltip": "Удалить {{ item.type.short_description | lowercase }}", "tooltip-append-to-body": true
+        = render partial: 'active_item'
+      uib-tab.manage ng-click="wp.showSelectItemType()" index="999999" uib-tooltip="Добавить оборудование"
+        uib-tab-heading
+          = fa_icon "plus-circle lg"

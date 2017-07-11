@@ -1,24 +1,79 @@
-$min-width:   970px
-$corp-color:  #0050a0
-$main-bg-color:   white
+@font-face
+  font-family: 'Glyphicons Halflings'
+  src: url('#{$icon-font-path}#{$icon-font-name}.eot')
+  src: url('#{$icon-font-path}#{$icon-font-name}?#iefix') format('embedded-opentype'), url('#{$icon-font-path}#{$icon-font-name}.woff2') format('woff2'), url('#{$icon-font-path}#{$icon-font-name}.woff') format('woff'), url('#{$icon-font-path}#{$icon-font-name}.ttf') format('truetype'), url('#{$icon-font-path}#{$icon-font-name}.svg#glyphicons_halflingsregular') format('svg')
+
+@media (min-width: 768px)
+  .container
+    width: 61.6667em
+    max-width: 95vw
+
+
+@media (min-width: 992px)
+  .container
+    width: 80em
+    max-width: 95vw
+
+
+@media (min-width: 1200px)
+  .container
+    width: 130em
+    max-width: 95vw
+
+body
+  background-color: $main-bg-color
+
+button, input[type='submit']
+  @extend .btn
+
+textarea
+  resize: none
+  
+/* ================================================ Основной контент ================================================ */
 
 .bg-content
   margin-bottom: $line-height-computed
 
-.content-body
+// Позиционирование уведомлений
+.alert
+  position: absolute
+  z-index: 9999
+  width: 100%
+
+//.content-body
   width: 100%
   padding: 20px
   display: inline-block
 
+a.default-color
+  color: $btn-default-color !important
+
 .pointer
   cursor: pointer
 
-.no-left-padding
-  padding-left: 0 !important
+.context-info
+  padding: $default-size
 
-.no-right-padding
-  padding-right: 0 !important
+.disabled
+  @extend .disabled
 
+  a
+    color: $gray-light !important
+
+    &:hover
+      background-color: $bgDefault !important
+
+.btn-toolbar
+  clear: both
+  margin: .8333em 0 0
+  position: relative
+
+.hidden-attachment
+  position: absolute !important
+  height: 0
+  width: 0
+  overflow: hidden
+  
 /* ================================================ Страницы входа на сайт ========================================== */
 
 .auth-header
@@ -33,28 +88,7 @@ $main-bg-color:   white
 
 .auth-content
   text-align: center
-  //width: 300px
   margin-top: 100px
-
-/* ================================================ Основной контент ================================================ */
-
-body
-  background-color: $main-bg-color
-
-button
-  @extend .btn, .btn-default
-
-textarea
-  resize: none
-
-a.default-color
-  color: $btn-default-color !important
-
-// Для отображения flash сообщений
-.absolute
-  position: absolute
-  z-index: 9999
-  width: 100%
 
 /* ================================================ Таблицы ========================================================= */
 
@@ -62,26 +96,20 @@ a.default-color
   @extend .table
   margin: 10px 0 !important
 
-table.center-header
-  th
-    text-align: center
-
 .table-hover
   @extend .table-hover
   cursor: pointer
-
-.row-margin-bot
-  margin-bottom: 15px
 
 // Стили для внутренних таблиц, используемых внутри форм
 .internal-table
   width: 100%
 
   tr.empty
-    height: 15px
+    height: $default-size
 
-  //.fa
-    cursor: pointer
+  td:last-child
+    [class^='col-']
+      padding-left: 0 !important
 
   .min-td
     width: 20px
@@ -90,7 +118,6 @@ table.center-header
   .form-group
     margin-bottom: 0 !important
 
-  //.icon-padding
   i
     padding: 10px 0
 
@@ -104,3 +131,18 @@ table.center-header
   .dataTables_filter
     label
       width: 100% !important
+    
+#index_list_wp
+  .manually
+    background-color: #c5e4ff
+
+/* ================================================ Стили для табов ================================================= */
+
+ul.nav-tabs
+  li.uib-tab.manage > a
+    color: $gray-base
+    border: 1px solid $nav-tabs-border-color
+    
+  li.uib-tab i.destroy-item:hover
+    color: $btn-danger-bg
+    cursor: pointer

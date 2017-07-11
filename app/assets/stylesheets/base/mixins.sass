@@ -1,0 +1,40 @@
+// Длительность смены стиля
+@mixin duration($a)
+  -webkit-transition-duration: $a
+  -o-transition-duration: $a
+  -moz-transition-duration: $a
+  transition-duration: $a
+
+// Прозрачность
+@mixin opacity($p)
+  opacity: $p
+  -webkit-opacity: $p
+  -khtml-opacity: $p
+  -moz-opacity: $p
+  filter: alpha(opacity=$p)
+  -ms-filter: "progid:DXImageTransform.Microsoft.Alpha(Opacity=$p)"
+
+// Скругление углов
+@mixin border-radius($radius)
+  -webkit-border-radius: $radius
+  -moz-border-radius: $radius
+  -ms-border-radius: $radius
+  border-radius: $radius
+
+// Тень объектов
+@mixin box-shadow($left, $top, $blur, $color)
+  -moz-box-shadow: $left $top $blur $color
+  -webkit-box-shadow: $left $top $blur $color
+  box-shadow: $left $top $blur $color
+  
+// Показать dropdown меню
+@mixin navbar-show-dropdown-menu
+  @media (min-width: 768px)
+    background-color: $navbar-top-bg-color !important
+    
+    .dropdown-menu
+      display: block
+  
+      > li
+        > a:hover
+          background-color: $navbar-border-color

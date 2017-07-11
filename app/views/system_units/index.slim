@@ -1,0 +1,9 @@
+= title "Просмотр ПК"
+
+.container ng-controller="SystemUnitIndexCtrl as unitPage"
+  .row
+    .col-fhd-24
+      /%table.table{ "ng-table": "unitPage.tableParams", "show-filter": "false" }
+        %tr{ "ng-repeat": "user in $data" }
+          %td{ title: "'Name'", "filter": "{ name: 'text'}", "sortable": "'name'", } {{user.name}}
+          %td{ title: "'Age'", "filter": "{ age: 'number'}", "sortable": "'age'", } {{user.age}}

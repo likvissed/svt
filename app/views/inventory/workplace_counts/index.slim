@@ -1,0 +1,8 @@
+= title "Инвентаризация"
+
+.container ng-controller="WorkplaceCountIndexCtrl as wpCount"
+  .well
+    datatable-wrapper
+      table.table.table-striped.table-condensed datatable="" dt-options="wpCount.dtOptions" dt-columns="wpCount.dtColumns" dt-instance="wpCount.dtInstance" width="100%"
+
+  = render partial: 'modal'

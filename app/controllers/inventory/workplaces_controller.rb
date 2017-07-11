@@ -1,108 +1,124 @@
 module Inventory
   class WorkplacesController < ApplicationController
     protect_from_forgery except: :create
-    load_and_authorize_resource
 
     def index
       respond_to do |format|
         format.html
         format.json do
-          @workplaces = Workplace
-                          .left_outer_joins(:user_iss)
-                          .left_outer_joins(:workplace_type)
-                          .left_outer_joins(:inv_items)
-                          .select('invent_workplace.*, invent_workplace_type.short_description as wp_type, user_iss
-.fio_initials as responsible, count(invent_item.item_id) as count')
-                          .group(:workplace_id)
+          @index = Workplaces::Index.new(params[:init_filters], params[:filters])
 
-          render json: @workplaces
+          if @index.run
+            render json: @index.data
+          else
+            render json: { full_message: 'Обратитесь к администратору, т.***REMOVED***' }, status: 422
+          end
         end
       end
     end
 
-    def create
-      # if @workplace.save
-      #   render json: { full_message: 'ok' }, status: :ok
-      # else
-      #   render json: { full_message: @workplace.errors.full_messages.join(', ') }, status: :unprocessable_entity
-      # end
+    def list_wp
+      respond_to do |format|
+        format.html
+        format.json do
+          @list_wp = Workplaces::ListWp.new(params[:init_filters], params[:filters])
+
+          if @list_wp.run
+            render json: @list_wp.data
+          else
+            render json: { full_message: 'Обратитесь к администратору, т.***REMOVED***' }, status: 422
+          end
+        end
+      end
+    end
+    
+    def pc_config_from_audit
+      @pc_config = LkInvents::PcConfigFromAudit.new(params[:invent_num])
+
+      if @pc_config.run
+        render json: @pc_config.data
+      else
+        render json: { full_message: @pc_config.errors.full_messages.join('. ') }, status: 422
+      end
     end
 
-    # Получить состав рабочего места
-    def show_workplace_structure
-      # Вывести состав указанного РМ
-      # SELECT
-      #   i.item_id, i.type_id, i.parent_id, i.workplace_id,
-      #   t.name, t.short_description as type_short_descr,
-      #   p.property_id, p.name as prop_name, p.short_description as prop_short_descr, p.type,
-      #   CASE p.type
-      #     WHEN 'int' THEN pv.value_int
-      #     WHEN 'date' THEN pv.value_date
-      #     WHEN 'float' THEN pv.value_float
-      #     WHEN 'list' THEN pv.value_list
-      #     WHEN 'string' THEN pv.value_string
-      #     WHEN 'longstring' THEN pv.value_longstring
-      #   END as value
-      # FROM invent_item i
-      # LEFT OUTER JOIN invent_type t
-      #   USING(type_id)
-      # LEFT OUTER JOIN invent_property p ON
-      #   p.type_id = t.type_id
-      # LEFT OUTER JOIN invent_property_value pv ON
-      #   pv.item_id = i.item_id AND pv.property_id = p.property_id
-      # WHERE workplace_id = 2;
+    def edit
+      @edit = Workplaces::Edit.new(current_user, params[:workplace_id])
 
-      # Получить все типы объектов с их свойствами и значениями
-      # SELECT
-      #   t.*,
-      #   i.*,
-      #   p.*,
-      #   p.name as prop_name,
-      #   CASE type
-      #     WHEN 'int' THEN pv.value_int
-      #     WHEN 'date' THEN pv.value_date
-      #     WHEN 'float' THEN pv.value_float
-      #     WHEN 'list' THEN pv.value_list
-      #     WHEN 'string' THEN pv.value_string
-      #     WHEN 'longstring' THEN pv.value_longstring
-      #   END as value
-      # FROM invent_type t
-      # LEFT OUTER JOIN invent_item i
-      #   USING(type_id)
-      # LEFT OUTER JOIN invent_property p ON
-      #   p.type_id = t.type_id
-      # LEFT OUTER JOIN invent_property_value pv ON
-      #   pv.item_id = i.item_id AND pv.property_id = p.property_id
+      respond_to do |format|
+        format.html do
+          if @edit.run(request.format.symbol)
+            @workplace = @edit.data
+          end
+        end
+        format.json do
+          if @edit.run(request.format.symbol)
+            render json: @edit.data
+          else
+            render json: { full_message: 'Обратитесь к администратору, т.***REMOVED***' }, status: 422
+          end
+        end
+      end
+    end
 
-      # WHERE i.workplace_id = 1
-      # LIMIT 1
+    def update
+      @update = LkInvents::UpdateWorkplace.new(
+        current_user, params[:workplace_id], workplace_params, params[:pc_file]
+      )
+
+      if @update.run
+        flash[:notice] = 'Данные о рабочем месте обновлены'
+        render json: { location: inventory_workplaces_path }
+      else
+        render json: { full_message: @update.errors.full_messages.join('. ') }, status: 422
+      end
+    end
+    
+    def confirm
+      @confirm = Workplaces::Confirm.new(params[:type], params[:ids])
+      if @confirm.run
+        render json: { full_message: @confirm.data }
+      else
+        render json: { full_message: @confirm.errors.full_messages.join('. ') }, status: 422
+      end
+    end
+
+    def send_pc_script
+      send_file(Rails.root.join('public', 'downloads', 'SysInfo.exe'), disposition: 'attachment')
     end
 
     private
 
     def workplace_params
+      params[:workplace] = JSON.parse(params[:workplace])
       params.require(:workplace).permit(
         :workplace_count_id,
         :workplace_type_id,
+        :workplace_specialization_id,
         :id_tn,
-        :location,
+        :location_site_id,
+        :location_building_id,
+        :location_room_name,
+        :location_room_id,
         :comment,
         :status,
         inv_items_attributes: [
           :id,
           :parent_id,
           :type_id,
+          :model_id,
+          :item_model,
           :workplace_id,
           :location,
-          :model_name,
           :invent_num,
           :_destroy,
-          inv_property_values_attributes: [
-            :id,
-            :property_id,
-            :item_id,
-            :value,
-            :_destroy
+          inv_property_values_attributes: %i[
+            id
+            property_id
+            item_id
+            property_list_id
+            value
+            _destroy
           ]
         ]
       )

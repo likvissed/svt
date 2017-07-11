@@ -1,19 +1,28 @@
 //= require jquery
 //= require jquery_ujs
 
-// require lib/datatables/jquery
-//= require lib/datatables/jquery.dataTables
-//= require lib/datatables/dataTables.bootstrap
+// Bootstrap
+//= require libs/bootstrap.js
 
-//= require lib/angularjs/angular
-//= require lib/angularjs/angular-animate
-//= require lib/angularjs/angular-resource
-//= require lib/bootstrap.js
-//= require lib/datatables/angular-datatables
+// AngularJS
+//= require angular
+//= require angular-resource
+//= require angular-animate
+//= require angular-datatables
+//= require angular-bootstrap
+//= require angular-ui-bootstrap/dist/ui-bootstrap-tpls
+//= require angular-i18n/angular-locale_ru
+//= require angular-websocket/dist/angular-websocket
+//= require angular-actioncable
+//= require angular-sanitize
+//= require ui-select
+//= require angular-cookies
 
-//= require lib/angularjs/ui-bootstrap-tpls-2.5.0.js
-//= require lib/angularjs/angular-locale_ru
+// DataTables
+//= require datatables.net/js/jquery.dataTables
+//= require angular-datatables/dist/plugins/bootstrap/angular-datatables.bootstrap
 
-//= require_tree ./main
+// App
+//= require_tree ./app
 //= require_tree ./inventory
 //= require_tree ./standart

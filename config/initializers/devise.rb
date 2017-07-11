@@ -6,8 +6,7 @@ Devise.setup do |config|
   # confirmation, reset password and unlock tokens in the database.
   # Devise will use the `secret_key_base` as its `secret_key`
   # by default. You can change it below and use your own secret key.
-  # config.secret_key = '8d7931a7e5d2e12f56ca734b2a72f88bc9703f46c6a801d89e281c36bb63c41719a1bde1d2914387964a2802a89a8b0632a83a1e293200e31645750eaedaa513'
-  config.secret_key = ENV['DEVISE_SECRET_KEY'] if Rails.env == 'staging'
+  config.secret_key = ENV['DEVISE_SECRET_KEY'] if %w[staging production].include? Rails.env
 
   # ==> Mailer Configuration
   # Configure the e-mail address which will be shown in Devise::Mailer,
@@ -251,16 +250,16 @@ Devise.setup do |config|
   # config.omniauth :github, 'APP_ID', 'APP_SECRET', scope: 'user,public_repo'
   config.omniauth :open_id_***REMOVED***,
                   server: 'https://***REMOVED***.***REMOVED***.ru/tools/openid/server',
-                  identity: 'http://' + SERVER_CONFIG['hostname'] + '/users/auth/open_id_***REMOVED***/callback',
-                  mandatory_fields: [:email, :fullname, :login, :tn]
+                  identity: "http://#{ENV['APPNAME']}/users/auth/open_id_***REMOVED***/callback",
+                  mandatory_fields: %i[email fullname login tn]
 
   # ==> Warden configuration
   # If you want to use other strategies, that are not supported by Devise, or
   # change the failure app, you can configure them inside the config.warden block.
   #
   # config.warden do |manager|
-    # manager.intercept_401 = false
-    # manager.default_strategies(scope: :user).unshift :some_external_strategy
+  #   manager.intercept_401 = false
+  #   manager.default_strategies(scope: :user).unshift :some_external_strategy
   # end
 
   # ==> Mountable engine configurations

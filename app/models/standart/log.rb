@@ -7,6 +7,6 @@ module Standart
     validates :system_unit_id, :event, presence: true
     # валидацию :user_id добавить, когда появится таблица users
 
-    enum event: ["Эталон создан", "Эталон изменен", "Изменения подтверждены"]
+    enum event: ['Эталон создан', 'Эталон изменен', 'Изменения подтверждены']
   end
 end

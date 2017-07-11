@@ -79,18 +79,21 @@ ActiveRecord::Schema.define(version: 20170302034819) do
   end
 
   create_table "users", force: :cascade, options: "ENGINE=InnoDB DEFAULT CHARSET=utf8" do |t|
-    t.integer  "tn",                               null: false
-    t.string   "info"
-    t.string   "encrypted_password",  default: "", null: false
+    t.integer  "id_tn",                                       null: false
+    t.integer  "tn",                                          null: false
+    t.string   "fullname"
+    t.string   "phone",               limit: 10, default: ""
+    t.string   "encrypted_password",             default: "", null: false
     t.integer  "role_id"
     t.datetime "remember_created_at"
-    t.integer  "sign_in_count",       default: 0,  null: false
+    t.integer  "sign_in_count",                  default: 0,  null: false
     t.datetime "current_sign_in_at"
     t.datetime "last_sign_in_at"
     t.string   "current_sign_in_ip"
     t.string   "last_sign_in_ip"
-    t.datetime "created_at",                       null: false
-    t.datetime "updated_at",                       null: false
+    t.datetime "created_at",                                  null: false
+    t.datetime "updated_at",                                  null: false
+    t.index ["id_tn"], name: "index_users_on_id_tn", using: :btree
     t.index ["role_id"], name: "index_users_on_role_id", using: :btree
     t.index ["tn"], name: "index_users_on_tn", using: :btree
   end

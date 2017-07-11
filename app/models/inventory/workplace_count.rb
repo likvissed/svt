@@ -1,56 +1,99 @@
 module Inventory
   class WorkplaceCount < Invent
-    self.table_name   = :invent_workplace_count
-    self.primary_key  = :workplace_count_id
+    self.table_name = "#{Rails.configuration.database_configuration["#{Rails.env}_invent"]['database']}.invent_workplace_count"
+    self.primary_key = :workplace_count_id
 
     has_many :workplaces
     has_many :workplace_responsibles, dependent: :destroy, inverse_of: :workplace_count
-    has_many :user_isses, through: :workplace_responsibles
+    has_many :users, through: :workplace_responsibles
 
-    before_validation :set_user_data_in_nested_attrs
+    validates :division,
+              presence: true,
+              numericality: { greater_than: 0, only_integer: true },
+              uniqueness: { case_sensitive: false },
+              reduce: true
+    validates :time_start, presence: true
+    validates :time_end, presence: true
+    validate :at_least_one_responsible
+    validate :forbid_duplicate_responsibles
+    validate :user_existing
 
-    validates :division,    presence: true, numericality: { greater_than: 0, only_integer: true }, uniqueness: true
-    validates :time_start,  presence: true
-    validates :time_end,    presence: true
-    validate  :at_least_one_responsible
-
-    accepts_nested_attributes_for :workplace_responsibles, allow_destroy: true, reject_if: proc { |attr| attr['tn'].blank? }
+    accepts_nested_attributes_for :users, allow_destroy: true
 
     enum status: { 'Разблокирован': 0, 'Заблокирован': 1 }, _prefix: :status
 
-    # Для работы  метода get_user_data
-    attr_accessor :id_tn, :phone
+    def users_attributes=(hash_arr)
+      @role = Role.find_by(name: :***REMOVED***_user)
+
+      hash_arr.each do |user_values|
+        return if user_values[:tn].blank?
+        @user_iss = UserIss.find_by(tn: user_values[:tn])
+
+        # Если задан id пользователя.
+        if user_values[:id]
+          user = users.find { |user| user[:id] == user_values[:id] }
+
+          # Если пользователя необходимо удалить из списка ответственных (сам пользователь не удалится).
+          if user_values[:_destroy]
+            user.mark_for_destruction
+            next
+          end
+
+          user['fullname'] = @user_iss.fio
+          user['phone'] = user_values[:phone].empty? ? @user_iss.tel : user_values[:phone]
+
+        # Если id не задан, но пользователь существует в таблице 'users'.
+        elsif user = User.where(tn: user_values[:tn]).first
+          user.fullname = @user_iss.fio
+          user.phone = user_values[:phone].empty? ? @user_iss.tel : user_values[:phone]
+
+          users << user
+
+        # Если создается новый пользователь.
+        else
+          if @user_iss
+            users << User.new(
+              id_tn: @user_iss.id_tn,
+              fullname: @user_iss.fio,
+              tn: user_values[:tn],
+              phone: user_values[:phone].empty? ? @user_iss.tel : user_values[:phone],
+              role: @role
+            )
+          else
+            users.build(tn: user_values[:tn], role: @role)
+          end
+        end
+      end
+    end
+
+    # Вывести ошибки модели workplace_responsibles.
+    def wp_resp_errors
+      workplace_responsibles.select { |wp_resp| wp_resp.errors.any? }.map { |wp_resp| wp_resp.errors.full_messages }
+    end
 
     private
 
-    # Проверка наличия ответственного
+    # Проверка наличия ответственного.
     def at_least_one_responsible
-      return self.errors.add(:base, "Необходимо добавить ответственного") unless workplace_responsibles.length > 0
-      return self.errors.add(:base, "Необходимо оставить хотя бы одного ответственного") if workplace_responsibles.reject{
-        |resp| resp._destroy == true }.empty?
-    end
-
-    # Установить знчения переменных id_tn и phone для вложенных аттрибутов
-    def set_user_data_in_nested_attrs
-      workplace_responsibles.each do |resp|
-        get_user_data(resp.tn)
-
-        resp.id_tn = self.id_tn
-        resp.phone = self.phone if resp.phone.empty?
+      errors.add(:base, :add_at_least_one_responsible) if users.empty? && workplace_responsibles.empty?
+      if users.reject { |resp| resp._destroy }.empty? && persisted?
+        errors.add(:base, :save_at_least_one_responsible)
       end
     end
 
-    # Получить данные об ответственном из БД Netadmin
-    def get_user_data(tn)
-      @user = UserIss.find_by('tn = ?', tn)
+    # Проверка, не пытается ли пользователь создать двух одинаковых пользователей.
+    def forbid_duplicate_responsibles
+      user_count = {}
+      users.each { |user| user_count[user.tn] = (user_count[user.tn] || 0) + 1 }
 
-      if @user.nil?
-        self.errors.add(:base, "Информация по табельному #{tn} не найдена")
-        return
-      end
+      user_count.each { |key, val| errors.add(:base, :multiple_user, tn: key) if val > 1 }
+    end
 
-      self.id_tn = @user.id_tn
-      self.phone = @user.tel
+    # Проверка, существует ли пользователь с указанным табельным номером.
+    def user_existing
+      user_errors = users.reject { |user| user.id_tn }.map(&:tn)
+
+      errors.add(:base, :user_not_found, tn: user_errors.uniq.join(', ')) if user_errors.any?
     end
   end
 end

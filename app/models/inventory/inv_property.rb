@@ -1,7 +1,7 @@
 module Inventory
   class InvProperty < Invent
-    self.primary_key  = :property_id
-    self.table_name   = :invent_property
+    self.primary_key = :property_id
+    self.table_name = :invent_property
 
     has_many :inv_property_values, foreign_key: 'property_id', dependent: :destroy
     has_many :inv_property_lists, foreign_key: 'property_id', dependent: :destroy

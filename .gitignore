@@ -55,6 +55,7 @@ config/redis.yml
 /public/uploads
 /public/downloads
 /spec/tmp/*
+/spec/uploads/*
 /cache
 /capybara*
 /capybara-*.html
@@ -67,3 +68,5 @@ config/redis.yml
 /cached_pages/*
 
 .lib/AuditBot/var/auditbot.log
+.env
+config/secrets.yml

@@ -1,44 +1,44 @@
-@font-face
-  font-family: 'Glyphicons Halflings'
-  src: url('#{$icon-font-path}#{$icon-font-name}.eot')
-  src: url('#{$icon-font-path}#{$icon-font-name}?#iefix') format('embedded-opentype'), url('#{$icon-font-path}#{$icon-font-name}.woff2') format('woff2'), url('#{$icon-font-path}#{$icon-font-name}.woff') format('woff'), url('#{$icon-font-path}#{$icon-font-name}.ttf') format('truetype'), url('#{$icon-font-path}#{$icon-font-name}.svg#glyphicons_halflingsregular') format('svg')
+.well
+  background-color: $main-bg-color
 
-@media (min-width: 768px)
-  .container
-    width: 61.6667em
-    max-width: 95vw
+.well-main
+  @extend .well
+  padding: 0
 
-
-@media (min-width: 992px)
-  .container
-    width: 80em
-    max-width: 95vw
-
-
-@media (min-width: 1200px)
-  .container
-    width: 105em
-    max-width: 95vw
+.well-content
+  @extend .well-main
+  //padding-top: 0
+  border: 0
+  box-shadow: none
 
 .navbar
   min-width: $min-width
 
 .container
   min-width: $min-width
-
-.well
-  padding: 0
-  background-color: white
-
-.well-pad
-  padding: 15px
-  background-color: white
-
+  
 .alert
-  border-radius: 0
+  @include border-radius(0)
   margin-bottom: 0 !important
 
-.alert-loading
-  padding: 5px 0 0 0
-  background-color: transparent
-  color: #d02424
+.dropdown-menu
+  max-height: 300px
+  overflow-y: auto
+
+.tab-content
+  padding: $default-size
+
+.well-main .well-content
+  margin: $default-size
+
+// Кастомизация ui-select под стиль input-sm
+.form-input-sm
+  height: 40px
+
+  input[type='search'], .ui-select-toggle
+    @extend .input-sm
+
+  .dropdown-menu
+    min-width: 100px
+    font-size: 12px
+    
