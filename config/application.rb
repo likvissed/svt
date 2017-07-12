@@ -53,5 +53,7 @@ module Inv
                        controller_spec: true
       g.fixture_replacement :factory_girl, dir: 'spec/factories'
     end
+
+    config.action_cable.url = "wss://#{ENV['APPNAME']}.***REMOVED***.ru/cable"
   end
 end
