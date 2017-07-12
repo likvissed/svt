@@ -272,13 +272,12 @@ th {
 }
 @font-face {
   font-family: 'Glyphicons Halflings';
-  src: url('glyphicons-halflings-regular/glyphicons-halflings-regular.eot');
-  src: 
-    url('glyphicons-halflings-regular/glyphicons-halflings-regular.eot?#iefix') format('embedded-opentype'),
-    url('glyphicons-halflings-regular/glyphicons-halflings-regular.woff2') format('woff2'),
-    url('glyphicons-halflings-regular/glyphicons-halflings-regular.woff') format('woff'),
-    url('glyphicons-halflings-regular/glyphicons-halflings-regular.ttf') format('truetype'),
-    url('glyphicons-halflings-regular/glyphicons-halflings-regular.svg#glyphicons_halflingsregular') format('svg');
+  src: font-path('glyphicons-halflings-regular/glyphicons-halflings-regular.eot');
+  src: font-path('glyphicons-halflings-regular/glyphicons-halflings-regular.eot?#iefix') format('embedded-opentype'),
+    font-path('glyphicons-halflings-regular/glyphicons-halflings-regular.woff2') format('woff2'),
+    font-path('glyphicons-halflings-regular/glyphicons-halflings-regular.woff') format('woff'),
+    font-path('glyphicons-halflings-regular/glyphicons-halflings-regular.ttf') format('truetype'),
+    font-path('glyphicons-halflings-regular/glyphicons-halflings-regular.svg#glyphicons_halflingsregular') format('svg');
 }
 /*@font-face {*/
   /*font-family: 'Glyphicons Halflings';*/
