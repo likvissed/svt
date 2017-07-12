@@ -8,30 +8,30 @@ module Inventory
         @type = type
         @ids = ids
       end
-      
+
       def run
         load_workplaces
         update_workplaces
         broadcast_workplaces
-        
+
         true
       rescue RuntimeError
         false
       end
-      
+
       private
-      
+
       def load_workplaces
         @workplaces = Workplace.where(workplace_id: @ids)
       end
-      
+
       def update_workplaces
         case @type
         when 'confirm'
-          @workplaces.update_all(status: :confirmed)
+          @workplaces.find_each { |wp| wp.update(status: :confirmed) }
           @data = 'Данные подтверждены'
         when 'disapprove'
-          @workplaces.update_all(status: :disapproved)
+          @workplaces.find_each { |wp| wp.update(status: :disapproved) }
           @data = 'Данные отклонены'
         else
           errors.add(:base, 'Указанное действие неразрешено')

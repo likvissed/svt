@@ -9,38 +9,38 @@ module Inventory
         @init_filters = init_filters
         @filters = filters
       end
-      
+
       def run
         load_workplace
         run_filters if @filters
         prepare_to_render
         load_filters if @init_filters
-        
+
         true
       end
 
       private
-# .left_outer_joins(:workplace_count)
+
       def load_workplace
         @workplaces = Workplace
                         .includes(:iss_reference_site, :iss_reference_building, :iss_reference_room, :user_iss, :workplace_count)
                         .left_outer_joins(:workplace_type)
                         .left_outer_joins(:inv_items)
-                        .select('invent_workplace.*, invent_workplace_type.short_description as wp_type, 
-count(invent_item.item_id) as count')
+                        .select('invent_workplace.*, invent_workplace_type.short_description as wp_type,
+ count(invent_item.item_id) as count')
                         .group(:workplace_id)
       end
-      
+
       # Отфильтровать полученные данные
       def run_filters
         unless @filters['workplace_count_id'].to_i.zero?
           @workplaces = @workplaces.where(workplace_count_id: @filters['workplace_count_id'])
         end
-        
+
         unless @filters['status'] == 'all'
           @workplaces = @workplaces.where(status: @filters['status'])
         end
-        
+
         unless @filters['workplace_type_id'].to_i.zero?
           @workplaces = @workplaces.where(workplace_type_id: @filters['workplace_type_id'])
         end
@@ -62,7 +62,7 @@ count(invent_item.item_id) as count')
           wp.delete('user_iss')
         end
       end
-      
+
       # Загрузить данные для фильтров
       def load_filters
         @data[:filters] = {}

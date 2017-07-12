@@ -42,20 +42,14 @@ module Inventory
 
       def load_workplace
         @edit_workplace = LkInvents::EditWorkplace.new(@current_user, @workplace_id)
-        if @edit_workplace.run
-          data[:wp_data] = @edit_workplace.data
-        else
-          raise 'abort'
-        end
+        return data[:wp_data] = @edit_workplace.data if @edit_workplace.run
+        raise 'abort'
       end
 
       def load_properties
         properties = LkInvents::InitProperties.new(nil, @edit_workplace.workplace.division)
-        if properties.run
-          data[:prop_data] = properties.data
-        else
-          raise 'abort'
-        end
+        return data[:prop_data] = properties.data if properties.run
+        raise 'abort'
       end
     end
   end

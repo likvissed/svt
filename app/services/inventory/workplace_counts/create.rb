@@ -13,7 +13,7 @@ module Inventory
       def run
         @data = WorkplaceCount.new(@wpc_params)
         save_workplace
-        
+
         true
       rescue RuntimeError
         false
