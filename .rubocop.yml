@@ -36,15 +36,15 @@ Style/AsciiComments:
 Style/FrozenStringLiteralComment:
   Enabled: false
 
-Style/AlignHash:
-  EnforcedColonStyle: key
-
 Style/Documentation:
   Enabled: false
 
 Style/ClassAndModuleChildren:
   Enabled: false
 
-Style/MultilineMethodCallIndentation:
+Layout/AlignHash:
+  EnforcedColonStyle: key
+
+Layout/MultilineMethodCallIndentation:
   EnforcedStyle: indented_relative_to_receiver
   IndentationWidth: 2

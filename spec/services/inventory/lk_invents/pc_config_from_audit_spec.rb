@@ -11,7 +11,7 @@ module Inventory
       context 'with valid inventory number' do
         before { allow(HostIss).to receive(:get_host).and_return(build :host_iss) }
 
-        include_examples 'run methods', %w[get_host_name load_data]
+        include_examples 'run methods', %w[host_name load_data]
 
         context 'when Audit correctly works on the specified PC' do
           before { allow(Audit).to receive(:get_data).and_return(build :audit) }
