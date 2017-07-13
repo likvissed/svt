@@ -61,60 +61,65 @@ module Inventory
 
       # Отдельная проверка для ПК, моноблока, ноутбука
       if InvPropertyValue::PROPERTY_WITH_FILES.include?(inv_type.name)
-        # Предполагаем, что все параметры ПК заданы (далее в цикле проверяем, так ли это).
-        # true - если все параметры заданы.
-        # false - если хотя бы один параметр отсутствует.
-        full_properties_flag = true
-        # Флаг наличия имени загружаемого файла
-        # true - имя задано
-        file_name_exist = false
-
-        inv_property_values.each do |prop_val|
-          next if prop_val._destroy
-
-          # Ищем совпадения с именами свойства системного блока.
-          founded_prop = %w[mb ram video cpu hdd].any? do |pc_prop|
-            pc_prop == @properties.find { |prop| prop.property_id == prop_val.property_id }.name
-          end
-
-          if founded_prop
-            full_properties_flag = false if property_value_invalid?(prop_val)
-            # Пропускаем тип свойства "config_file", так как его проверка будет последней, в конце метода.
-          elsif @properties.find { |prop| prop.property_id == prop_val.property_id }.name == 'config_file'
-            file_name_exist = true unless prop_val.value.blank?
-          else
-            add_prop_val_error(prop_val)
-          end
-        end
+        flags = prop_values_verification
 
         # Проверка наличия данных от аудита, либо отчета о конфигурации
-        if !invent_num.blank? && !full_properties_flag && !file_name_exist
+        if invent_num.present? && !flags[:full_properties_flag] && !flags[:file_name_exist]
           errors.add(:base, :pc_data_not_received)
         end
 
         # Если имя файла пришло пустым (не будет работать при создании нового item, только во время редактирования).
-        unless file_name_exist
-          # Объект свойства 'config_file'
-          prop_obj = @properties.find { |prop| prop.name == 'config_file' }
-          # Объект inv_property_value со свойством 'config_file'
-          file_obj = inv_property_values.find { |val| val.property_id == prop_obj.property_id }
+        config_file_verification unless flags[:file_name_exist]
+      else
+        inv_property_values.each { |prop_val| add_prop_val_error(prop_val) }
+      end
+    end
 
-          unless file_obj.nil?
-            # Если имя файла изменилось и при этом ранее имя файла было указано (а сейчас оно отсутствует), файл
-            # необходимо удалить из файловой системы.
-            if file_obj.value_changed? && !file_obj.value_was.to_s.empty?
-              logger.info 'Вызов метода для удаления файла'
+    # Проверка, заполнены ли значения для всех свойств техники.
+    def prop_values_verification
+      flags = {
+        # Предполагаем, что все параметры ПК заданы (далее в цикле проверяем, так ли это).
+        # true - все параметры заданы.
+        # false - хотя бы один параметр отсутствует.
+        full_properties_flag: true,
+        # Флаг наличия имени загружаемого файла
+        # true - имя задано
+        file_name_exist: false
+      }
 
-              file_obj.destroy_file
-            end
-          end
+      inv_property_values.each do |prop_val|
+        next if prop_val._destroy
+
+        # Ищем совпадения с именами свойства системного блока.
+        founded_prop = %w[mb ram video cpu hdd].any? do |pc_prop|
+          pc_prop == @properties.find { |prop| prop.property_id == prop_val.property_id }.name
         end
 
-      else
-        inv_property_values.each do |prop_val|
+        if founded_prop
+          flags[:full_properties_flag] = false if property_value_invalid?(prop_val)
+          # Пропускаем тип свойства "config_file", так как его проверка будет последней, в конце метода.
+        elsif @properties.find { |prop| prop.property_id == prop_val.property_id }.name == 'config_file'
+          flags[:file_name_exist] = true if prop_val.value.present?
+        else
           add_prop_val_error(prop_val)
         end
       end
+
+      flags
+    end
+
+    # Удалить старый файл конфигурации, если был загружен новый.
+    def config_file_verification
+      # Объект свойства 'config_file'
+      prop_obj = @properties.find { |prop| prop.name == 'config_file' }
+      # Объект inv_property_value со свойством 'config_file'
+      file_obj = inv_property_values.find { |val| val.property_id == prop_obj.property_id }
+
+      # Если имя файла изменилось и при этом ранее имя файла было указано (а сейчас оно отсутствует), файл
+      # необходимо удалить из файловой системы.
+      return unless file_obj&.value_changed? && !file_obj.value_was.to_s.empty?
+      logger.info 'Вызов метода для удаления файла'
+      file_obj.destroy_file
     end
 
     # Добавить ошибку в объект errors, если значение свойства не прошло проверку.

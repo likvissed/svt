@@ -19,7 +19,7 @@ class User < ApplicationRecord
   def self.find_for_database_authentication(warden_conditions)
     conditions = warden_conditions.dup
     if login = conditions.delete(:login)
-      where(conditions.to_hash).where(["tn = :value", { value: login }]).first
+      where(conditions.to_hash).where(['tn = :value', { value: login }]).first
     elsif conditions.has_key?(:tn)
       where(conditions.to_hash).first
     end

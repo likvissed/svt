@@ -22,14 +22,19 @@ class Audit < SMSServer
   def self.get_data(pc_name)
     raw_data = execute_procedure('ISS_Get_HW_invent_inf', pc_name, 'f')
     logger.info "Raw data: #{raw_data.inspect}".blue
-
     return nil if raw_data.empty?
+    processing_pc_data(raw_data[0])
+  end
 
-    data = raw_data[0]
+  # Проверка актуальности данных по полю last_connection (всё, что более 20 дней - устаревшие данные).
+  def self.relevance?(data)
+    Time.zone.parse(data[:last_connection].first) + MAX_RELENAVCE_TIME.days > Time.zone.now
+  end
 
-    # data.delete('last_connection')
+  # Обработка данных, полученных с Аудита.
+  # data - данные, полученные с Аудита
+  def self.processing_pc_data(data)
     data.delete('printers')
-
     data.each do |type, value|
       data[type] = []
 
@@ -45,7 +50,7 @@ class Audit < SMSServer
           mod_part = tmp_ram.to_s.split('.')
           if mod_part[1].to_i <= 5 && mod_part[1].to_i != 0
             mod_part[1] = 5
-            val = eval(mod_part.join('.'))
+            val = mod_part.join('.').to_f
           else
             val = tmp_ram.ceil.to_f
           end
@@ -54,12 +59,6 @@ class Audit < SMSServer
         data[type].push val
       end
     end
-
     data
-  end
-
-  # Проверка актуальности данных по полю last_connection (всё, что более 20 дней - устаревшие данные).
-  def self.relevance?(data)
-    Time.zone.parse(data[:last_connection].first) + MAX_RELENAVCE_TIME.days > Time.zone.now
   end
 end
