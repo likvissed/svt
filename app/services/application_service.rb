@@ -2,18 +2,13 @@ class ApplicationService
   include Pundit
   include ActiveModel::Validations
 
-  attr_reader :data
-
-  # Возвращает объект @current_user
-  def current_user
-    @current_user
-  end
+  attr_reader :data, :current_user
 
   # Возвращает массив статусов с переведенными на русскую локаль ключами.
   def statuses
-    Inventory::Workplace.statuses.map{ |key, val| [key, Inventory::Workplace.translate_enum(:status, key)] }.to_h
+    Inventory::Workplace.statuses.map { |key, _val| [key, Inventory::Workplace.translate_enum(:status, key)] }.to_h
   end
-  
+
   # Возвращает строку, содержащую расположение РМ.
   def wp_location_string(wp)
     "Пл. '#{wp['iss_reference_site']['name']}', корп. '#{wp['iss_reference_building']['name']}', комн. '#{wp['iss_reference_room']['name']}'"

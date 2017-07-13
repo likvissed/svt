@@ -6,9 +6,7 @@ module Inventory
       # Подготовка параметров к записи: получение room_id, запись файла в параметры.
       def prepare_params
         create_or_get_room
-        if @file.kind_of?(ActionDispatch::Http::UploadedFile) || @file.kind_of?(Rack::Test::UploadedFile)
-          set_file_into_params
-        end
+        set_file_into_params if @file.is_a?(ActionDispatch::Http::UploadedFile) || @file.is_a?(Rack::Test::UploadedFile)
       end
 
       # Записать файл в @workplace_params.
@@ -19,7 +17,7 @@ module Inventory
         type_with_files = InvType.where(name: InvPropertyValue::PROPERTY_WITH_FILES).includes(:inv_properties)
 
         @workplace_params[:inv_items_attributes].each do |item|
-          next if (type = type_with_files.find { |type| type[:type_id] == item[:type_id] }).nil?
+          next if (type = type_with_files.find { |type_f| type_f[:type_id] == item[:type_id] }).nil?
 
           item[:inv_property_values_attributes].each do |prop_val|
             next unless type.inv_properties.find { |prop| prop[:property_id] == prop_val[:property_id] }.name == 'config_file'

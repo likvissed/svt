@@ -18,7 +18,7 @@ module Inventory
 
       def run
         run_callbacks(:run) do
-          get_host_name
+          host_name
           load_data
         end
       rescue Timeout::Error
@@ -48,7 +48,7 @@ module Inventory
               end
 
               break
-            rescue Exception
+            rescue StandardError
               errors.add(:base, :not_responded)
               return false
             end
@@ -58,13 +58,12 @@ module Inventory
         true
       end
 
-      def get_host_name
+      def host_name
         @host = HostIss.get_host(inv_num)
+        return if @host
 
-        if host.nil?
-          errors.add(:host, :not_found)
-          raise('abort')
-        end
+        errors.add(:host, :not_found)
+        raise 'abort'
       end
     end
   end

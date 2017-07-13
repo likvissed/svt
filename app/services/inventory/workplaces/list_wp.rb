@@ -9,18 +9,18 @@ module Inventory
         @init_filters = init_filters
         @filters = filters
       end
-      
+
       def run
         load_workplace
         run_filters if @filters
         prepare_to_render
         load_filters if @init_filters
-        
+
         true
       end
-      
+
       private
-      
+
       def load_workplace
         @workplaces = Workplace.includes(
           :user_iss,
@@ -39,7 +39,7 @@ module Inventory
           @workplaces = @workplaces.where(workplace_count_id: @filters['workplace_count_id'])
         end
       end
-      
+
       def prepare_to_render
         @data[:workplaces] = @workplaces.as_json(
           include: [
@@ -60,10 +60,10 @@ module Inventory
             }
           ]
         ).map do |wp|
-          workplace = "ФИО: #{wp['user_iss']['fio']}; Отдел: #{wp['workplace_count']['division']}; 
-#{wp['workplace_type']['short_description']}; Расположение: #{wp_location_string(wp)}"
+          workplace = "ФИО: #{wp['user_iss']['fio']}; Отдел: #{wp['workplace_count']['division']};
+ #{wp['workplace_type']['short_description']}; Расположение: #{wp_location_string(wp)}"
           items = wp['inv_items'].map { |item| item_info(item) }
-          
+
           {
             workplace_id: wp['workplace_id'],
             workplace: workplace,
@@ -71,20 +71,20 @@ module Inventory
           }
         end
       end
-      
+
       # Преобразовать данные о составе РМ в массив строк.
       def item_info(item)
-        model = if item['inv_model'] 
-                  "Модель: #{item['inv_model']['item_model']}" 
+        model = if item['inv_model']
+                  "Модель: #{item['inv_model']['item_model']}"
                 else
                   "<span class='manually'>Модель: #{item['item_model']}</span>"
                 end
         property_values = item['inv_property_values'].map { |prop_val| property_value_info(prop_val) }
-        
-        "#{item['inv_type']['short_description']}: Инв №: #{item['invent_num']}; #{model}; Конфигурация: 
-#{property_values.join('; ')}"
+
+        "#{item['inv_type']['short_description']}: Инв №: #{item['invent_num']}; #{model}; Конфигурация:
+ #{property_values.join('; ')}"
       end
-      
+
       # Преобразовать данные о составе экземпляра техники.
       def property_value_info(prop_val)
         # Флаг показывает, содержится ли значение свойства в поле value (true, если содержится).
@@ -95,9 +95,9 @@ module Inventory
           value = prop_val['value']
           value_flag = true
         end
-        
+
         result = "#{prop_val['inv_property']['short_description']}: #{value}"
-        
+
         if prop_val['inv_property']['property_type'] == 'list_plus' && value_flag
           "<span class='manually'>#{result}</span>"
         else

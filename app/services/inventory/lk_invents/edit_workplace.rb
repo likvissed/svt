@@ -22,8 +22,8 @@ module Inventory
       # Получить данные из БД.
       def load_workplace
         @workplace = Workplace
-                  .includes(:workplace_count, :iss_reference_room, { inv_items: :inv_property_values })
-                  .find(@workplace_id)
+                       .includes(:workplace_count, :iss_reference_room, inv_items: :inv_property_values)
+                       .find(@workplace_id)
         authorize workplace, :edit?
 
         transform_to_json

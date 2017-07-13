@@ -16,14 +16,14 @@ module Inventory
       end
 
       def run
-        @workplace = Workplace.includes(inv_items: [:inv_type, :inv_property_values]).find(@workplace_id)
+        @workplace = Workplace.includes(inv_items: %i[inv_type inv_property_values]).find(@workplace_id)
         authorize @workplace, :update?
 
         prepare_params
         update_workplace
         broadcast_workplaces
         broadcast_workplace_list
-        
+
         true
       rescue RuntimeError
         false

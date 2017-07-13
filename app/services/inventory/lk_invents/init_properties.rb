@@ -25,10 +25,10 @@ module Inventory
         exclude_mandatory_fields unless mandatory
       rescue Pundit::NotAuthorizedError
         false
-      rescue Exception => e
+      rescue StandardError => e
         Rails.logger.error e.inspect.red
         Rails.logger.error e.backtrace.inspect
-        
+
         false
       end
 
@@ -37,9 +37,7 @@ module Inventory
       # Получить список отделов, доступных на редактирование для указанного пользователя.
       def load_divisions
         @divisions = @current_user.workplace_counts
-        if @divisions.empty?
-          raise Pundit::NotAuthorizedError, 'Access denied'
-        end
+        raise Pundit::NotAuthorizedError, 'Access denied' if @divisions.empty?
 
         data[:divisions] = @divisions.as_json.each do |division|
           division['allowed_time'] = time_not_passed?(division['time_start'], division['time_end'])
@@ -58,8 +56,8 @@ module Inventory
       # Получить список типов оборудования с их свойствами и возможными значениями.
       def load_inv_types
         data[:eq_types] = InvType
-                             .includes(:inv_models, inv_properties: { inv_property_lists: :inv_model_property_lists })
-                             .where('name != "unknown"')
+                            .includes(:inv_models, inv_properties: { inv_property_lists: :inv_model_property_lists })
+                            .where('name != "unknown"')
       end
 
       def load_workplace_types
@@ -78,8 +76,8 @@ module Inventory
       # Получить список площадок и корпусов.
       def load_locations
         data[:iss_locations] = IssReferenceSite
-                                  .includes(:iss_reference_buildings)
-                                  .as_json(include: :iss_reference_buildings)
+                                 .includes(:iss_reference_buildings)
+                                 .as_json(include: :iss_reference_buildings)
       end
 
       # Получить список возможных статусов РМ.
@@ -108,7 +106,7 @@ module Inventory
           type
         end
       end
-      
+
       def load_pc_config_key
         data[:pc_config_key] = ENV['PC_CONFIG_KEY']
       end

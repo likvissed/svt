@@ -15,12 +15,10 @@ module Inventory
 
       if @properties.run
         render json: @properties.data
+      elsif @properties.data[:divisions].nil?
+        raise Pundit::NotAuthorizedError, 'Access denied'
       else
-        if @properties.data[:divisions].nil?
-          raise Pundit::NotAuthorizedError, 'Access denied'
-        else
-          render json: { full_message: 'Обратитесь к администратору, т.***REMOVED***' }, status: 422
-        end
+        render json: { full_message: 'Обратитесь к администратору, т.***REMOVED***' }, status: 422
       end
     end
 
@@ -137,14 +135,7 @@ module Inventory
           :location,
           :invent_num,
           :_destroy,
-          inv_property_values_attributes: %i[
-            id
-            property_id
-            item_id
-            property_list_id
-            value
-            _destroy
-          ]
+          inv_property_values_attributes: %i[id property_id item_id property_list_id value _destroy]
         ]
       )
     end

@@ -22,7 +22,7 @@ module Inventory
         save_workplace
         broadcast_workplaces
         broadcast_workplace_list
-        
+
         true
       rescue RuntimeError
         false
@@ -48,8 +48,8 @@ module Inventory
           # Чтобы избежать N+1 запрос в методе 'transform_workplace' нужно создать объект ActiveRecord (например,
           # вызвать find)
           @workplace = Workplace
-                        .includes(inv_items: [:inv_type, { inv_property_values: :inv_property }])
-                        .find(workplace.workplace_id)
+                         .includes(inv_items: [:inv_type, { inv_property_values: :inv_property }])
+                         .find(workplace.workplace_id)
 
           prepare_workplace
         else

@@ -31,7 +31,7 @@ module Inventory
         end
       end
     end
-    
+
     def pc_config_from_audit
       @pc_config = LkInvents::PcConfigFromAudit.new(params[:invent_num])
 
@@ -47,9 +47,7 @@ module Inventory
 
       respond_to do |format|
         format.html do
-          if @edit.run(request.format.symbol)
-            @workplace = @edit.data
-          end
+          @workplace = @edit.data if @edit.run(request.format.symbol)
         end
         format.json do
           if @edit.run(request.format.symbol)
@@ -73,7 +71,7 @@ module Inventory
         render json: { full_message: @update.errors.full_messages.join('. ') }, status: 422
       end
     end
-    
+
     def confirm
       @confirm = Workplaces::Confirm.new(params[:type], params[:ids])
       if @confirm.run
@@ -112,14 +110,7 @@ module Inventory
           :location,
           :invent_num,
           :_destroy,
-          inv_property_values_attributes: %i[
-            id
-            property_id
-            item_id
-            property_list_id
-            value
-            _destroy
-          ]
+          inv_property_values_attributes: %i[id property_id item_id property_list_id value _destroy]
         ]
       )
     end

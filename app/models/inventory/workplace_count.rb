@@ -31,7 +31,7 @@ module Inventory
 
         # Если задан id пользователя.
         if user_values[:id]
-          user = users.find { |user| user[:id] == user_values[:id] }
+          user = users.find { |u| u[:id] == user_values[:id] }
 
           # Если пользователя необходимо удалить из списка ответственных (сам пользователь не удалится).
           if user_values[:_destroy]
@@ -43,25 +43,23 @@ module Inventory
           user['phone'] = user_values[:phone].empty? ? @user_iss.tel : user_values[:phone]
 
         # Если id не задан, но пользователь существует в таблице 'users'.
-        elsif user = User.where(tn: user_values[:tn]).first
+        elsif user = User.find_by(tn: user_values[:tn])
           user.fullname = @user_iss.fio
           user.phone = user_values[:phone].empty? ? @user_iss.tel : user_values[:phone]
 
           users << user
 
         # Если создается новый пользователь.
+        elsif @user_iss
+          users << User.new(
+            id_tn: @user_iss.id_tn,
+            fullname: @user_iss.fio,
+            tn: user_values[:tn],
+            phone: user_values[:phone].empty? ? @user_iss.tel : user_values[:phone],
+            role: @role
+          )
         else
-          if @user_iss
-            users << User.new(
-              id_tn: @user_iss.id_tn,
-              fullname: @user_iss.fio,
-              tn: user_values[:tn],
-              phone: user_values[:phone].empty? ? @user_iss.tel : user_values[:phone],
-              role: @role
-            )
-          else
-            users.build(tn: user_values[:tn], role: @role)
-          end
+          users.build(tn: user_values[:tn], role: @role)
         end
       end
     end
@@ -76,9 +74,7 @@ module Inventory
     # Проверка наличия ответственного.
     def at_least_one_responsible
       errors.add(:base, :add_at_least_one_responsible) if users.empty? && workplace_responsibles.empty?
-      if users.reject { |resp| resp._destroy }.empty? && persisted?
-        errors.add(:base, :save_at_least_one_responsible)
-      end
+      errors.add(:base, :save_at_least_one_responsible) if users.reject(&:_destroy).empty? && persisted?
     end
 
     # Проверка, не пытается ли пользователь создать двух одинаковых пользователей.
@@ -91,7 +87,7 @@ module Inventory
 
     # Проверка, существует ли пользователь с указанным табельным номером.
     def user_existing
-      user_errors = users.reject { |user| user.id_tn }.map(&:tn)
+      user_errors = users.reject(&:id_tn).map(&:tn)
 
       errors.add(:base, :user_not_found, tn: user_errors.uniq.join(', ')) if user_errors.any?
     end
