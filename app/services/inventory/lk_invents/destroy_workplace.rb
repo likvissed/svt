@@ -28,7 +28,7 @@ module Inventory
         return true if data.destroy_from_***REMOVED***
         Rails.logger.error data.errors.full_messages.inspect.red
 
-        errors.add(:base, data.errors.full_messages.join(', '))
+        errors.add(:base, data.errors.full_messages.join('. '))
         raise 'abort'
       end
     end

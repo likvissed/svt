@@ -7,7 +7,7 @@ script type="text/ng-template" id="editWpCount.haml"
     .modal-body
       .form-group.required ng-class="modal.errorClass('workplace_count[division]')"
         = label_tag :workplace_count_division, class: "control-label" do
-          abbr title="Обязательное поле"  *
+          abbr> title="Обязательное поле" *
           b Отдел
         = text_field_tag "workplace_count[division]", " modal.data.division ", class: "form-control",
           "ng-model": "modal.data.division"
@@ -16,7 +16,7 @@ script type="text/ng-template" id="editWpCount.haml"
 
       .form-group.required ng-class="modal.errorClass('workplace_count[time_start]')"
         = label_tag :workplace_count_time_start, class: "control-label" do
-          abbr title="Обязательное поле"  *
+          abbr> title="Обязательное поле" *
           b Дата начала ввода данных
         = text_field_tag "workplace_count[time_start]", " modal.data.time_start ", class: "form-control",
           "ng-model": "modal.data.time_start", "uib-datepicker-popup": "{{ modal.time_start.format }}",
@@ -28,7 +28,7 @@ script type="text/ng-template" id="editWpCount.haml"
 
       .form-group.required ng-class="modal.errorClass('workplace_count[time_end]')"
         = label_tag :workplace_count_time_end, class: "control-label" do
-          abbr title="Обязательное поле"  *
+          abbr> title="Обязательное поле" *
           b Дата окончания ввода данных
         = text_field_tag "workplace_count[time_end]", " modal.data.time_end ", class: "form-control",
           "ng-model": "modal.data.time_end", "uib-datepicker-popup": "{{ modal.time_end.format }}",
@@ -47,7 +47,7 @@ script type="text/ng-template" id="editWpCount.haml"
           tr
             td.col-sm-16.col-md-16.col-lg-5
               = label_tag "workplace_count_workplace_responsibles.tn", class: "control-label" do
-                abbr title="Обязательное поле" *
+                abbr> title="Обязательное поле" *
                 b Таб. номер
             td.col-lg-13
               b ФИО

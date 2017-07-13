@@ -55,7 +55,7 @@ module Inventory
         else
           Rails.logger.error workplace.errors.full_messages.inspect.red
 
-          errors.add(:base, workplace.errors.full_messages.join(', '))
+          errors.add(:base, workplace.errors.full_messages.join('. '))
           raise 'abort'
         end
       end
