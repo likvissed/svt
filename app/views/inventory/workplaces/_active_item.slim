@@ -14,7 +14,7 @@
             .input-group-btn
               = button_tag type: :button, class: "btn-default", "data-toggle": "dropdown",
                 "ng-disabled": "wp.additional.auditData" do
-                | Данные  
+                ' Данные
                 span.caret
               ul.dropdown-menu.dropdown-menu-right
                 li= link_to "Получить автоматически", "", "ng-click": "wp.getAuditData(item)",
