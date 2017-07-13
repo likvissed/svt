@@ -2,9 +2,8 @@ doctype html
 html
   head
     meta charset="utf-8"
-    = wicked_pdf_stylesheet_link_tag '***REMOVED***_pdf'
-    = wicked_pdf_javascript_include_tag 'number_pages'
-  body onload="number_pages"
+    = stylesheet_link_tag wicked_pdf_asset_base64 '***REMOVED***_pdf'
+  body
     .header
       table
         tr
