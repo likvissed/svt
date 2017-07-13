@@ -12,8 +12,8 @@
       uib-tab.animate-repeat index="$index" ng-repeat="item in wp.workplace.inv_items_attributes" ng-hide="item._destroy"
         uib-tab-heading
           span ng-bind="item.type.short_description"
-          |  
-          = fa_icon "times-circle lg", class: "destroy-item", "ng-click": "wp.delItem(item, $event)", 
+          '
+          = fa_icon "times-circle lg", class: "destroy-item", "ng-click": "wp.delItem(item, $event)",
             "uib-tooltip": "Удалить {{ item.type.short_description | lowercase }}", "tooltip-append-to-body": true
         = render partial: 'active_item'
       uib-tab.manage ng-click="wp.showSelectItemType()" index="999999" uib-tooltip="Добавить оборудование"
