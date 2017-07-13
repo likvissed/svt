@@ -1,10 +1,10 @@
 doctype html
 html
   head
-    meta charset='utf-8'
+    meta charset="utf-8"
     = wicked_pdf_stylesheet_link_tag '***REMOVED***_pdf'
     = wicked_pdf_javascript_include_tag 'number_pages'
-  body onload='number_pages'
+  body onload="number_pages"
     .header
       table
         tr
@@ -22,15 +22,15 @@ html
 
     .content
       .content-header
-        | Перечень рабочих мест отдела
+        ' Перечень рабочих мест отдела
         = workplace_count.division
 
       table.table
         thead
           th align="center" №
           th Описание
-          th width='25' Ответственный
-          th width='20' Расположение
+          th width="25" Ответственный
+          th width="20" Расположение
         tbody
           - workplace_count.workplaces.includes(:iss_reference_site, :iss_reference_building, :iss_reference_room, :workplace_type, :user_iss, :inv_items).where(status: :confirmed).each_with_index do |wp, index|
             - items = wp.inv_items.map(&:invent_num)
@@ -45,7 +45,7 @@ html
       table
         tr
           td
-            | Руководитель подразделения
+            ' Руководитель подразделения
             = workplace_count.division
           td align="right"
             | /___________/

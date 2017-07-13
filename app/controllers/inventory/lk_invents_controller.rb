@@ -88,7 +88,7 @@ module Inventory
       @workplace_count = WorkplaceCount.find_by(division: params[:division])
       authorize @workplace_count, :generate_pdf?
 
-      render pdf: 'test',
+      render pdf: "Перечень рабочих мест отдела #{@workplace_count.division}",
              template: 'templates/approved_workplace_list',
              locals: { workplace_count: @workplace_count },
              encoding: 'UTF-8'
