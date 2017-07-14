@@ -40,7 +40,6 @@ server 'dc', user: 'deployer', roles: %w[web app db]
 # Repo details
 set :rbenv_ruby, '2.3.1'
 set :repo_url, '/var/repos/inv.git'
-set :branch, 'master'
 set :rbenv_map_bins, %w[rake gem bundle ruby rails]
 
 set :keep_releases, 5
