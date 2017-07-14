@@ -17,6 +17,7 @@ module Inventory
 
       def workplace_counts
         @workplace_counts = WorkplaceCount
+                              .includes(users: :user_iss)
                               .left_outer_joins(:workplaces)
                               .select('invent_workplace_count.*, SUM(CASE WHEN invent_workplace.status = 0 THEN 1 ELSE
  0 END) AS ready, SUM(CASE WHEN invent_workplace.status = 1 THEN 1 ELSE 0 END) AS waiting')
@@ -28,9 +29,7 @@ module Inventory
           include: {
             users: {
               include: {
-                user_iss: {
-                  only: %i[fio]
-                }
+                user_iss: { only: %i[fio] }
               }
             }
           }
