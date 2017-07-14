@@ -247,7 +247,7 @@
    */
   function WorkplaceListCtrl($scope, $compile, $controller, DTOptionsBuilder, DTColumnBuilder, ActionCableChannel, Server, Config, Flash, Error, Cookies) {
     var self = this;
-    
+
     self.Config = Config;
     self.Flash = Flash;
     self.Error = Error;
@@ -259,7 +259,7 @@
     $controller('DefaultDataTableCtrl', {});
 
     var checkboxCell = '<input ng-model="wpList.flags.all" ng-click="wpList.toggleAll()" ng-disabled="wpList.isEmptyWorkplace()" type="checkbox">';
-    
+
     // Объект, содержащий данные отделов по инвентаризации (workplace_id => data)
     self.workplaces = {};
     // Фильтр по отделам
@@ -332,7 +332,7 @@
         self._setFilters(json.filters);
       }
     }
-    
+
     /**
      * Показать номер строки.
      */
@@ -346,7 +346,7 @@
     function createdRow(row, data, dataIndex) {
       self.workplaces[data.workplace_id] = data;
       self.workplaces[data.workplace_id].selected = false;
-      
+
       // Компиляция строки
       $compile(angular.element(row))($scope);
     }
@@ -360,23 +360,23 @@
         $compile(angular.element(header).contents())($scope);
       }
     }
-    
+
     function checkboxCellFunc(data, type, full, meta) {
       return '<input ng-model="wpList.workplaces[' + data.workplace_id + '].selected" ng-click="wpList.toggleOne()" type="checkbox">';
     }
-    
+
     function showWorkplace(data, type, full, meta) {
-      var 
+      var
         res,
         items = [];
-      
+
       angular.forEach(data.items, function (value) { items.push('<li>' + value + '</li>'); });
       res = '<span>' + data.workplace + '</span><br>Состав:<ul>' + items.join('') + '</ul>';
-      
+
       return res;
     }
   }
-  
+
   /**
    * Заполнить данные фильтров.
    *
@@ -386,7 +386,7 @@
     var cookieVal;
 
     this.divisionFilters = this.divisionFilters.concat(data.divisions);
-    
+
     // Установить выбранный фильтр по отделам
     cookieVal = this.Cookies.Workplace.get('tableListDivisionFilter');
     if (angular.isUndefined(cookieVal)) {
@@ -414,7 +414,7 @@
 
   /**
    * Удалить элементы из объекта workplaces.
-   * 
+   *
    * @param keys - массив ключей, которые необходимо удалить.
    */
   WorkplaceListCtrl.prototype._removeRow = function (keys) {
@@ -430,7 +430,7 @@
   WorkplaceListCtrl.prototype.isEmptyWorkplace = function () {
     return Object.keys(this.workplaces).length == 0;
   };
-  
+
   /**
    * Выделить или снять всё.
    */
@@ -443,13 +443,13 @@
    * Проверить, сколько checkbox выделено.
    */
   WorkplaceListCtrl.prototype.toggleOne = function () {
-    var 
+    var
       self = this,
       // Счетчик выделенных полей checkbox
       count = 0,
       // Флаг, который будет присвоен переменной flags.all
       flag = true;
-    
+
     angular.forEach(self.workplaces, function (wp) {
       if (!wp.selected) {
         flag = false;
@@ -458,7 +458,7 @@
         count ++;
       }
     });
-    
+
     this.flags.all = flag;
     this.flags.single = count != 0;
   };
@@ -469,7 +469,7 @@
   WorkplaceListCtrl.prototype.changeFilter = function () {
     this._setFilterCookies();
     this._setDefaultTableMetadata();
-    
+
     this.dtInstance.changeData({
       data: {
         filters: {
@@ -486,12 +486,12 @@
     var
       self = this,
       wpIds = $.grep(Object.keys(this.workplaces), function (el) { return self.workplaces[el].selected });
-    
+
     if (wpIds.length == 0) {
       self.Flash.alert('Необходимо выбрать хотя бы одно рабочее место');
       return false;
     }
-    
+
     this.Server.Workplace.confirm(
       {
         type: type,
