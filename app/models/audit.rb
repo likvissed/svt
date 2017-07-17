@@ -52,7 +52,7 @@ class Audit < SMSServer
             mod_part[1] = 5
             val = mod_part.join('.').to_f
           else
-            val = tmp_ram.ceil.to_f
+            val = tmp_ram.ceil
           end
         end
 
