@@ -44,7 +44,8 @@
       ul.nav.navbar-nav
         li.dropdown class="#{active_class('/inventory/workplace')}"
           = link_to "", class: "dropdown-toggle", "data-toggle": "dropdown" do
-            | Инвентаризация
+            = fa_icon "clipboard"
+            '  Инвентаризация
             b.caret
           ul.dropdown-menu
             li= link_to "Список РМ", inventory_workplaces_path
