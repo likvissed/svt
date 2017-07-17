@@ -10,7 +10,7 @@ module Inventory
       end
 
       def run
-        @data = Workplace.find(@workplace_id)
+        @data = Workplace.includes(inv_items: { inv_property_values: :inv_property }).find(@workplace_id)
         authorize @data, :destroy?
 
         destroy_workplace

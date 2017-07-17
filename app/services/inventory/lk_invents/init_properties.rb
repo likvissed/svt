@@ -12,7 +12,9 @@ module Inventory
       end
 
       # mandatory - свойство mandatory таблицы invent_property
-      def run(mandatory = false)
+      #   true - оставить только свойства с параметров mandatory: true
+      #   false - оставить все свойства
+      def run(mandatory = true)
         load_divisions if @current_user
         load_inv_types
         load_workplace_types
@@ -21,8 +23,9 @@ module Inventory
         load_statuses
         load_users if @division
         load_pc_config_key
+        prepare_eq_types_to_render(mandatory)
 
-        exclude_mandatory_fields unless mandatory
+        true
       rescue Pundit::NotAuthorizedError
         false
       rescue StandardError => e
@@ -55,6 +58,7 @@ module Inventory
 
       # Получить список типов оборудования с их свойствами и возможными значениями.
       def load_inv_types
+        # .includes(:inv_models, inv_properties: { inv_property_lists: :inv_model_property_lists })
         data[:eq_types] = InvType
                             .includes(:inv_models, inv_properties: { inv_property_lists: :inv_model_property_lists })
                             .where('name != "unknown"')
@@ -85,25 +89,27 @@ module Inventory
         data[:statuses] = statuses
       end
 
+      # Преобразовать в json формат с необходимыми полями.
       # Исключить все свойства inv_property, где mandatory = false (исключение для системных блоков).
-      def exclude_mandatory_fields
+      def prepare_eq_types_to_render(mandatory)
         data[:eq_types] = data[:eq_types].as_json(
-          include: {
+          include: [
+            :inv_models,
             inv_properties: {
               include: {
                 inv_property_lists: {
                   include: :inv_model_property_lists
                 }
               }
-            },
-            inv_models: {}
-          }
-        ).each do |type|
+            }
+          ]
+        )
+        return unless mandatory
+
+        data[:eq_types].each do |type|
           if InvPropertyValue::PROPERTY_WITH_FILES.none? { |val| val == type['name'] }
             type['inv_properties'].delete_if { |prop| !prop['mandatory'] }
           end
-
-          type
         end
       end
 

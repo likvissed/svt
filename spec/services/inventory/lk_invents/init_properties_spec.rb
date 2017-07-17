@@ -10,7 +10,7 @@ module Inventory
         subject { InitProperties.new(user) }
 
         include_examples 'run methods', %w[load_divisions load_inv_types load_workplace_types
-load_workplace_specializations load_locations load_pc_config_key exclude_mandatory_fields]
+load_workplace_specializations load_locations load_pc_config_key prepare_eq_types_to_render]
 
         its(:data) { is_expected.not_to be_nil }
 
@@ -32,9 +32,10 @@ load_workplace_specializations load_locations load_pc_config_key exclude_mandato
         end
 
         context 'when service runs with "mandatory: true"' do
-          it 'does not run exclude_mandatory_fields method' do
-            expect(subject).not_to receive(:exclude_mandatory_fields)
-            subject.run(true)
+          it 'does not exclude fields with mandatory=false property' do
+            subject.run(false)
+            expect(subject.data[:eq_types].find { |type| type['name'] == 'printer' }['inv_properties'].count)
+              .to eq InvType.find_by(name: :printer).inv_properties.count
           end
         end
       end

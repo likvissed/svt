@@ -48,7 +48,7 @@ module Inventory
 
       def load_properties
         properties = LkInvents::InitProperties.new(nil, @edit_workplace.workplace.division)
-        return data[:prop_data] = properties.data if properties.run
+        return data[:prop_data] = properties.data if properties.run(false)
         raise 'abort'
       end
     end
