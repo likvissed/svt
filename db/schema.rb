@@ -10,7 +10,7 @@
 #
 # It's strongly recommended that you check this file into your version control system.
 
-ActiveRecord::Schema.define(version: 20170302034819) do
+ActiveRecord::Schema.define(version: 20170718022437) do
 
   create_table "roles", force: :cascade, options: "ENGINE=InnoDB DEFAULT CHARSET=utf8" do |t|
     t.string   "name",              limit: 64
@@ -18,6 +18,17 @@ ActiveRecord::Schema.define(version: 20170302034819) do
     t.string   "long_description"
     t.datetime "created_at",                   null: false
     t.datetime "updated_at",                   null: false
+  end
+
+  create_table "standart_discrepancies", force: :cascade, options: "ENGINE=InnoDB DEFAULT CHARSET=utf8" do |t|
+    t.integer  "item_id"
+    t.integer  "property_value_id"
+    t.integer  "event"
+    t.string   "new_value"
+    t.datetime "created_at",        null: false
+    t.datetime "updated_at",        null: false
+    t.index ["item_id"], name: "index_standart_discrepancies_on_item_id", using: :btree
+    t.index ["property_value_id"], name: "index_standart_discrepancies_on_property_value_id", using: :btree
   end
 
   create_table "users", force: :cascade, options: "ENGINE=InnoDB DEFAULT CHARSET=utf8" do |t|

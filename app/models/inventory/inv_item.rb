@@ -18,6 +18,11 @@ module Inventory
              foreign_key: 'item_id',
              dependent: :destroy,
              inverse_of: :inv_item
+    has_many :standart_discrepancies,
+             class_name: 'Standart::Discrepancy',
+             foreign_key: 'item_id',
+             dependent: :destroy,
+             inverse_of: :inv_item
 
     belongs_to :inv_type, foreign_key: 'type_id'
     belongs_to :workplace, optional: true
