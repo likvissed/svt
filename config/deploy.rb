@@ -74,5 +74,18 @@ task :seed do
   end
 end
 
+desc 'Drop, create and migrate database'
+task :recreate_db do
+  on primary fetch(:migration_role) do
+    within release_path do
+      with rails_env: fetch(:rails_env) do
+        execute :rake, 'db:drop'
+        execute :rake, 'db:create'
+        execute :rake, 'db:migrate'
+      end
+    end
+  end
+end
+
 after 'deploy', 'deploy:cleanup'
 after 'deploy:publishing', 'deploy:restart'
