@@ -40,6 +40,7 @@ class Audit < SMSServer
 
       value.split(';').map do |val|
         val.strip!
+        val.gsub!(/ +/, ' ')
 
         # Игнорировать результат нахождения флэшек.
         next if NOT_DETECTED_DEVICES.include? val
