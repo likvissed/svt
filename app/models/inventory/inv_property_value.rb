@@ -6,7 +6,7 @@ module Inventory
     # Список типов оборудования, которые имеют свойство с типом "файл"
     PROPERTY_WITH_FILES = %w[pc allin1 notebook].freeze
 
-    has_one :standart_discrepancies,
+    has_one :standart_discrepancy,
             class_name: 'Standart::Discrepancy',
             foreign_key: 'property_value_id',
             inverse_of: :inv_property_value

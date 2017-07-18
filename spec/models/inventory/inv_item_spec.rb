@@ -3,7 +3,8 @@ require 'rails_helper'
 module Inventory
   RSpec.describe InvItem, type: :model do
     it { is_expected.to have_many(:inv_property_values).order(:property_id).with_foreign_key('item_id').dependent(:destroy) }
-    it { is_expected.to have_many(:standart_changes).class_name('Standart::Discrepancy').with_foreign_key('item_id').dependent(:destroy) }
+    it { is_expected.to have_many(:standart_discrepancies).class_name('Standart::Discrepancy').with_foreign_key('item_id').dependent(:destroy) }
+    it { is_expected.to have_many(:standart_logs).class_name('Standart::Log').with_foreign_key('item_id') }
 
     it { is_expected.to belong_to(:inv_type).with_foreign_key('type_id') }
     it { is_expected.to belong_to(:workplace) }

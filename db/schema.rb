@@ -10,7 +10,7 @@
 #
 # It's strongly recommended that you check this file into your version control system.
 
-ActiveRecord::Schema.define(version: 20170718022437) do
+ActiveRecord::Schema.define(version: 20170718045544) do
 
   create_table "roles", force: :cascade, options: "ENGINE=InnoDB DEFAULT CHARSET=utf8" do |t|
     t.string   "name",              limit: 64
@@ -29,6 +29,16 @@ ActiveRecord::Schema.define(version: 20170718022437) do
     t.datetime "updated_at",        null: false
     t.index ["item_id"], name: "index_standart_discrepancies_on_item_id", using: :btree
     t.index ["property_value_id"], name: "index_standart_discrepancies_on_property_value_id", using: :btree
+  end
+
+  create_table "standart_logs", force: :cascade, options: "ENGINE=InnoDB DEFAULT CHARSET=utf8" do |t|
+    t.integer  "item_id"
+    t.integer  "user_id"
+    t.integer  "event"
+    t.datetime "created_at", null: false
+    t.datetime "updated_at", null: false
+    t.index ["item_id"], name: "index_standart_logs_on_item_id", using: :btree
+    t.index ["user_id"], name: "index_standart_logs_on_user_id", using: :btree
   end
 
   create_table "users", force: :cascade, options: "ENGINE=InnoDB DEFAULT CHARSET=utf8" do |t|
