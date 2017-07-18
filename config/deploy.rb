@@ -63,7 +63,7 @@ namespace :deploy do
   end
 end
 
-desc 'Reset database and add default data'
+desc 'Add default data to the database'
 task :seed do
   on primary fetch(:migration_role) do
     within release_path do
@@ -74,7 +74,7 @@ task :seed do
   end
 end
 
-desc 'Drop, create and migrate database'
+desc 'Run :drop, :create and :migrate database'
 task :recreate_db do
   on primary fetch(:migration_role) do
     within release_path do
