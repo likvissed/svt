@@ -32,16 +32,16 @@ module Inv
         origins 'https://***REMOVED***.***REMOVED***.ru', 'https://***REMOVED***.npopm``.ru',
                 'https://***REMOVED***.***REMOVED***.ru', 'https://***REMOVED***.npopm.ru',
                 'https://***REMOVED***.***REMOVED***.ru', 'https://***REMOVED***.npopm.ru'
-        resource '/inventory/***REMOVED***_invents/svt_access*', headers: :any, methods: [:get]
-        resource '/inventory/***REMOVED***_invents/init_properties*', headers: :any, methods: [:get]
-        resource '/inventory/***REMOVED***_invents/show_division_data*', headers: :any, methods: [:get]
-        resource '/inventory/***REMOVED***_invents/pc_config_from_audit*', headers: :any, methods: [:get]
-        resource '/inventory/***REMOVED***_invents/create_workplace*', headers: :any, methods: [:post]
-        resource '/inventory/***REMOVED***_invents/edit_workplace*', headers: :any, methods: [:get]
-        resource '/inventory/***REMOVED***_invents/update_workplace*', headers: :any, methods: [:patch]
-        resource '/inventory/***REMOVED***_invents/destroy_workplace*', headers: :any, methods: [:delete]
-        resource '/inventory/***REMOVED***_invents/generate_pdf*', headers: :any, methods: [:get]
-        resource '/inventory/***REMOVED***_invents/get_pc_script*', headers: :any, methods: [:get]
+        resource '/invent/***REMOVED***_invents/svt_access*', headers: :any, methods: [:get]
+        resource '/invent/***REMOVED***_invents/init_properties*', headers: :any, methods: [:get]
+        resource '/invent/***REMOVED***_invents/show_division_data*', headers: :any, methods: [:get]
+        resource '/invent/***REMOVED***_invents/pc_config_from_audit*', headers: :any, methods: [:get]
+        resource '/invent/***REMOVED***_invents/create_workplace*', headers: :any, methods: [:post]
+        resource '/invent/***REMOVED***_invents/edit_workplace*', headers: :any, methods: [:get]
+        resource '/invent/***REMOVED***_invents/update_workplace*', headers: :any, methods: [:patch]
+        resource '/invent/***REMOVED***_invents/destroy_workplace*', headers: :any, methods: [:delete]
+        resource '/invent/***REMOVED***_invents/generate_pdf*', headers: :any, methods: [:get]
+        resource '/invent/***REMOVED***_invents/get_pc_script*', headers: :any, methods: [:get]
       end
     end
 

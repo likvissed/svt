@@ -1,4 +1,4 @@
-module Inventory
+module Invent
   # Проверка на валидность создаваемой модели
   shared_examples 'item_valid_model' do
     it 'should be valid' do

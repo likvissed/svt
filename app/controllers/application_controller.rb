@@ -41,7 +41,7 @@ class ApplicationController < ActionController::Base
   def link_to_new_record
     case params[:ctrl_name]
     when 'workplace_counts'
-      class_name = Inventory::WorkplaceCount
+      class_name = Invent::WorkplaceCount
       type = :modal
       attrs = 'ng-click="wpCount.openWpCountEditModal()"'
     end
@@ -82,7 +82,7 @@ class ApplicationController < ActionController::Base
   def layout
     is_a?(Devise::SessionsController) ? 'sign_in_app' : 'application'
   end
-  
+
   # Проверка роли перед доступом к контроллерам
   def authorization
     authorize :application, :authorization?

@@ -24,5 +24,5 @@
 
 // App
 //= require_tree ./app
-//= require_tree ./inventory
+//= require_tree ./invent
 //= require_tree ./standart

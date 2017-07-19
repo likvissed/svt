@@ -1,4 +1,4 @@
-module Inventory
+module Invent
   # Проверка на валидность создаваемой модели
   shared_examples ':wrong_rm_pk_composition error' do
     it 'includes :wrong_rm_pk_composition error' do

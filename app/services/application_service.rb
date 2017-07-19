@@ -6,7 +6,7 @@ class ApplicationService
 
   # Возвращает массив статусов с переведенными на русскую локаль ключами.
   def statuses
-    Inventory::Workplace.statuses.map { |key, _val| [key, Inventory::Workplace.translate_enum(:status, key)] }.to_h
+    Invent::Workplace.statuses.map { |key, _val| [key, Invent::Workplace.translate_enum(:status, key)] }.to_h
   end
 
   # Возвращает строку, содержащую расположение РМ.

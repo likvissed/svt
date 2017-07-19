@@ -1,14 +1,14 @@
 ru:
   activemodel:
     attributes:
-      inventory/***REMOVED***_invents/pc_config_from_audit:
+      invent/***REMOVED***_invents/pc_config_from_audit:
         base: ''
         inv_num: 'Инвентарный номер'
         host: 'ПК'
 
     errors:
       models:
-        inventory/***REMOVED***_invents/pc_config_from_audit:
+        invent/***REMOVED***_invents/pc_config_from_audit:
           not_found: 'с указанным инвентарным номером не найден. Проверьте корректность введенного инвентарного номера,
            либо, если номер введен верно, нажмите "Ввод данных вручную"'
           not_responded: 'Получить данные автоматически не удалось, вам необходимо ввести их вручную. Для этого нажмите
@@ -18,5 +18,5 @@ ru:
           not_relevant: 'Полученные данные не действительны, вам необходимо ввести данные вручную. Для этого нажмите
            кнопку "Ввод данных вручную"'
 
-        inventory/***REMOVED***_invents/***REMOVED***_authorization:
+        invent/***REMOVED***_invents/***REMOVED***_authorization:
           access_denied: 'Доступ запрещен'

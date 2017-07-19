@@ -1,0 +1,23 @@
+.navbar.navbar-default role="navigation-content"
+  .navbar-header
+    = button_tag "", class: "navbar-toggle", "data-toggle": "collapse", "data-target": ".navbar-collapse-content" do
+      span.sr-only Toggle navigation
+      span.icon-bar
+      span.icon-bar
+      span.icon-bar
+
+  .collapse.navbar-collapse.navbar-collapse-content
+    .navbar-form.navbar-left
+      .form-group
+        ' Отдел:
+        = text_field_tag "workplace[division]", "", class: "form-control", "ng-model": "wp.workplace.division"
+      /.form-group
+        span<>
+        = button_tag type: :button, class: "btn-default" do
+          = fa_icon "download"
+          |  Файл конфигурации
+          br
+    .navbar-form.navbar-right
+      .btn-group
+        = button_tag "Готово", class: "btn-success"
+        = link_to "Отмена", invent_workplaces_path, class: "btn btn-default"

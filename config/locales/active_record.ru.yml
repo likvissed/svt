@@ -1,26 +1,26 @@
 ru:
   activerecord:
     models:
-      inventory/workplace_count: "отделы"
-      inventory/workplace_responsible: "ответственные"
-      inventory/workplace: "рабочее место"
-      inventory/inv_item: "оборудование"
+      invent/workplace_count: "отделы"
+      invent/workplace_responsible: "ответственные"
+      invent/workplace: "рабочее место"
+      invent/inv_item: "оборудование"
 
     attributes:
-      inventory/workplace_count:
+      invent/workplace_count:
         division: "Отдел"
         time_start: "Дата начала ввода данных"
         time_end: "Дата окончания ввода данных"
         users: 'Список ответственных'
 
-      inventory/workplace_count/users:
+      invent/workplace_count/users:
         tn: "Табельный номер"
         id_tn: "Идентификатор табельного номера"
 
-      inventory/workplace_responsible:
+      invent/workplace_responsible:
         user_id: 'Ответственный для данного отдела'
 
-      inventory/workplace:
+      invent/workplace:
         id_tn: "ФИО ответственного"
         workplace_count_id: "Отдел, к которому привязано рабочее место,"
         workplace_type_id: "Тип рабочего места"
@@ -33,26 +33,26 @@ ru:
           pending_verification: "В ожидании проверки"
           disapproved: "Отклонено"
 
-      inventory/workplace/inv_items:
+      invent/workplace/inv_items:
         base: ""
         type_id: "Тип оборудования"
         invent_num: "Инвентарный номер"
         model_id: "Модель"
         item_model: "Наименование модели"
 
-      inventory/workplace/inv_items/inv_property_values:
+      invent/workplace/inv_items/inv_property_values:
         base: ""
         property_id: "Свойство"
         property_list_id: "Значение"
         value: "Значение"
 
-      inventory/inv_item:
+      invent/inv_item:
         type_id: "Тип оборудования"
         invent_num: "Инвентарный номер"
         model_id: "Модель"
         item_model: "Модель"
 
-      inventory/inv_item/inv_property_values:
+      invent/inv_item/inv_property_values:
         property_id: "Свойство"
         property_list_id: "Значение"
         value: "Значение"
@@ -73,7 +73,7 @@ ru:
 
       models:
         # Отдел, содержащий рабочие места
-        inventory/workplace_count:
+        invent/workplace_count:
           attributes:
             base:
               add_at_least_one_responsible: 'Необходимо добавить ответственного'
@@ -81,13 +81,13 @@ ru:
               multiple_user: 'Табельный номер "%{tn}" задан несколько раз'
               user_not_found: 'Табельный номер "%{tn}" не существует, проверьте корректность введенного номера'
 
-        inventory/workplace_responsible:
+        invent/workplace_responsible:
           attributes:
             user_id:
               already_exists: 'с табельным %{tn} уже существует (либо вы его задали несколько раз)'
 
         # Рабочее место
-        inventory/workplace:
+        invent/workplace:
           attributes:
             base:
               cant_destroy_items: 'Не удалось удалить запись (обратитесь к администратору, т. ***REMOVED***)'
@@ -177,7 +177,7 @@ ru:
               not_a_number: 'не указана'
 
         # Техника
-        inventory/inv_item:
+        invent/inv_item:
           attributes:
             base:
               pc_data_not_received: 'Сначала необходимо нажать кнопку "Получить данные автоматически" или "Ввод данных

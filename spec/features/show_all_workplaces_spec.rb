@@ -10,13 +10,13 @@ feature 'Show all workplaces', %q{
 
   scenario 'Authenticated user tries to see all workplaces', js: true do
     sign_in user
-    visit inventory_workplaces_path
+    visit invent_workplaces_path
 
     expect(page).to have_css('#index_workplace')
   end
 
   scenario 'Unauthenticated user try to show all workplaces', js: true do
-    visit inventory_workplaces_path
+    visit invent_workplaces_path
 
     expect(page).to have_selector 'body#svt_sign_in'
     expect(page).to have_content('Вам необходимо войти в систему')

@@ -4,8 +4,8 @@ class User < ApplicationRecord
   devise :database_authenticatable, :trackable, :timeoutable, :omniauthable,
          omniauth_providers: %i[open_id_***REMOVED*** check_***REMOVED***_auth], authentication_keys: [:login]
 
-  has_many :workplace_responsibles, class_name: 'Inventory::WorkplaceResponsible', inverse_of: :user
-  has_many :workplace_counts, through: :workplace_responsibles, class_name: 'Inventory::WorkplaceCount'
+  has_many :workplace_responsibles, class_name: 'Invent::WorkplaceResponsible', inverse_of: :user
+  has_many :workplace_counts, through: :workplace_responsibles, class_name: 'Invent::WorkplaceCount'
 
   belongs_to :role
   belongs_to :user_iss, foreign_key: 'id_tn'

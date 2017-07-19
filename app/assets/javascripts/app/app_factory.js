@@ -122,7 +122,7 @@
       /**
        * Ресурс модели рабочих мест
        */
-      Workplace: $resource('/inventory/workplaces/:workplace_id.json', {}, {
+      Workplace: $resource('/invent/workplaces/:workplace_id.json', {}, {
         update: {
           method: 'PUT',
           headers: { 'Content-Type': undefined },
@@ -130,13 +130,13 @@
         },
         confirm: {
           method: 'PUT',
-          url: '/inventory/workplaces/confirm'
+          url: '/invent/workplaces/confirm'
         }
       }),
       /**
        * Ресурс модели отделов с количеством рабочих мест
        */
-      WorkplaceCount: $resource('/inventory/workplace_counts/:workplace_count_id.json', {}, { update: { method: 'PUT' } })
+      WorkplaceCount: $resource('/invent/workplace_counts/:workplace_count_id.json', {}, { update: { method: 'PUT' } })
     }
   }
 

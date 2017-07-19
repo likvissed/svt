@@ -2,7 +2,7 @@ Rails.application.routes.draw do
   devise_for :users, controllers: { omniauth_callbacks: 'users/callbacks' }
 
   authenticated :user do
-    root 'inventory/workplaces#index', as: :authenticated_root
+    root 'invent/workplaces#index', as: :authenticated_root
   end
 
   devise_scope :user do
@@ -10,7 +10,7 @@ Rails.application.routes.draw do
   end
 
   # Инвентаризация
-  namespace :inventory do
+  namespace :invent do
     # Отделы
     resources :workplace_counts, param: :workplace_count_id, except: :edit
     # Рабочие места

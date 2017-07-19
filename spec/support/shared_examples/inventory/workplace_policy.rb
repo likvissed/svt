@@ -1,4 +1,4 @@
-module Inventory
+module Invent
   shared_examples 'workplace policy with :***REMOVED***_user role' do
     context 'when :***REMOVED***_user role' do
       context 'with valid user, in allowed time, when workplace status is not confirmed' do
