@@ -1,6 +1,6 @@
 module Invent
   class WorkplaceCount < BaseInvent
-    self.table_name = "#{Rails.configuration.database_configuration["#{Rails.env}_invent"]['database']}.invent_workplace_count"
+    self.table_name = "#{Rails.configuration.database_configuration["#{Rails.env}_invent"]['database']}.#{table_name_prefix}workplace_count"
     self.primary_key = :workplace_count_id
 
     has_many :workplaces, dependent: :restrict_with_error

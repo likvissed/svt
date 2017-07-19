@@ -1,7 +1,7 @@
 module Invent
   class InvItem < BaseInvent
     self.primary_key = :item_id
-    self.table_name = :invent_item
+    self.table_name = "#{table_name_prefix}item"
 
     # Список типов оборудования, для которых не обязательно наличие модели.
     PRESENCE_MODEL_EXCEPT = %w[pc].freeze

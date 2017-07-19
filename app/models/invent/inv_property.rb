@@ -1,7 +1,7 @@
 module Invent
   class InvProperty < BaseInvent
     self.primary_key = :property_id
-    self.table_name = :invent_property
+    self.table_name = "#{table_name_prefix}property"
 
     has_many :inv_property_values, foreign_key: 'property_id', dependent: :destroy
     has_many :inv_property_lists, foreign_key: 'property_id', dependent: :destroy

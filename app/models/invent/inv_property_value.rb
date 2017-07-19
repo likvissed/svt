@@ -1,7 +1,7 @@
 module Invent
   class InvPropertyValue < BaseInvent
     self.primary_key = :property_value_id
-    self.table_name = :invent_property_value
+    self.table_name = "#{table_name_prefix}property_value"
 
     # Список типов оборудования, которые имеют свойство с типом "файл"
     PROPERTY_WITH_FILES = %w[pc allin1 notebook].freeze

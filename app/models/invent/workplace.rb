@@ -1,7 +1,7 @@
 module Invent
   class Workplace < BaseInvent
     self.primary_key = :workplace_id
-    self.table_name = :invent_workplace
+    self.table_name = "#{table_name_prefix}workplace"
 
     has_many :inv_items
     belongs_to :workplace_type

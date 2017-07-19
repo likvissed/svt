@@ -1,6 +1,6 @@
 module Invent
   class WorkplaceResponsible < BaseInvent
-    self.table_name = "#{Rails.configuration.database_configuration["#{Rails.env}_invent"]['database']}.invent_workplace_responsible"
+    self.table_name = "#{Rails.configuration.database_configuration["#{Rails.env}_invent"]['database']}.#{table_name_prefix}workplace_responsible"
     self.primary_key = :workplace_responsible_id
 
     belongs_to :workplace_count, inverse_of: :workplace_responsibles

@@ -1,7 +1,7 @@
 module Invent
   class WorkplaceSpecialization < BaseInvent
-    self.table_name = :invent_workplace_specialization
     self.primary_key = :workplace_specialization_id
+    self.table_name = "#{table_name_prefix}workplace_specialization"
 
     has_many :workplaces
   end

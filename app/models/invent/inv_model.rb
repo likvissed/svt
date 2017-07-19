@@ -1,7 +1,7 @@
 module Invent
   class InvModel < BaseInvent
     self.primary_key = :model_id
-    self.table_name = :invent_model
+    self.table_name = "#{table_name_prefix}model"
 
     has_many :inv_model_property_lists, foreign_key: 'model_id', dependent: :destroy
     has_many :inv_items, foreign_key: 'model_id'
