@@ -32,6 +32,7 @@ module Inv
         origins 'https://***REMOVED***.***REMOVED***.ru', 'https://***REMOVED***.npopm``.ru',
                 'https://***REMOVED***.***REMOVED***.ru', 'https://***REMOVED***.npopm.ru',
                 'https://***REMOVED***.***REMOVED***.ru', 'https://***REMOVED***.npopm.ru'
+        resource '/inventory/***REMOVED***_invents/svt_access*', headers: :any, methods: [:get]
         resource '/inventory/***REMOVED***_invents/init_properties*', headers: :any, methods: [:get]
         resource '/inventory/***REMOVED***_invents/show_division_data*', headers: :any, methods: [:get]
         resource '/inventory/***REMOVED***_invents/pc_config_from_audit*', headers: :any, methods: [:get]

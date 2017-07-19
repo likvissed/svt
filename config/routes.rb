@@ -28,6 +28,8 @@ Rails.application.routes.draw do
     end
 
     # Запросы с ЛК
+    # Проверка доступа к разделу "Вычислительная техника" в ЛК.
+    get '***REMOVED***_invents/svt_access', to: '***REMOVED***_invents#svt_access'
     # Инициализация
     get '***REMOVED***_invents/init_properties', to: '***REMOVED***_invents#init_properties'
     # Получить данные по выбранном отделу (список РМ, макс. число, список работников отдела)
@@ -58,7 +60,7 @@ Rails.application.routes.draw do
 
   # Эталоны
   namespace :standart do
-    resources :system_units
+
   end
 
   # Получить html-код кнопки "Добавить запись"

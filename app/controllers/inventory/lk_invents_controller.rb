@@ -10,6 +10,15 @@ module Inventory
 
     respond_to :json
 
+    def svt_access
+      @user = User.find_by(tn: params[:tn])
+      if @user && @user.workplace_responsibles.any?
+        render json: { access: true }
+      else
+        render json: { access: false }
+      end
+    end
+
     def init_properties
       @properties = LkInvents::InitProperties.new(current_user)
 

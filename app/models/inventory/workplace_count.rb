@@ -3,7 +3,7 @@ module Inventory
     self.table_name = "#{Rails.configuration.database_configuration["#{Rails.env}_invent"]['database']}.invent_workplace_count"
     self.primary_key = :workplace_count_id
 
-    has_many :workplaces
+    has_many :workplaces, dependent: :restrict_with_error
     has_many :workplace_responsibles, dependent: :destroy, inverse_of: :workplace_count
     has_many :users, through: :workplace_responsibles
 
