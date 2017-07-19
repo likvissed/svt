@@ -1,16 +1,17 @@
 ru:
   activerecord:
     models:
-      invent/workplace_count: "отделы"
-      invent/workplace_responsible: "ответственные"
-      invent/workplace: "рабочее место"
-      invent/inv_item: "оборудование"
+      invent/workplace_count: 'отделы'
+      invent/workplace_responsible: 'ответственные'
+      invent/workplace: 'рабочее место'
+      invent/inv_item: 'оборудование'
 
     attributes:
       invent/workplace_count:
         division: "Отдел"
         time_start: "Дата начала ввода данных"
         time_end: "Дата окончания ввода данных"
+        workplaces: 'рабочие места'
         users: 'Список ответственных'
 
       invent/workplace_count/users:
@@ -80,6 +81,8 @@ ru:
               save_at_least_one_responsible: 'Необходимо оставить хотя бы одного ответственного'
               multiple_user: 'Табельный номер "%{tn}" задан несколько раз'
               user_not_found: 'Табельный номер "%{tn}" не существует, проверьте корректность введенного номера'
+              restrict_dependent_destroy:
+                many: 'Нельзя удалить, так как существуют связанные с отделом %{record}.'
 
         invent/workplace_responsible:
           attributes:
