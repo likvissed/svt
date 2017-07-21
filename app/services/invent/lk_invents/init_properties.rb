@@ -104,7 +104,7 @@ module Invent
             }
           ]
         )
-        return unless mandatory
+        # return unless mandatory
 
         data[:eq_types].each do |type|
           if InvType::PROPERTY_WITH_FILES.none? { |val| val == type['name'] }

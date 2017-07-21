@@ -104,7 +104,7 @@ module Invent
         end
 
         if founded_prop
-          flags[:full_properties_flag] = false if property_value_invalid?(prop_val)
+          flags[:full_properties_flag] = false unless property_value_valid?(prop_val)
           # Пропускаем тип свойства "config_file", так как его проверка будет последней, в конце метода.
         elsif @properties.find { |prop| prop.property_id == prop_val.property_id }.name == 'config_file'
           flags[:file_name_exist] = true if prop_val.value.present?
@@ -132,14 +132,14 @@ module Invent
 
     # Добавить ошибку в объект errors, если значение свойства не прошло проверку.
     def add_prop_val_error(prop_val)
-      return unless property_value_invalid?(prop_val)
+      return if property_value_valid?(prop_val)
 
       field = @properties.find { |prop| prop.property_id == prop_val.property_id }.short_description
       errors.add(:base, :field_is_empty, empty_field: field)
     end
 
-    def property_value_invalid?(prop_val)
-      (prop_val.property_list_id == -1 || (prop_val.property_list_id.to_i.zero? && prop_val.value.blank?)) && !prop_val._destroy
+    def property_value_valid?(prop_val)
+      (prop_val.property_list_id != -1 && (!prop_val.property_list_id.to_i.zero? || prop_val.value.present?)) || prop_val._destroy
     end
   end
 end
