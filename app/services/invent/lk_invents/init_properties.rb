@@ -107,7 +107,7 @@ module Invent
         return unless mandatory
 
         data[:eq_types].each do |type|
-          if InvPropertyValue::PROPERTY_WITH_FILES.none? { |val| val == type['name'] }
+          if InvType::PROPERTY_WITH_FILES.none? { |val| val == type['name'] }
             type['inv_properties'].delete_if { |prop| !prop['mandatory'] }
           end
         end

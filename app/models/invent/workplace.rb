@@ -3,7 +3,7 @@ module Invent
     self.primary_key = :workplace_id
     self.table_name = "#{table_name_prefix}workplace"
 
-    has_many :inv_items
+    has_many :inv_items, inverse_of: :workplace
     belongs_to :workplace_type
     belongs_to :workplace_specialization
     belongs_to :workplace_count
@@ -239,9 +239,9 @@ module Invent
       network_prop_list_id = @property.inv_property_lists.find do |list|
         list['value'] == 'network'
       end['property_list_id']
-      # Массив объектов с именами заданным в InvItem::ALL_PRINT_TYPES.
+      # Массив объектов с именами заданным в InvType::ALL_PRINT_TYPES.
       all_print_objects = @types.select do |type_obj|
-        InvItem::ALL_PRINT_TYPES.find { |type_name| type_obj['name'] == type_name }
+        InvType::ALL_PRINT_TYPES.find { |type_name| type_obj['name'] == type_name }
       end
 
       inv_items.each do |item|
@@ -277,9 +277,9 @@ module Invent
       net_prop_list_id = @property.inv_property_lists.find { |list| list['value'] == 'network' }['property_list_id']
       # property_list_id со значением 'local' свойства connection_type из объекта @property.
       loc_prop_list_id = @property.inv_property_lists.find { |list| list['value'] == 'local' }['property_list_id']
-      # Массив объектов с именами заданным в InvItem::ALL_PRINT_TYPES.
+      # Массив объектов с именами заданным в InvType::ALL_PRINT_TYPES.
       all_print_objects = @types.select do |type_obj|
-        InvItem::ALL_PRINT_TYPES.find { |type_name| type_obj['name'] == type_name }
+        InvType::ALL_PRINT_TYPES.find { |type_name| type_obj['name'] == type_name }
       end
 
       inv_items.each do |item|

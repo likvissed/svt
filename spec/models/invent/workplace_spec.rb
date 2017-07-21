@@ -154,9 +154,9 @@ module Invent
           include_examples 'includes error', 'at_least_one_notebook_or_tablet'
         end
 
-        context 'and when user sets items that not part of array InvItem::ALLOWED_MOB_TYPES' do
+        context 'and when user sets items that not part of array InvType::ALLOWED_MOB_TYPES' do
           InvType.all.reject do |type_obj|
-            InvItem::ALLOWED_MOB_TYPES.find { |type_name| type_obj['name'] == type_name }
+            InvType::ALLOWED_MOB_TYPES.find { |type_name| type_obj['name'] == type_name }
           end.each do |mob_type|
             context "#{mob_type.name} (#{mob_type.short_description})" do
               subject do
@@ -170,8 +170,8 @@ module Invent
           end
         end
 
-        context 'and when user sets not one allowed item (its includes into array InvItem::ALLOWED_MOB_TYPES)' do
-          InvItem::ALLOWED_MOB_TYPES.each do |type_name|
+        context 'and when user sets not one allowed item (its includes into array InvType::ALLOWED_MOB_TYPES)' do
+          InvType::ALLOWED_MOB_TYPES.each do |type_name|
             context type_name.pluralize do
               subject do
                 build(
@@ -190,7 +190,7 @@ module Invent
         end
 
         context 'and when user sets only one allowed item' do
-          InvItem::ALLOWED_MOB_TYPES.each do |type_name|
+          InvType::ALLOWED_MOB_TYPES.each do |type_name|
             subject { build(:workplace_mob, :add_items, items: [type_name.to_sym], workplace_count: workplace_count) }
 
             it { is_expected.to be_valid }
