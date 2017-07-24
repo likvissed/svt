@@ -20,8 +20,6 @@ module Invent
 
     accepts_nested_attributes_for :users, allow_destroy: true
 
-    enum status: { 'Разблокирован': 0, 'Заблокирован': 1 }, _prefix: :status
-
     def users_attributes=(hash_arr)
       @role = Role.find_by(name: :***REMOVED***_user)
 
