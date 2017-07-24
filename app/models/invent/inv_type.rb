@@ -14,10 +14,10 @@ module Invent
     # Список типов оборудования, которые имеют свойство с типом "файл" и хранят конфигурацию оборудования
     PROPERTY_WITH_FILES = %w[pc allin1 notebook].freeze
 
-    has_many :inv_items, foreign_key: 'type_id', dependent: :destroy
+    has_many :inv_items, foreign_key: 'type_id', dependent: :destroy, inverse_of: :inv_type
 
     has_many :inv_property_to_types, foreign_key: 'type_id', dependent: :destroy
-    has_many :inv_properties, through: :inv_property_to_types
+    has_many :inv_properties, -> { order(:property_order) }, through: :inv_property_to_types
 
     has_many :inv_models, foreign_key: 'type_id'
     has_many :inv_vendors, through: :inv_models

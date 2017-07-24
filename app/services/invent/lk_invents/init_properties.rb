@@ -58,7 +58,6 @@ module Invent
 
       # Получить список типов оборудования с их свойствами и возможными значениями.
       def load_inv_types
-        # .includes(:inv_models, inv_properties: { inv_property_lists: :inv_model_property_lists })
         data[:eq_types] = InvType
                             .includes(:inv_models, inv_properties: { inv_property_lists: :inv_model_property_lists })
                             .where('name != "unknown"')

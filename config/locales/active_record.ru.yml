@@ -186,6 +186,7 @@ ru:
               pc_data_not_received: 'Сначала необходимо нажать кнопку "Получить данные автоматически" или "Ввод данных
                вручную"'
               field_is_empty: 'Не заполнено поле "%{empty_field}"'
+              property_not_filled: 'Не указано свойство "%{empty_prop}"'
             type_id:
              blank: 'не выбран'
             model_id:

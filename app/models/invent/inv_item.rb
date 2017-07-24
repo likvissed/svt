@@ -21,8 +21,9 @@ module Invent
 
     validates :type_id, presence: true, numericality: { greater_than: 0, only_integer: true }
     validates :invent_num, presence: true
-    validate  :presence_model, unless: -> { errors.details[:type_id].any? }
-    validate  :check_property_value, unless: -> { errors.details[:type_id].any? }
+    validate :presence_model, unless: -> { errors.details[:type_id].any? }
+    validate :check_property_value, unless: -> { errors.details[:type_id].any? }
+    validate :check_mandatory, unless: -> { errors.details[:type_id].any? }
 
     before_save :set_default_model
 
@@ -52,7 +53,8 @@ module Invent
 
     # Проверка наличия значений для всех свойств текущего экземпляра техники.
     def check_property_value
-      @properties = InvProperty.all
+      # @properties = InvProperty.all
+      @properties ||= inv_type.inv_properties
 
       # Отдельная проверка для ПК, моноблока, ноутбука
       if InvType::PROPERTY_WITH_FILES.include?(inv_type.name) && workplace.workplace_specialization.try(:name) != 'secret'
@@ -68,7 +70,18 @@ module Invent
       elsif InvType::PROPERTY_WITH_FILES.include?(inv_type.name) && workplace.workplace_specialization.try(:name) == 'secret'
         secret_prop_values_verification
       else
-        inv_property_values.each { |prop_val| add_prop_val_error(prop_val) }
+        inv_property_values.each { |prop_val| prop_value_verification(prop_val) }
+      end
+    end
+
+    # Проверка, что все properties со свойством "mandatory: true" присутствуют.
+    def check_mandatory
+      @properties ||= inv_type.inv_properties
+
+      @properties.where(mandatory: true).each do |prop|
+        unless inv_property_values.reject(&:_destroy).find { |prop_val| prop_val[:property_id] == prop.property_id }
+          errors.add(:base, :property_not_filled, empty_prop: prop.short_description)
+        end
       end
     end
 
@@ -79,7 +92,7 @@ module Invent
           pc_prop == @properties.find { |prop| prop.property_id == prop_val.property_id }.name
         end
 
-        add_prop_val_error(prop_val)
+        prop_value_verification(prop_val)
       end
     end
 
@@ -109,7 +122,7 @@ module Invent
         elsif @properties.find { |prop| prop.property_id == prop_val.property_id }.name == 'config_file'
           flags[:file_name_exist] = true if prop_val.value.present?
         else
-          add_prop_val_error(prop_val)
+          prop_value_verification(prop_val)
         end
       end
 
@@ -131,7 +144,7 @@ module Invent
     end
 
     # Добавить ошибку в объект errors, если значение свойства не прошло проверку.
-    def add_prop_val_error(prop_val)
+    def prop_value_verification(prop_val)
       return if property_value_valid?(prop_val)
 
       field = @properties.find { |prop| prop.property_id == prop_val.property_id }.short_description
@@ -139,7 +152,17 @@ module Invent
     end
 
     def property_value_valid?(prop_val)
-      (prop_val.property_list_id != -1 && (!prop_val.property_list_id.to_i.zero? || prop_val.value.present?)) || prop_val._destroy
+      # Флаг, показывающий, нужно ли в условии проверять свойство mandatory. Этот флаг необходим, так как для свойств
+      # ПК, моноблока и ноутбука основные параметры могут зависеть от передаваемого файла.
+      escape_mandatory = InvProperty::SECRET_EXCEPT.any? do |pc_prop|
+        pc_prop == @properties.find { |prop| prop.property_id == prop_val.property_id }.name
+      end
+
+      if escape_mandatory
+        (prop_val.property_list_id != -1 && (!prop_val.property_list_id.to_i.zero? || prop_val.value.present?)) || prop_val._destroy
+      else
+        (prop_val.property_list_id != -1 && (!prop_val.property_list_id.to_i.zero? || prop_val.value.present?) || !prop_val.inv_property.mandatory) || prop_val._destroy
+      end
     end
   end
 end

@@ -15,6 +15,8 @@ module Invent
         type_name nil
         # Массив объектов, ключ - имя свойства, значение - хэш { inv_property_list: obj, value: '' }.
         property_values []
+
+
       end
 
       trait :without_model_id do
@@ -56,32 +58,47 @@ module Invent
                 )
               end
             else
-              # Если property_value задано, необходимо создать invent_property_value со значениями указанными в
-              evaluator.property_values.each do |setting_prop|
-                next unless setting_prop.keys.first.to_sym == prop.name.to_sym
-
+              # Если property_value задано, необходимо создать invent_property_value со значениями указанными в setting_prop
+              if setting_prop = evaluator.property_values.find { |prop_val| prop_val.keys.first.to_sym == prop.name.to_sym }
                 case prop.property_type
-                when 'string'
-                  item.inv_property_values << build(
-                    :property_value, inv_item: item, inv_property: prop, value: setting_prop[prop.name.to_sym][:value]
-                  )
-                when 'list'
-                  item.inv_property_values << build(
-                    :property_value, inv_item: item, inv_property: prop, inv_property_list: setting_prop[prop.name
-                    .to_sym][:inv_property_list]
-                  )
-                when 'list_plus'
-                  item.inv_property_values << build(
-                    :property_value, inv_item: item, inv_property: prop, inv_property_list: setting_prop[prop.name
-                    .to_sym][:inv_property_list], value: setting_prop[prop.name.to_sym][:value]
-                  )
-                when 'file'
-                  item.inv_property_values << build(
-                    :property_value, inv_item: item, inv_property: prop, value: setting_prop[prop.name.to_sym][:value]
-                  )
+                  when 'string'
+                    item.inv_property_values << build(
+                      :property_value, inv_item: item, inv_property: prop, value: setting_prop[prop.name.to_sym][:value]
+                    )
+                  when 'list'
+                    item.inv_property_values << build(
+                      :property_value, inv_item: item, inv_property: prop, inv_property_list: setting_prop[prop.name
+                        .to_sym][:inv_property_list]
+                    )
+                  when 'list_plus'
+                    item.inv_property_values << build(
+                      :property_value, inv_item: item, inv_property: prop, inv_property_list: setting_prop[prop.name
+                        .to_sym][:inv_property_list], value: setting_prop[prop.name.to_sym][:value]
+                    )
+                  when 'file'
+                    item.inv_property_values << build(
+                      :property_value, inv_item: item, inv_property: prop, value: setting_prop[prop.name.to_sym][:value]
+                    )
                 end
-
-                break
+              else
+                case prop.property_type
+                  when 'string'
+                    item.inv_property_values << build(
+                      :property_value, inv_item: item, inv_property: prop, value: 'String value'
+                    )
+                  when 'list'
+                    item.inv_property_values << build(
+                      :property_value, inv_item: item, inv_property: prop, inv_property_list: prop.inv_property_lists.first
+                    )
+                  when 'list_plus'
+                    item.inv_property_values << build(
+                      :property_value, inv_item: item, inv_property: prop, inv_property_list: prop.inv_property_lists.first
+                    )
+                  when 'file'
+                    item.inv_property_values << build(
+                      :property_value, inv_item: item, inv_property: prop, value: 'old_pc_config.txt'
+                    )
+                end
               end
             end
           end
