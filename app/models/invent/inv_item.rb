@@ -4,7 +4,6 @@ module Invent
     self.table_name = "#{table_name_prefix}item"
 
     has_many :inv_property_values,
-             -> { order(:property_id) },
              foreign_key: 'item_id',
              dependent: :destroy,
              inverse_of: :inv_item

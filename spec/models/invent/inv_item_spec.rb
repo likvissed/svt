@@ -2,7 +2,7 @@ require 'rails_helper'
 
 module Invent
   RSpec.describe InvItem, type: :model do
-    it { is_expected.to have_many(:inv_property_values).order(:property_id).with_foreign_key('item_id').dependent(:destroy) }
+    it { is_expected.to have_many(:inv_property_values).with_foreign_key('item_id').dependent(:destroy) }
     it { is_expected.to have_many(:standart_discrepancies).class_name('Standart::Discrepancy').with_foreign_key('item_id').dependent(:destroy) }
     it { is_expected.to have_many(:standart_logs).class_name('Standart::Log').with_foreign_key('item_id') }
 
