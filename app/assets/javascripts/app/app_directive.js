@@ -48,9 +48,13 @@
         function compileElements() {
           $timeout(function () {
             $compile(element.find('.new-record'))(scope);
+
             $compile(element.find('.workplaces-division-filter'))(scope);
             $compile(element.find('.workplaces-status-filter'))(scope);
             $compile(element.find('.workplaces-type-filter'))(scope);
+
+            $compile(element.find('.create-workplace-count-list'))(scope);
+
             $compile(element.find('.workplace-list-approve'))(scope);
             $compile(element.find('.workplace-list-division-filter'))(scope);
           }, 0, false);
@@ -68,7 +72,13 @@
                 scope.wpIndex.selectedTypeFilter
               ];
             }
-            
+
+            if (scope.wpCount) {
+              return [
+                scope.wpCount.createWorkplaceCountList
+              ];
+            }
+
             // Для списка РМ
             if (scope.wpList) {
               return [

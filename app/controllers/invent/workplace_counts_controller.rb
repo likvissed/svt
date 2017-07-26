@@ -25,6 +25,16 @@ module Invent
       end
     end
 
+    def create_list
+      @create_list = WorkplaceCounts::CreateList.new(params[:file])
+
+      if @create_list.run
+        render json: { full_message: 'Список отделов и ответственных обновлен' }
+      else
+        render json: { full_message: @create_list.errors.full_messages.join('. ') }, status: 422
+      end
+    end
+
     def show
       @show = WorkplaceCounts::Show.new(params[:workplace_count_id])
 

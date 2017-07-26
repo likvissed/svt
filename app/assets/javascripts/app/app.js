@@ -11,8 +11,9 @@ var app = angular
     'ngActionCable',
     'ngSanitize',
     'ui.select',
-    'ngCookies'
-  ]);  
+    'ngCookies',
+    'ngFileUpload'
+  ]);
 
 
 app

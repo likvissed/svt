@@ -4,9 +4,11 @@ module Invent
     self.table_name = "#{table_name_prefix}item"
 
     has_many :inv_property_values,
+             -> { joins('LEFT OUTER JOIN invent_property ON invent_property_value.property_id = invent_property.property_id').order('invent_property.property_order') },
              foreign_key: 'item_id',
              dependent: :destroy,
              inverse_of: :inv_item
+    has_many :inv_properties, -> { order('invent_property.property_order') }, through: :inv_property_values
     has_many :standart_discrepancies,
              class_name: 'Standart::Discrepancy',
              foreign_key: 'item_id',
@@ -56,7 +58,7 @@ module Invent
       @properties ||= inv_type.inv_properties
 
       # Отдельная проверка для ПК, моноблока, ноутбука
-      if InvType::PROPERTY_WITH_FILES.include?(inv_type.name) && workplace.workplace_specialization.try(:name) != 'secret'
+      if InvType::TYPE_WITH_FILES.include?(inv_type.name) && workplace.workplace_specialization.try(:name) != 'secret'
         flags = prop_values_verification
 
         # Проверка наличия данных от аудита, либо отчета о конфигурации
@@ -66,7 +68,7 @@ module Invent
 
         # Если имя файла пришло пустым (не будет работать при создании нового item, только во время редактирования).
         config_file_verification unless flags[:file_name_exist]
-      elsif InvType::PROPERTY_WITH_FILES.include?(inv_type.name) && workplace.workplace_specialization.try(:name) == 'secret'
+      elsif InvType::TYPE_WITH_FILES.include?(inv_type.name) && workplace.workplace_specialization.try(:name) == 'secret'
         secret_prop_values_verification
       else
         inv_property_values.each { |prop_val| prop_value_verification(prop_val) }

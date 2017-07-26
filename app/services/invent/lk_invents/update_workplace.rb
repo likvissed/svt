@@ -16,7 +16,7 @@ module Invent
       end
 
       def run
-        @workplace = Workplace.includes(inv_items: %i[inv_type inv_property_values]).find(@workplace_id)
+        @workplace = Workplace.includes(inv_items: [:inv_type, inv_property_values: :inv_property]).find(@workplace_id)
         authorize @workplace, :update?
 
         prepare_params
@@ -32,7 +32,7 @@ module Invent
       private
 
       def update_workplace
-        if workplace.update(workplace_params)
+        if workplace.update_attributes(workplace_params)
           # Чтобы избежать N+1 запрос в методе 'transform_workplace' нужно создать объект ActiveRecord (например,
           # вызвать find)
           @workplace = Workplace

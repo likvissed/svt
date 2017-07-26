@@ -44,7 +44,6 @@ module ServiceMacros
     new_mon['inv_property_values_attributes'].each { |prop_val| prop_val['id'] = nil }
 
     wp.data['inv_items_attributes'] << new_mon
-
     wp.data
   end
 end

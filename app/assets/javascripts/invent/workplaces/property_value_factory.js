@@ -72,7 +72,8 @@
       getTemplateSelectProp: function (name, listFlag) {
         var arr = angular.copy(templateSelectProp);
 
-        arr[0].short_description = 'Выберите ' + name.toLowerCase();
+        // arr[0].short_description = 'Выберите ' + name.toLowerCase();
+        arr[0].short_description = 'Выбрать из списка';
         listFlag ? arr[1].short_description = 'Ввести ' + name.toLowerCase() + ' вручную...' : arr.pop();
 
         return arr;

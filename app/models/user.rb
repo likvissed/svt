@@ -13,6 +13,8 @@ class User < ApplicationRecord
   validates :tn, presence: true, uniqueness: true
   validates :id_tn, uniqueness: { message: :tn_already_exists }
 
+  after_validation :replace_nil
+
   # Для тестов.
   attr_accessor :login, :email, :division, :tel
 
@@ -43,5 +45,11 @@ class User < ApplicationRecord
 
   def email_changed?
     false
+  end
+
+  private
+
+  def replace_nil
+    self.phone = '' if phone.nil?
   end
 end

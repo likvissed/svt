@@ -23,16 +23,16 @@
 
     // ====================================== Данные с сервера =============================================================
 
-    // Типы РМ
-    this.wp_types = [{ workplace_type_id: -1, long_description: 'Выберите тип' }];
-    // Направления работы на рабочих местах
-    this.specs = [{ workplace_specialization_id: -1, short_description: 'Выберите вид' }];
-    // Типы оборудования на РМ с необходимыми для заполнения свойствами
-    this.eq_types = [{ type_id: -1, short_description: 'Выберите тип' }];
+    // Поле select, предлагающее выбрать тип оборудования
+    this.selectWpType = { workplace_type_id: -1, long_description: 'Выберите тип' };
+    // Поле select, предлагающее выбрать вид деятельности
+    this.selectWpSpec = { workplace_specialization_id: -1, short_description: 'Выберите вид' };
     // Список отделов, прикрепленных к пользователю
     this.divisions = [];
-    // Список площадок и корпусов
-    this.iss_locations = [{ site_id: -1, name: 'Выберите площадку' }];
+    // Поле select, предлагающее выбрать площадку
+    this.selectIssLocation = { site_id: -1, name: 'Выберите площадку' };
+    // Поле select, предлагающее выбрать корпус
+    this.selectIssBuilding = { building_id: -1, name: 'Выберите корпус' };
 
 // ====================================== Данные, которые отправяются на сервер ========================================
 
@@ -57,19 +57,19 @@
       // Id в таблице отделов
       workplace_count_id: 0,
       // Тип РМ
-      workplace_type_id: -1,
+      workplace_type_id: this.selectWpType.workplace_type_id,
       // Объект - тип РМ
-      workplace_type: angular.copy(this.wp_types[0]),
+      workplace_type: this.selectWpType,
       // Вид выполняемой работы
-      workplace_specialization_id: -1,
+      workplace_specialization_id: this.selectWpSpec.workplace_specialization_id,
       // Ответственный за РМ
       id_tn: '',
       // Площадка
-      location_site_id: -1,
+      location_site_id: this.selectIssLocation.site_id,
       // Объект - площадка
-      location_site: angular.copy(this.iss_locations[0]),
+      location_site: this.selectIssLocation,
       // Корпус
-      location_building_id: -1,
+      location_building_id: this.selectIssBuilding.building_id,
       // Комната
       location_room_name: '',
       // Дефолтный статус РМ (2 - в ожидании проверки)
@@ -148,15 +148,25 @@
         self.workplace = angular.copy(data.wp_data);
 
         angular.forEach(data.prop_data.iss_locations, function (value) {
-          value.iss_reference_buildings = [{ building_id: -1, name: 'Выберите корпус' }].concat(value.iss_reference_buildings);
+          value.iss_reference_buildings = [self.selectIssBuilding].concat(value.iss_reference_buildings);
         });
         self.Item.setTypes(data.prop_data.eq_types);
-        self.wp_types = angular.copy(self.wp_types.concat(data.prop_data.wp_types));
-        self.specs = angular.copy(self.specs.concat(data.prop_data.specs));
-        self.iss_locations = angular.copy(self.iss_locations.concat(data.prop_data.iss_locations));
+
+        // Типы РМ
+        self.wp_types = [self.selectWpType].concat(data.prop_data.wp_types);
+        // Направления работы на рабочих местах
+        self.specs = [self.selectWpSpec].concat(data.prop_data.specs);
+        // Список площадок и корпусов
+        self.iss_locations = [self.selectIssLocation].concat(data.prop_data.iss_locations);
+
         self.users = data.prop_data.users;
         self.statuses = data.prop_data.statuses;
+
         self.additional.fileKey = parseInt(data.prop_data.pc_config_key);
+        self.additional.pcAttrs = angular.copy(data.prop_data.file_depending);
+        self.additional.singleItems = angular.copy(data.prop_data.single_pc_items);
+        self.additional.pcTypes = angular.copy(data.prop_data.type_with_files);
+        self.additional.secretExceptions = angular.copy(data.prop_data.secret_exceptions);
 
         self._addObjects();
       })

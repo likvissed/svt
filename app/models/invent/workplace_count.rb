@@ -3,6 +3,12 @@ module Invent
     self.table_name = "#{Rails.configuration.database_configuration["#{Rails.env}_invent"]['database']}.#{table_name_prefix}workplace_count"
     self.primary_key = :workplace_count_id
 
+    # Временной интервал, в рамках которого у ответственных лиц имеется доступ на редактирование СВТ.
+    ACCESS_TIME = {
+      start: Date.new(2017, 8, 01),
+      end: Date.new(2017, 10, 02)
+    }
+
     has_many :workplaces, dependent: :restrict_with_error
     has_many :workplace_responsibles, dependent: :destroy, inverse_of: :workplace_count
     has_many :users, through: :workplace_responsibles
@@ -20,12 +26,18 @@ module Invent
 
     accepts_nested_attributes_for :users, allow_destroy: true
 
+    def self.user_attr_template(tn)
+      { id: nil, tn: tn, phone: '' }
+    end
+
     def users_attributes=(hash_arr)
       @role = Role.find_by(name: :***REMOVED***_user)
 
       hash_arr.each do |user_values|
+        user_values = user_values.symbolize_keys
         return if user_values[:tn].blank?
         @user_iss = UserIss.find_by(tn: user_values[:tn])
+        user_values[:phone] = '' if user_values[:phone].nil?
 
         # Если задан id пользователя.
         if user_values[:id]

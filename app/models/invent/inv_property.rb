@@ -7,7 +7,7 @@ module Invent
     FILE_DEPENDING = %w[mb ram video cpu hdd].freeze
     # Свойства, которые не обязательны для заполнения в случае, если для РМ выбрано направление деятельности
     # "Работа с гостайной"
-    SECRET_EXCEPT = %w[mb ram video cpu hdd config_file].freeze
+    SECRET_EXCEPT = %w[network_connection mb ram video cpu hdd config_file].freeze
 
     has_many :inv_property_values, foreign_key: 'property_id', dependent: :destroy
     has_many :inv_property_lists, foreign_key: 'property_id', dependent: :destroy

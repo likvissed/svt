@@ -85,7 +85,7 @@ module Invent
     end
 
     describe '#check_property_value' do
-      context 'when item_type belongs to array InvType::PROPERTY_WITH_FILES' do
+      context 'when item_type belongs to array InvType::TYPE_WITH_FILES' do
         context 'and when workplace_specialization != "secret"' do
           context 'and when all parametrs are sets' do
             include_examples 'item_valid_model' do
@@ -132,7 +132,7 @@ module Invent
         end
       end
 
-      context 'when item_type is not part of array InvType::PROPERTY_WITH_FILES' do
+      context 'when item_type is not part of array InvType::TYPE_WITH_FILES' do
         context 'and when all parameters are sets' do
           include_examples 'item_valid_model' do
             let(:item) { build(:item_with_item_model, :with_property_values, type_name: :printer) }

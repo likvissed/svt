@@ -23,6 +23,7 @@ module Invent
         load_statuses
         load_users if @division
         load_pc_config_key
+        load_constants
         prepare_eq_types_to_render(mandatory)
 
         true
@@ -88,6 +89,14 @@ module Invent
         data[:statuses] = statuses
       end
 
+      # Получить различные константы, необходимые для работы
+      def load_constants
+        data[:file_depending] = InvProperty::FILE_DEPENDING
+        data[:single_pc_items] = InvType::SINGLE_PC_ITEMS
+        data[:type_with_files] = InvType::TYPE_WITH_FILES
+        data[:secret_exceptions] = InvProperty::SECRET_EXCEPT
+      end
+
       # Преобразовать в json формат с необходимыми полями.
       # Исключить все свойства inv_property, где mandatory = false (исключение для системных блоков).
       def prepare_eq_types_to_render(mandatory)
@@ -104,12 +113,12 @@ module Invent
           ]
         )
         # return unless mandatory
-
-        data[:eq_types].each do |type|
-          if InvType::PROPERTY_WITH_FILES.none? { |val| val == type['name'] }
-            type['inv_properties'].delete_if { |prop| !prop['mandatory'] }
-          end
-        end
+        #
+        # data[:eq_types].each do |type|
+        #   if InvType::TYPE_WITH_FILES.none? { |val| val == type['name'] }
+        #     type['inv_properties'].delete_if { |prop| !prop['mandatory'] }
+        #   end
+        # end
       end
 
       def load_pc_config_key
