@@ -2,7 +2,7 @@ require 'spec_helper'
 
 module Invent
   module LkInvents
-    RSpec.describe EditWorkplace, type: :model do
+    RSpec.describe UpdateWorkplace, type: :model do
       let(:user) { create :user }
       let(:workplace_count) { create :active_workplace_count, users: [user] }
       let!(:old_workplace) do

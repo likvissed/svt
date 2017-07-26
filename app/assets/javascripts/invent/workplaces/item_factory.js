@@ -8,11 +8,13 @@
 
   function Item($filter, PropertyValue) {
     var
-      // Типы оборудования на РМ с необходимыми для заполнения свойствами
-      eq_types = [{ type_id: -1, short_description: 'Выберите тип' }],
+      // Типы оборудования
+      eqTypes,
+      // Поле select, предлагающее выбрать тип оборудования
+      selectEqType = { type_id: -1, short_description: 'Выберите тип' },
       // Шаблон экземпляра техники, добавляемого к РМ
       templateItem = {
-        id:             null,
+        id: null,
         // item_id: null,
         type_id: 0,
         workplace_id: 0,
@@ -22,7 +24,7 @@
         item_model: '',
         inv_property_values_attributes: [],
         // По умолчанию показать пользователю "Выберите тип"
-        type: eq_types[0],
+        type: selectEqType,
         // Выбранная модель
         model: null
       },
@@ -47,11 +49,11 @@
         // Число видимых пользователю экземпляров техники для текущего РМ.
         visibleCount: 0,
         // Типы ПК, для которых необходимы параметры pcAttrs.
-        pcTypes: ['pc', 'allin1', 'notebook'],
+        pcTypes: [],
         // Параметра СБ/моноблока/ноутбука, которые загружаются от Аудита или из файла конфигурации ПК.
-        pcAttrs: ['mb', 'ram', 'video', 'cpu', 'hdd'],
+        pcAttrs: [],
         // Список типов оборудования, которые не могут встречаться дважды или пересекаться между собой в рамках одного рабочего места.
-        singleItems: ['pc', 'allin1', 'notebook', 'tablet'],
+        singleItems: [],
         // Разрешенные форматы загружаемого файла.
         fileFormats: [''],
         // Доп. описание модели
@@ -242,18 +244,18 @@
        *
        * @param types - добавляемый массив типов.
        */
-      setTypes: function (types) { eq_types = angular.copy(eq_types.concat(types)); },
+      setTypes: function (types) { eqTypes = [selectEqType].concat(types); },
       /**
        * Получить массив типов техники.
        */
-      getTypes: function () { return eq_types },
+      getTypes: function () { return eqTypes },
       /**
        * Добавить вспомогательные объекты к указанному объекту item.
        *
        * @param item - экземпляр техники
        */
       addProperties: function (item) {
-        angular.forEach(eq_types, function (eq_value) {
+        angular.forEach(eqTypes, function (eq_value) {
           if (item.type_id != eq_value.type_id) { return true; }
 
           item.type = angular.copy(eq_value);
@@ -421,7 +423,7 @@
       clearPcMetadata: function (item) {
         // Находим тип оборудования, который был до изменения (до вызова метода changeEqType в контроллере).
         // (Только для тех случаев, если до изменения был тип 'pc', 'allin1' или 'notebook')
-        angular.forEach(eq_types, function (value) {
+        angular.forEach(eqTypes, function (value) {
           if (item.type_id != value.type_id) { return true; }
           if (!$filter('contains')(additional.pcTypes, value.name)) { return true; }
 

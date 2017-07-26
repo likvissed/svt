@@ -11,10 +11,7 @@ module Invent
         @division = division
       end
 
-      # mandatory - свойство mandatory таблицы invent_property
-      #   true - оставить только свойства с параметров mandatory: true
-      #   false - оставить все свойства
-      def run(mandatory = true)
+      def run
         load_divisions if @current_user
         load_inv_types
         load_workplace_types
@@ -23,7 +20,8 @@ module Invent
         load_statuses
         load_users if @division
         load_pc_config_key
-        prepare_eq_types_to_render(mandatory)
+        load_constants
+        prepare_eq_types_to_render
 
         true
       rescue Pundit::NotAuthorizedError
@@ -88,9 +86,16 @@ module Invent
         data[:statuses] = statuses
       end
 
+      # Получить различные константы, необходимые для работы
+      def load_constants
+        data[:file_depending] = InvProperty::FILE_DEPENDING
+        data[:single_pc_items] = InvType::SINGLE_PC_ITEMS
+        data[:type_with_files] = InvType::TYPE_WITH_FILES
+        data[:secret_exceptions] = InvProperty::SECRET_EXCEPT
+      end
+
       # Преобразовать в json формат с необходимыми полями.
-      # Исключить все свойства inv_property, где mandatory = false (исключение для системных блоков).
-      def prepare_eq_types_to_render(mandatory)
+      def prepare_eq_types_to_render
         data[:eq_types] = data[:eq_types].as_json(
           include: [
             :inv_models,
@@ -103,13 +108,6 @@ module Invent
             }
           ]
         )
-        # return unless mandatory
-
-        data[:eq_types].each do |type|
-          if InvType::PROPERTY_WITH_FILES.none? { |val| val == type['name'] }
-            type['inv_properties'].delete_if { |prop| !prop['mandatory'] }
-          end
-        end
       end
 
       def load_pc_config_key

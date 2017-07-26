@@ -12,7 +12,9 @@ Rails.application.routes.draw do
   # Инвентаризация
   namespace :invent do
     # Отделы
-    resources :workplace_counts, param: :workplace_count_id, except: :edit
+    resources :workplace_counts, param: :workplace_count_id, except: :edit do
+      post 'create_list', to: 'workplace_counts#create_list', on: :collection
+    end
     # Рабочие места
     resources :workplaces, param: :workplace_id do
       collection do

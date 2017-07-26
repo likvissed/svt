@@ -95,12 +95,12 @@
       DTColumnBuilder.newColumn(null).withTitle('').withOption('className', 'col-fhd-1').renderWith(renderIndex),
       DTColumnBuilder.newColumn('division').withTitle('Отдел').withOption('className', 'col-fhd-2'),
       DTColumnBuilder.newColumn('wp_type').withTitle('Тип').withOption('className', 'col-fhd-4'),
-      DTColumnBuilder.newColumn('responsible').withTitle('Ответственный').withOption('className', 'col-fhd-5'),
+      DTColumnBuilder.newColumn('responsible').withTitle('Ответственный').withOption('className', 'col-fhd-6'),
       DTColumnBuilder.newColumn('location').withTitle('Расположение').withOption('className', 'col-fhd-5'),
       DTColumnBuilder.newColumn('count').withTitle('Кол-во техники').withOption('className', 'col-fhd-2'),
       DTColumnBuilder.newColumn('status').withTitle('Статус').notSortable().withOption('className', 'col-fhd-3').renderWith(statusRecord),
-      DTColumnBuilder.newColumn(null).withTitle('').notSortable().withOption('className', 'col-fhd-1 text-center').renderWith(editRecord),
-      DTColumnBuilder.newColumn(null).withTitle('').notSortable().withOption('className', 'col-fhd-1 text-center').renderWith(delRecord)
+      DTColumnBuilder.newColumn(null).withTitle('').notSortable().withOption('className', 'col-fhd-1 text-center').renderWith(editRecord)
+      // DTColumnBuilder.newColumn(null).withTitle('').notSortable().withOption('className', 'col-fhd-1 text-center').renderWith(delRecord)
     ];
 
     function initComplete(settings, json) {
@@ -156,7 +156,7 @@
      */
     function editRecord(data, type, full, meta) {
       return '<a href="/invent/workplaces/' + data.workplace_id + '/edit" class="default-color pointer"' +
-        ' uib-tooltip="Редактировать запись"><i class="fa fa-pencil-square-o fa-1g"></a>';
+        ' uib-tooltip="Редактировать запись" tooltip-append-to-body="true"><i class="fa fa-pencil-square-o fa-1g"></a>';
     }
 
     /**

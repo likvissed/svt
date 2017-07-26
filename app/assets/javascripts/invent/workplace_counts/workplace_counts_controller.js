@@ -5,7 +5,7 @@
     .controller('WorkplaceCountIndexCtrl', WorkplaceCountIndexCtrl)
     .controller('ModalWpCountController', ModalWpCountController);
 
-  WorkplaceCountIndexCtrl.$inject = ['$controller', '$scope', '$compile', '$uibModal', 'DTOptionsBuilder', 'DTColumnBuilder', 'Config', 'Server', 'Flash', 'Error', 'WorkplaceCount'];
+  WorkplaceCountIndexCtrl.$inject = ['$controller', '$scope', '$compile', '$uibModal', 'DTOptionsBuilder', 'DTColumnBuilder', 'Upload', 'Config', 'Server', 'Flash', 'Error', 'WorkplaceCount'];
   ModalWpCountController.$inject = ['$uibModalInstance', 'data', 'Server', 'Config', 'Flash', 'Error', 'WorkplaceCount'];
 
   /**
@@ -13,13 +13,14 @@
    *
    * @class SVT.WorkplaceCountIndexCtrl
    */
-  function WorkplaceCountIndexCtrl($controller, $scope, $compile, $uibModal, DTOptionsBuilder, DTColumnBuilder, Config, Server, Flash, Error, WorkplaceCount) {
+  function WorkplaceCountIndexCtrl($controller, $scope, $compile, $uibModal, DTOptionsBuilder, DTColumnBuilder, Upload, Config, Server, Flash, Error, WorkplaceCount) {
     var self = this;
 
 // =============================================== Инициализация =======================================================
 
     self.$scope = $scope;
     self.$uibModal = $uibModal;
+    self.Upload = Upload;
     self.Config = Config;
     self.Server = Server;
     self.Flash = Flash;
@@ -45,21 +46,23 @@
       .withOption('createdRow', createdRow)
       .withDOM(
         '<"row"' +
-        '<"col-sm-4 col-md-3 col-lg-2 col-xlg-2 col-fhd-2"' +
-        '<"#workplace_counts.new-record">>' +
-        '<"col-sm-16 col-md-18 col-lg-19 col-xlg-19 col-fhd-19">' +
-        '<"col-sm-4 col-md-3 col-lg-3 col-fhd-3"f>>' +
+          '<"col-sm-4 col-md-3 col-lg-2 col-xlg-2 col-fhd-2"' +
+            '<"#workplace_counts.new-record">>' +
+          '<"col-sm-5 col-md-4 col-lg-4 col-xlg-3 col-fhd-3"' +
+            '<"create-workplace-count-list">>' +
+          '<"col-sm-11 col-md-14 col-lg-15 col-xlg-16 col-fhd-16">' +
+          '<"col-sm-4 col-md-3 col-lg-3 col-fhd-3"f>>' +
         '<"row"' +
-        '<"col-fhd-24"t>>' +
+          '<"col-fhd-24"t>>' +
         '<"row"' +
-        '<"col-fhd-12"i>' +
-        '<"col-fhd-12"p>>'
+          '<"col-fhd-12"i>' +
+          '<"col-fhd-12"p>>'
       );
 
     self.dtColumns = [
-      DTColumnBuilder.newColumn(null).withTitle('').withOption('className', 'col-fhd-1').renderWith(renderIndex),
-      DTColumnBuilder.newColumn('division').withTitle('Отдел').withOption('className', 'col-fhd-2'),
-      DTColumnBuilder.newColumn('responsibles').withTitle('Ответственный').withOption('className', 'col-fhd-7'),
+      // DTColumnBuilder.newColumn(null).withTitle('').withOption('className', 'col-fhd-1').renderWith(renderIndex),
+      DTColumnBuilder.newColumn('division').withTitle('Отдел').withOption('className', 'col-fhd-1'),
+      DTColumnBuilder.newColumn('responsibles').withTitle('Ответственный').withOption('className', 'col-fhd-9'),
       DTColumnBuilder.newColumn('phones').withTitle('Телефон').withOption('className', 'col-fhd-2'),
       // DTColumnBuilder.newColumn('count_wp').withTitle('Кол-во РМ').withOption('className', 'col-fhd-3 text-center'),
       DTColumnBuilder.newColumn('date-range').withTitle('Время доступа').withOption('className', 'col-fhd-5' +
@@ -70,6 +73,28 @@
       DTColumnBuilder.newColumn(null).withTitle('').notSortable().withOption('className', 'text-center col-fhd-1').renderWith(editRecord),
       DTColumnBuilder.newColumn(null).withTitle('').notSortable().withOption('className', 'text-center col-fhd-1').renderWith(delRecord)
     ];
+
+    /**
+     * Отправить загруженный файл на сервер.
+     *
+     * @param file
+     */
+    $scope.uploadFile = function (file) {
+      if (!file) { return false }
+
+      file.upload = self.Upload.upload({
+        url: '/invent/workplace_counts/create_list',
+        data: { file: file }
+      });
+
+      file.upload.then(function (response) {
+        self.Flash.notice(response.data.full_message);
+        self.dtInstance.reloadData(null, self.Config.global.reloadPaging);
+      }, function (response) {
+        self.Error.response(response);
+        self.dtInstance.reloadData(null, self.Config.global.reloadPaging);
+      })
+    };
 
 // =============================================== Приватные функции ===================================================
 
@@ -86,6 +111,7 @@
      * Callback после создания каждой строки.
      */
     function createdRow(row, data, dataIndex) {
+      self.wpCount[data.workplace_count_id] = data;
       // Компиляция строки
       $compile(angular.element(row))($scope);
     }
@@ -188,7 +214,6 @@
       function (response) {
         self.Error.response(response);
       });
-
   };
 
 // =====================================================================================================================
