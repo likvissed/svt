@@ -51,6 +51,15 @@ module Invent
       end
     end
 
+    def pc_config_from_user
+      @pc_file = LkInvents::PcConfigFromUser.new(params[:pc_file])
+      if @pc_file.run
+        render json: { data: @pc_file.data, full_message: 'Файл добавлен' }
+      else
+        render json: { full_message: @pc_file.errors.full_messages.join('. ') }, status: 422
+      end
+    end
+
     def create_workplace
       @workplace = LkInvents::CreateWorkplace.new(current_user, workplace_params, params[:pc_file])
 

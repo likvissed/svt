@@ -7,7 +7,7 @@ module Invent
       let!(:workplace_count) { create :active_workplace_count, users: [user] }
 
       context 'with valid workplace params' do
-        let(:room) { create :iss_room }
+        let(:room) { IssReferenceSite.first.iss_reference_buildings.first.iss_reference_rooms.first }
         let(:workplace) { create_workplace_attributes(room: room) }
         let(:prop_val_count) do
           count = 0

@@ -3,14 +3,9 @@ module Invent
     factory :workplace, class: Workplace do
       workplace_specialization { WorkplaceSpecialization.last }
       id_tn { UserIss.where(dept: workplace_count.division).first.id_tn }
-      association :iss_reference_room, factory: :iss_room
-      iss_reference_building do
-        iss_reference_room.nil? ? IssReferenceBuilding.first : iss_reference_room.iss_reference_building
-      end
-      iss_reference_site do
-        iss_reference_building.nil? ? IssReferenceSite.first : iss_reference_building.iss_reference_site
-      end
-      location_room_name { iss_reference_room.nil? ? nil : iss_reference_room.name }
+      iss_reference_site { IssReferenceSite.first }
+      iss_reference_building { iss_reference_site.iss_reference_buildings.first }
+      iss_reference_room { iss_reference_building.iss_reference_rooms.first }
       comment ''
       status { Workplace.statuses['pending_verification'] }
 

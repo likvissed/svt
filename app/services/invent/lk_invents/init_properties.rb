@@ -19,7 +19,6 @@ module Invent
         load_locations
         load_statuses
         load_users if @division
-        load_pc_config_key
         load_constants
         prepare_eq_types_to_render
 
@@ -108,10 +107,6 @@ module Invent
             }
           ]
         )
-      end
-
-      def load_pc_config_key
-        data[:pc_config_key] = ENV['PC_CONFIG_KEY']
       end
     end
   end

@@ -10,7 +10,7 @@ module Invent
       end
 
       context 'with valid workplace params' do
-        let(:room) { create :iss_room }
+        let(:room) { IssReferenceSite.first.iss_reference_buildings.first.iss_reference_rooms.first }
         let(:user_iss) { build :***REMOVED***_user_iss }
         let(:new_workplace) do
           update_workplace_attributes(user, old_workplace.workplace_id, room: room, user_iss: user_iss)

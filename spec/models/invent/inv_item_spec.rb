@@ -94,8 +94,13 @@ module Invent
           end
 
           context 'and when file is set and file params is not set' do
-            include_examples 'item_valid_model' do
-              let(:item) { build(:item_with_item_model, :without_property_values_and_with_file, type_name: :pc, workplace: common_workplace) }
+            let(:item) { build(:item_with_item_model, :without_property_values_and_with_file, type_name: :pc, workplace: common_workplace) }
+
+            include_examples 'item_not_valid_model'
+
+            it 'includes the base: :pc_data_not_received error' do
+              item.valid?
+              expect(item.errors.details[:base]).to include(error: :pc_data_not_received)
             end
           end
 

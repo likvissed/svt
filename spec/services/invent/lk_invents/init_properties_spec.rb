@@ -10,7 +10,7 @@ module Invent
         subject { InitProperties.new(user) }
 
         include_examples 'run methods', %w[load_divisions load_inv_types load_workplace_types
-load_workplace_specializations load_locations load_pc_config_key prepare_eq_types_to_render load_constants]
+load_workplace_specializations load_locations prepare_eq_types_to_render load_constants]
 
         its(:data) { is_expected.not_to be_nil }
 
@@ -21,10 +21,10 @@ load_workplace_specializations load_locations load_pc_config_key prepare_eq_type
         end
 
         context 'when @data is filling' do
-          let!(:data_keys) { %i[divisions eq_types wp_types specs iss_locations statuses pc_config_key secret_exceptions file_depending single_pc_items type_with_files] }
+          let!(:data_keys) { %i[divisions eq_types wp_types specs iss_locations statuses secret_exceptions file_depending single_pc_items type_with_files] }
           before { subject.run }
 
-          it 'fills the @data hash with %i[divisions eq_types wp_types specs iss_locations statuses pc_config_key secret_exceptions file_depending single_pc_items type_with_files] keys' do
+          it 'fills the @data hash with %i[divisions eq_types wp_types specs iss_locations statuses secret_exceptions file_depending single_pc_items type_with_files] keys' do
             expect(subject.data.keys).to include *data_keys
           end
 

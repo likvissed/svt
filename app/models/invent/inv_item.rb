@@ -61,8 +61,12 @@ module Invent
       if InvType::TYPE_WITH_FILES.include?(inv_type.name) && workplace.workplace_specialization.try(:name) != 'secret'
         flags = prop_values_verification
 
-        # Проверка наличия данных от аудита, либо отчета о конфигурации
-        if invent_num.present? && !flags[:full_properties_flag] && !flags[:file_name_exist]
+        # Проверка наличия данных от аудита
+        if invent_num.present? && !flags[:full_properties_flag]
+          # Проверку отчета о конфигурации отключил, так как теперь расшифровка происходит на стороне сервера. Класс,
+          # обрабатывающий файл, не проверяет, валиден ли файл, он просто возвращает данные (какими бы они не были).
+          # Если ошибка с данными, нужно править программу SysInfo.
+          # && !flags[:file_name_exist]
           errors.add(:base, :pc_data_not_received)
         end
 
