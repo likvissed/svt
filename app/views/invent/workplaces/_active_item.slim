@@ -1,10 +1,10 @@
 .ng-hide ng-show="item"
   .col-lg-offset-3.col-xlg-offset-4.col-fhd-offset-5.col-md-24.col-lg-18.col-xlg-16.col-fhd-14
     -# Постоянные параметры.
-    .col-md-8.col-lg-8.col-xlg-8
+    .col-md-9.col-lg-10.col-xlg-9
       .form-group
         = label_tag :workplace_items__invent_num, "Инвентарный номер", class: "control-label"
-    .col-md-16.col-lg-16.col-xlg-16
+    .col-md-15.col-lg-14.col-xlg-15
       div ng-if="wp.additional.pcTypes | contains:item.type.name"
         .form-group
           .input-group
@@ -31,10 +31,10 @@
           = text_field_tag "workplace[items][][invent_num]", "", class: "form-control",
             "ng-model": "item.invent_num","ng-blur": "wp.checkPcInvnum(item)"
 
-    .col-md-8.col-lg-8.col-xlg-8
+    .col-md-9.col-lg-10.col-xlg-9
       .form-group
         = label_tag :workplace_items__item_model, "Модель", class: "control-label"
-    .col-md-16.col-lg-16.col-xlg-16
+    .col-md-15.col-lg-14.col-xlg-15
       -# Если модель необходимо ввести вручную (так как нет вариантов для данного аида техники).
       div ng-if="!item.type.inv_models.length"
         .form-group
@@ -55,10 +55,10 @@
 
     -# Переменные параметры.
     div ng-repeat="prop in item.type.inv_properties track by $index" ng-if="item.model_id != -1 || item.type.inv_models.length == 0" ng-hide="prop._destroy || prop.name == 'config_file'"
-      .col-md-8.col-lg-8.col-xlg-8
+      .col-md-9.col-lg-10.col-xlg-9
         .form-group
           label ng-bind="prop.short_description"
-      .col-md-16.col-lg-16.col-xlg-16
+      .col-md-15.col-lg-14.col-xlg-15
         .form-group
           div ng-switch=true on="prop.property_type"
             div ng-switch-when="string"
