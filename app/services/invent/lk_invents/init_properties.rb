@@ -76,8 +76,13 @@ module Invent
       # Получить список площадок и корпусов.
       def load_locations
         data[:iss_locations] = IssReferenceSite
+                                 .order(:sort_order)
                                  .includes(:iss_reference_buildings)
                                  .as_json(include: :iss_reference_buildings)
+
+        data[:iss_locations].each do |loc|
+          loc['name'] = "#{loc['name']} (#{loc['long_name']})" unless loc['name'] == 'Другое'
+        end
       end
 
       # Получить список возможных статусов РМ.
