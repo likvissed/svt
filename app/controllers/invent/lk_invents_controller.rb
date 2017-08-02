@@ -6,7 +6,7 @@ module Invent
     skip_before_action :verify_authenticity_token
     skip_before_action :authorization
     before_action :check_***REMOVED***_authorization, except: :svt_access
-    after_action -> { sign_out @***REMOVED***_auth.data }, except: :svt_access
+    # after_action -> { sign_out @***REMOVED***_auth.data }, except: :svt_access
 
     respond_to :json
 
