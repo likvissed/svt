@@ -24,7 +24,7 @@ module Invent
         end
       end
 
-      context 'with another role' do
+      context 'with :manager role' do
         let(:admin_user) { create :user }
 
         it 'allows access to the workplace_count' do

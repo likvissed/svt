@@ -22,6 +22,17 @@ FactoryGirl.define do
     association :role, factory: :***REMOVED***_user_role
   end
 
+  factory :***REMOVED***_user, class: User do
+    id_tn 5336
+    tn ***REMOVED***
+    phone '39-45'
+    division ***REMOVED***
+    email 'v***REMOVED***@***REMOVED***.ru'
+    login '***REMOVED***'
+    fullname '***REMOVED***'
+    association :role, factory: :manager_role
+  end
+
   factory :invalid_user, class: User do
     tn 123321
   end

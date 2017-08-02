@@ -10,4 +10,10 @@ FactoryGirl.define do
     short_description 'Пользотель ЛК'
     long_description 'Пользователь ЛК, от которого пользователь ЛК входит в систему'
   end
+
+  factory :manager_role, class: Role do
+    name 'manager'
+    short_description 'Менеджер'
+    long_description 'Пользователь с расширенными правами'
+  end
 end

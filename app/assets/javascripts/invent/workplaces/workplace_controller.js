@@ -498,7 +498,6 @@
         ids: wpIds
       },
       function success(response) {
-        self.dtInstance.reloadData(null, self.Config.global.reloadPaging);
         self._removeRow(wpIds);
         self.Flash.notice(response.full_message);
       },
