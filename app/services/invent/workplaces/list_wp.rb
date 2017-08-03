@@ -108,7 +108,7 @@ module Invent
       # Загрузить данные для фильтров
       def load_filters
         @data[:filters] = {}
-        @data[:filters][:divisions] = WorkplaceCount.select(:workplace_count_id, :division)
+        @data[:filters][:divisions] = WorkplaceCount.select(:workplace_count_id, :division).order('CAST(division AS SIGNED)')
       end
     end
   end
