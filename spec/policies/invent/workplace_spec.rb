@@ -151,8 +151,8 @@ module Invent
         let(:user) { create :***REMOVED***_user }
 
         context 'and when in allowed time' do
-          it 'denies access to the workplace' do
-            expect(subject).not_to permit(user, Workplace.find(workplace.workplace_id))
+          it 'grants access to the workplace' do
+            expect(subject).to permit(user, Workplace.find(workplace.workplace_id))
           end
         end
 

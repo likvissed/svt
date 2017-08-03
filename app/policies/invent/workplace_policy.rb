@@ -33,7 +33,7 @@ module Invent
       elsif division_access?
         true
       elsif user.has_role? :manager
-        !allowed_time?
+        true
       else
         false
       end
