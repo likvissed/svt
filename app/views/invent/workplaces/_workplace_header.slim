@@ -20,4 +20,4 @@
     .navbar-form.navbar-right
       .btn-group
         = button_tag "Готово", class: "btn-success"
-        = link_to "Отмена", invent_workplaces_path, class: "btn btn-default"
+        = link_to "Отмена", request.referrer, class: "btn btn-default"

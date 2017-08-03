@@ -318,7 +318,8 @@
     self.dtColumns = [
       DTColumnBuilder.newColumn(null).withTitle('').renderWith(renderIndex),
       DTColumnBuilder.newColumn(null).withTitle(checkboxCell).notSortable().renderWith(checkboxCellFunc),
-      DTColumnBuilder.newColumn(null).withTitle('Описание').notSortable().withOption('className', 'col-fhd-23').renderWith(showWorkplace)
+      DTColumnBuilder.newColumn(null).withTitle('Описание').notSortable().withOption('className', 'col-fhd-22').renderWith(showWorkplace),
+      DTColumnBuilder.newColumn(null).withTitle('').notSortable().withOption('className', 'col-fhd-1 text-center').renderWith(editRecord)
     ];
 
     function initComplete(settings, json) {
@@ -349,6 +350,14 @@
 
       // Компиляция строки
       $compile(angular.element(row))($scope);
+    }
+
+    /**
+     * Отрендерить ссылку на редактирование записи.
+     */
+    function editRecord(data, type, full, meta) {
+      return '<a href="/invent/workplaces/' + data.workplace_id + '/edit" class="default-color pointer"' +
+        ' uib-tooltip="Редактировать запись" tooltip-append-to-body="true"><i class="fa fa-pencil-square-o fa-1g"></a>';
     }
 
     /**
