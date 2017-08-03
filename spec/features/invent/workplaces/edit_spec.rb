@@ -25,7 +25,7 @@ module Invent
         expect(page).to have_content 'Данные о рабочем месте'
         expect(page).to have_select 'Тип рабочего места', selected: workplace.workplace_type.long_description
         expect(page).to have_select 'Вид выполняемой работы', selected: workplace.workplace_specialization.short_description
-        expect(page).to have_select 'Площадка', selected: workplace.iss_reference_site.name
+        expect(page).to have_select 'Площадка', selected: "#{workplace.iss_reference_site.name} (#{workplace.iss_reference_site.long_name})"
         expect(page).to have_select 'Корпус', selected: workplace.iss_reference_building.name
         expect(page).to have_field 'Комната', with: workplace.iss_reference_room.name
         expect(page).to have_select 'Статус', selected: Workplace.translate_enum(:status, workplace.status)
