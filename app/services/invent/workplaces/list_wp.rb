@@ -76,8 +76,10 @@ module Invent
       def item_info(item)
         model = if item['inv_model']
                   "Модель: #{item['inv_model']['item_model']}"
-                else
+                elsif !item['inv_model'] && !item['item_model'].empty?
                   "<span class='manually'>Модель: #{item['item_model']}</span>"
+                else
+                  'Модель не указана'
                 end
         property_values = item['inv_property_values'].map { |prop_val| property_value_info(prop_val) }
 
