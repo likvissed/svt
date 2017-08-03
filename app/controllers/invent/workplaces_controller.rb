@@ -66,7 +66,7 @@ module Invent
 
       if @update.run
         flash[:notice] = 'Данные о рабочем месте обновлены'
-        render json: { location: invent_workplaces_path }
+        render json: { location: root_path }
       else
         render json: { full_message: @update.errors.full_messages.join('. ') }, status: 422
       end
