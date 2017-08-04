@@ -324,10 +324,10 @@
 
     function initComplete(settings, json) {
       // Создание подписки на канал WorkplacesChannel для обновления автоматического обновления таблицы.
-      var consumer = new ActionCableChannel('WorkplaceListChannel');
-      consumer.subscribe(function () {
-        self.dtInstance.reloadData(null, self.Config.global.reloadPaging);
-      });
+      // var consumer = new ActionCableChannel('WorkplaceListChannel');
+      // consumer.subscribe(function () {
+      //   self.dtInstance.reloadData(null, self.Config.global.reloadPaging);
+      // });
 
       if (json.filters) {
         self._setFilters(json.filters);

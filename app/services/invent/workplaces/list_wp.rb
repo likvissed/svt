@@ -25,6 +25,7 @@ module Invent
         @workplaces = Workplace.includes(
           :user_iss,
           :workplace_type,
+          :workplace_specialization,
           :workplace_count,
           :iss_reference_site,
           :iss_reference_building,
@@ -45,6 +46,7 @@ module Invent
           include: [
             :user_iss,
             :workplace_type,
+            :workplace_specialization,
             :workplace_count,
             :iss_reference_site,
             :iss_reference_building,
@@ -61,7 +63,8 @@ module Invent
           ]
         ).map do |wp|
           workplace = "ФИО: #{wp['user_iss']['fio']}; Отдел: #{wp['workplace_count']['division']};
- #{wp['workplace_type']['short_description']}; Расположение: #{wp_location_string(wp)}"
+ #{wp['workplace_type']['short_description']}; Расположение: #{wp_location_string(wp)}; Основной вид деятельности:
+ #{wp['workplace_specialization']['short_description']}"
           items = wp['inv_items'].map { |item| item_info(item) }
 
           {
