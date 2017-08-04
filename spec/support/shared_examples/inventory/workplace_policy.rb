@@ -28,8 +28,8 @@ module Invent
           create :workplace_mob, :add_items, items: %i[tablet], workplace_count: workplace_count, status: 'confirmed'
         end
 
-        it 'denies access to the workplace' do
-          expect(subject).not_to permit(***REMOVED***_user, Workplace.find(workplace.workplace_id))
+        it 'grants access to the workplace' do
+          expect(subject).to permit(***REMOVED***_user, Workplace.find(workplace.workplace_id))
         end
       end
     end

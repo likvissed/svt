@@ -13,7 +13,7 @@ module Invent
       return true if admin?
 
       if user.has_role? :***REMOVED***_user
-        division_access? && allowed_time? && !confirmed?
+        division_access? && allowed_time?
       elsif user.has_role? :manager
         true
       else
@@ -29,7 +29,7 @@ module Invent
       return true if admin?
 
       if user.has_role? :***REMOVED***_user
-        division_access? && allowed_time? && !confirmed?
+        division_access? && allowed_time?
       elsif division_access?
         true
       elsif user.has_role? :manager
