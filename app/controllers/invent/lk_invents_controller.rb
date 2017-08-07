@@ -103,14 +103,24 @@ module Invent
     end
 
     def generate_pdf
-      @workplace_count = WorkplaceCount.find_by(division: params[:division])
-      authorize @workplace_count, :generate_pdf?
-
-      render pdf: "Перечень рабочих мест отдела #{@workplace_count.division}",
-             template: 'templates/approved_workplace_list',
-             locals: { workplace_count: @workplace_count },
-             encoding: 'UTF-8'
+      # @workplace_count = WorkplaceCount.find_by(division: params[:division])
+      # authorize @workplace_count, :generate_pdf?
+      #
+      # render pdf: "Перечень рабочих мест отдела #{@workplace_count.division}",
+      #        template: 'templates/approved_workplace_list',
+      #        locals: { workplace_count: @workplace_count },
+      #        encoding: 'UTF-8'
       # disposition: 'attachment'
+
+      @division_report = LkInvents::DivisionReport.new(params[:division])
+      if @division_report.run
+        send_data @division_report.data.read,
+                  filename: "#{@division_report.wp[:workplace_count]['division']}.rtf",
+                  type: "application/rtf",
+                  disposition: "attachment"
+      else
+        render json: { full_message: 'Обратитесь к администратору, т.***REMOVED***' }, status: 422
+      end
     end
 
     def send_pc_script
