@@ -48,6 +48,7 @@ module Invent
       respond_to do |format|
         format.html do
           @workplace = @edit.data if @edit.run(request.format.symbol)
+          session[:workplace_prev_url] = request.referrer
         end
         format.json do
           if @edit.run(request.format.symbol)
@@ -66,7 +67,7 @@ module Invent
 
       if @update.run
         flash[:notice] = 'Данные о рабочем месте обновлены'
-        render json: { location: root_path }
+        render json: { location: session[:workplace_prev_url] }
       else
         render json: { full_message: @update.errors.full_messages.join('. ') }, status: 422
       end
