@@ -16,7 +16,7 @@ module Invent
       end
 
       def run
-        @workplace = Workplace.includes(inv_items: [:inv_type, inv_property_values: :inv_property]).find(@workplace_id)
+        @workplace = Workplace.includes(inv_items: [inv_type: :inv_properties, inv_property_values: :inv_property]).find(@workplace_id)
         authorize @workplace, :update?
 
         prepare_params

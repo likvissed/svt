@@ -86,7 +86,7 @@ module Invent
 
     describe '#check_property_value' do
       context 'when item_type belongs to array InvType::TYPE_WITH_FILES' do
-        context 'and when workplace_specialization != "secret"' do
+        context 'and when "invent_num" field not included into the InvPcException model' do
           context 'and when all parametrs are sets' do
             include_examples 'item_valid_model' do
               let(:item) { build(:item_with_item_model, :with_property_values, type_name: :pc, workplace: common_workplace) }
@@ -122,11 +122,17 @@ module Invent
           end
         end
 
-        context 'and when workplace_specialization == "secret"' do
-          let(:item) { build :item_with_item_model, :without_property_values, type_name: :pc, workplace: secret_workplace }
-          let(:properties) { InvProperty.where(name: InvProperty::SECRET_EXCEPT) }
+        context 'and when "invent_num" field included into the InvPcException model' do
+          let(:item) do
+            build :item_with_item_model,
+                  :without_property_values,
+                  type_name: :pc,
+                  invent_num: InvPcException.first.invent_num,
+                  workplace: secret_workplace
+          end
+          let(:properties) { InvProperty.where(name: InvProperty::PC_EXCEPT) }
 
-          it 'creates item without file and InvProperty::SECRET_EXCEPT properties' do
+          it 'creates item without file and InvProperty::PC_EXCEPT properties' do
             item.valid?
 
             expect(item.errors.details[:base]).not_to include(error: :pc_data_not_received)

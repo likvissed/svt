@@ -21,10 +21,10 @@ load_workplace_specializations load_locations prepare_eq_types_to_render load_co
         end
 
         context 'when @data is filling' do
-          let!(:data_keys) { %i[divisions eq_types wp_types specs iss_locations statuses secret_exceptions file_depending single_pc_items type_with_files] }
+          let!(:data_keys) { %i[divisions eq_types wp_types specs iss_locations statuses file_depending single_pc_items type_with_files] }
           before { subject.run }
 
-          it 'fills the @data hash with %i[divisions eq_types wp_types specs iss_locations statuses secret_exceptions file_depending single_pc_items type_with_files] keys' do
+          it 'fills the @data hash with %i[divisions eq_types wp_types specs iss_locations statuses file_depending single_pc_items type_with_files] keys' do
             expect(subject.data.keys).to include *data_keys
           end
 
@@ -44,10 +44,6 @@ load_workplace_specializations load_locations prepare_eq_types_to_render load_co
 
           it 'puts the InvType::TYPE_WITH_FILES array into the :type_with_files key' do
             expect(subject.data[:type_with_files]).to eq InvType::TYPE_WITH_FILES
-          end
-
-          it 'puts the InvProperty::SECRET_EXCEPT array into the :secret_exceptions key' do
-            expect(subject.data[:secret_exceptions]).to eq InvProperty::SECRET_EXCEPT
           end
 
           it_behaves_like '@data into init_properties_service is filleable'

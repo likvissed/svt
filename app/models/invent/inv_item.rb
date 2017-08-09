@@ -54,11 +54,11 @@ module Invent
 
     # Проверка наличия значений для всех свойств текущего экземпляра техники.
     def check_property_value
-      # @properties = InvProperty.all
+      @pc_exceptions ||= InvPcException.pluck(:invent_num)
       @properties ||= inv_type.inv_properties
 
       # Отдельная проверка для ПК, моноблока, ноутбука
-      if InvType::TYPE_WITH_FILES.include?(inv_type.name) && workplace.workplace_specialization.try(:name) != 'secret'
+      if InvType::TYPE_WITH_FILES.include?(inv_type.name) && !@pc_exceptions.include?(invent_num)
         flags = prop_values_verification
 
         # Проверка наличия данных от аудита
@@ -72,8 +72,8 @@ module Invent
 
         # Если имя файла пришло пустым (не будет работать при создании нового item, только во время редактирования).
         config_file_verification unless flags[:file_name_exist]
-      elsif InvType::TYPE_WITH_FILES.include?(inv_type.name) && workplace.workplace_specialization.try(:name) == 'secret'
-        secret_prop_values_verification
+      elsif InvType::TYPE_WITH_FILES.include?(inv_type.name) && @pc_exceptions.include?(invent_num)
+        exception_pc_prop_values_verification
       else
         inv_property_values.each { |prop_val| prop_value_verification(prop_val) }
       end
@@ -90,10 +90,10 @@ module Invent
       end
     end
 
-    # Проверка, заполнены ли значения для свойств техники, исключая те, что указаны в InvProperty::SECRET_EXCEPT.
-    def secret_prop_values_verification
+    # Проверка, заполнены ли значения для свойств техники, исключая те, что указаны в InvProperty::PC_EXCEPT.
+    def exception_pc_prop_values_verification
       inv_property_values.each do |prop_val|
-        next if prop_val._destroy || InvProperty::SECRET_EXCEPT.any? do |pc_prop|
+        next if prop_val._destroy || InvProperty::PC_EXCEPT.any? do |pc_prop|
           pc_prop == @properties.find { |prop| prop.property_id == prop_val.property_id }.name
         end
 
@@ -159,7 +159,7 @@ module Invent
     def property_value_valid?(prop_val)
       # Флаг, показывающий, нужно ли в условии проверять свойство mandatory. Этот флаг необходим, так как для свойств
       # ПК, моноблока и ноутбука основные параметры могут зависеть от передаваемого файла.
-      escape_mandatory = InvProperty::SECRET_EXCEPT.any? do |pc_prop|
+      escape_mandatory = InvProperty::PC_EXCEPT.any? do |pc_prop|
         pc_prop == @properties.find { |prop| prop.property_id == prop_val.property_id }.name
       end
 

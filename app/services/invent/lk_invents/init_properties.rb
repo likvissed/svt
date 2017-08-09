@@ -95,7 +95,6 @@ module Invent
         data[:file_depending] = InvProperty::FILE_DEPENDING
         data[:single_pc_items] = InvType::SINGLE_PC_ITEMS
         data[:type_with_files] = InvType::TYPE_WITH_FILES
-        data[:secret_exceptions] = InvProperty::SECRET_EXCEPT
       end
 
       # Преобразовать в json формат с необходимыми полями.

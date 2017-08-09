@@ -12,7 +12,7 @@ RSpec.configure do |config|
   # Список таблиц, которые запрещено очищать
   saved_tables = %w[
     invent_type invent_property_to_type invent_property invent_property_list invent_vendor invent_model
-    invent_model_property_list invent_workplace_specialization invent_workplace_type
+    invent_model_property_list invent_workplace_specialization invent_workplace_type invent_pc_exceptions
   ]
 
   local_db = Rails.configuration.database_configuration[Rails.env]

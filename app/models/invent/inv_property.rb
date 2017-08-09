@@ -5,9 +5,9 @@ module Invent
 
     # Свойства ПК, которые могут быть заполнены из загруженного файла
     FILE_DEPENDING = %w[mb ram video cpu hdd].freeze
-    # Свойства, которые не обязательны для заполнения в случае, если для РМ выбрано направление деятельности
-    # "Работа с гостайной"
-    SECRET_EXCEPT = %w[network_connection mb ram video cpu hdd config_file].freeze
+    # Свойства, которые не обязательны для заполнения в случае, если для текущего экземпляра техники указан инвентарный
+    # номер, который встречается в модели InvPcException.
+    PC_EXCEPT = %w[network_connection mb ram video cpu hdd config_file].freeze
 
     has_many :inv_property_values, foreign_key: 'property_id', dependent: :destroy
     has_many :inv_property_lists, foreign_key: 'property_id', dependent: :destroy
