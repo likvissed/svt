@@ -96,10 +96,12 @@ module Invent
         value_flag = false
         if prop_val['inv_property_list']
           value = prop_val['inv_property_list']['short_description']
-        else
+        elsif !prop_val['value'].empty?
           value = prop_val['value']
           value_flag = true
         end
+
+        value ||= 'нет данных'
 
         result = "#{prop_val['inv_property']['short_description']}: #{value}"
 
