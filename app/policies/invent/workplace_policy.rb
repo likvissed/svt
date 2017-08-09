@@ -22,16 +22,12 @@ module Invent
     end
 
     # Если роль '***REMOVED***_user': есть ли у пользователя доступ на редактирование РМ указанного отдела.
-    # Если роль не '***REMOVED***_user', но ответственный за отдел (администратор и ответственный за отдел в одном лице): доступ
-    #   есть
-    # Если роль 'manager': доступ на изменение только по истечении разрешенного пользователям ЛК времени редактирования.
+    # Если роль 'manager': доступ есть
     def update?
       return true if admin?
 
       if user.has_role? :***REMOVED***_user
         division_access? && allowed_time?
-      elsif division_access?
-        true
       elsif user.has_role? :manager
         true
       else
@@ -40,11 +36,14 @@ module Invent
     end
 
     # Если роль '***REMOVED***_user': есть ли у пользователя доступ на удаление РМ указанного отдела.
+    # Если роле не '***REMOVED***_user', но ответственный за отдел + доступ по времени открыт: доступ есть
     def destroy?
       return true if admin?
 
       if user.has_role? :***REMOVED***_user
         division_access? && allowed_time? && !confirmed?
+      elsif user.has_role? :manager
+        allowed_time?
       else
         false
       end

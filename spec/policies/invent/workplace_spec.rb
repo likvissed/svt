@@ -104,32 +104,6 @@ module Invent
           expect(subject).to permit(manager, Workplace.find(workplace.workplace_id))
         end
       end
-
-      # context 'with another role' do
-      #   let(:admin_user) { create :user }
-      #
-      #   it 'grants access to the workplace' do
-      #     expect(subject).to permit(admin_user, Workplace.find(workplace.workplace_id))
-      #   end
-      #
-      #   context 'and when out of allowed time' do
-      #     let(:workplace_count) { create :inactive_workplace_count, users: [***REMOVED***_user] }
-      #
-      #     it 'grants access to the workplace' do
-      #       expect(subject).to permit(admin_user, Workplace.find(workplace.workplace_id))
-      #     end
-      #   end
-      #
-      #   context 'and when workplace status is confirmed' do
-      #     let(:workplace) do
-      #       create :workplace_mob, :add_items, items: %i[tablet], workplace_count: workplace_count, status: 'confirmed'
-      #     end
-      #
-      #     it 'grants access to the workplace' do
-      #       expect(subject).to permit(admin_user, Workplace.find(workplace.workplace_id))
-      #     end
-      #   end
-      # end
     end
 
     permissions :update? do
@@ -138,12 +112,50 @@ module Invent
 
       include_examples 'workplace policy with :***REMOVED***_user role'
 
-      context 'when not :***REMOVED***_user role, but there is an opportunity to manage workplaces' do
-        let(:another_user) { create :***REMOVED***_user }
-        let(:workplace_count) { create :active_workplace_count, users: [another_user] }
+      context 'with :manager role' do
+        let(:user) { create :***REMOVED***_user }
 
         it 'grants access to the workplace' do
-          expect(subject).to permit(another_user, Workplace.find(workplace.workplace_id))
+          expect(subject).to permit(user, Workplace.find(workplace.workplace_id))
+        end
+      end
+    end
+
+    permissions :destroy? do
+      let(:workplace_count) { create :active_workplace_count, users: [***REMOVED***_user] }
+      let!(:workplace) { create :workplace_mob, :add_items, items: %i[tablet], workplace_count: workplace_count }
+
+      context 'when :***REMOVED***_user role' do
+        context 'and with valid user, in allowed time, when workplace status is not confirmed' do
+          it 'grants access to the workplace' do
+            expect(subject).to permit(***REMOVED***_user, Workplace.find(workplace.workplace_id))
+          end
+        end
+
+        context 'and with invalid user' do
+          let(:another_user) { create :user, role: ***REMOVED***_user.role }
+
+          it 'denies access to the workplace' do
+            expect(subject).not_to permit(another_user, Workplace.find(workplace.workplace_id))
+          end
+        end
+
+        context 'and when out of allowed time' do
+          let(:workplace_count) { create :inactive_workplace_count, users: [***REMOVED***_user] }
+
+          it 'denies access to the workplace' do
+            expect(subject).not_to permit(***REMOVED***_user, Workplace.find(workplace.workplace_id))
+          end
+        end
+
+        context 'and when workplace status is confirmed' do
+          let(:workplace) do
+            create :workplace_mob, :add_items, items: %i[tablet], workplace_count: workplace_count, status: 'confirmed'
+          end
+
+          it 'denies access to the workplace' do
+            expect(subject).not_to permit(***REMOVED***_user, Workplace.find(workplace.workplace_id))
+          end
         end
       end
 
@@ -159,8 +171,8 @@ module Invent
         context 'and when out of allowed time' do
           let(:workplace_count) { create :inactive_workplace_count, users: [***REMOVED***_user] }
 
-          it 'grants access to the workplace' do
-            expect(subject).to permit(user, Workplace.find(workplace.workplace_id))
+          it 'denies access to the workplace' do
+            expect(subject).not_to permit(user, Workplace.find(workplace.workplace_id))
           end
         end
       end
