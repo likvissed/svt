@@ -10,7 +10,7 @@
 #
 # It's strongly recommended that you check this file into your version control system.
 
-ActiveRecord::Schema.define(version: 20170718080635) do
+ActiveRecord::Schema.define(version: 20170814065247) do
 
   create_table "roles", force: :cascade, options: "ENGINE=InnoDB DEFAULT CHARSET=utf8" do |t|
     t.string   "name",              limit: 64
@@ -22,12 +22,14 @@ ActiveRecord::Schema.define(version: 20170718080635) do
 
   create_table "standart_discrepancies", force: :cascade, options: "ENGINE=InnoDB DEFAULT CHARSET=utf8" do |t|
     t.integer  "item_id"
+    t.integer  "property_id"
     t.integer  "property_value_id"
     t.integer  "event"
     t.string   "new_value"
     t.datetime "created_at",        null: false
     t.datetime "updated_at",        null: false
     t.index ["item_id"], name: "index_standart_discrepancies_on_item_id", using: :btree
+    t.index ["property_id"], name: "fk_rails_d1c19a836e", using: :btree
     t.index ["property_value_id"], name: "index_standart_discrepancies_on_property_value_id", using: :btree
   end
 
@@ -72,4 +74,5 @@ ActiveRecord::Schema.define(version: 20170718080635) do
     t.index ["tn"], name: "index_users_on_tn", using: :btree
   end
 
+  add_foreign_key "standart_discrepancies", "invent_property", column: "property_id", primary_key: "property_id"
 end
