@@ -20,11 +20,6 @@ module Invent
     it { is_expected.to accept_nested_attributes_for(:inv_property_values).allow_destroy(true) }
 
     let(:workplace_count) { create :active_workplace_count, :default_user }
-    let(:secret_workplace) do
-      build :workplace_pk,
-            workplace_count: workplace_count,
-            workplace_specialization: WorkplaceSpecialization.find_by(name: :secret)
-    end
     let(:common_workplace) do
       build :workplace_pk,
             workplace_count: workplace_count,
@@ -128,7 +123,7 @@ module Invent
                   :without_property_values,
                   type_name: :pc,
                   invent_num: InvPcException.first.invent_num,
-                  workplace: secret_workplace
+                  workplace: common_workplace
           end
           let(:properties) { InvProperty.where(name: InvProperty::PC_EXCEPT) }
 

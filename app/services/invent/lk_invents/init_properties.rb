@@ -81,7 +81,7 @@ module Invent
                                  .as_json(include: :iss_reference_buildings)
 
         data[:iss_locations].each do |loc|
-          loc['name'] = "#{loc['name']} (#{loc['long_name']})" unless loc['name'] == 'Другое'
+          loc['name'] = "#{loc['name']} (#{loc['long_name']})" unless loc['long_name'].to_s.empty?
         end
       end
 
