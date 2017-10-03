@@ -11,24 +11,13 @@ module Invent
 
       def run
         prepare_tmp_params
-        @data = IO.popen("php #{Rails.root}/lib/generate_division_report.php '#{wp.to_json}'")
+        @data = IO.popen("php #{Rails.root}/lib/generate_division_report.php #{@division}")
       end
 
       private
 
       def prepare_tmp_params
         wp[:workplace_count] = WorkplaceCount.find_by(division: @division)
-        wp[:workplaces] = wp[:workplace_count].workplaces
-                            .includes(
-                              :iss_reference_site,
-                              :iss_reference_building,
-                              :iss_reference_room,
-                              :workplace_type,
-                              :user_iss,
-                              :inv_items
-                            )
-                            .where(status: :confirmed)
-                            .as_json(include: %i[iss_reference_site iss_reference_building iss_reference_room workplace_type user_iss inv_items])
       end
     end
   end

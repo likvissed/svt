@@ -12,7 +12,7 @@
       //Настройка для библиотеки DatePicker
       datePicker: {
         // Минимальная дата, возможная для установки
-        minDate: new Date(),
+        // minDate: new Date(),
         // Показывать/скрывать номер недели в году
         showWeeks:  false,
         // Локализация
