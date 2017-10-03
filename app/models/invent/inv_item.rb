@@ -58,7 +58,7 @@ module Invent
       @properties ||= inv_type.inv_properties
 
       # Отдельная проверка для ПК, моноблока, ноутбука
-      if InvType::TYPE_WITH_FILES.include?(inv_type.name) && !@pc_exceptions.include?(invent_num)
+      if InvType::TYPE_WITH_FILES.include?(inv_type.name) && !@pc_exceptions.any? { |s| s.casecmp(invent_num) == 0 }
         flags = prop_values_verification
 
         # Проверка наличия данных от аудита
@@ -72,7 +72,7 @@ module Invent
 
         # Если имя файла пришло пустым (не будет работать при создании нового item, только во время редактирования).
         config_file_verification unless flags[:file_name_exist]
-      elsif InvType::TYPE_WITH_FILES.include?(inv_type.name) && @pc_exceptions.include?(invent_num)
+      elsif InvType::TYPE_WITH_FILES.include?(inv_type.name) && @pc_exceptions.any? { |s| s.casecmp(invent_num) == 0 }
         exception_pc_prop_values_verification
       else
         inv_property_values.each { |prop_val| prop_value_verification(prop_val) }
