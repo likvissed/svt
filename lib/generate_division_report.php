@@ -11,8 +11,7 @@ include_once 'PHPRtfLite.php';
 //$workplaces = $par['workplaces']; // Массив РМ
 $dept = $argv[1];
 
-//$dbname = 'netadmin';
-$dbname = 'invent_development';
+$dbname = 'netadmin';
 
 $con = new DBConn ('cosmos', $dbname);
 $con->prepare_query('SELECT wi.workplace_id,u.fio_initials,iwt.short_description,irs.name AS site,irb.name as corp, irr.name FROM invent_workplace AS wi, invent_workplace_type as iwt, netadmin.user_iss AS u, netadmin.iss_reference_sites AS irs, netadmin.iss_reference_buildings AS irb, netadmin.iss_reference_rooms AS irr where u.id_tn=wi.id_tn AND irs.site_id=wi.location_site_id AND irb.building_id=wi.location_building_id AND irr.room_id=wi.location_room_id AND iwt.workplace_type_id=wi.workplace_type_id AND u.id_tn IN (SELECT id_tn FROM netadmin.user_iss WHERE dept=:dept) ORDER BY wi.workplace_id;');
@@ -181,10 +180,8 @@ class DBConn{
       case "cosmos":
                       #require_once 'cosmos_login.inc.php';
                       $this->host = 'sql***REMOVED***.npopm.ru';
-//                      $this->user = 'inv_prod';
-//                      $this->pass = 'yk%pzD{2lE1k}V7~';
-                      $this->user = 'inv_dev';
-                      $this->pass = '33Lq4wbp%3@J';
+                      $this->user = 'inv_prod';
+                      $this->pass = 'yk%pzD{2lE1k}V7~';
                       break;
     }
       $dsn = 'mysql:host='.$this->host.';dbname='.$dbname;
