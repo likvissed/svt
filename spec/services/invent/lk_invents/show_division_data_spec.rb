@@ -30,6 +30,23 @@ module Invent
         it 'puts the :users at least with %w[id_tn fio] keys' do
           expect(subject.data[:users].first.as_json).to include('id_tn', 'fio')
         end
+
+        context 'and when responsible user was dismissed' do
+          let(:dismissed_user) { build :invalid_user }
+          let!(:workplace) do
+            w = build :workplace_pk,
+                      :add_items,
+                      items: %i[pc monitor],
+                      workplace_count: workplace_count,
+                      id_tn: dismissed_user.id_tn
+            w.save(validate: false)
+            w
+          end
+
+          it 'must add "Ответственный не найден" to the fio field' do
+            expect(subject.data[:workplaces].first['fio']).to match 'Ответственный не найден'
+          end
+        end
       end
     end
   end

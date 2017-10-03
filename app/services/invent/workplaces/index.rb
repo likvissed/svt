@@ -51,7 +51,7 @@ module Invent
           include: %i[iss_reference_site iss_reference_building iss_reference_room user_iss workplace_count]
         ).each do |wp|
           wp['location'] = wp_location_string(wp)
-          wp['responsible'] = wp['user_iss']['fio']
+          wp['responsible'] = wp['user_iss'] ? wp['user_iss']['fio'] : 'Ответственный не найден'
           wp['status'] = Workplace.translate_enum(:status, wp['status'])
           wp['division'] = wp['workplace_count']['division']
 

@@ -94,6 +94,24 @@ module Invent
       it 'must create @workplaces variable' do
         expect(subject.instance_variable_get :@workplaces).not_to be_nil
       end
+
+      context 'when responsible user was dismissed' do
+        let(:dismissed_user) { build :invalid_user }
+        let!(:workplace) do
+          w = build :workplace_pk,
+                    :add_items,
+                    items: %i[pc monitor],
+                    workplace_count: workplace_count,
+                    id_tn: dismissed_user.id_tn
+
+          w.save(validate: false)
+          w
+        end
+
+        it 'must add "Ответственный не найден" to the responsible field' do
+          expect(subject.data[:workplaces].first['responsible']).to match 'Ответственный не найден'
+        end
+      end
     end
   end
 end

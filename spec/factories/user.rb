@@ -12,7 +12,7 @@ FactoryGirl.define do
   end
 
   factory :***REMOVED***_user, class: User do
-    id_tn 12880
+    id_tn ***REMOVED***
     tn ***REMOVED***
     phone '***REMOVED***'
     division ***REMOVED***
@@ -24,7 +24,7 @@ FactoryGirl.define do
 
   factory :***REMOVED***_user, class: User do
     id_tn 5336
-    tn ***REMOVED***
+    tn 24_079
     phone '39-45'
     division ***REMOVED***
     email 'v***REMOVED***@***REMOVED***.ru'
@@ -34,6 +34,7 @@ FactoryGirl.define do
   end
 
   factory :invalid_user, class: User do
-    tn 123321
+    id_tn 111_222
+    tn 123_321
   end
 end

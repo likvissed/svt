@@ -62,8 +62,8 @@ module Invent
 
       def prepare_to_***REMOVED***_table(wp)
         wp['short_description'] = wp['workplace_type']['short_description'] if wp['workplace_type']
-        wp['fio'] = wp['user_iss']['fio_initials']
-        wp['duty'] = wp['user_iss']['duty']
+        wp['fio'] = wp['user_iss'] ? wp['user_iss']['fio_initials'] : 'Ответственный не найден'
+        wp['duty'] = wp['user_iss'] ? wp['user_iss']['duty'] : 'Ответственный не найден'
         wp['location'] = "Пл. '#{wp['iss_reference_site']['name']}', корп.
 #{wp['iss_reference_building']['name']}, комн. #{wp['iss_reference_room']['name']}"
         wp['status'] = Workplace.translate_enum(:status, wp['status'])
