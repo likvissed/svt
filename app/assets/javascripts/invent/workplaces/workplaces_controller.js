@@ -54,9 +54,14 @@
     self.dtOptions = DTOptionsBuilder
       .newOptions()
       .withBootstrap()
+      .withOption('serverSide', true)
+      .withOption('processing', true)
       .withOption('initComplete', initComplete)
       .withOption('stateSave', true)
-      .withDataProp('workplaces')
+      .withLanguage({
+        searchPlaceholder: 'ФИО'
+      })
+      .withDataProp('data')
       .withOption('ajax', {
         url: '/invent/workplaces.json',
         data: {
@@ -104,6 +109,8 @@
     ];
 
     function initComplete(settings, json) {
+      // $('.dataTables_filter input').off().on('input', function (e) {});
+
       // Создание подписки на канал WorkplacesChannel для обновления автоматического обновления таблицы.
       var consumer = new ActionCableChannel('WorkplacesChannel');
       consumer.subscribe(function () {
@@ -120,7 +127,7 @@
      */
     function renderIndex(data, type, full, meta) {
       self.workplaces[data.workplace_id] = data;
-      return meta.row + 1;
+      return meta.settings._iDisplayStart + meta.row + 1;
     }
 
     /**

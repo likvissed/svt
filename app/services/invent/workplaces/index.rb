@@ -2,17 +2,20 @@ module Invent
   module Workplaces
     # Загрузить все рабочие места.
     class Index < ApplicationService
-      # init_filters- флаг, определяющий, нужно ли загрузить данные для фильтров.
-      # filters - объект, содержащий выбранные фильтры.
-      def initialize(init_filters = false, filters = false)
+      def initialize(params)
         @data = {}
-        @init_filters = init_filters
-        @filters = filters
+        @draw = params[:draw]
+        @start = params[:start]
+        @length = params[:length]
+        @search = params[:search]
+        @init_filters = params[:init_filters]
+        @filters = params[:filters]
       end
 
       def run
         load_workplace
         run_filters if @filters
+        limit_records
         prepare_to_render
         load_filters if @init_filters
 
@@ -23,11 +26,10 @@ module Invent
 
       def load_workplace
         @workplaces = Workplace
-                        .includes(:iss_reference_site, :iss_reference_building, :iss_reference_room, :user_iss, :workplace_count)
-                        .left_outer_joins(:workplace_type)
-                        .left_outer_joins(:inv_items)
+                        .left_outer_joins(:workplace_type, :inv_items, :user_iss)
                         .select('invent_workplace.*, invent_workplace_type.short_description as wp_type,
  count(invent_item.item_id) as count')
+                        .where('fio LIKE ? OR fio is NULL', "%#{@search[:value]}%")
                         .group(:workplace_id)
       end
 
@@ -44,10 +46,19 @@ module Invent
         unless @filters['workplace_type_id'].to_i.zero?
           @workplaces = @workplaces.where(workplace_type_id: @filters['workplace_type_id'])
         end
+
+      end
+
+      # Ограничение выборки взависимости от выбранного пользователем номера страницы.
+      def limit_records
+        @data[:recordsFiltered] = @workplaces.length
+        @workplaces = @workplaces
+                        .includes(:iss_reference_site, :iss_reference_building, :iss_reference_room, :user_iss, :workplace_count)
+                        .limit(@length).offset(@start)
       end
 
       def prepare_to_render
-        @data[:workplaces] = @workplaces.as_json(
+        @data[:data] = @workplaces.as_json(
           include: %i[iss_reference_site iss_reference_building iss_reference_room user_iss workplace_count]
         ).each do |wp|
           wp['location'] = wp_location_string(wp)
@@ -61,6 +72,9 @@ module Invent
           wp.delete('iss_reference_room')
           wp.delete('user_iss')
         end
+
+        @data[:draw] = @draw
+        @data[:recordsTotal] = Workplace.count
       end
 
       # Загрузить данные для фильтров

@@ -8,14 +8,28 @@ module Invent
       let(:workplace_count_***REMOVED***) { create :active_workplace_count, division: ***REMOVED***, users: [user] }
       let!(:workplace) { create :workplace_pk, :add_items, items: %i[pc monitor], workplace_count: workplace_count }
       let!(:workplace_***REMOVED***) { create :workplace_mob, :add_items, items: %i[notebook], status: :confirmed, workplace_count: workplace_count_***REMOVED*** }
+      let(:params) do
+        {
+          draw: 1,
+          start: 0,
+          length: 25,
+          search: { value: '', regex: '' },
+          init_filters: false,
+          filters: false
+        }
+      end
+      subject { Index.new(params) }
       before { subject.run }
 
-      it 'fills the @data object with %i[workplaces] keys' do
-        expect(subject.data).to include(:workplaces)
+      it 'fills the @data object with %i[data draw recordsTotal recordsFiltered] keys' do
+        expect(subject.data).to include(:data, :draw, :recordsTotal, :recordsFiltered)
       end
 
       context 'with init_filters' do
-        subject { Index.new(true) }
+        subject do
+          params[:init_filters] = true
+          Index.new(params)
+        end
 
         it 'assigns %i[divisions statuses types] to the :filters key' do
           expect(subject.data[:filters]).to include(:divisions, :statuses, :types)
@@ -30,7 +44,7 @@ module Invent
         end
 
         it 'returns all workplaces data' do
-          expect(subject.data[:workplaces].count).to eq Workplace.count
+          expect(subject.data[:data].count).to eq Workplace.count
         end
 
         its(:run) { is_expected.to be_truthy }
@@ -45,11 +59,14 @@ module Invent
               workplace_type_id: 0
             }
           end
-          subject { Index.new(false, filter.as_json) }
+          subject do
+            params[:filters] = filter.as_json
+            Index.new(params)
+          end
 
           it 'returns filtered data' do
-            expect(subject.data[:workplaces].count).to eq 1
-            expect(subject.data[:workplaces].first['workplace_count_id']).to eq workplace.workplace_count_id
+            expect(subject.data[:data].count).to eq 1
+            expect(subject.data[:data].first['workplace_count_id']).to eq workplace.workplace_count_id
           end
         end
 
@@ -61,11 +78,14 @@ module Invent
               workplace_type_id: 0
             }
           end
-          subject { Index.new(false, filter.as_json) }
+          subject do
+            params[:filters] = filter.as_json
+            Index.new(params)
+          end
 
           it 'returns filtered data' do
-            expect(subject.data[:workplaces].count).to eq 1
-            expect(subject.data[:workplaces].first['workplace_count_id']).to eq workplace_***REMOVED***.workplace_count_id
+            expect(subject.data[:data].count).to eq 1
+            expect(subject.data[:data].first['workplace_count_id']).to eq workplace_***REMOVED***.workplace_count_id
           end
         end
 
@@ -77,17 +97,20 @@ module Invent
               workplace_type_id: workplace.workplace_type_id
             }
           end
-          subject { Index.new(false, filter.as_json) }
+          subject do
+            params[:filters] = filter.as_json
+            Index.new(params)
+          end
 
           it 'returns filtered data' do
-            expect(subject.data[:workplaces].count).to eq 1
-            expect(subject.data[:workplaces].first['workplace_type_id']).to eq workplace.workplace_type_id
+            expect(subject.data[:data].count).to eq 1
+            expect(subject.data[:data].first['workplace_type_id']).to eq workplace.workplace_type_id
           end
         end
       end
 
       it 'fills the workplaces array at least with %w[division responsibles phone date-range waiting ready] keys' do
-        expect(subject.data[:workplaces].first)
+        expect(subject.data[:data].first)
           .to include('division', 'wp_type', 'responsible', 'location', 'count', 'status')
       end
 
@@ -109,7 +132,7 @@ module Invent
         end
 
         it 'must add "Ответственный не найден" to the responsible field' do
-          expect(subject.data[:workplaces].first['responsible']).to match 'Ответственный не найден'
+          expect(subject.data[:data].first['responsible']).to match 'Ответственный не найден'
         end
       end
     end

@@ -6,7 +6,7 @@ module Invent
       respond_to do |format|
         format.html
         format.json do
-          @index = Workplaces::Index.new(params[:init_filters], params[:filters])
+          @index = Workplaces::Index.new(params)
 
           if @index.run
             render json: @index.data

@@ -18,8 +18,8 @@ module Invent
 
         it 'creates an array of workplace hashes which must includes %w[division wp_type responsible location count
  status] keys' do
-          get :index, format: :json
-          expect(assigns(:workplaces).first).to include(
+          get :index, format: :json, params: { search: { value: '', regex: 'false' }, draw: 1, start: 0, length: 25 }
+          expect(assigns(:index).data[:data].first).to include(
             'division', 'wp_type', 'responsible', 'location', 'count', 'status'
           )
         end
