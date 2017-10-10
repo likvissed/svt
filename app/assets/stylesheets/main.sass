@@ -23,7 +23,7 @@ button, input[type='submit']
 
 textarea
   resize: none
-  
+
 /* ================================================ Основной контент ================================================ */
 
 .bg-content
@@ -68,7 +68,7 @@ a.default-color
   height: 0
   width: 0
   overflow: hidden
-  
+
 /* ================================================ Страницы входа на сайт ========================================== */
 
 .auth-header
@@ -126,7 +126,7 @@ a.default-color
   .dataTables_filter
     label
       width: 100% !important
-    
+
 #index_list_wp
   .manually
     background-color: #c5e4ff
@@ -137,7 +137,14 @@ ul.nav-tabs
   li.uib-tab.manage > a
     color: $gray-base
     border: 1px solid $nav-tabs-border-color
-    
+
   li.uib-tab i.destroy-item:hover
     color: $btn-danger-bg
     cursor: pointer
+
+.test-form
+  @extend .form-control
+  background-color: transparent
+  border: 0
+  padding: 0
+  width: 140px !important

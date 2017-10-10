@@ -44,6 +44,10 @@ class ApplicationController < ActionController::Base
       class_name = Invent::WorkplaceCount
       type = :modal
       attrs = 'ng-click="wpCount.openWpCountEditModal()"'
+    when 'workplaces'
+      class_name = Invent::Workplace
+      type = :page
+      attrs = "href=#{new_invent_workplace_path}"
     end
 
     link = create_link_to_new_record(type, class_name, attrs)
@@ -70,9 +74,10 @@ class ApplicationController < ActionController::Base
     if type == :modal
       "<button class='btn btn-primary btn-block btn-sm' #{params}>Добавить</button>"
     elsif type == :page
-      "<form class='button_to' method='get' action='#{params}'>
-        <input class='btn btn-primary btn-block btn-sm' type='submit' value='Добавить'>
-      </form>"
+      # "<form class='button_to' method='get' action='#{params}'>
+      #   <input class='btn btn-primary btn-block btn-sm' type='submit' value='Добавить'>
+      # </form>"
+      "<a class='btn btn-primary btn-block btn-sm' #{params}>Добавить</a>"
     end
   end
 

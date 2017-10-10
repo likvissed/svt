@@ -27,7 +27,7 @@
     this.selectWpType = { workplace_type_id: -1, long_description: 'Выберите тип' };
     // Поле select, предлагающее выбрать вид деятельности
     this.selectWpSpec = { workplace_specialization_id: -1, short_description: 'Выберите вид' };
-    // Список отделов, прикрепленных к пользователю
+    // Список отделов
     this.divisions = [];
     // Поле select, предлагающее выбрать площадку
     this.selectIssLocation = { site_id: -1, name: 'Выберите площадку' };
@@ -41,16 +41,6 @@
 
 // ====================================== Шаблоны данных ===============================================================
 
-    // Шаблон данных выбранного отдела
-    this._templateDivision = {
-      // Объект выбранного отдела массива this.divisions
-      selected: null,
-      // Список работников отдела
-      users: [],
-      //{ id_tn: -1, fio: 'Выберите ФИО' }
-      // Список рабочих мест выбранного отдела
-      workplaces: []
-    };
     // Шаблон данных о рабочем месте (новом или редактируемом)
     this._templateWorkplace = {
       workplace_id: 0,
@@ -137,42 +127,90 @@
   };
 
   /**
+   * Установка параметров, полученных с сервера.
+   *
+   * @param data - полученные с сервера данные
+   */
+  Workplace.prototype._setProperties = function (data) {
+    var self = this;
+
+    angular.forEach(data.prop_data.iss_locations, function (value) {
+      value.iss_reference_buildings = [self.selectIssBuilding].concat(value.iss_reference_buildings);
+    });
+    this.Item.setTypes(data.prop_data.eq_types);
+
+    // Типы РМ
+    this.wp_types = [self.selectWpType].concat(data.prop_data.wp_types);
+    // Направления работы на рабочих местах
+    this.specs = [self.selectWpSpec].concat(data.prop_data.specs);
+    // Список площадок и корпусов
+    this.iss_locations = [self.selectIssLocation].concat(data.prop_data.iss_locations);
+
+    this.statuses = data.prop_data.statuses;
+    this.divisions = data.divisions;
+
+    this.additional.fileKey = parseInt(data.prop_data.pc_config_key);
+    this.additional.pcAttrs = angular.copy(data.prop_data.file_depending);
+    this.additional.singleItems = angular.copy(data.prop_data.single_pc_items);
+    this.additional.pcTypes = angular.copy(data.prop_data.type_with_files);
+    this.additional.secretExceptions = angular.copy(data.prop_data.secret_exceptions);
+  };
+
+  /**
    * Получить данные о РМ.
    */
   Workplace.prototype.init = function (id) {
     var self = this;
 
-    return this.$http
-      .get('/invent/workplaces/' + id + '/edit.json')
-      .success(function (data) {
-        self.workplace = angular.copy(data.wp_data);
+    if (id) {
+      return this.Server.Workplace.edit({ id: id },
+        function (data) {
+          self.workplace = angular.copy(data.wp_data);
+          self.users = data.prop_data.users;
 
-        angular.forEach(data.prop_data.iss_locations, function (value) {
-          value.iss_reference_buildings = [self.selectIssBuilding].concat(value.iss_reference_buildings);
-        });
-        self.Item.setTypes(data.prop_data.eq_types);
+          self._setProperties(data);
+          self._addObjects();
 
-        // Типы РМ
-        self.wp_types = [self.selectWpType].concat(data.prop_data.wp_types);
-        // Направления работы на рабочих местах
-        self.specs = [self.selectWpSpec].concat(data.prop_data.specs);
-        // Список площадок и корпусов
-        self.iss_locations = [self.selectIssLocation].concat(data.prop_data.iss_locations);
+          self.workplace.division = angular.copy($.grep(self.divisions, function (el) {
+            if (el.workplace_count_id == self.workplace.workplace_count_id) { return true; }
+          }))[0];
+        }, function (response, status) {
+          self.Error.response(response, status);
+        }).$promise;
+    } else {
+      return this.Server.Workplace.new(
+        function (data) {
+          self.workplace = angular.copy(self._templateWorkplace);
+          self.users = [];
 
-        self.users = data.prop_data.users;
-        self.statuses = data.prop_data.statuses;
+          self._setProperties(data);
 
-        self.additional.fileKey = parseInt(data.prop_data.pc_config_key);
-        self.additional.pcAttrs = angular.copy(data.prop_data.file_depending);
-        self.additional.singleItems = angular.copy(data.prop_data.single_pc_items);
-        self.additional.pcTypes = angular.copy(data.prop_data.type_with_files);
-        self.additional.secretExceptions = angular.copy(data.prop_data.secret_exceptions);
+          self.workplace.division = angular.copy(self.divisions[0]);
+        }, function (response, status) {
+          self.Error.response(response, status);
+        }).$promise;
+    }
+  };
 
-        self._addObjects();
-      })
-      .error(function (response, status) {
+  /**
+   * Загрузить список работников отдела.
+   */
+  Workplace.prototype.loadUsers = function () {
+    var self = this;
+
+    if (!this.workplace.division)
+      return false;
+
+    this.workplace.workplace_count_id = this.workplace.division.workplace_count_id;
+
+    return this.Server.UserIss.usersFromDivision(
+      { division: this.workplace.division.division },
+      function (data) {
+        self.users = angular.copy(data);
+      },
+      function (response, status) {
         self.Error.response(response, status);
-      });
+      }).$promise;
   };
 
   /**
@@ -202,14 +240,42 @@
   Workplace.prototype.getAuditData = function (item) {
     var self = this;
 
-    this.$http
-      .get('/invent/workplaces/pc_config_from_audit/' + item.invent_num)
-      .success(function (data) {
+    this.Server.Workplace.pcConfigFromAudit(
+      { invent_num: item.invent_num },
+      function (data) {
         self.Item.setPcProperties(item, data);
-      })
-      .error(function (response, status) {
+      },
+      function (response, status) {
         self.Error.response(response, status);
       });
+  };
+
+  /**
+   * Отправить файл на сервер для расшифровки. Возвращает расшифрованные данные в виде строки.
+   *
+   * @param file - загружаемый файл
+   */
+  Workplace.prototype.matchUploadFile = function (file) {
+    var
+      self = this,
+      formData = new FormData();
+
+    formData.append('pc_file', file);
+
+
+
+    return this.$http
+      .post('/invent/workplaces/pc_config_from_user/',
+        formData,
+        {
+          headers: { 'Content-Type': undefined },
+          transformRequest: angular.identity
+        }
+      )
+      .success(function (response) {})
+      .error(function (response, status) {
+        self.Error.response(response, status);
+      })
   };
 
   /**
@@ -234,28 +300,17 @@
         function success(response) {
           self.$window.location.href = response.location;
         },
-        function error(response) {
-          self.Error.response(response);
-        }
-      );
+        function error(response, status) {
+          self.Error.response(response, status);
+        });
     } else {
-      // return this.$http
-      //   .post(this._host + 'create_workplace',
-      //     formData,
-      //     {
-      //       headers: { 'Content-Type': undefined },
-      //       transformRequest: angular.identity
-      //     }
-      //   )
-      //   .success(function (response) {
-      //     self.getDivision('workplaces').push(response.workplace);
-      //
-      //     if (response.full_message)
-      //       self.$dialogs.notify(response.full_message);
-      //   })
-      //   .error(function (response) {
-      //     self.$dialogs.error(response.full_message);
-      //   })
+      this.Server.Workplace.save(formData,
+        function (response) {
+          self.$window.location.href = response.location;
+        },
+        function (response, status) {
+          self.Error.response(response, status);
+        });
     }
   };
 

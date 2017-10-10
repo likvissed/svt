@@ -3,22 +3,22 @@
 
 .navbar-sign-in
   border-bottom: 1px solid $navbar-border-color
-  
+
 [role="navigation-top"]
   height: 70px
-  background-color: #fafafa 
+  background-color: #fafafa
   margin-bottom: 0
   color: $navbar-main-bg-color
-  
+
   .container
     height: 100%
-  
+
   // Вся шапка
   .navbar-header
     height: 100%
     width: 100%
     position: relative
-    
+
   // Логотип ***REMOVED*** + имя сайта
   .navbar-header-brand
     display: table-cell
@@ -26,25 +26,25 @@
 
     @-moz-document url-prefix()
       min-width: 414px
-    
+
     .navbar-brand-logo
       display: table-cell
-      
+
       img
         max-height: 60px
         margin: 5px 0
-        
+
     .navbar-brand-title
       display: table-cell
       font-size: 19px
       padding: 0 25px
-        
+
       .navbar-brand-title-content
         padding: 10px 25px
         border:
           left: 1px solid $navbar-border-color
           right: 1px solid $navbar-border-color
-        
+
         a
           display: block
           color: darken($navbar-top-text-color, 15%)
@@ -53,30 +53,30 @@
 
           &:hover
             color: darken($navbar-top-text-color, 30%)
-      
+
   // Информация и пользователе + индикатор загрузки
   .navbar-header-info
     display: table-cell
     vertical-align: middle
     width: 30%
     min-width: 153px
-    
+
     .navbar-user-info
       display: table-cell
       vertical-align: middle
-      
+
       .navbar-user-info-content
         span
           display: block
-          
+
         [data-role="user-type"]
           font-size: 0.875em
           font-weight: bold
-  
+
         [data-role="user-name"]
           font-size: 0.9em
           color: $main-corp-color
-      
+
     .navbar-loading
       display: table-cell
       vertical-align: middle
@@ -89,7 +89,7 @@
     vertical-align: middle
     text-align: right
     width: 100%
-    
+
     .navbar-right
       height: 100%
       display: inline-block
@@ -99,22 +99,22 @@
         display: inline-block
         padding: 0 10px
         border-left: 1px solid $navbar-border-color
-        
+
         &:first-child
           border-left: none
-          
+
         a
           line-height: 1em
           color: $navbar-main-bg-color
           padding: 0
-          
+
           &:hover
-            color: $main-corp-color 
+            color: $main-corp-color
             background: transparent
-            
+
           &:focus
             background: transparent
-            
+
         i
           margin-right: 5px
           color: $main-corp-color
@@ -124,13 +124,13 @@
   border-color: $navbar-main-bg-color
   min-height: $navbar-main-height !important
   letter-spacing: .025em
-  
+
   //.container
     height: 100%
-    
+
   //.navbar-collapse-main
     height: 100% !important
-  
+
   // Выделенное меню текущей страницы.
   .active > a
     color: $navbar-main-text-color !important
@@ -139,42 +139,42 @@
   .open:not(.active) > a
     background-color: $navbar-top-bg-color !important
     color: $main-font-color !important
-      
+
   // Первый уровень меню
   .navbar-nav
     > li
       margin:
         top: -1px
         bottom: -1px
-      
+
       > a
         padding:
           top: 10px
           bottom: 10px
         color: $navbar-main-text-color
-        
+
         // Случай, когда пользователь дважды подряд кликает на dropdown-menu и убирает фокус с меню (цвет текста должен
         // остаться темным)
         &:focus:not(:hover)
           color: $navbar-main-text-color
-          
+
         &:hover
           background-color: $navbar-top-bg-color
-          
+
   // Второй уровень меню (если выбранный dropdown неактивный)
   .dropdown:hover:not(.active)
     @include navbar-show-dropdown-menu
 
     > a
       color: $main-font-color !important
-          
+
   // Второй уровень меню (если выбранный dropdown активный)
   .dropdown:hover
     @include navbar-show-dropdown-menu
-    
+
   .navbar-header
     height: 100%
-    
+
     // Иконка, всплывающая на xs экранах
     .navbar-toggle
       margin: 5px 10px
@@ -182,17 +182,18 @@
 
       .icon-bar
         background-color: $navbar-main-text-color
-      
+
       &:hover
         background-color: $navbar-top-bg-color
 
         .icon-bar
           background-color: $navbar-main-bg-color
-        
+
   .dropdown-menu
     background-color: $navbar-top-bg-color !important
 
 [role="navigation-content"]
+  min-width: 878px
   border-top-left-radius: $border-radius-base
   border-top-right-radius: $border-radius-base
   border:

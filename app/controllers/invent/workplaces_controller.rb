@@ -17,6 +17,32 @@ module Invent
       end
     end
 
+    def new
+      respond_to do |format|
+        format.html { session[:workplace_prev_url] = request.referrer }
+        format.json do
+          @new_wp = Workplaces::NewWp.new
+
+          if @new_wp.run
+            render json: @new_wp.data
+          else
+            render json: { full_message: 'Обратитесь к администратору, т.***REMOVED***' }, status: 422
+          end
+        end
+      end
+    end
+
+    def create
+      @create = LkInvents::CreateWorkplace.new(current_user, workplace_params, params[:pc_file])
+
+      if @create.run
+        flash[:notice] = 'Рабочее место создано'
+        render json: { location: session[:workplace_prev_url] }
+      else
+        render json: { full_message: @create.errors.full_messages.join('. ') }, status: 422
+      end
+    end
+
     def list_wp
       respond_to do |format|
         format.html
@@ -39,6 +65,16 @@ module Invent
         render json: @pc_config.data
       else
         render json: { full_message: @pc_config.errors.full_messages.join('. ') }, status: 422
+      end
+    end
+
+    def pc_config_from_user
+      @pc_file = LkInvents::PcConfigFromUser.new(params[:pc_file])
+
+      if @pc_file.run
+        render json: { data: @pc_file.data, full_message: 'Файл добавлен' }
+      else
+        render json: { full_message: @pc_file.errors.full_messages.join('. ') }, status: 422
       end
     end
 

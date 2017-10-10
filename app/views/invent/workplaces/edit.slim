@@ -1,15 +1,4 @@
 = title "Редактирование рабочего места"
 
-.container ng-controller="WorkplaceEditCtrl as wp" ng-init="wp.init(#{@workplace.workplace_id || 0})"
-  .well-main
-    form ng-submit="wp.saveWorkplace()"
-      = render partial: 'workplace_header'
-      .well-content
-        .row
-          .col-md-7.col-lg-6.col-xlg-6
-            = render partial: 'common_data'
-          .col-md-17.col-lg-18.col-xlg-18
-            = render partial: 'item_list'
-
-= render partial: 'manually_pc_modal'
-= render partial: 'new_item'
+.container ng-controller="WorkplaceEditCtrl as wp" ng-init="wp.init(#{@workplace.workplace_id})"
+  = render partial: 'edit_form'

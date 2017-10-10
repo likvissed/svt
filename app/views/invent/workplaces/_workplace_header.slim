@@ -1,16 +1,18 @@
 .navbar.navbar-default role="navigation-content"
-  .navbar-header
-    = button_tag "", class: "navbar-toggle", "data-toggle": "collapse", "data-target": ".navbar-collapse-content" do
-      span.sr-only Toggle navigation
-      span.icon-bar
-      span.icon-bar
-      span.icon-bar
-
   .collapse.navbar-collapse.navbar-collapse-content
+    .navbar-text
+      ' Отдел:
     .navbar-form.navbar-left
+      /= text_field_tag "workplace[division]", "", class: "form-control", "ng-model": "wp.workplace.division",
+        "ng-blur": "wp.loadUsers()"
+
       .form-group
-        ' Отдел:
-        = text_field_tag "workplace[division]", "", class: "form-control", "ng-model": "wp.workplace.division"
+        ui-select ng-model="wp.workplace.division" on-select="wp.loadUsers()" theme="bootstrap"
+          ui-select-match
+            | {{ $select.selected.division }}
+          ui-select-choices repeat="obj in wp.divisions | filter: $select.search"
+            div ng-bind-html="obj.division | highlight: $select.search"
+
       /.form-group
         span<>
         = button_tag type: :button, class: "btn-default" do

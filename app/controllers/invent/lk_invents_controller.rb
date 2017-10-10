@@ -12,6 +12,7 @@ module Invent
 
     def svt_access
       @svt_access = LkInvents::SvtAccess.new(params[:tn])
+
       if @svt_access.run
         render json: @svt_access.data
       else
@@ -53,6 +54,7 @@ module Invent
 
     def pc_config_from_user
       @pc_file = LkInvents::PcConfigFromUser.new(params[:pc_file])
+
       if @pc_file.run
         render json: { data: @pc_file.data, full_message: 'Файл добавлен' }
       else

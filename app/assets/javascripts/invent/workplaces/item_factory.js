@@ -498,19 +498,15 @@
        * Распарсить загруженный файл, найти в нем все параметры, необходимые для ПК.
        *
        * @param item - объект техники, для которого пользователь загружает файл.
-       * @param encrypted_data - данные, прочитанные из файла.
+       * @param data - данные, прочитанные из файла (их возвращает сервер).
        */
-      matchDataFromUploadedFile: function (item, encrypted_data) {
+      matchDataFromUploadedFile: function (item, data) {
         var
-          res = '',
-          sym = '',
+          res,
+          error = false,
           matchedObj = {};
 
-        for (var i = 0, len = encrypted_data.length; i < len; i++) {
-          sym = event.target.result[i].charCodeAt(0);
-          res += String.fromCharCode(sym ^ additional.fileKey);
-        }
-
+        res = data.replace(/ +/g, ' ');
         matchedObj.video = res.match(/\[video\]\s+(.*)\s+\[mb\]/m);
         matchedObj.mb = res.match(/\[mb\]\s+(.*)\s+\[cpu\]/m);
         matchedObj.cpu = res.match(/\[cpu\]\s+(.*)\s+\[ram\]/m);
@@ -518,6 +514,11 @@
         matchedObj.hdd = res.match(/\[hdd\]\s+(.*)/m);
 
         angular.forEach(additional.pcAttrs, function (attr_value) {
+          if (!matchedObj[attr_value]) {
+            error = true;
+            return false;
+          }
+
           if (matchedObj[attr_value]) {
             matchedObj[attr_value] = matchedObj[attr_value][1].split(';');
 
@@ -528,7 +529,12 @@
           }
         });
 
-        _setPcProperties(item, matchedObj);
+        if (error) {
+          return false;
+        } else {
+          _setPcProperties(item, matchedObj);
+          return true;
+        }
       },
       /**
        * Записать в модель workplace.inv_items данные о выбранной модели выбранного типа оборудования.

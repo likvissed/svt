@@ -24,6 +24,8 @@ Rails.application.routes.draw do
         put 'confirm', to: 'workplaces#confirm'
         # Получить данные о системном блоке из аудита
         get 'pc_config_from_audit/:invent_num', to: 'workplaces#pc_config_from_audit', constraints: { invent_num: /.*/ }
+        # Расшифровать файл конфигурации ПК, загруженный пользователем.
+        post 'pc_config_from_user', to: 'workplaces#pc_config_from_user'
         # Скачать скрипт для генерации файла конфигурации ПК
         get 'pc_script', to: 'workplaces#send_pc_script'
       end
@@ -69,6 +71,9 @@ Rails.application.routes.draw do
 
   # Получить html-код кнопки "Добавить запись"
   get 'link/new_record', to: 'application#link_to_new_record'
+
+  # Получить список пользователей указанного отдела
+  get 'user_isses/users_from_division/:division', to: 'user_isses#users_from_division'
 
   mount ActionCable.server, at: '/cable'
 end

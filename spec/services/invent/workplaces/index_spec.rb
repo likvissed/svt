@@ -109,6 +109,10 @@ module Invent
         end
       end
 
+      it 'loads the number of records specified in params[:length]' do
+        expect(subject.data[:data].length).to be <= params[:length]
+      end
+
       it 'fills the workplaces array at least with %w[division responsibles phone date-range waiting ready] keys' do
         expect(subject.data[:data].first)
           .to include('division', 'wp_type', 'responsible', 'location', 'count', 'status')

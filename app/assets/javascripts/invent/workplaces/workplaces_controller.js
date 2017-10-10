@@ -81,7 +81,9 @@
       .withOption('createdRow', createdRow)
       .withDOM(
         '<"row"' +
-          '<"col-sm-8 col-md-12 col-lg-12 col-xlg-12 col-fhd-15">' +
+          '<"col-sm-4 col-md-3 col-lg-3 col-xlg-3 col-fhd-2"' +
+            '<"#workplaces.new-record">>' +
+          '<"col-sm-4 col-md-9 col-lg-9 col-xlg-9 col-fhd-13">' +
           '<"col-sm-4 col-md-3 col-lg-3 col-xlg-3 col-fhd-2"' +
             '<"workplaces-type-filter">>' +
           '<"col-sm-4 col-md-3 col-lg-3 col-xlg-3 col-fhd-2"' +
@@ -562,6 +564,19 @@
 
       // Данные о рабочем месте
       self.workplace = self.Workplace.workplace;
+
+      if (!id) { self.loadUsers(); }
+    });
+  };
+
+  /**
+   * Загрузить список работников отдела.
+   */
+  WorkplaceEditCtrl.prototype.loadUsers = function () {
+    var self = this;
+
+    this.Workplace.loadUsers().then(function () {
+      self.users = self.Workplace.users;
     });
   };
 
@@ -769,18 +784,24 @@
       return false;
     }
 
-    this.Item.setPcFile(file);
-    this.Item.setAdditional('auditData', true);
-    this.Item.setFileName(this.item, file.name);
+    this.Workplace.matchUploadFile(file).then(
+      function (response) {
+        self.Item.setPcFile(file);
+        self.Item.setAdditional('auditData', true);
+        self.Item.setFileName(self.item, file.name);
 
-    var reader = new FileReader();
-    reader.onload = function (event) {
-      self.Item.matchDataFromUploadedFile(self.item, event.target.result);
-      self.Item.setAdditional('invent_num', angular.copy(self.item.invent_num));
-      self.Flash.notice('Файл добавлен');
-      self.$uibModalInstance.close();
-    };
-    reader.readAsText(file);
+        if (!self.Item.matchDataFromUploadedFile(self.item, response.data.data)) {
+          self.Flash.alert('Не удалось обработать данные. Убедитесь в том, что вы загружаете файл, созданный скачанной программой. Если ошибка не исчезает, обратитесь к администратору (т.***REMOVED***)');
+          //self.invent.changeAuditData(self.item);
+
+          return false;
+        }
+
+        self.Item.setAdditional('invent_num', angular.copy(self.item.invent_num));
+        self.Flash.notice(response.data.full_message);
+        self.$uibModalInstance.close();
+      }
+    );
   };
 
 // =====================================================================================================================

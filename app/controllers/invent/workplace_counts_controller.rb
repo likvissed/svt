@@ -70,7 +70,6 @@ module Invent
     def workplace_count_params
       params.require(:workplace_count).permit(
         :workplace_count_id,
-        :count_wp,
         :division,
         :time_start,
         :time_end,

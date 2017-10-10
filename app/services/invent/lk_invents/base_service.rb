@@ -14,6 +14,8 @@ module Invent
       # 2. В найденном 'item' ищется 'inv_property_value' со свойством 'Отчет о конфигурации'
       # 3. Создается ключ ':file', в который записывается файл. В ключ ':value' записывается имя файла.
       def set_file_into_params
+        return false if @workplace_params[:inv_items_attributes].nil?
+
         type_with_files = InvType.where(name: InvType::TYPE_WITH_FILES).includes(:inv_properties)
 
         @workplace_params[:inv_items_attributes].each do |item|
