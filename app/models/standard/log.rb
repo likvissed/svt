@@ -1,5 +1,5 @@
-module  Standart
-  class Log < BaseStandart
+module  Standard
+  class Log < BaseStandard
     belongs_to :inv_item, class_name: 'Invent::InvItem', foreign_key: 'item_id'
     belongs_to :user
 

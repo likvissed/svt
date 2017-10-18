@@ -1,4 +1,4 @@
-module Standart
+module Standard
   class SystemUnitsController < ApplicationController
     def index; end
 

@@ -1,5 +1,5 @@
-module Standart
-  class Discrepancy < BaseStandart
+module Standard
+  class Discrepancy < BaseStandard
     belongs_to :inv_item, class_name: 'Invent::InvItem', foreign_key: 'item_id'
     belongs_to :inv_property_value, class_name: 'Invent::InvPropertyValue', foreign_key: 'property_value_id', optional: true
 

@@ -26,4 +26,4 @@
 // App
 //= require_tree ./app
 //= require_tree ./invent
-//= require_tree ./standart
+//= require_tree ./standard

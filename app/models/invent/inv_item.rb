@@ -9,12 +9,12 @@ module Invent
              dependent: :destroy,
              inverse_of: :inv_item
     has_many :inv_properties, -> { order('invent_property.property_order') }, through: :inv_property_values
-    has_many :standart_discrepancies,
-             class_name: 'Standart::Discrepancy',
+    has_many :standard_discrepancies,
+             class_name: 'Standard::Discrepancy',
              foreign_key: 'item_id',
              dependent: :destroy,
              inverse_of: :inv_item
-    has_many :standart_logs, class_name: 'Standart::Log', foreign_key: 'item_id', inverse_of: :inv_item
+    has_many :standard_logs, class_name: 'Standard::Log', foreign_key: 'item_id', inverse_of: :inv_item
 
     belongs_to :inv_type, foreign_key: 'type_id'
     belongs_to :workplace, optional: true

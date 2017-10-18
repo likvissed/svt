@@ -10,7 +10,7 @@
 #
 # It's strongly recommended that you check this file into your version control system.
 
-ActiveRecord::Schema.define(version: 20170817044317) do
+ActiveRecord::Schema.define(version: 20171018041102) do
 
   create_table "roles", force: :cascade, options: "ENGINE=InnoDB DEFAULT CHARSET=utf8" do |t|
     t.string   "name",              limit: 64
@@ -20,7 +20,7 @@ ActiveRecord::Schema.define(version: 20170817044317) do
     t.datetime "updated_at",                   null: false
   end
 
-  create_table "standart_discrepancies", force: :cascade, options: "ENGINE=InnoDB DEFAULT CHARSET=utf8" do |t|
+  create_table "standard_discrepancies", force: :cascade, options: "ENGINE=InnoDB DEFAULT CHARSET=utf8" do |t|
     t.integer  "item_id"
     t.integer  "property_id"
     t.integer  "property_value_id"
@@ -28,29 +28,29 @@ ActiveRecord::Schema.define(version: 20170817044317) do
     t.string   "new_value"
     t.datetime "created_at",        null: false
     t.datetime "updated_at",        null: false
-    t.index ["item_id"], name: "index_standart_discrepancies_on_item_id", using: :btree
+    t.index ["item_id"], name: "index_standard_discrepancies_on_item_id", using: :btree
     t.index ["property_id"], name: "fk_rails_d1c19a836e", using: :btree
-    t.index ["property_value_id"], name: "index_standart_discrepancies_on_property_value_id", using: :btree
+    t.index ["property_value_id"], name: "index_standard_discrepancies_on_property_value_id", using: :btree
   end
 
-  create_table "standart_log_details", force: :cascade, options: "ENGINE=InnoDB DEFAULT CHARSET=utf8" do |t|
+  create_table "standard_log_details", force: :cascade, options: "ENGINE=InnoDB DEFAULT CHARSET=utf8" do |t|
     t.integer  "log_id"
     t.integer  "property_id"
     t.string   "old_detail"
     t.string   "new_detail"
     t.datetime "created_at",  null: false
     t.datetime "updated_at",  null: false
-    t.index ["log_id"], name: "index_standart_log_details_on_log_id", using: :btree
-    t.index ["property_id"], name: "index_standart_log_details_on_property_id", using: :btree
+    t.index ["log_id"], name: "index_standard_log_details_on_log_id", using: :btree
+    t.index ["property_id"], name: "index_standard_log_details_on_property_id", using: :btree
   end
 
-  create_table "standart_logs", force: :cascade, options: "ENGINE=InnoDB DEFAULT CHARSET=utf8" do |t|
+  create_table "standard_logs", force: :cascade, options: "ENGINE=InnoDB DEFAULT CHARSET=utf8" do |t|
     t.integer  "item_id"
     t.string   "username"
     t.integer  "event"
     t.datetime "created_at", null: false
     t.datetime "updated_at", null: false
-    t.index ["item_id"], name: "index_standart_logs_on_item_id", using: :btree
+    t.index ["item_id"], name: "index_standard_logs_on_item_id", using: :btree
   end
 
   create_table "users", force: :cascade, options: "ENGINE=InnoDB DEFAULT CHARSET=utf8" do |t|
@@ -73,5 +73,5 @@ ActiveRecord::Schema.define(version: 20170817044317) do
     t.index ["tn"], name: "index_users_on_tn", using: :btree
   end
 
-  add_foreign_key "standart_discrepancies", "invent_property", column: "property_id", primary_key: "property_id"
+  add_foreign_key "standard_discrepancies", "invent_property", column: "property_id", primary_key: "property_id"
 end

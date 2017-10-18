@@ -65,7 +65,7 @@ Rails.application.routes.draw do
   end
 
   # Эталоны
-  namespace :standart do
+  namespace :standard do
 
   end
 

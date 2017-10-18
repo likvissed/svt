@@ -3,8 +3,8 @@ module Invent
     self.primary_key = :property_value_id
     self.table_name = "#{table_name_prefix}property_value"
 
-    has_one :standart_discrepancy,
-            class_name: 'Standart::Discrepancy',
+    has_one :standard_discrepancy,
+            class_name: 'Standard::Discrepancy',
             foreign_key: 'property_value_id',
             inverse_of: :inv_property_value
 
