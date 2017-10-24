@@ -3,7 +3,7 @@ module Invent
     self.primary_key = :workplace_id
     self.table_name = "#{table_name_prefix}workplace"
 
-    has_many :inv_items, inverse_of: :workplace
+    has_many :inv_items, inverse_of: :workplace, dependent: :nullify
     belongs_to :workplace_type
     belongs_to :workplace_specialization
     belongs_to :workplace_count
@@ -15,8 +15,8 @@ module Invent
     validates :id_tn,
               presence: true,
               numericality: { only_integer: true },
-              reduce: true
-    validates :id_tn, user_iss_by_id_tn: true, unless: -> { errors.any? }
+              reduce: true, unless: :status_freezed?
+    validates :id_tn, user_iss_by_id_tn: true, unless: -> { errors.any? || status_freezed? }
     validates :workplace_count_id,
               presence: true,
               numericality: { greater_than: 0, only_integer: true }
@@ -44,7 +44,7 @@ module Invent
 
     accepts_nested_attributes_for :inv_items, allow_destroy: true, reject_if: proc { |attr| attr['type_id'].to_i.zero? }
 
-    enum status: { confirmed: 0, pending_verification: 1, disapproved: 2 }
+    enum status: { confirmed: 0, pending_verification: 1, disapproved: 2, freezed: 3 }
 
     # Удалить РМ, связанные экземпляры техники, значения их свойств, а также загруженные файлы.
     def destroy_from_***REMOVED***
@@ -56,6 +56,10 @@ module Invent
           raise ActiveRecord::Rollback
         end
       end
+    end
+
+    def status_freezed?
+      status == 'freezed'
     end
 
     private

@@ -46,6 +46,9 @@ module Invent
           @workplaces = @workplaces.where(workplace_type_id: @filters['workplace_type_id'])
         end
 
+        unless @filters['workplace_id'].to_i.zero?
+          @workplaces = @workplaces.where(workplace_id: @filters['workplace_id'])
+        end
       end
 
       # Ограничение выборки взависимости от выбранного пользователем номера страницы.

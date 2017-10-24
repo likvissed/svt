@@ -51,17 +51,35 @@ module Invent
       end
 
       context 'with filters' do
-        context 'with division filter' do
+        subject do
+          params[:filters] = filter.as_json
+          Index.new(params)
+        end
+
+        context 'with id fitler' do
           let(:filter) do
             {
-              workplace_count_id: workplace_count.workplace_count_id,
+              workplace_id: workplace.workplace_id,
+              workplace_count_id: 0,
               status: 'all',
               workplace_type_id: 0
             }
           end
-          subject do
-            params[:filters] = filter.as_json
-            Index.new(params)
+
+          it 'returns filtered data' do
+            expect(subject.data[:data].count).to eq 1
+            expect(subject.data[:data].first['workplace_count_id']).to eq workplace.workplace_count_id
+          end
+        end
+
+        context 'with division filter' do
+          let(:filter) do
+            {
+              workplace_id: 0,
+              workplace_count_id: workplace_count.workplace_count_id,
+              status: 'all',
+              workplace_type_id: 0
+            }
           end
 
           it 'returns filtered data' do
@@ -73,14 +91,11 @@ module Invent
         context 'with status filter' do
           let(:filter) do
             {
+              workplace_id: 0,
               workplace_count_id: 0,
               status: 'confirmed',
               workplace_type_id: 0
             }
-          end
-          subject do
-            params[:filters] = filter.as_json
-            Index.new(params)
           end
 
           it 'returns filtered data' do
@@ -92,14 +107,11 @@ module Invent
         context 'with type filter' do
           let(:filter) do
             {
+              workplace_id: 0,
               workplace_count_id: 0,
               status: 'all',
               workplace_type_id: workplace.workplace_type_id
             }
-          end
-          subject do
-            params[:filters] = filter.as_json
-            Index.new(params)
           end
 
           it 'returns filtered data' do

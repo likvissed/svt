@@ -4,7 +4,7 @@ module Invent
   RSpec.describe Workplace, type: :model do
     let!(:workplace_count) { create :active_workplace_count, :default_user }
 
-    it { is_expected.to have_many(:inv_items).dependent(false) }
+    it { is_expected.to have_many(:inv_items).dependent(:nullify) }
     it { is_expected.to belong_to(:workplace_type) }
     it { is_expected.to belong_to(:workplace_specialization) }
     it { is_expected.to belong_to(:workplace_count) }
@@ -13,7 +13,6 @@ module Invent
     it { is_expected.to belong_to(:iss_reference_building).with_foreign_key('location_building_id') }
     it { is_expected.to belong_to(:iss_reference_room).with_foreign_key('location_room_id') }
 
-    it { is_expected.to validate_presence_of(:id_tn) }
     it { is_expected.to validate_presence_of(:workplace_count_id) }
     it { is_expected.to validate_presence_of(:workplace_type_id) }
     it { is_expected.to validate_presence_of(:workplace_specialization_id) }
@@ -21,7 +20,6 @@ module Invent
     it { is_expected.to validate_presence_of(:location_building_id) }
     it { is_expected.to validate_presence_of(:location_room_id) }
 
-    it { is_expected.to validate_numericality_of(:id_tn).only_integer }
     it { is_expected.to validate_numericality_of(:workplace_count_id).is_greater_than(0).only_integer }
     it { is_expected.to validate_numericality_of(:workplace_type_id).is_greater_than(0).only_integer }
     it { is_expected.to validate_numericality_of(:workplace_specialization_id).is_greater_than(0).only_integer }
@@ -47,6 +45,20 @@ module Invent
     end
 
     describe '#check_id_tn' do
+      context 'when status :freezed' do
+        before { allow(subject).to receive(:status_freezed?).and_return(true) }
+
+        it { is_expected.not_to validate_presence_of(:id_tn) }
+        it { is_expected.not_to validate_numericality_of(:id_tn).only_integer }
+      end
+
+      context 'when status is not :freezed' do
+        before { allow(subject).to receive(:status_freezed?).and_return(false) }
+
+        it { is_expected.to validate_presence_of(:id_tn) }
+        it { is_expected.to validate_numericality_of(:id_tn).only_integer }
+      end
+
       context 'when id_tn is set and right' do
         subject { build(:workplace_pk, :add_items, items: %i[pc monitor monitor], workplace_count: workplace_count) }
 

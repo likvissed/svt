@@ -109,6 +109,16 @@ module Invent
       end
     end
 
+    def destroy
+      @workplace = Workplace.find(params[:workplace_id])
+
+      if @workplace.destroy
+        render json: { full_message: 'Рабочее место удалено' }
+      else
+        render json: { full_message: @workplace.errors.full_messages.join('. ') }, status: 422
+      end
+    end
+
     def confirm
       @confirm = Workplaces::Confirm.new(params[:type], params[:ids])
       if @confirm.run

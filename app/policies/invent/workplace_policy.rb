@@ -4,7 +4,13 @@ module Invent
     def create?
       return true if admin?
 
-      division_access? && allowed_time?
+      if user.has_role? :***REMOVED***_user
+        division_access? && allowed_time?
+      elsif user.has_role? :manager
+        true
+      else
+        false
+      end
     end
 
     # Если роль '***REMOVED***_user': есть ли у пользователя доступ на редактирование РМ указанного отдела.

@@ -49,6 +49,7 @@
           $timeout(function () {
             $compile(element.find('.new-record'))(scope);
 
+            $compile(element.find('.workplaces-id-filter'))(scope);
             $compile(element.find('.workplaces-division-filter'))(scope);
             $compile(element.find('.workplaces-status-filter'))(scope);
             $compile(element.find('.workplaces-type-filter'))(scope);
@@ -67,6 +68,7 @@
             // Для таблицы РМ
             if (scope.wpIndex) {
               return [
+                scope.wpIndex.selectedIdFilter,
                 scope.wpIndex.selectedDivisionFilter,
                 scope.wpIndex.selectedStatusFilter,
                 scope.wpIndex.selectedTypeFilter

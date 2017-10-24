@@ -8,7 +8,7 @@
     .controller('ManuallyPcDialogCtrl', ManuallyPcDialogCtrl)
     .controller('SelectItemTypeCtrl', SelectItemTypeCtrl);
 
-  WorkplaceIndexCtrl.$inject = ['$scope', '$compile', '$controller', 'DTOptionsBuilder', 'DTColumnBuilder', 'ActionCableChannel', 'Config', 'Error', 'Cookies'];
+  WorkplaceIndexCtrl.$inject = ['$scope', '$compile', '$controller', 'DTOptionsBuilder', 'DTColumnBuilder', 'ActionCableChannel', 'Server', 'Config', 'Flash', 'Error', 'Cookies'];
   WorkplaceListCtrl.$inject = ['$scope', '$compile', '$controller', 'DTOptionsBuilder', 'DTColumnBuilder', 'ActionCableChannel', 'Server', 'Config', 'Flash', 'Error', 'Cookies'];
   WorkplaceEditCtrl.$inject = ['$filter', '$timeout', '$uibModal', 'Flash', 'Config', 'Workplace', 'Item'];
   ManuallyPcDialogCtrl.$inject = ['$uibModalInstance', 'Flash', 'Workplace', 'Item', 'item'];
@@ -19,12 +19,14 @@
    *
    * @class SVT.WorkplaceIndexCtrl
    */
-  function WorkplaceIndexCtrl($scope, $compile, $controller, DTOptionsBuilder, DTColumnBuilder, ActionCableChannel, Config, Error, Cookies) {
+  function WorkplaceIndexCtrl($scope, $compile, $controller, DTOptionsBuilder, DTColumnBuilder, ActionCableChannel, Server, Config, Flash, Error, Cookies) {
     var self = this;
 
 // =============================================== Инициализация =======================================================
 
+    self.Server = Server;
     self.Config = Config;
+    self.Flash = Flash;
     self.Error = Error;
     self.Cookies = Cookies;
     self.Cookies.Workplace.init();
@@ -69,6 +71,7 @@
           init_filters: true,
           // Сохраненные фильтры.
           filters: {
+            workplace_id: self.Cookies.Workplace.get('tableIdFilter') || '',
             workplace_count_id: self.Cookies.Workplace.get('tableDivisionFilter') || self.divisionFilters[0].workplace_count_id,
             status: self.Cookies.Workplace.get('tableStatusFilter') || Object.keys(this.statusFilters)[0],
             workplace_type_id: self.Cookies.Workplace.get('tableTypeFilter') || self.typeFilters[0].workplace_type_id
@@ -83,7 +86,9 @@
         '<"row"' +
           '<"col-sm-4 col-md-3 col-lg-3 col-xlg-3 col-fhd-2"' +
             '<"#workplaces.new-record">>' +
-          '<"col-sm-4 col-md-9 col-lg-9 col-xlg-9 col-fhd-13">' +
+          '<"col-md-6 col-lg-6 col-xlg-6 col-fhd-11">' +
+          '<"col-sm-4 col-md-3 col-lg-3 col-xlg-3 col-fhd-2"' +
+            '<"workplaces-id-filter">>' +
           '<"col-sm-4 col-md-3 col-lg-3 col-xlg-3 col-fhd-2"' +
             '<"workplaces-type-filter">>' +
           '<"col-sm-4 col-md-3 col-lg-3 col-xlg-3 col-fhd-2"' +
@@ -99,15 +104,15 @@
       );
 
     self.dtColumns = [
-      DTColumnBuilder.newColumn(null).withTitle('').withOption('className', 'col-fhd-1').renderWith(renderIndex),
-      DTColumnBuilder.newColumn('division').withTitle('Отдел').withOption('className', 'col-fhd-2'),
-      DTColumnBuilder.newColumn('wp_type').withTitle('Тип').withOption('className', 'col-fhd-4'),
-      DTColumnBuilder.newColumn('responsible').withTitle('Ответственный').withOption('className', 'col-fhd-6'),
-      DTColumnBuilder.newColumn('location').withTitle('Расположение').withOption('className', 'col-fhd-5'),
-      DTColumnBuilder.newColumn('count').withTitle('Кол-во техники').withOption('className', 'col-fhd-2'),
-      DTColumnBuilder.newColumn('status').withTitle('Статус').notSortable().withOption('className', 'col-fhd-3').renderWith(statusRecord),
-      DTColumnBuilder.newColumn(null).withTitle('').notSortable().withOption('className', 'col-fhd-1 text-center').renderWith(editRecord)
-      // DTColumnBuilder.newColumn(null).withTitle('').notSortable().withOption('className', 'col-fhd-1 text-center').renderWith(delRecord)
+      DTColumnBuilder.newColumn('workplace_id').withTitle('ID').notSortable().withOption('className', 'col-fhd-1'),
+      DTColumnBuilder.newColumn('division').withTitle('Отдел').notSortable().withOption('className', 'col-fhd-2'),
+      DTColumnBuilder.newColumn('wp_type').withTitle('Тип').notSortable().withOption('className', 'col-fhd-4'),
+      DTColumnBuilder.newColumn('responsible').withTitle('Ответственный').notSortable().withOption('className', 'col-fhd-6'),
+      DTColumnBuilder.newColumn('location').withTitle('Расположение').notSortable().withOption('className', 'col-fhd-5'),
+      DTColumnBuilder.newColumn('count').withTitle('Кол-во техники').notSortable().withOption('className', 'col-fhd-2'),
+      DTColumnBuilder.newColumn('status').withTitle('Статус').notSortable().notSortable().withOption('className', 'col-fhd-2').renderWith(statusRecord),
+      DTColumnBuilder.newColumn(null).withTitle('').notSortable().withOption('className', 'col-fhd-1 text-center').renderWith(editRecord),
+      DTColumnBuilder.newColumn(null).withTitle('').notSortable().withOption('className', 'col-fhd-1 text-center').renderWith(delRecord)
     ];
 
     function initComplete(settings, json) {
@@ -122,14 +127,6 @@
       if (json.filters) {
         self._setFilters(json.filters);
       }
-    }
-
-    /**
-     * Показать номер строки.
-     */
-    function renderIndex(data, type, full, meta) {
-      self.workplaces[data.workplace_id] = data;
-      return meta.settings._iDisplayStart + meta.row + 1;
     }
 
     /**
@@ -155,6 +152,10 @@
           break;
         case 'Отклонено':
           labelClass = 'label-danger';
+          break;
+        case 'Заморожено':
+          labelClass = 'label-primary';
+          break;
       }
 
       return '<span class="label ' + labelClass + '">' + data + '</span>';
@@ -165,15 +166,17 @@
      */
     function editRecord(data, type, full, meta) {
       return '<a href="/invent/workplaces/' + data.workplace_id + '/edit" class="default-color pointer"' +
-        ' uib-tooltip="Редактировать запись" tooltip-append-to-body="true"><i class="fa fa-pencil-square-o fa-1g"></a>';
+        ' uib-tooltip="Редактировать состав рабочего места" tooltip-append-to-body="true"><i ' +
+        'class="fa fa-pencil-square-o fa-1g"></a>';
     }
 
     /**
      * Отрендерить ссылку на удаление данных.
      */
     function delRecord(data, type, full, meta) {
-      return '<a href="" class="text-danger pointer" disable-link=true ng-click="wpIndex.destroyRecord(' +
-        data.workplace_id + ')" uib-tooltip="Удалить запись"><i class="fa fa-trash-o fa-1g"></a>';
+      return '<a href="" class="text-danger pointer" disable-link=true ng-click="wpIndex.destroyWp(' +
+        data.workplace_id + ')" uib-tooltip="Удалить рабочее место (с сохранением техники)" ' +
+        'tooltip-append-to-body="true"><i class="fa fa-trash-o fa-1g"></a>';
     }
   }
 
@@ -189,12 +192,20 @@
     Object.assign(this.statusFilters, data.statuses);
     this.typeFilters = this.typeFilters.concat(data.types);
 
+    // Установить выбранный фильтр по ID рабочего места
+    cookieVal = this.Cookies.Workplace.get('tableIdFilter');
+    if (angular.isUndefined(cookieVal)) {
+      this.selectedIdFilter = '';
+    } else {
+      this.selectedIdFilter = cookieVal;
+    }
+
     // Установить выбранный фильтр по отделам
     cookieVal = this.Cookies.Workplace.get('tableDivisionFilter');
     if (angular.isUndefined(cookieVal)) {
       this.selectedDivisionFilter = this.divisionFilters[0];
     } else {
-      this.selectedDivisionFilter = $.grep(this.divisionFilters, function (el) { return el.workplace_count_id == cookieVal })[0];
+      this.selectedDivisionFilter = this.divisionFilters.find(function (el) { return el.workplace_count_id == cookieVal })
     }
 
     // Установить выбранный фильтр по статусам РМ
@@ -210,7 +221,7 @@
     if (angular.isUndefined(cookieVal)) {
       this.selectedTypeFilter = this.typeFilters[0];
     } else {
-      this.selectedTypeFilter = $.grep(this.typeFilters, function (el) { return el.workplace_type_id == cookieVal })[0];
+      this.selectedTypeFilter = this.typeFilters.find(function (el) { return el.workplace_type_id == cookieVal })
     }
   };
 
@@ -218,6 +229,7 @@
    * Записать выбранные фильтры в cookies.
    */
   WorkplaceIndexCtrl.prototype._setFilterCookies = function () {
+    this.Cookies.Workplace.set('tableIdFilter', this.selectedIdFilter);
     this.Cookies.Workplace.set('tableDivisionFilter', this.selectedDivisionFilter.workplace_count_id);
     this.Cookies.Workplace.set('tableStatusFilter', this.selectedStatusFilter);
     this.Cookies.Workplace.set('tableTypeFilter', this.selectedTypeFilter.workplace_type_id);
@@ -232,6 +244,7 @@
     this.dtInstance.changeData({
       data: {
         filters: {
+          workplace_id: this.selectedIdFilter,
           workplace_count_id: this.selectedDivisionFilter.workplace_count_id,
           status: this.selectedStatusFilter,
           workplace_type_id: this.selectedTypeFilter.workplace_type_id
@@ -242,9 +255,27 @@
 
   /**
    * Удалить рабочее место.
+   *
+   * @params id - id рабочего места.
    */
-  WorkplaceIndexCtrl.prototype.destroyRecord = function () {
+  WorkplaceIndexCtrl.prototype.destroyWp = function (id) {
+    var
+      self = this,
+      confirm_str = "Вы действительно хотите удалить рабочее место \"" + id + "\"?";
 
+    if (!confirm(confirm_str))
+      return false;
+
+    self.Server.Workplace.delete(
+      { workplace_id: id },
+      function (response) {
+        console.log(response);
+        self.Flash.notice(response.full_message);
+        self.dtInstance.reloadData(null, self.Config.global.reloadPaging);
+      },
+      function (response, status) {
+        self.Error.response(response, status);
+      });
   };
 
 // =====================================================================================================================
@@ -410,7 +441,7 @@
     if (angular.isUndefined(cookieVal)) {
       this.selectedDivisionFilter = this.divisionFilters[0];
     } else {
-      this.selectedDivisionFilter = $.grep(this.divisionFilters, function (el) { return el.workplace_count_id == cookieVal })[0];
+      this.selectedDivisionFilter = this.divisionFilters(function (el) { return el.workplace_count_id == cookieVal });
     }
   };
 

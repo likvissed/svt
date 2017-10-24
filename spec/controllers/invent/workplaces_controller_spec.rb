@@ -180,6 +180,21 @@ module Invent
       end
     end
 
+    describe 'DELETE #destroy' do
+      let!(:workplace) do
+        create :workplace_pk, :add_items, items: %i[pc monitor], workplace_count: workplace_count
+      end
+      subject { delete :destroy, params: { workplace_id: workplace.workplace_id } }
+
+      it 'destroys the selected workplace' do
+        expect { subject }.to change(Workplace, :count).by(-1)
+      end
+
+      it 'does not destroy items of the selected workplace' do
+        expect { subject }.not_to change(InvItem, :count)
+      end
+    end
+
     describe 'PUT #confirm' do
       it 'creates instance of the LkInvents::PcConfigFromAudit' do
         put :confirm

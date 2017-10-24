@@ -33,6 +33,7 @@ ru:
           confirmed: "Подтверждено"
           pending_verification: "В ожидании проверки"
           disapproved: "Отклонено"
+          freezed: "Заморожено"
 
       invent/workplace/inv_items:
         base: ""

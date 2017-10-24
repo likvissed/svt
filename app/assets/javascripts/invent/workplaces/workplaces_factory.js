@@ -80,13 +80,13 @@
     var self = this;
 
     // Находим объект с workplace_type_id
-    this.workplace.workplace_type = $.grep(angular.copy(this.wp_types), function (el) {
+    this.workplace.workplace_type = this.wp_types.find(function (el) {
       return self.workplace.workplace_type_id == el.workplace_type_id;
-    })[0];
+    });
 
-    this.workplace.location_site = $.grep(angular.copy(this.iss_locations), function (el) {
+    this.workplace.location_site = this.iss_locations.find(function (el) {
       return self.workplace.location_site_id == el.site_id;
-    })[0];
+    });
 
     angular.forEach(this.workplace.inv_items_attributes, function (item) { self.Item.addProperties(item); });
   };
@@ -120,7 +120,7 @@
       self = this,
       visibleArr = [];
 
-    visibleArr = $.grep(this.workplace.inv_items_attributes, function (el) { if (!el._destroy) return true; });
+    visibleArr = this.workplace.inv_items_attributes.filter(function (el) { if (!el._destroy) return true; });
     this.$timeout(function () {
       self.additional.activeTab = self.workplace.inv_items_attributes.indexOf(visibleArr[0]);
     }, 0);
@@ -171,9 +171,9 @@
           self._setProperties(data);
           self._addObjects();
 
-          self.workplace.division = angular.copy($.grep(self.divisions, function (el) {
+          self.workplace.division = self.divisions.find(function (el) {
             if (el.workplace_count_id == self.workplace.workplace_count_id) { return true; }
-          }))[0];
+          });
         }, function (response, status) {
           self.Error.response(response, status);
         }).$promise;

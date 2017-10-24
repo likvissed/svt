@@ -3,6 +3,7 @@
 
   app
     .directive('fileUpload', fileUpload)
+    .directive('workplacesIdFilter', workplacesIdFilter)
     .directive('workplacesDivisionFilter', workplacesDivisionFilter)
     .directive('workplacesStatusFilter', workplacesStatusFilter)
     .directive('workplacesTypeFilter', workplacesTypeFilter)
@@ -18,6 +19,16 @@
         });
       }
     };
+  }
+
+  // Фильтр РМ по ID
+  function workplacesIdFilter() {
+    return {
+      restrict: 'C',
+      template:
+      '<input type="test" class="form-control input-sm" placeholder="ID" ng-model="wpIndex.selectedIdFilter" ' +
+      'ng-model-options="{ debounce: 500 }" ng-change="wpIndex.changeFilter()">'
+    }
   }
 
   // Фильтр РМ по отделам
@@ -55,7 +66,7 @@
       'type.short_description for type in wpIndex.typeFilters" ng-change="wpIndex.changeFilter()"></select>'
     }
   }
-  
+
   // Кнопки Подтвердить/Отменить
   function workplaceListApprove() {
     return {
