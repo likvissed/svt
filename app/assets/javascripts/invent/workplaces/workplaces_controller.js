@@ -441,7 +441,7 @@
     if (angular.isUndefined(cookieVal)) {
       this.selectedDivisionFilter = this.divisionFilters[0];
     } else {
-      this.selectedDivisionFilter = this.divisionFilters(function (el) { return el.workplace_count_id == cookieVal });
+      this.selectedDivisionFilter = this.divisionFilters.find(function (el) { return el.workplace_count_id == cookieVal });
     }
   };
 
