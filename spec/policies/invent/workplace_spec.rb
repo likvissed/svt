@@ -151,18 +151,8 @@ module Invent
       context 'with :manager role' do
         let(:user) { create :***REMOVED***_user }
 
-        context 'and when in allowed time' do
-          it 'grants access to the workplace' do
-            expect(subject).to permit(user, Workplace.find(workplace.workplace_id))
-          end
-        end
-
-        context 'and when out of allowed time' do
-          let(:workplace_count) { create :inactive_workplace_count, users: [***REMOVED***_user] }
-
-          it 'denies access to the workplace' do
-            expect(subject).not_to permit(user, Workplace.find(workplace.workplace_id))
-          end
+        it 'grants access to the workplace' do
+          expect(subject).to permit(user, Workplace.find(workplace.workplace_id))
         end
       end
     end

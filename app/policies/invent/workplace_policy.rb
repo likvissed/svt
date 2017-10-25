@@ -49,7 +49,7 @@ module Invent
       if user.has_role? :***REMOVED***_user
         division_access? && allowed_time? && !confirmed?
       elsif user.has_role? :manager
-        allowed_time?
+        true
       else
         false
       end
