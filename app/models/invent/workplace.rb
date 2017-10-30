@@ -96,7 +96,10 @@ module Invent
 
       @types.each do |type|
         count = inv_items.select do |item|
-          next if item._destroy
+          # next if item._destroy
+          # Не считать технику, если она была удалена из списка. После удаления из списка, техника не будет удалена из
+          # БД, удалится только связь с текущим РМ.
+          next if item.item_id && item.workplace_id.nil?
 
           item.type_id == type.type_id
         end.length

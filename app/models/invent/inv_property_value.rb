@@ -31,6 +31,7 @@ module Invent
     private
 
     def save_file
+      return if inv_item.workplace_id.nil?
       raise 'abort' unless PcFile.new(property_value_id, file).upload
     end
 

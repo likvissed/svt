@@ -27,7 +27,7 @@ module Invent
     it { is_expected.to validate_numericality_of(:location_building_id).is_greater_than(0).only_integer }
     it { is_expected.to validate_numericality_of(:location_room_id).is_greater_than(0).only_integer }
 
-    it { is_expected.to accept_nested_attributes_for(:inv_items).allow_destroy(true) }
+    it { is_expected.to accept_nested_attributes_for(:inv_items).allow_destroy(false) }
 
     describe '#destroy_from_***REMOVED***' do
       let!(:workplace) do
