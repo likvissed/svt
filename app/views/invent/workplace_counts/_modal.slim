@@ -19,9 +19,8 @@ script type="text/ng-template" id="editWpCount.haml"
           abbr> title="Обязательное поле" *
           b Дата начала ввода данных
         = text_field_tag "workplace_count[time_start]", " modal.data.time_start ", class: "form-control",
-          "ng-model": "modal.data.time_start", "uib-datepicker-popup": "{{ modal.time_start.format }}",
-          "ng-model-options": "{ timezone: 'utc' }", "ng-focus": "modal.openDatePicker('time_start')",
-          "datepicker-options": "modal.dateOptions", "is-open": "modal.time_start.openDatePicker",
+          "ng-model": "modal.data.time_start", "uib-datepicker-popup": "", "ng-model-options": "{ timezone: 'utc' }",
+          "ng-focus": "modal.openDatePicker('time_start')", "is-open": "modal.time_start.openDatePicker",
           "popup-placement":"bottom-left", "show-button-bar": false
 
         span.help-block ng-show="modal.form['workplace_count[time_start]'].$invalid" ng-bind="modal.errorMessage('workplace_count[time_start]')"
@@ -31,9 +30,8 @@ script type="text/ng-template" id="editWpCount.haml"
           abbr> title="Обязательное поле" *
           b Дата окончания ввода данных
         = text_field_tag "workplace_count[time_end]", " modal.data.time_end ", class: "form-control",
-          "ng-model": "modal.data.time_end", "uib-datepicker-popup": "{{ modal.time_end.format }}",
-          "ng-model-options": "{ timezone: 'utc' }", "ng-focus": "modal.openDatePicker('time_end')",
-          "datepicker-options": "modal.dateOptions", "is-open": "modal.time_end.openDatePicker",
+          "ng-model": "modal.data.time_end", "uib-datepicker-popup": "", "ng-model-options": "{ timezone: 'utc' }",
+          "ng-focus": "modal.openDatePicker('time_end')", "is-open": "modal.time_end.openDatePicker",
           "popup-placement": "bottom-left", "show-button-bar": false
 
         span.help-block ng-show="modal.form['workplace_count[time_end]'].$invalid" ng-bind="modal.errorMessage('workplace_count[time_end]')"

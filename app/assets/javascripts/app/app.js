@@ -15,7 +15,6 @@ var app = angular
     'ngFileUpload'
   ]);
 
-
 app
   // Настройка ресурсов
   .config(['$resourceProvider', '$httpProvider', function($resourceProvider, $httpProvider) {
@@ -23,4 +22,10 @@ app
     $resourceProvider.defaults.stripTrailingSlashes = false;
     // Настройка для отслеживания AJAX запросов (нужно для индикатора загрузки)
     $httpProvider.interceptors.push('myHttpInterceptor');
+  }])
+  .config(['uibDatepickerConfig', 'Config', function (uibDatepickerConfig, Config) {
+    uibDatepickerConfig.showWeeks = Config.global.uibDatepickerPopupConfig.showWeeks;
+  }])
+  .config(['uibDatepickerPopupConfig', 'Config', function (uibDatepickerPopupConfig, Config) {
+    uibDatepickerPopupConfig.uibDatepickerPopup = Config.global.uibDatepickerPopupConfig.uibDatepickerPopup;
   }]);

@@ -237,21 +237,15 @@
     this.data = data.value;
     // Метод передачи данных (POST, PUT)
     this.method = data.method;
-    // Общие настройки календаря
-    this.dateOptions = Config.global.datePicker;
     // Настройка календаря 'time_start'
     this.time_start = {
       // Переменная определяющая начальное состояние календаря (false - скрыть, true - показать)
-      openDatePicker: false,
-      // Формат времени, который видит пользователь
-      format: Config.global.datePicker.longFormat
+      openDatePicker: false
     };
     // Настройка календаря 'time_end'
     this.time_end = {
       // Переменная определяющая начальное состояние календаря (false - скрыть, true - показать)
-      openDatePicker: false,
-      // Формат времени, который видит пользователь
-      format: Config.global.datePicker.longFormat
+      openDatePicker: false
     };
   }
 
