@@ -364,14 +364,14 @@
 
     if (item.id) {
       item._destroy = 1;
+      item.workplace_id = null;
+
       this.setFirstActiveTab(item);
     } else {
       this.setFirstActiveTab(item);
       this.workplace.inv_items_attributes.splice($.inArray(item, this.workplace.inv_items_attributes), 1);
       this.Item.clearPcMetadata(item);
     }
-
-
 
     this.additional.visibleCount --;
   };

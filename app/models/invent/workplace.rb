@@ -42,7 +42,7 @@ module Invent
 
     delegate :division, to: :workplace_count
 
-    accepts_nested_attributes_for :inv_items, allow_destroy: true, reject_if: proc { |attr| attr['type_id'].to_i.zero? }
+    accepts_nested_attributes_for :inv_items, reject_if: proc { |attr| attr['type_id'].to_i.zero? }
 
     enum status: { confirmed: 0, pending_verification: 1, disapproved: 2, freezed: 3 }
 
