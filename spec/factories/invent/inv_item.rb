@@ -6,7 +6,7 @@ module Invent
       location 'Location'
       model_id 0
       item_model ''
-      invent_num '764196'
+      sequence(:invent_num) { |i| 764196 + i }
       serial_num '222222'
       inv_type { InvType.find_by(name: type_name) }
 

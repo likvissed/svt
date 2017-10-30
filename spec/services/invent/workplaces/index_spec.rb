@@ -56,9 +56,27 @@ module Invent
           Index.new(params)
         end
 
+        context 'with invent_num filter' do
+          let(:filter) do
+            {
+              invent_num: workplace.inv_items.first.invent_num,
+              workplace_id: 0,
+              workplace_count_id: 0,
+              status: 'all',
+              workplace_type_id: 0
+            }
+          end
+
+          it 'returns filtered data' do
+            expect(subject.data[:data].count).to eq 1
+            expect(subject.data[:data].first['workplace_count_id']).to eq workplace.workplace_count_id
+          end
+        end
+
         context 'with id fitler' do
           let(:filter) do
             {
+              invent_num: '',
               workplace_id: workplace.workplace_id,
               workplace_count_id: 0,
               status: 'all',
@@ -75,6 +93,7 @@ module Invent
         context 'with division filter' do
           let(:filter) do
             {
+              invent_num: '',
               workplace_id: 0,
               workplace_count_id: workplace_count.workplace_count_id,
               status: 'all',
@@ -91,6 +110,7 @@ module Invent
         context 'with status filter' do
           let(:filter) do
             {
+              invent_num: '',
               workplace_id: 0,
               workplace_count_id: 0,
               status: 'confirmed',
@@ -107,6 +127,7 @@ module Invent
         context 'with type filter' do
           let(:filter) do
             {
+              invent_num: '',
               workplace_id: 0,
               workplace_count_id: 0,
               status: 'all',

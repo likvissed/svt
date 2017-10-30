@@ -71,6 +71,7 @@
           init_filters: true,
           // Сохраненные фильтры.
           filters: {
+            invent_num: self.Cookies.Workplace.get('tableInventNumFilter') || '',
             workplace_id: self.Cookies.Workplace.get('tableIdFilter') || '',
             workplace_count_id: self.Cookies.Workplace.get('tableDivisionFilter') || self.divisionFilters[0].workplace_count_id,
             status: self.Cookies.Workplace.get('tableStatusFilter') || Object.keys(this.statusFilters)[0],
@@ -84,18 +85,20 @@
       .withOption('createdRow', createdRow)
       .withDOM(
         '<"row"' +
-          '<"col-sm-4 col-md-3 col-lg-3 col-xlg-3 col-fhd-2"' +
+          '<"col-sm-4 col-md-4 col-lg-3 col-xlg-3 col-fhd-2 multiline-buffer"' +
             '<"#workplaces.new-record">>' +
-          '<"col-md-6 col-lg-6 col-xlg-6 col-fhd-11">' +
-          '<"col-sm-4 col-md-3 col-lg-3 col-xlg-3 col-fhd-2"' +
+          '<"col-lg-3 col-xlg-3 col-fhd-9">' +
+          '<"col-sm-4 col-md-4 col-lg-3 col-xlg-3 col-fhd-2 multiline-buffer"' +
+            '<"workplaces-invent-num-filter">>' +
+          '<"col-sm-4 col-md-4 col-lg-3 col-xlg-3 col-fhd-2 multiline-buffer"' +
             '<"workplaces-id-filter">>' +
-          '<"col-sm-4 col-md-3 col-lg-3 col-xlg-3 col-fhd-2"' +
+          '<"col-sm-4 col-md-4 col-lg-3 col-xlg-3 col-fhd-2 multiline-buffer"' +
             '<"workplaces-type-filter">>' +
-          '<"col-sm-4 col-md-3 col-lg-3 col-xlg-3 col-fhd-2"' +
+          '<"col-sm-4 col-md-4 col-lg-3 col-xlg-3 col-fhd-2 multiline-buffer"' +
             '<"workplaces-division-filter">>' +
-          '<"col-sm-4 col-md-3 col-lg-3 col-xlg-3 col-fhd-2"' +
+          '<"col-sm-4 col-md-4 col-lg-3 col-xlg-3 col-fhd-2 multiline-buffer"' +
             '<"workplaces-status-filter">>' +
-          '<"col-sm-4 col-md-3 col-lg-3 col-xlg-3 col-fhd-3"f>>' +
+          '<"col-sm-4 col-md-4 col-lg-3 col-xlg-3 col-fhd-3 multiline-buffer"f>>' +
         '<"row"' +
           '<"col-fhd-24"t>>' +
         '<"row"' +
@@ -192,6 +195,14 @@
     Object.assign(this.statusFilters, data.statuses);
     this.typeFilters = this.typeFilters.concat(data.types);
 
+    // Установить выбранный фильтр по инвентарному номеру
+    cookieVal = this.Cookies.Workplace.get('tableInventNumFilter');
+    if (angular.isUndefined(cookieVal)) {
+      this.selectedInventNumFilter = '';
+    } else {
+      this.selectedInventNumFilter = cookieVal;
+    }
+
     // Установить выбранный фильтр по ID рабочего места
     cookieVal = this.Cookies.Workplace.get('tableIdFilter');
     if (angular.isUndefined(cookieVal)) {
@@ -229,6 +240,7 @@
    * Записать выбранные фильтры в cookies.
    */
   WorkplaceIndexCtrl.prototype._setFilterCookies = function () {
+    this.Cookies.Workplace.set('tableInventNumFilter', this.selectedInventNumFilter);
     this.Cookies.Workplace.set('tableIdFilter', this.selectedIdFilter);
     this.Cookies.Workplace.set('tableDivisionFilter', this.selectedDivisionFilter.workplace_count_id);
     this.Cookies.Workplace.set('tableStatusFilter', this.selectedStatusFilter);
@@ -244,6 +256,7 @@
     this.dtInstance.changeData({
       data: {
         filters: {
+          invent_num: this.selectedInventNumFilter,
           workplace_id: this.selectedIdFilter,
           workplace_count_id: this.selectedDivisionFilter.workplace_count_id,
           status: this.selectedStatusFilter,

@@ -34,6 +34,10 @@ module Invent
 
       # Отфильтровать полученные данные
       def run_filters
+        unless @filters['invent_num'].empty?
+          @workplaces = @workplaces.left_outer_joins(:inv_items).where('invent_num LIKE ?', "%#{@filters['invent_num']}%")
+        end
+
         unless @filters['workplace_count_id'].to_i.zero?
           @workplaces = @workplaces.where(workplace_count_id: @filters['workplace_count_id'])
         end

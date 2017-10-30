@@ -3,6 +3,7 @@
 
   app
     .directive('fileUpload', fileUpload)
+    .directive('workplacesInventNumFilter', workplacesInventNumFilter)
     .directive('workplacesIdFilter', workplacesIdFilter)
     .directive('workplacesDivisionFilter', workplacesDivisionFilter)
     .directive('workplacesStatusFilter', workplacesStatusFilter)
@@ -21,12 +22,22 @@
     };
   }
 
+  // Фильтр РМ по инвентарному номеру
+  function workplacesInventNumFilter() {
+    return {
+      restrict: 'C',
+      template:
+      '<input type="text" class="form-control input-sm" placeholder="Инвентарный №" ' +
+      'ng-model-options="{ debounce: 500 }" ng-model="wpIndex.selectedInventNumFilter" ng-change="wpIndex.changeFilter()">'
+    }
+  }
+
   // Фильтр РМ по ID
   function workplacesIdFilter() {
     return {
       restrict: 'C',
       template:
-      '<input type="test" class="form-control input-sm" placeholder="ID" ng-model="wpIndex.selectedIdFilter" ' +
+      '<input type="text" class="form-control input-sm" placeholder="ID" ng-model="wpIndex.selectedIdFilter" ' +
       'ng-model-options="{ debounce: 500 }" ng-change="wpIndex.changeFilter()">'
     }
   }
