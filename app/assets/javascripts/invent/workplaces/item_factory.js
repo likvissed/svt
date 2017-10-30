@@ -20,6 +20,7 @@
         workplace_id: 0,
         location: '',
         invent_num: '',
+        serial_num: '',
         model_id: 0,
         item_model: '',
         inv_property_values_attributes: [],

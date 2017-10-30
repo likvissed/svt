@@ -158,6 +158,7 @@ module Invent
           :workplace_id,
           :location,
           :invent_num,
+          :serial_num,
           :_destroy,
           inv_property_values_attributes: %i[id property_id item_id property_list_id value _destroy]
         ]

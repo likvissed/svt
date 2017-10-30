@@ -35,9 +35,10 @@ module Invent
         within '#wp_item_list' do
           expect(all('li').count).to eq workplace.inv_items.count + 1
           expect(page).to have_field 'Инвентарный номер', with: workplace.inv_items.first.invent_num
+          expect(page).to have_field 'Серийный номер', with: workplace.inv_items.first.serial_num
           expect(page).to have_content 'Модель'
 
-          workplace.inv_items.first.inv_properties.reject{ |prop| !prop.mandatory || prop.name == 'config_file' }.each do |prop|
+          workplace.inv_items.first.inv_properties.reject { |prop| !prop.mandatory || prop.name == 'config_file' }.each do |prop|
             expect(page).to have_content prop.short_description
           end
         end
