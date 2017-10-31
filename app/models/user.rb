@@ -14,6 +14,7 @@ class User < ApplicationRecord
   validates :id_tn, uniqueness: { message: :tn_already_exists }
 
   after_validation :replace_nil
+  before_save :truncate_phone
 
   # Для тестов.
   attr_accessor :login, :email, :division, :tel
@@ -25,6 +26,10 @@ class User < ApplicationRecord
     elsif conditions.has_key?(:tn)
       where(conditions.to_hash).first
     end
+  end
+
+  def truncate_phone
+    self.phone = phone.slice(0, 10)
   end
 
   # Проверка наличия указанной роли у пользователя
