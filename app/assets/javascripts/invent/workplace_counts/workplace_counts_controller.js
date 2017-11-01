@@ -203,7 +203,7 @@
     if (!confirm(confirm_str))
       return false;
 
-    self.Server.WorkplaceCount.delete({ workplace_count_id: id },
+    self.Server.Invent.WorkplaceCount.delete({ workplace_count_id: id },
       // Success
       function (response) {
         self.Flash.notice(response.full_message);
@@ -278,7 +278,7 @@
     self.clearErrors();
 
     if (self.method == 'POST') {
-      self.Server.WorkplaceCount.save({ workplace_count: self.data },
+      self.Server.Invent.WorkplaceCount.save({ workplace_count: self.data },
         function success(response) {
           self.$uibModalInstance.close();
 
@@ -290,7 +290,7 @@
         }
       )
     } else {
-      self.Server.WorkplaceCount.update(
+      self.Server.Invent.WorkplaceCount.update(
         { workplace_count_id: self.data.workplace_count_id },
         { workplace_count: self.data },
         function success(response) {

@@ -119,51 +119,51 @@
    */
   function Server($resource) {
     return {
-      /**
-       * Ресурс модели рабочих мест.
-       */
-      Workplace: $resource('/invent/workplaces/:workplace_id.json', {}, {
-        new: {
-          method: 'GET',
-          url: '/invent/workplaces/new.json'
-        },
-        edit: {
-          method: 'GET',
-          url: '/invent/workplaces/:id/edit.json'
-        },
-        pcConfigFromAudit: {
-          method: 'GET',
-          url: '/invent/workplaces/pc_config_from_audit/:invent_num'
-        },
-        save: {
-          method: 'POST',
-          headers: { 'Content-Type': undefined },
-          transformRequest: angular.identity
-        },
-        pcConfigFromUser: {
-          method: 'POST',
-          url: '/invent/workplaces/pc_config_from_user'
-        },
-        update: {
-          method: 'PUT',
-          headers: { 'Content-Type': undefined },
-          transformRequest: angular.identity
-        },
-        confirm: {
-          method: 'PUT',
-          url: '/invent/workplaces/confirm'
-        }
-      }),
       Invent: {
+        /**
+         * Ресурс модели рабочих мест.
+         */
+        Workplace: $resource('/invent/workplaces/:workplace_id.json', {}, {
+          new: {
+            method: 'GET',
+            url: '/invent/workplaces/new.json'
+          },
+          edit: {
+            method: 'GET',
+            url: '/invent/workplaces/:id/edit.json'
+          },
+          pcConfigFromAudit: {
+            method: 'GET',
+            url: '/invent/workplaces/pc_config_from_audit/:invent_num'
+          },
+          save: {
+            method: 'POST',
+            headers: { 'Content-Type': undefined },
+            transformRequest: angular.identity
+          },
+          pcConfigFromUser: {
+            method: 'POST',
+            url: '/invent/workplaces/pc_config_from_user'
+          },
+          update: {
+            method: 'PUT',
+            headers: { 'Content-Type': undefined },
+            transformRequest: angular.identity
+          },
+          confirm: {
+            method: 'PUT',
+            url: '/invent/workplaces/confirm'
+          }
+        }),
+        /**
+         * Ресурс модели отделов с количеством рабочих мест.
+         */
+        WorkplaceCount: $resource('/invent/workplace_counts/:workplace_count_id.json', {}, { update: { method: 'PUT' } }),
         /**
          * Ресурс модели экземпляров техники.
          */
         Item: $resource('/invent/items/:item_id.json', {}, { query: { method: 'GET', isArray: false } })
       },
-      /**
-       * Ресурс модели отделов с количеством рабочих мест.
-       */
-      WorkplaceCount: $resource('/invent/workplace_counts/:workplace_count_id.json', {}, { update: { method: 'PUT' } }),
       /**
        * Ресурс модели работников отдела.
        */

@@ -279,7 +279,7 @@
     if (!confirm(confirm_str))
       return false;
 
-    self.Server.Workplace.delete(
+    self.Server.Invent.Workplace.delete(
       { workplace_id: id },
       function (response) {
         console.log(response);
@@ -554,7 +554,7 @@
       return false;
     }
 
-    this.Server.Workplace.confirm(
+    this.Server.Invent.Workplace.confirm(
       {
         type: type,
         ids: wpIds

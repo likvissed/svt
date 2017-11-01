@@ -163,7 +163,7 @@
     var self = this;
 
     if (id) {
-      return this.Server.Workplace.edit({ id: id },
+      return this.Server.Invent.Workplace.edit({ id: id },
         function (data) {
           self.workplace = angular.copy(data.wp_data);
           self.users = data.prop_data.users;
@@ -178,7 +178,7 @@
           self.Error.response(response, status);
         }).$promise;
     } else {
-      return this.Server.Workplace.new(
+      return this.Server.Invent.Workplace.new(
         function (data) {
           self.workplace = angular.copy(self._templateWorkplace);
           self.users = [];
@@ -240,7 +240,7 @@
   Workplace.prototype.getAuditData = function (item) {
     var self = this;
 
-    this.Server.Workplace.pcConfigFromAudit(
+    this.Server.Invent.Workplace.pcConfigFromAudit(
       { invent_num: item.invent_num },
       function (data) {
         self.Item.setPcProperties(item, data);
@@ -294,7 +294,7 @@
     formData.append('pc_file', this.Item.getPcFile());
 
     if (this.workplaceCopy.workplace_id) {
-      this.Server.Workplace.update(
+      this.Server.Invent.Workplace.update(
         { workplace_id: self.workplace.workplace_id },
         formData,
         function success(response) {
@@ -304,7 +304,7 @@
           self.Error.response(response, status);
         });
     } else {
-      this.Server.Workplace.save(formData,
+      this.Server.Invent.Workplace.save(formData,
         function (response) {
           self.$window.location.href = response.location;
         },
