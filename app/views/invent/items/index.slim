@@ -1,0 +1,32 @@
+= title "Список техники"
+
+#index_inv_item.container ng-controller="InventItemsCtrl as invItems"
+  .well
+    .row
+      .col-xlg-24
+        table.table.table-striped.table-condensed
+          thead
+            tr
+              th ID
+              th Тип
+              th Модель
+              th Инв. №
+              th ID РМ
+              th Ответственный
+              th Описание
+              th
+          tbody
+            tr ng-repeat="item in invItems.items"
+              td.col-xlg-1 ng-bind="item.item_id"
+              td.col-xlg-2 ng-bind="item.inv_type.short_description"
+              td.col-xlg-3 ng-bind="item.model"
+              td.col-xlg-1 ng-bind="item.invent_num"
+              td.col-xlg-1 ng-bind="item.workplace.workplace_id"
+              td.col-xlg-4 ng-bind="item.workplace.user_iss.fio"
+              td.col-xlg-11 ng-bind-html="item.description"
+              td.col-xlg-1
+                = button_tag "Действия", type: :button, class: "btn-default btn-sm"
+    .row
+      .col-xlg-12.col-xlg-offset-12
+        ul{ uib-pagination="true" total-items="invItems.pagination.totalEvents" ng-model="invItems.pagination.currentPage"
+          max-size="invItems.pagination.maxSize" class="pagination-sm pull-right" ng-change="invItems.pageChanged()" }

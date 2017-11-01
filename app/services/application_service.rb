@@ -23,4 +23,26 @@ class ApplicationService
   def broadcast_workplace_list
     ActionCable.server.broadcast 'workplace_list', nil
   end
+
+  # Получить данные о составе экземпляра техники в виде тега.
+  def property_value_info(prop_val)
+    # Флаг показывает, содержится ли значение свойства в поле value (true, если содержится).
+    value_flag = false
+    if prop_val['inv_property_list']
+      value = prop_val['inv_property_list']['short_description']
+    elsif !prop_val['value'].empty?
+      value = prop_val['value']
+      value_flag = true
+    end
+
+    value ||= 'нет данных'
+
+    result = "#{prop_val['inv_property']['short_description']}: #{value}"
+
+    if prop_val['inv_property']['property_type'] == 'list_plus' && value_flag
+      "<span class='manually-val'>#{result}</span>"
+    else
+      result
+    end
+  end
 end

@@ -80,7 +80,7 @@ module Invent
         model = if item['inv_model']
                   "Модель: #{item['inv_model']['item_model']}"
                 elsif !item['inv_model'] && !item['item_model'].empty?
-                  "<span class='manually'>Модель: #{item['item_model']}</span>"
+                  "<span class='manually-val'>Модель: #{item['item_model']}</span>"
                 else
                   'Модель не указана'
                 end
@@ -88,28 +88,6 @@ module Invent
 
         "#{item['inv_type']['short_description']}: Инв №: #{item['invent_num']}; #{model}; Конфигурация:
  #{property_values.join('; ')}"
-      end
-
-      # Преобразовать данные о составе экземпляра техники.
-      def property_value_info(prop_val)
-        # Флаг показывает, содержится ли значение свойства в поле value (true, если содержится).
-        value_flag = false
-        if prop_val['inv_property_list']
-          value = prop_val['inv_property_list']['short_description']
-        elsif !prop_val['value'].empty?
-          value = prop_val['value']
-          value_flag = true
-        end
-
-        value ||= 'нет данных'
-
-        result = "#{prop_val['inv_property']['short_description']}: #{value}"
-
-        if prop_val['inv_property']['property_type'] == 'list_plus' && value_flag
-          "<span class='manually'>#{result}</span>"
-        else
-          result
-        end
       end
 
       # Загрузить данные для фильтров

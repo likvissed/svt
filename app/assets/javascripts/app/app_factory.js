@@ -154,6 +154,12 @@
           url: '/invent/workplaces/confirm'
         }
       }),
+      Invent: {
+        /**
+         * Ресурс модели экземпляров техники.
+         */
+        Item: $resource('/invent/items/:item_id.json', {}, { query: { method: 'GET', isArray: false } })
+      },
       /**
        * Ресурс модели отделов с количеством рабочих мест.
        */
