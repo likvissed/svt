@@ -2,31 +2,69 @@
 
 #index_inv_item.container ng-controller="InventItemsCtrl as invItems"
   .well
-    .row
-      .col-xlg-24
-        table.table.table-striped.table-condensed
-          thead
-            tr
-              th ID
-              th Тип
-              th Модель
-              th Инв. №
-              th ID РМ
-              th Ответственный
-              th Описание
-              th
-          tbody
-            tr ng-repeat="item in invItems.items"
-              td.col-xlg-1 ng-bind="item.item_id"
-              td.col-xlg-2 ng-bind="item.inv_type.short_description"
-              td.col-xlg-3 ng-bind="item.model"
-              td.col-xlg-1 ng-bind="item.invent_num"
-              td.col-xlg-1 ng-bind="item.workplace.workplace_id"
-              td.col-xlg-4 ng-bind="item.workplace.user_iss.fio"
-              td.col-xlg-11 ng-bind-html="item.description"
-              td.col-xlg-1
-                = button_tag "Действия", type: :button, class: "btn-default btn-sm"
-    .row
-      .col-xlg-12.col-xlg-offset-12
-        ul{ uib-pagination="true" total-items="invItems.pagination.totalEvents" ng-model="invItems.pagination.currentPage"
-          max-size="invItems.pagination.maxSize" class="pagination-sm pull-right" ng-change="invItems.pageChanged()" }
+    .table-block
+      .row
+        .col-fhd-6
+          .row.multiline-buffer.filter-block ng-repeat="filter in invItems.filters.properties"
+            .col-fhd-10
+              select{ class="form-control input-sm" ng-model="invItems.filters.properties[$index]"
+              ng-options="prop as prop.long_description for prop in invItems.lists.invPropertyFilters track by prop.property_id" }
+            .col-fhd-9
+              = text_field_tag "", "", class: "form-control input-sm", placeholder: "Значение",
+                "ng-model": "invItems.filters.prop_values[$index]", "ng-change": "invItems.changeFilter()",
+                "ng-model-options": "{ debounce: 1000 }"
+            .col-fhd-5
+              .btn-group.btn-group-justified.btn-group-sm
+                .btn-group.btn-group-sm
+                  = button_tag "", type: :button, class: "btn btn-default", "ng-click": "invItems.addPropFilter()",
+                    "uib-tooltip": "Добавить фильтр", "tooltip-append-to-body": "true" do
+                    = fa_icon "plus lg"
+                .btn-group.btn-group-sm
+                  = button_tag "", type: :button, class: "btn btn-default", "ng-click": "invItems.delPropFilter($index)",
+                    "ng-disabled": "invItems.filters.properties.length == 1", "uib-tooltip": "Удалить фильтр",
+                    "tooltip-append-to-body": "true" do
+                    = fa_icon "minus lg"
+
+        .col-fhd-2.col-fhd-offset-8.multiline-buffer
+          = text_field_tag "", "", class: "form-control input-sm", placeholder: "ID",
+            "ng-model": "invItems.filters.item_id", "ng-model-options": "{ debounce: 500 }",
+            "ng-change": "invItems.changeFilter()"
+        .col-fhd-2.multiline-buffer
+          select{ class="form-control input-sm" ng-model="invItems.filters.inv_type" ng-change="invItems.changeFilter()"
+          ng-options="type as type.short_description for type in invItems.lists.invTypeFilters" }
+        .col-fhd-2.multiline-buffer
+          = text_field_tag "", "", class: "form-control input-sm", placeholder: "Инвентарный №",
+            "ng-model": "invItems.filters.invent_num", "ng-model-options": "{ debounce: 500 }",
+            "ng-change": "invItems.changeFilter()"
+        .col-fhd-4.multiline-buffer
+          = text_field_tag "", "", class: "form-control input-sm", placeholder: "ФИО ответственного",
+            "ng-model": "invItems.filters.responsible", "ng-model-options": "{ debounce: 1000 }",
+            "ng-change": "invItems.changeFilter()"
+      .row
+        .col-fhd-24
+          table.table.table-striped.table-condensed
+            thead
+              tr
+                th ID
+                th Тип
+                th Модель
+                th Инв. №
+                th ID РМ
+                th Ответственный
+                th Описание
+                th
+            tbody
+              tr ng-repeat="item in invItems.items"
+                td.col-fhd-1 ng-bind="item.item_id"
+                td.col-fhd-2 ng-bind="item.inv_type.short_description"
+                td.col-fhd-3 ng-bind="item.model"
+                td.col-fhd-1 ng-bind="item.invent_num"
+                td.col-fhd-1 ng-bind="item.workplace.workplace_id"
+                td.col-fhd-4 ng-bind="item.workplace.user_iss.fio"
+                td.col-fhd-11 ng-bind-html="item.description"
+                td.col-fhd-1
+                  = button_tag "Действия", type: :button, class: "btn-default btn-sm"
+      .row
+        .col-fhd-12.col-fhd-offset-12
+          ul{ uib-pagination="true" total-items="invItems.pagination.totalEvents" ng-model="invItems.pagination.currentPage"
+            max-size="invItems.pagination.maxSize" class="pagination-sm pull-right" ng-change="invItems.changePage()" }

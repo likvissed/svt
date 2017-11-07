@@ -88,11 +88,17 @@ a.default-color
 /* ================================================ Таблицы ========================================================= */
 
 datatable-wrapper
-  .multiline-buffer
-    margin-top: 10px
+  @include table-block-styles
+
+  .dataTables_filter
+    label
+      margin-bottom: 0 !important
 
   .pagination
     @extend .pagination-sm
+
+.table-block
+  @include table-block-styles
 
 .dataTables_wrapper .row
   margin-top: 0 !important
@@ -128,6 +134,13 @@ datatable-wrapper
 
 .manually-val
   background-color: #c5e4ff
+
+.filter-block
+  @include border-radius($border-radius-base)
+
+  border: 1px solid $table-border-color
+  background-color: $bgDefault
+
 
 /* ================================================ Стиль для компонентов таблицы DataTables ======================== */
 
