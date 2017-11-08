@@ -54,6 +54,7 @@
   InventItemsCtrl.prototype.delPropFilter = function (index) {
     if (this.filters.properties.length > 1) {
       this.InvItem.delPropFilter(index);
+      this._loadItems(false);
     }
   };
 })();

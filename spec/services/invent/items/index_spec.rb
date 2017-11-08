@@ -8,7 +8,7 @@ module Invent
       let!(:workplace) { create :workplace_pk, :add_items, items: %i[pc monitor], workplace_count: workplace_count }
       let!(:sec_workplace) { create :workplace_pk, :add_items, items: %i[pc monitor], workplace_count: workplace_count, id_tn: 12880 }
       let(:item) { workplace.inv_items.first }
-      let(:data_keys) { %i[totalRecords data] }
+      let(:data_keys) { %i[recordsTotal recordsFiltered data] }
       let(:params) { { start: 0, length: 25 } }
       subject { Index.new(params) }
 
@@ -96,7 +96,8 @@ module Invent
           let(:filters) do
             {
               properties: [prop.property_id],
-              prop_values: ['String value']
+              prop_values: ['String value'],
+              exact_prop_values: [false]
             }
           end
 

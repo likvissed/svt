@@ -16,7 +16,9 @@
     };
 
     this.pagination = {
-      totalEvents: 0,
+      init: false,
+      filteredRecords: 0,
+      totalRecords: 0,
       currentPage: 1,
       maxSize: 5
     };
@@ -28,7 +30,8 @@
         invent_num: '',
         responsible: '',
         properties: [],
-        prop_values: []
+        prop_values: [],
+        exact_prop_values: []
       },
       // Варианты выбора фильтров
       lists: {
@@ -56,6 +59,8 @@
       init = false;
     }
 
+    self.pagination.init = false;
+
     return this.Server.Invent.Item.query(
       {
         start: start,
@@ -73,14 +78,17 @@
 
             return arr;
           })(),
-          prop_values: selected.prop_values
+          prop_values: selected.prop_values,
+          exact_prop_values: selected.exact_prop_values
         }
       },
       function (response) {
         // Список всей техники
         self.items = response.data;
         // Данные для составления нумерации страниц
-        self.pagination.totalEvents = response.totalRecords;
+        self.pagination.filteredRecords = response.recordsFiltered;
+        self.pagination.totalRecords = response.recordsTotal;
+        self.pagination.init = true;
 
         if (response.filters) {
           // Данные для фильтра выбора типа техники
@@ -90,7 +98,8 @@
           // Данные для фильтра выбора свойства и указания значения
           self.filters.lists.invPropertyFilters = self.filters.lists.invPropertyFilters.concat(response.filters.inv_properties);
           selected.properties[0] = self.filters.lists.invPropertyFilters[0];
-          selected.prop_values[0] = ''
+          selected.prop_values[0] = '';
+          selected.exact_prop_values[0] = false;
         }
       },
       function (response, status) {
@@ -104,6 +113,7 @@
   InvItem.prototype.addPropFilter = function () {
     this.filters.selected.properties.push(angular.copy(this._filterTemplate));
     this.filters.selected.prop_values.push('');
+    this.filters.selected.exact_prop_values.push(false);
   };
 
   /**
@@ -112,5 +122,6 @@
   InvItem.prototype.delPropFilter = function (index) {
     this.filters.selected.properties.splice(index, 1);
     this.filters.selected.prop_values.splice(index, 1);
+    this.filters.selected.exact_prop_values.splice(index, 1);
   }
 })();

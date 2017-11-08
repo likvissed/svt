@@ -28,6 +28,7 @@ module Invent
       private
 
       def load_items
+        @data[:recordsTotal] = InvItem.count
         @items = InvItem
       end
 
@@ -52,13 +53,17 @@ module Invent
           @filters['properties'].each_with_index do |prop_id, index|
             next if prop_id.to_i.zero? || @filters['prop_values'][index].empty?
 
-            @items = @items.where('invent_item.item_id IN (SELECT item_id FROM invent_property_value AS val LEFT JOIN invent_property_list AS list USING(property_list_id) WHERE val.property_id = :prop_id AND (val.value LIKE :val OR list.short_description LIKE :val))', prop_id: prop_id, val: "%#{@filters['prop_values'][index]}%")
+            if @filters['exact_prop_values'][index]
+              @items = @items.where('invent_item.item_id IN (SELECT item_id FROM invent_property_value AS val LEFT JOIN invent_property_list AS list USING(property_list_id) WHERE val.property_id = :prop_id AND (val.value = :val OR list.short_description = :val))', prop_id: prop_id, val: @filters['prop_values'][index])
+            else
+              @items = @items.where('invent_item.item_id IN (SELECT item_id FROM invent_property_value AS val LEFT JOIN invent_property_list AS list USING(property_list_id) WHERE val.property_id = :prop_id AND (val.value LIKE :val OR list.short_description LIKE :val))', prop_id: prop_id, val: "%#{@filters['prop_values'][index]}%")
+            end
           end
         end
       end
 
       def limit_records
-        data[:totalRecords] = @items.count
+        data[:recordsFiltered] = @items.count
         @items = @items
                    .includes(
                      :inv_type,

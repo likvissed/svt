@@ -34,8 +34,8 @@ module Invent
       end
 
       it 'wraps the values entered manually with <span class=\'manually\'></span> tag' do
-        expect(subject.data[:workplaces].first[:items].last).to match /<span class='manually'>Модель: #{workplace.inv_items.first.item_model}<\/span>/
-        expect(subject.data[:workplaces].first[:items].last).to match /<span class='manually'>Диагональ экрана: Manually diagonal<\/span>/
+        expect(subject.data[:workplaces].first[:items].last).to match /<span class='manually-val'>Модель: #{workplace.inv_items.first.item_model}<\/span>/
+        expect(subject.data[:workplaces].first[:items].last).to match /<span class='manually-val'>Диагональ экрана: Manually diagonal<\/span>/
       end
 
       context 'with init_filters' do

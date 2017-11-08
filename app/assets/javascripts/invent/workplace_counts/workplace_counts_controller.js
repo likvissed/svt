@@ -55,8 +55,8 @@
         '<"row"' +
           '<"col-fhd-24"t>>' +
         '<"row"' +
-          '<"col-fhd-12"i>' +
-          '<"col-fhd-12"p>>'
+          '<"col-xs-12"i>' +
+          '<"col-xs-12"p>>'
       );
 
     self.dtColumns = [

@@ -5,12 +5,14 @@
     .directive('disableLink', disableLink)
     .directive('datatableWrapper', datatableWrapper)
     .directive('newRecord', newRecord)
-    .directive('typeaheadOpenOnFocus', typeaheadOpenOnFocus);
+    .directive('typeaheadOpenOnFocus', typeaheadOpenOnFocus)
+    .directive('ngTableInfo', ngTableInfo);
 
   disableLink.$inject = [];
   datatableWrapper.$inject = ['$timeout', '$compile'];
   newRecord.$inject = [];
   typeaheadOpenOnFocus.$inject = ['$parse', '$timeout'];
+  ngTableInfo.$inject = ['$timeout', 'Config'];
 
 // =====================================================================================================================
 
@@ -133,6 +135,55 @@
         })
       }
     }
+  }
+
+  // Показать общую информацию о таблице (основано на объекте pagination).
+  function ngTableInfo ($timeout, Config) {
+    return {
+      scope: {
+        infoAttrs: "="
+      },
+      link: function (scope, element, attrs) {
+        var
+          // Индекс начальной записи
+          startRecord,
+          // Индекс конечной записи
+          endRecord,
+          // Общее число страниц
+          totalPages,
+          // Результат, который видит пользователь
+          result = '';
+
+        function setEl() {
+          totalPages = Math.ceil(scope.infoAttrs.filteredRecords / Config.global.uibPaginationConfig.itemsPerPage);
+          startRecord  = (scope.infoAttrs.currentPage - 1) * Config.global.uibPaginationConfig.itemsPerPage + 1;
+          endRecord  = startRecord + Config.global.uibPaginationConfig.itemsPerPage - 1;
+          // Для последней страницы, если индекс конечной записи не совпадает с общим числом записей, значит общее число записей меньше, чем в индексе.
+          // Установить новый индекс конечной записи
+          if (endRecord != scope.infoAttrs.filteredRecords && totalPages == scope.infoAttrs.currentPage) {
+            endRecord = scope.infoAttrs.filteredRecords;
+          }
+
+          result = 'Записи с ' + startRecord + ' по ' + endRecord + ' из ' + scope.infoAttrs.filteredRecords;
+
+          // Если число отфильтрованных записей не совпадает с числом всех записей, вывести это на экран.
+          if (scope.infoAttrs.filteredRecords != scope.infoAttrs.totalRecords) {
+            result += ' (выборка из ' + scope.infoAttrs.totalRecords + ' записей)'
+          }
+
+          element.text(result);
+        }
+
+        $timeout(function () {
+          setEl();
+        }, 0);
+
+        scope.$watch(
+          function () { return scope.infoAttrs.currentPage; },
+          function () { setEl(); }, true
+        );
+      }
+    };
   }
 })();
 
