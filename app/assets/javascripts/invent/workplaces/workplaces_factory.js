@@ -43,6 +43,8 @@
 
     // Шаблон данных о рабочем месте (новом или редактируемом)
     this._templateWorkplace = {
+      // Показывает, нужно ли при создании/редактировании РМ использовать проверки на состав РМ
+      enabled_filters: true,
       workplace_id: 0,
       // Id в таблице отделов
       workplace_count_id: 0,
@@ -133,6 +135,9 @@
    */
   Workplace.prototype._setProperties = function (data) {
     var self = this;
+
+    // По умолчанию фильтры всегда включены
+    this.workplace.enabled_filters = true;
 
     angular.forEach(data.prop_data.iss_locations, function (value) {
       value.iss_reference_buildings = [self.selectIssBuilding].concat(value.iss_reference_buildings);

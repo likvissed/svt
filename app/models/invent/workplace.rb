@@ -35,10 +35,12 @@ module Invent
     validates :location_room_id,
               presence: true,
               numericality: { greater_than: 0, only_integer: true }
-    validate :check_workplace_conditions, unless: -> { workplace_type_id == -1 }
+    validate :check_workplace_conditions, if: -> { workplace_type_id != -1 && enabled_filters }
 
     # Для тестов (от имени пользователя заполняется поле "Комната")
     attr_accessor :location_room_name, :division
+    # Поле указывает, нужно ли использовать валидаторы при создании/редактировании текущей модели
+    attr_accessor :enabled_filters
 
     delegate :division, to: :workplace_count
 

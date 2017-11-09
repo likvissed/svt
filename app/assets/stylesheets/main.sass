@@ -69,6 +69,16 @@ a.default-color
   width: 0
   overflow: hidden
 
+.navbar .ui-select
+  margin-top: -1px
+
+  .form-control
+    min-width: 100px
+    width: 130px
+
+  .dropdown-menu
+    min-width: 130px
+
 /* ================================================ Страницы входа на сайт ========================================== */
 
 .auth-header
@@ -163,10 +173,3 @@ ul.nav-tabs
   li.uib-tab i.destroy-item:hover
     color: $btn-danger-bg
     cursor: pointer
-
-.test-form
-  @extend .form-control
-  background-color: transparent
-  border: 0
-  padding: 0
-  width: 140px !important

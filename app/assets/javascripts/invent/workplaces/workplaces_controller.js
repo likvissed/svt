@@ -480,7 +480,11 @@
    * @param keys - массив ключей, которые необходимо удалить.
    */
   WorkplaceListCtrl.prototype._removeRow = function (keys) {
-    angular.forEach(keys, function (id) { delete this[id] }, this.workplaces);
+    var self = this;
+
+    keys.forEach(function (id) { delete this[id] }, this.workplaces);
+    this.dtInstance.reloadData(null, self.Config.global.reloadPaging);
+
     if (this.isEmptyWorkplace()) {
       this._setDefaultTableMetadata();
     }

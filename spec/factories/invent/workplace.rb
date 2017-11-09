@@ -8,6 +8,7 @@ module Invent
       iss_reference_room { iss_reference_building.iss_reference_rooms.first }
       comment ''
       status { Workplace.statuses['pending_verification'] }
+      enabled_filters true
 
       trait :rm_pk do
         workplace_type { WorkplaceType.find_by(name: 'rm_pk') }

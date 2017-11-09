@@ -61,7 +61,7 @@
                 th ID РМ
                 th Ответственный
                 th Описание
-                th
+                /th
             tbody
               tr ng-repeat="item in invItems.items"
                 td.col-lg-1.col-xlg-1.col-fhd-1 ng-bind="item.item_id"
@@ -70,8 +70,8 @@
                 td.col-lg-1.col-xlg-1.col-fhd-1 ng-bind="item.invent_num"
                 td.col-lg-1.col-xlg-1.col-fhd-1 ng-bind="item.workplace.workplace_id"
                 td.col-lg-4.col-xlg-4.col-fhd-4 ng-bind="item.workplace.user_iss.fio"
-                td.col-lg-11.col-xlg-11.col-fhd-11 ng-bind-html="item.description"
-                td.col-lg-1.col-xlg-1.col-fhd-1
+                td.col-lg-12.col-xlg-12.col-fhd-12 ng-bind-html="item.description"
+                /td.col-lg-1.col-xlg-1.col-fhd-1
                   = button_tag "Действия", type: :button, class: "btn-default btn-sm"
       .row
         .col-xs-12
