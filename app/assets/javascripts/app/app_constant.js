@@ -11,6 +11,13 @@
       modalAnimation: true,
       // При обновлении таблицы DataTables не сбрасывать нумерацию страниц.
       reloadPaging: false,
+      uibPaginationConfig: {
+        nextText: 'След.',
+        previousText: 'Пред.',
+        rotate: true,
+        boundaryLinkNumbers: true,
+        itemsPerPage: 25
+      },
       uibDatepickerConfig: {
         // Показывать/скрывать номер недели в году
         showWeeks: false

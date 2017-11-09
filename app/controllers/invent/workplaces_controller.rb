@@ -139,6 +139,7 @@ module Invent
     def workplace_params
       params[:workplace] = JSON.parse(params[:workplace])
       params.require(:workplace).permit(
+        :enabled_filters,
         :workplace_count_id,
         :workplace_type_id,
         :workplace_specialization_id,

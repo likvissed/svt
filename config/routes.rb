@@ -62,6 +62,8 @@ Rails.application.routes.draw do
     get '***REMOVED***_invents/generate_pdf/:division', to: '***REMOVED***_invents#generate_pdf', constraints: { division: /\d+/ }
     # Скачать скрипт для генерации файла конфигурации ПК
     get '***REMOVED***_invents/pc_script', to: '***REMOVED***_invents#send_pc_script'
+
+    resources :items, only: :index
   end
 
   # Эталоны

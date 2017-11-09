@@ -102,8 +102,8 @@
         '<"row"' +
           '<"col-fhd-24"t>>' +
         '<"row"' +
-          '<"col-fhd-12"i>' +
-          '<"col-fhd-12"p>>'
+          '<"col-xs-12"i>' +
+          '<"col-xs-12"p>>'
       );
 
     self.dtColumns = [
@@ -279,7 +279,7 @@
     if (!confirm(confirm_str))
       return false;
 
-    self.Server.Workplace.delete(
+    self.Server.Invent.Workplace.delete(
       { workplace_id: id },
       function (response) {
         console.log(response);
@@ -364,8 +364,8 @@
         '<"row"' +
           '<"col-fhd-24"t>>' +
         '<"row"' +
-          '<"col-fhd-12"i>' +
-          '<"col-fhd-12"p>>'
+          '<"col-xs-12"i>' +
+          '<"col-xs-12"p>>'
       );
 
     self.dtColumns = [
@@ -480,7 +480,11 @@
    * @param keys - массив ключей, которые необходимо удалить.
    */
   WorkplaceListCtrl.prototype._removeRow = function (keys) {
-    angular.forEach(keys, function (id) { delete this[id] }, this.workplaces);
+    var self = this;
+
+    keys.forEach(function (id) { delete this[id] }, this.workplaces);
+    this.dtInstance.reloadData(null, self.Config.global.reloadPaging);
+
     if (this.isEmptyWorkplace()) {
       this._setDefaultTableMetadata();
     }
@@ -554,7 +558,7 @@
       return false;
     }
 
-    this.Server.Workplace.confirm(
+    this.Server.Invent.Workplace.confirm(
       {
         type: type,
         ids: wpIds

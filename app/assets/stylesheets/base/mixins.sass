@@ -26,15 +26,22 @@
   -moz-box-shadow: $left $top $blur $color
   -webkit-box-shadow: $left $top $blur $color
   box-shadow: $left $top $blur $color
-  
+
 // Показать dropdown меню
 @mixin navbar-show-dropdown-menu
   @media (min-width: 768px)
     background-color: $navbar-top-bg-color !important
-    
+
     .dropdown-menu
       display: block
-  
+
       > li
         > a:hover
           background-color: $navbar-border-color
+
+@mixin table-block-styles
+  .multiline-buffer
+    margin-top: 5px
+    padding:
+      top: 5px
+      bottom: 5px

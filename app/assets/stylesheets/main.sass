@@ -69,6 +69,16 @@ a.default-color
   width: 0
   overflow: hidden
 
+.navbar .ui-select
+  margin-top: -1px
+
+  .form-control
+    min-width: 100px
+    width: 130px
+
+  .dropdown-menu
+    min-width: 130px
+
 /* ================================================ Страницы входа на сайт ========================================== */
 
 .auth-header
@@ -88,11 +98,17 @@ a.default-color
 /* ================================================ Таблицы ========================================================= */
 
 datatable-wrapper
-  .multiline-buffer
-    margin-top: 10px
+  @include table-block-styles
+
+  .dataTables_filter
+    label
+      margin-bottom: 0 !important
 
   .pagination
     @extend .pagination-sm
+
+.table-block
+  @include table-block-styles
 
 .dataTables_wrapper .row
   margin-top: 0 !important
@@ -126,6 +142,16 @@ datatable-wrapper
   i
     padding: 10px 0
 
+.manually-val
+  background-color: #c5e4ff
+
+.filter-block
+  @include border-radius($border-radius-base)
+
+  border: 1px solid $table-border-color
+  background-color: $bgDefault
+
+
 /* ================================================ Стиль для компонентов таблицы DataTables ======================== */
 
 .dataTables_wrapper
@@ -137,10 +163,6 @@ datatable-wrapper
     label
       width: 100% !important
 
-#index_list_wp
-  .manually
-    background-color: #c5e4ff
-
 /* ================================================ Стили для табов ================================================= */
 
 ul.nav-tabs
@@ -151,10 +173,3 @@ ul.nav-tabs
   li.uib-tab i.destroy-item:hover
     color: $btn-danger-bg
     cursor: pointer
-
-.test-form
-  @extend .form-control
-  background-color: transparent
-  border: 0
-  padding: 0
-  width: 140px !important
