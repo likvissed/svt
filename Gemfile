@@ -38,10 +38,6 @@ gem 'rubocop', require: false
 gem 'simple_form'
 gem 'slim'
 
-# Generate PDF
-gem 'wicked_pdf'
-gem 'wkhtmltopdf-binary'
-
 # Bundle edge Rails instead: gem 'rails', github: 'rails/rails'
 gem 'rails', '~> 5.0.1'
 # Use Puma as the app server
