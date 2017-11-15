@@ -179,8 +179,9 @@
         }, 0);
 
         scope.$watch(
-          function () { return scope.infoAttrs.currentPage; },
-          function () { setEl(); }, true
+          function () { return scope.infoAttrs; },
+          function () { setEl(); },
+          true
         );
       }
     };
