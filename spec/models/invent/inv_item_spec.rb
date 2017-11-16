@@ -5,6 +5,8 @@ module Invent
     it { is_expected.to have_many(:inv_property_values).with_foreign_key('item_id').dependent(:destroy) }
     it { is_expected.to have_many(:standard_discrepancies).class_name('Standard::Discrepancy').with_foreign_key('item_id').dependent(:destroy) }
     it { is_expected.to have_many(:standard_logs).class_name('Standard::Log').with_foreign_key('item_id') }
+    it { is_expected.to have_many(:item_to_orders).class_name('Warehouse::ItemToOrder').with_foreign_key('invent_item_id') }
+    it { is_expected.to have_many(:orders).through(:item_to_orders).class_name('Warehouse::Order') }
 
     it { is_expected.to belong_to(:inv_type).with_foreign_key('type_id') }
     it { is_expected.to belong_to(:workplace) }

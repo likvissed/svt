@@ -5,6 +5,7 @@ module Invent
     let!(:workplace_count) { create :active_workplace_count, :default_user }
 
     it { is_expected.to have_many(:inv_items).dependent(:nullify) }
+    it { is_expected.to have_many(:orders).class_name('Warehouse::Order') }
     it { is_expected.to belong_to(:workplace_type) }
     it { is_expected.to belong_to(:workplace_specialization) }
     it { is_expected.to belong_to(:workplace_count) }

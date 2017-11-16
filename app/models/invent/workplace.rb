@@ -4,6 +4,7 @@ module Invent
     self.table_name = "#{table_name_prefix}workplace"
 
     has_many :inv_items, inverse_of: :workplace, dependent: :nullify
+    has_many :orders, class_name: 'Warehouse::Order'
     belongs_to :workplace_type
     belongs_to :workplace_specialization
     belongs_to :workplace_count
