@@ -49,7 +49,7 @@ set :use_sudo, false
 set :passenger_restart_with_touch, true
 
 set :linked_files, %w[config/database.yml config/secrets.yml .env]
-set :linked_dirs, %w[log tmp/pids tmp/cache vendor/bundle public/uploads public/downloads]
+set :linked_dirs, %w[log tmp/pids tmp/cache vendor/bundle public/uploads public/downloads node_modules]
 
 SSHKit.config.command_map[:rake] = 'bundle exec rake'
 SSHKit.config.command_map[:rails] = 'bundle exec rails'
