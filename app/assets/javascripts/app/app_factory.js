@@ -162,7 +162,14 @@
         /**
          * Ресурс модели экземпляров техники.
          */
-        Item: $resource('/invent/items/:item_id.json', {}, { query: { method: 'GET', isArray: false } })
+        Item: $resource('/invent/items/:item_id.json', {}, {
+          query: { method: 'GET', isArray: false },
+          used: {
+            method: 'GET',
+            url: '/invent/items/used/:type_id',
+            isArray: true
+          }
+        })
       },
       /**
        * Ресурс модели работников отдела.

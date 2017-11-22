@@ -12,7 +12,7 @@
   WorkplaceListCtrl.$inject = ['$scope', '$compile', '$controller', 'DTOptionsBuilder', 'DTColumnBuilder', 'ActionCableChannel', 'Server', 'Config', 'Flash', 'Error', 'Cookies'];
   WorkplaceEditCtrl.$inject = ['$filter', '$timeout', '$uibModal', 'Flash', 'Config', 'Workplace', 'Item'];
   ManuallyPcDialogCtrl.$inject = ['$uibModalInstance', 'Flash', 'Workplace', 'Item', 'item'];
-  SelectItemTypeCtrl.$inject = ['$uibModalInstance', 'data', 'Workplace'];
+  SelectItemTypeCtrl.$inject = ['$uibModalInstance', 'data', 'Workplace', 'Flash'];
 
   /**
    * Управление общей таблицей рабочих мест.
@@ -768,8 +768,14 @@
     });
 
     modalInstance.result.then(
-      function (selectedType) {
-        self.Workplace.createItem(selectedType);
+      function (result) {
+        if (result.selectedItem) {
+          // Для б/у оборудования
+          self.Workplace.addExistingItem(result.selectedType, result.selectedItem);
+        } else {
+          // Для нового оборудования
+          self.Workplace.createItem(result.selectedType);
+        }
       },
       function () {
         self.Workplace.setFirstActiveTab()
@@ -854,29 +860,87 @@
 
 // =====================================================================================================================
 
-  function SelectItemTypeCtrl($uibModalInstance, data, Workplace) {
+  function SelectItemTypeCtrl($uibModalInstance, data, Workplace, Flash) {
     this.$uibModalInstance = $uibModalInstance;
+    this.Flash = Flash;
     // Типы оборудования
     this.eq_types = data.eq_types;
     // Выбранный тип устройства
-    this.selected = angular.copy(this.eq_types[0]);
-    this.Workplace = Workplace
+    this.selectedType = angular.copy(this.eq_types[0]);
+    // Выбранная техника (Б/У)
+    this.selectedItem = {};
+    this.Workplace = Workplace;
+    // Тип техники: новая или б/у
+    this.itemType = '';
   }
+
+  /**
+   * Из массива self.items удалить технику, которая уже присутствует в составе текущего РМ.
+   */
+  SelectItemTypeCtrl.prototype._removeDuplicateItems = function() {
+    var
+      self = this,
+      index;
+
+    self.Workplace.workplace.inv_items_attributes.forEach(function (item) {
+      index = self.items.findIndex(function (el) { return el.item_id == item.id; });
+      if (index != -1) {
+        self.items.splice(index, 1);
+      }
+    })
+  };
+
+  SelectItemTypeCtrl.prototype.setInitselectedType = function() {
+    this.selectedType = angular.copy(this.eq_types[0]);
+  };
 
   /**
    * Проверка валидаций выбранного типа оборудования.
    */
-  SelectItemTypeCtrl.prototype.validateSelectedType = function () {
-    if (!this.Workplace.validateType(this.selected))
-      this.selected = angular.copy(this.eq_types[0]);
+  SelectItemTypeCtrl.prototype.validateSelectedType = function() {
+    if (this.Workplace.validateType(this.selectedType)) {
+      return true;
+    } else {
+      this.selectedType = angular.copy(this.eq_types[0]);
+      return false;
+    }
   };
 
-  SelectItemTypeCtrl.prototype.ok = function () {
-    if (this.Workplace.validateType(this.selected))
-      this.$uibModalInstance.close(this.selected);
+  /**
+   * Загрузить всё Б/У оборудование со склада.
+   */
+  SelectItemTypeCtrl.prototype.loadItems = function() {
+    var self = this;
+
+    if (!this.validateSelectedType()) {
+      return false;
+    }
+
+    this.Workplace.loadUsedItems(this.selectedType.type_id)
+      .then(function(response) {
+        self.items = response;
+        self._removeDuplicateItems();
+      });
   };
 
-  SelectItemTypeCtrl.prototype.cancel = function () {
+  SelectItemTypeCtrl.prototype.ok = function() {
+    var result = { selectedType: this.selectedType };
+
+    if (this.itemType == 'new') {
+      if (this.Workplace.validateType(this.selectedType)) {
+        this.$uibModalInstance.close(result);
+      }
+    } else {
+      if (this.Workplace.validateType(this.selectedType) && this.selectedItem.item_id) {
+        result['selectedItem'] = this.selectedItem;
+        this.$uibModalInstance.close(result);
+      } else {
+        this.Flash.alert('Необходимо выбрать технику.');
+      }
+    }
+  };
+
+  SelectItemTypeCtrl.prototype.cancel = function() {
     this.$uibModalInstance.dismiss();
   };
 })();

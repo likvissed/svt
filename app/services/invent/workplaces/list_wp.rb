@@ -77,13 +77,7 @@ module Invent
 
       # Преобразовать данные о составе РМ в массив строк.
       def item_info(item)
-        model = if item['inv_model']
-                  "Модель: #{item['inv_model']['item_model']}"
-                elsif !item['inv_model'] && !item['item_model'].empty?
-                  "<span class='manually-val'>Модель: #{item['item_model']}</span>"
-                else
-                  'Модель не указана'
-                end
+        model = get_model(item)
         property_values = item['inv_property_values'].map { |prop_val| property_value_info(prop_val) }
 
         "#{item['inv_type']['short_description']}: Инв №: #{item['invent_num']}; #{model}; Конфигурация:

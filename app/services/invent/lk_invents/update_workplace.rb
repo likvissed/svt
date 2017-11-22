@@ -11,12 +11,14 @@ module Invent
       def initialize(current_user, workplace_id, strong_params, file = nil)
         @current_user = current_user
         @workplace_id = workplace_id
-        @workplace_params = strong_params.deep_symbolize_keys
+        @workplace_params = strong_params
         @file = file
       end
 
       def run
-        @workplace = Workplace.includes(inv_items: [inv_type: :inv_properties, inv_property_values: :inv_property]).find(@workplace_id)
+        @workplace = Workplace
+                       .includes(inv_items: [inv_type: :inv_properties, inv_property_values: :inv_property])
+                       .find(@workplace_id)
         authorize @workplace, :update?
 
         prepare_params

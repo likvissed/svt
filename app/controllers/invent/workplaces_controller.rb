@@ -137,8 +137,9 @@ module Invent
     private
 
     def workplace_params
-      params[:workplace] = JSON.parse(params[:workplace])
+      params[:workplace] = JSON.parse(params[:workplace], symbolize_names: true)
       params.require(:workplace).permit(
+        :workplace_id,
         :enabled_filters,
         :workplace_count_id,
         :workplace_type_id,
@@ -150,6 +151,7 @@ module Invent
         :location_room_id,
         :comment,
         :status,
+        inv_item_ids: [],
         inv_items_attributes: [
           :id,
           :parent_id,
@@ -160,6 +162,7 @@ module Invent
           :location,
           :invent_num,
           :serial_num,
+          :status,
           :_destroy,
           inv_property_values_attributes: %i[id property_id item_id property_list_id value _destroy]
         ]

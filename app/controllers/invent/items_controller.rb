@@ -14,5 +14,25 @@ module Invent
         end
       end
     end
+
+    def used
+      @used = Items::Used.new(params[:type_id])
+
+      if @used.run
+        render json: @used.data
+      else
+        render json: { full_message: 'Ошибка. Обратитесь к администратору, т.***REMOVED***' }, status: 422
+      end
+    end
+
+    def show
+      @show = Items::Show.new(params[:item_id])
+
+      if @show.run
+        render json: @show.data
+      else
+        render json: { full_message: @show.errors.full_messages.join('. ') }, status: 422
+      end
+    end
   end
 end

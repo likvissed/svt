@@ -27,7 +27,8 @@
         // По умолчанию показать пользователю "Выберите тип"
         type: selectEqType,
         // Выбранная модель
-        model: null
+        model: null,
+        status: 'waiting_take'
       },
       // Файл конфигурации ПК, связанный с текущим РМ.
       pcFile = null,
@@ -256,7 +257,7 @@
        * @param item - экземпляр техники
        */
       addProperties: function (item) {
-        angular.forEach(eqTypes, function (eq_value) {
+        eqTypes.forEach(function (eq_value) {
           if (item.type_id != eq_value.type_id) { return true; }
 
           item.type = angular.copy(eq_value);
@@ -596,7 +597,19 @@
       addNewPropertyValue: function (item) {
         item.inv_property_values_attributes.push(PropertyValue.getTemplatePropertyValue());
       },
-      setInitPropertyListId: _setInitPropertyListId
+      setInitPropertyListId: _setInitPropertyListId,
+      /**
+       * Заполнить созданный элемент массива inv_items_attributes указанными данными.
+       *
+       * @param item
+       * @param data - данные для заполнения объекта item
+       * @param workplace_id - ID рабочего места
+       */
+      setItemAttributes: function (item, data, workplace_id) {
+        Object.keys(templateItem).forEach(function (key) { item[key] = data[key]; });
+
+        item.workplace_id = workplace_id;
+      }
     };
   }
 })();

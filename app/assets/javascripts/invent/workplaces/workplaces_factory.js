@@ -67,7 +67,9 @@
       // Дефолтный статус РМ (2 - в ожидании проверки)
       status: 'pending_verification',
       // Состав РМ
-      inv_items_attributes: []
+      inv_items_attributes: [],
+      // Список ID техники, которая уже существует в БД
+      inv_item_ids: []
     };
 
 // =====================================================================================================================
@@ -76,7 +78,7 @@
   }
 
   /**
-   * Добавить объекты, связанные с выбранным типом оборудования, моделями и т.д. (обратная операция _clearBeforeSend).
+   * Добавить объекты, связанные с выбранным типом оборудования, моделями и т.д. (обратная операция _delObjects).
    */
   Workplace.prototype._addObjects = function () {
     var self = this;
@@ -267,8 +269,6 @@
 
     formData.append('pc_file', file);
 
-
-
     return this.$http
       .post('/invent/workplaces/pc_config_from_user/',
         formData,
@@ -288,7 +288,7 @@
    */
   Workplace.prototype.saveWorkplace = function () {
     var self = this;
-    // this._clearBeforeSend();
+
     this._delObjects();
 
     var formData = new FormData();
@@ -321,6 +321,8 @@
 
   /**
    * Создать новое оборудования, установить начальные значения для данного типа.
+   *
+   * @param selectedType - тип создаваемого устройства
    */
   Workplace.prototype.createItem = function (selectedType) {
     var self = this;
@@ -357,6 +359,40 @@
   };
 
   /**
+   * Добавить существующее оборудование к РМ.
+   *
+   * @param selectedType - тип создаваемого устройства
+   * @param selectedItem - выбранное оборудование
+   */
+  Workplace.prototype.addExistingItem = function(selectedType, selectedItem) {
+    var self = this;
+
+    self.Server.Invent.Item.get(
+      { item_id: selectedItem.item_id },
+      function (response) {
+        self._addNewItem();
+
+        var
+          // Получаем индекс созданного элемента
+          length = self.workplace.inv_items_attributes.length - 1,
+          // Созданный элемент
+          item = self.workplace.inv_items_attributes[length];
+
+        self.Item.addProperties(response);
+        self.Item.setItemAttributes(item, response, self.workplace.workplace_id);
+        self.workplace.inv_item_ids.push(item.id);
+
+        // Сделать созданный элемент активным в табах.
+        self.$timeout(function () {
+          self.additional.activeTab = length;
+        }, 0);
+      },
+      function (response, status) {
+        self.Error.response(response, status);
+      });
+  };
+
+  /**
    * Удалить элемент из массива inv_items_attributes.
    *
    * @param item - удаляемый элемент
@@ -367,14 +403,15 @@
       this.Item.clearPcAdditionalData(item);
     }
 
-    if (item.id) {
-      item._destroy = 1;
+    if (item.id && !item.status) {
+      item.status = 'waiting_bring';
+    } else if (item.id && item.status == 'waiting_take') {
       item.workplace_id = null;
-
+      item.status = null;
+    } else if (!item.id) {
       this.setFirstActiveTab(item);
-    } else {
-      this.setFirstActiveTab(item);
-      this.workplace.inv_items_attributes.splice($.inArray(item, this.workplace.inv_items_attributes), 1);
+      this.workplace.inv_items_attributes.splice(this.workplace.inv_items_attributes.indexOf(item), 1);
+      this.workplace.inv_item_ids.splice(this.workplace.inv_item_ids.indexOf(item.id), 1);
       this.Item.clearPcMetadata(item);
     }
 
@@ -382,8 +419,7 @@
   };
 
   /**
-   * Установить новый активный экземпляр техники в табах взависимости от удаляемого элемента. Если удаляется активный
-   * элемент - установить активным самый первый элемент, не помеченный флагом _destroy.
+   * Установить новый активный экземпляр техники в табах взависимости от удаляемого элемента.
    *
    * @param item - удаляемый экземпляр техники (необязательный параметр). Если задан - то новый активный элемент будет
    * установлен только в том случае, если удаляется активный экземпляр техники.
@@ -418,9 +454,11 @@
       var countPc = 0;
 
       // Считаем количество СБ/моноблоков/ноутбуков на текущем РМ.
-      $.each(this.workplace.inv_items_attributes, function (index, value) {
-        if (self.Item.typeValidationPassed(value.type.name) && !value._destroy)
+      this.workplace.inv_items_attributes.forEach(function(item) {
+        // if (self.Item.typeValidationPassed(item.type.name) && !item._destroy) {
+        if (self.Item.typeValidationPassed(item.type.name) && item.status != 'waiting_bring') {
           countPc ++;
+        }
       });
 
       if (countPc >= 1) {
@@ -431,5 +469,22 @@
     }
 
     return true;
+  };
+
+  /**
+   * Загрузить Б/У технику указанного типа.
+   *
+   * @param type_id - тип загружаемой техники
+   */
+  Workplace.prototype.loadUsedItems = function(type_id) {
+    var self = this;
+
+    return this.Server.Invent.Item.used(
+      { type_id: type_id },
+      function (response) {},
+      function (response, status) {
+        self.Error.response(response, status);
+      }
+    ).$promise;
   };
 })();

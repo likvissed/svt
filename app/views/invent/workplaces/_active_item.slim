@@ -1,4 +1,19 @@
 .ng-hide ng-show="item"
+  .col-lg-offset-3.col-xlg-offset-4.col-fhd-offset-5.col-md-24.col-lg-18.col-xlg-16.col-fhd-14 ng-if='item.status'
+    .form-group
+      p.info-block.bg-warning
+        | Данный {{ item.type.short_description | lowercase }} пользователь должен
+        span ng-if="item.status == 'waiting_bring'"
+          b<>
+            | сдать
+          | в УИВТ
+          = button_tag "Сдал", type: :button, class: "btn-success btn-xs pull-right", "aria-hidden": "true"
+        span ng-if="item.status == 'waiting_take'"
+          b<>
+            | получить
+          | в УИВТ
+          = button_tag "Получил", type: :button, class: "btn-success btn-xs pull-right", "aria-hidden": "true"
+
   .col-lg-offset-3.col-xlg-offset-4.col-fhd-offset-5.col-md-24.col-lg-18.col-xlg-16.col-fhd-14
     -# Постоянные параметры.
     .col-md-9.col-lg-10.col-xlg-9

@@ -59,26 +59,9 @@ module Invent
         data.delete('workplace_count')
 
         data['inv_items_attributes'].each do |item|
-          item['id'] = item['item_id']
-          item['inv_property_values_attributes'] = item['inv_property_values']
-
-          item.delete('item_id')
-          item.delete('inv_property_values')
-
-          item['inv_property_values_attributes'].each do |prop_val|
-            prop_val['id'] = prop_val['property_value_id']
-
-            # Для пустых значений с типом list и list_plus установить значение = -1 (Это автоматически выберет строчку
-            # "Выбрать из списка")
-            if %w[list list_plus].include?(prop_val['inv_property']['property_type']) &&
-              prop_val['property_list_id'].zero? && prop_val['value'].empty?
-              prop_val['property_list_id'] = -1
-            end
-
-            prop_val.delete('inv_property')
-            prop_val.delete('property_value_id')
-          end
+          prepare_to_edit_item(item)
         end
+        data['inv_item_ids'] = data['inv_items_attributes'].map { |item| item['id'] }
       end
     end
   end

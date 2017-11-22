@@ -45,4 +45,38 @@ class ApplicationService
       result
     end
   end
+
+  # Получить модель в виде строки
+  def get_model(item)
+    if item['inv_model']
+      "Модель: #{item['inv_model']['item_model']}"
+    elsif !item['inv_model'] && !item['item_model'].empty?
+      "<span class='manually-val'>Модель: #{item['item_model']}</span>"
+    else
+      'Модель не указана'
+    end
+  end
+
+  # Подготовить технику для удаления
+  def prepare_to_edit_item(item)
+    item['id'] = item['item_id']
+    item['inv_property_values_attributes'] = item['inv_property_values']
+
+    item.delete('item_id')
+    item.delete('inv_property_values')
+
+    item['inv_property_values_attributes'].each do |prop_val|
+      prop_val['id'] = prop_val['property_value_id']
+
+      # Для пустых значений с типом list и list_plus установить значение = -1 (Это автоматически выберет строчку
+      # "Выбрать из списка")
+      if %w[list list_plus].include?(prop_val['inv_property']['property_type']) &&
+        prop_val['property_list_id'].zero? && prop_val['value'].empty?
+        prop_val['property_list_id'] = -1
+      end
+
+      prop_val.delete('inv_property')
+      prop_val.delete('property_value_id')
+    end
+  end
 end
