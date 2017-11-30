@@ -1,4 +1,4 @@
-FactoryGirl.define do
+FactoryBot.define do
   factory :user_iss do
     tn 101_101
     dept ***REMOVED***
@@ -34,7 +34,7 @@ FactoryGirl.define do
     duty_code 0
     fio_initials '***REMOVED*** Р.Ф.'
     category 4
-    id_tn 12880
+    id_tn ***REMOVED***
     dept_kadr ***REMOVED***
     decret false
   end

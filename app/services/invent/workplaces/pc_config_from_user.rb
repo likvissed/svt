@@ -1,6 +1,6 @@
 module Invent
-  module LkInvents
-    # Класс расшифровывает данные, полученные программой SysInfo
+  module Workplaces
+    # Декодировать данные, полученные программой SysInfo
     class PcConfigFromUser < BaseService
       def initialize(file)
         @file = file
@@ -8,7 +8,13 @@ module Invent
 
       def run
         match_data
+
         true
+      rescue RuntimeError => e
+        Rails.logger.error e.inspect.red
+        Rails.logger.error e.backtrace[0..5].inspect
+
+        false
       end
 
       private

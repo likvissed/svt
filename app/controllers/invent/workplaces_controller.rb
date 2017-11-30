@@ -11,7 +11,7 @@ module Invent
           if @index.run
             render json: @index.data
           else
-            render json: { full_message: 'Обратитесь к администратору, т.***REMOVED***' }, status: 422
+            render json: { full_message: 'Ошибка. Обратитесь к администратору, т.***REMOVED***' }, status: 422
           end
         end
       end
@@ -26,14 +26,14 @@ module Invent
           if @new_wp.run
             render json: @new_wp.data
           else
-            render json: { full_message: 'Обратитесь к администратору, т.***REMOVED***' }, status: 422
+            render json: { full_message: 'Ошибка. Обратитесь к администратору, т.***REMOVED***' }, status: 422
           end
         end
       end
     end
 
     def create
-      @create = LkInvents::CreateWorkplace.new(current_user, workplace_params, params[:pc_file])
+      @create = Workplaces::Create.new(current_user, workplace_params)
 
       if @create.run
         flash[:notice] = 'Рабочее место создано'
@@ -52,14 +52,14 @@ module Invent
           if @list_wp.run
             render json: @list_wp.data
           else
-            render json: { full_message: 'Обратитесь к администратору, т.***REMOVED***' }, status: 422
+            render json: { full_message: 'Ошибка. Обратитесь к администратору, т.***REMOVED***' }, status: 422
           end
         end
       end
     end
 
     def pc_config_from_audit
-      @pc_config = LkInvents::PcConfigFromAudit.new(params[:invent_num])
+      @pc_config = Workplaces::PcConfigFromAudit.new(params[:invent_num])
 
       if @pc_config.run
         render json: @pc_config.data
@@ -69,10 +69,10 @@ module Invent
     end
 
     def pc_config_from_user
-      @pc_file = LkInvents::PcConfigFromUser.new(params[:pc_file])
+      @pc_file = Workplaces::PcConfigFromUser.new(params[:pc_file])
 
       if @pc_file.run
-        render json: { data: @pc_file.data, full_message: 'Файл добавлен' }
+        render json: { data: @pc_file.data, full_message: 'Данные загружены' }
       else
         render json: { full_message: @pc_file.errors.full_messages.join('. ') }, status: 422
       end
@@ -90,16 +90,14 @@ module Invent
           if @edit.run(request.format.symbol)
             render json: @edit.data
           else
-            render json: { full_message: 'Обратитесь к администратору, т.***REMOVED***' }, status: 422
+            render json: { full_message: 'Ошибка. Обратитесь к администратору, т.***REMOVED***' }, status: 422
           end
         end
       end
     end
 
     def update
-      @update = LkInvents::UpdateWorkplace.new(
-        current_user, params[:workplace_id], workplace_params, params[:pc_file]
-      )
+      @update = Workplaces::Update.new(current_user, params[:workplace_id], workplace_params)
 
       if @update.run
         flash[:notice] = 'Данные о рабочем месте обновлены'
@@ -137,7 +135,6 @@ module Invent
     private
 
     def workplace_params
-      params[:workplace] = JSON.parse(params[:workplace], symbolize_names: true)
       params.require(:workplace).permit(
         :workplace_id,
         :enabled_filters,
@@ -151,8 +148,8 @@ module Invent
         :location_room_id,
         :comment,
         :status,
-        inv_item_ids: [],
-        inv_items_attributes: [
+        item_ids: [],
+        items_attributes: [
           :id,
           :parent_id,
           :type_id,
@@ -164,7 +161,7 @@ module Invent
           :serial_num,
           :status,
           :_destroy,
-          inv_property_values_attributes: %i[id property_id item_id property_list_id value _destroy]
+          property_values_attributes: %i[id property_id item_id property_list_id value _destroy]
         ]
       )
     end

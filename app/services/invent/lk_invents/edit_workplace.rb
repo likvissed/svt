@@ -13,7 +13,12 @@ module Invent
 
       def run
         load_workplace
-      rescue RuntimeError
+
+        true
+      rescue RuntimeError => e
+        Rails.logger.error e.inspect.red
+        Rails.logger.error e.backtrace[0..5].inspect
+
         false
       end
 
@@ -22,7 +27,7 @@ module Invent
       # Получить данные из БД.
       def load_workplace
         @workplace = Workplace
-                       .includes(:workplace_count, :iss_reference_room, inv_items: { inv_property_values: :inv_property })
+                       .includes(:workplace_count, :iss_reference_room, items: { property_values: :property })
                        .find(@workplace_id)
         authorize workplace, :edit?
 
@@ -36,10 +41,10 @@ module Invent
           include: [
             :workplace_count,
             :iss_reference_room,
-            inv_items: {
+            items: {
               include: {
-                inv_property_values: {
-                  include: :inv_property
+                property_values: {
+                  include: :property
                 }
               }
             }
@@ -51,17 +56,17 @@ module Invent
       def prepare_to_render
         data['division'] = data['workplace_count']['division']
         data['location_room_name'] = data['iss_reference_room']['name']
-        data['inv_items_attributes'] = data['inv_items']
+        data['items_attributes'] = data['items']
 
-        data.delete('inv_items')
+        data.delete('items')
         data.delete('iss_reference_room')
         data.delete('location_room_id')
         data.delete('workplace_count')
 
-        data['inv_items_attributes'].each do |item|
+        data['items_attributes'].each do |item|
           prepare_to_edit_item(item)
         end
-        data['inv_item_ids'] = data['inv_items_attributes'].map { |item| item['id'] }
+        data['item_ids'] = data['items_attributes'].map { |item| item['id'] }
       end
     end
   end

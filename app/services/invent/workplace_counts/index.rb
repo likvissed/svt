@@ -1,6 +1,6 @@
 module Invent
   module WorkplaceCounts
-    # Класс загружает все данные об отделах, заполняющих данные о РМ, включая отдел, ответственных, телефоны, время доступа для редакитварования,
+    # Загрузить все данные об отделах, заполняющих данные о РМ, включая отдел, ответственных, телефоны, время доступа для редакитварования,
     # количество ожидающих подстверждения РМ, а также количество подтвержденных РМ
     class Index < ApplicationService
       attr_reader :workplace_counts
@@ -9,7 +9,12 @@ module Invent
         workplace_counts
         transform_to_json
         prepare_to_render
-      rescue RuntimeError
+
+        true
+      rescue RuntimeError => e
+        Rails.logger.error e.inspect.red
+        Rails.logger.error e.backtrace[0..5].inspect
+
         false
       end
 

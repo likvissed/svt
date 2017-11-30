@@ -1,7 +1,7 @@
 module Standard
   class Discrepancy < BaseStandard
-    belongs_to :inv_item, class_name: 'Invent::InvItem', foreign_key: 'item_id'
-    belongs_to :inv_property_value, class_name: 'Invent::InvPropertyValue', foreign_key: 'property_value_id', optional: true
+    belongs_to :item, class_name: 'Invent::Item', foreign_key: 'item_id'
+    belongs_to :property_value, class_name: 'Invent::PropertyValue', foreign_key: 'property_value_id', optional: true
 
     enum event: { add: 0, change: 1, remove: 2 }
   end

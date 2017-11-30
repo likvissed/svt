@@ -2,7 +2,7 @@ require 'csv'
 
 module Invent
   module WorkplaceCounts
-    # Класс создает список отделов и ответственных лиц из загруженного файла.
+    # Создать список отделов и ответственных лиц из загруженного файла.
     class CreateList < ApplicationService
       def initialize(file)
         @file = file
@@ -18,8 +18,12 @@ module Invent
       def run
         validate_format
         parse_file
+
         true
-      rescue RuntimeError
+      rescue RuntimeError => e
+        Rails.logger.error e.inspect.red
+        Rails.logger.error e.backtrace[0..5].inspect
+
         false
       end
 

@@ -2,11 +2,11 @@ require 'feature_helper'
 
 module Invent
   module WorkplaceCounts
-    feature 'Show all workplace_counts', %q{
+    feature 'Show all workplace_counts', '
       In order to see all divisions and responsible users
       As an authenticated user
       I want to be able to go to the index page
-    } do
+    ' do
       given(:user) { create(:user) }
       given!(:workplace_count) { create(:active_workplace_count, users: [build(:***REMOVED***_user)]) }
 

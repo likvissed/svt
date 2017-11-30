@@ -2,8 +2,14 @@ class HostIss < Netadmin
   self.table_name = :hosts
   self.primary_key = :ip
 
-  def self.get_host(inv_num)
-    data = connection.exec_query("SELECT * FROM #{table_name} WHERE id = #{sanitize(inv_num.to_s)}").first
-    data.nil? ? nil : data.symbolize_keys
+  bad_attribute_names :class
+  alias_attribute :invent_num, :id
+
+  def klass
+    read_attribute(:class)
+  end
+
+  def klass=(val)
+    write_attribute(:class, val)
   end
 end

@@ -1,5 +1,5 @@
 module Invent
-  module LkInvents
+  module Workplaces
     # Получить данные о конфигурации ПК от системы Аудит.
     class PcConfigFromAudit < BaseService
       attr_reader :host
@@ -24,21 +24,32 @@ module Invent
       rescue Timeout::Error
         errors.add(:base, :not_responded)
         false
-      rescue RuntimeError
+      rescue RuntimeError => e
+        Rails.logger.error e.inspect.red
+        Rails.logger.error e.backtrace[0..5].inspect
+
         false
       end
 
       private
 
       def run_validations
-        raise 'abort' unless valid?
+        raise 'Ошибка валидации' unless valid?
+      end
+
+      def host_name
+        @host = HostIss.find_by(id: inv_num)
+        return if @host
+
+        errors.add(:host, :not_found)
+        raise 'Хост не найден'
       end
 
       def load_data
         Timeout.timeout(Audit::TIMEOUT_FOR_REQUEST) do
           loop do
             begin
-              @data = Audit.get_data(host[:name])
+              @data = Audit.get_data(host.name)
               if data.nil?
                 errors.add(:base, :empty_data)
                 return false
@@ -56,14 +67,6 @@ module Invent
         end
 
         true
-      end
-
-      def host_name
-        @host = HostIss.get_host(inv_num)
-        return if @host
-
-        errors.add(:host, :not_found)
-        raise 'abort'
       end
     end
   end

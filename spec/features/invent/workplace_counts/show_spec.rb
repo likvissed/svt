@@ -2,14 +2,14 @@ require 'feature_helper'
 
 module Invent
   module WorkpalceCounts
-    feature 'Show the workplace_count', %q{
-    In order to change data about workplace_count
-    As an authenticated user
-    I want to be able to load data about selected workpalce_count
-    } do
-      given!(:user) { create :user }
-      given(:***REMOVED***_user) { create :***REMOVED***_user }
-      given!(:workplace_count) { create :active_workplace_count, users: [***REMOVED***_user] }
+    feature 'Show the workplace_count', '
+      In order to change data about workplace_count
+      As an authenticated user
+      I want to be able to load data about selected workpalce_count
+    ' do
+      given!(:user) { create(:user) }
+      given(:***REMOVED***_user) { create(:***REMOVED***_user) }
+      given!(:workplace_count) { create(:active_workplace_count, users: [***REMOVED***_user]) }
 
       scenario 'Unauthenticated user tries to show a workplace_count', js: true do
         visit invent_workplace_counts_path

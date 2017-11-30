@@ -1,20 +1,17 @@
 require 'spec_helper'
 
 module Invent
-  module LkInvents
+  module Workplaces
     RSpec.describe PcConfigFromAudit, type: :model do
-      subject { PcConfigFromAudit.new(111111) }
+      let(:host_iss) { build(:host_iss) }
+      subject { PcConfigFromAudit.new(host_iss[:id]) }
 
       it { is_expected.to validate_presence_of(:inv_num) }
       it { is_expected.not_to allow_value('').for(:inv_num) }
 
       context 'with valid inventory number' do
-        before { allow(HostIss).to receive(:get_host).and_return(build :host_iss) }
-
-        include_examples 'run methods', %w[host_name load_data]
-
         context 'when Audit correctly works on the specified PC' do
-          before { allow(Audit).to receive(:get_data).and_return(build :audit) }
+          before { allow(Audit).to receive(:get_data).and_return(build(:audit)) }
 
           it 'returns a hash with %i[cpu ram hdd mb video last_connection] keys' do
             subject.run
@@ -41,7 +38,7 @@ module Invent
         end
 
         context "when Audit did not update data more than #{Audit::MAX_RELENAVCE_TIME} days" do
-          before { allow(Audit).to receive(:get_data).and_return(build :audit, last_connection: [30.days.ago.to_s]) }
+          before { allow(Audit).to receive(:get_data).and_return(build(:audit, last_connection: [30.days.ago.to_s])) }
 
           it 'sets the :not_relevant error into the :base key' do
             subject.run
@@ -53,6 +50,8 @@ module Invent
       end
 
       context 'with invalid inventory number' do
+        subject { PcConfigFromAudit.new(111_111) }
+
         it 'sets the :not_found error into :host key' do
           subject.run
           expect(subject.errors.details[:host]).to include(error: :not_found)

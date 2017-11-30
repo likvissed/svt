@@ -3,8 +3,8 @@ module Warehouse
     self.primary_key = :warehouse_item_id
     self.table_name = "#{table_name_prefix}items"
 
-    belongs_to :inv_item, class_name: 'Invent::InvItem', foreign_key: 'invent_item_id'
-    belongs_to :inv_type, class_name: 'Invent::InvType', foreign_key: 'type_id'
-    belongs_to :inv_model, class_name: 'Invent::InvModel', foreign_key: 'model_id'
+    belongs_to :item, class_name: 'Invent::Item', foreign_key: 'invent_item_id'
+    belongs_to :type, class_name: 'Invent::Type'
+    belongs_to :model, class_name: 'Invent::Model'
   end
 end

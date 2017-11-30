@@ -1,5 +1,6 @@
 module Invent
   module WorkplaceCounts
+    # Загрузить данные доступа отдела.
     class Show < ApplicationService
       def initialize(workplace_count_id)
         @workplace_count_id = workplace_count_id
@@ -7,7 +8,12 @@ module Invent
 
       def run
         load_workplace_count
-      rescue RuntimeError
+
+        true
+      rescue RuntimeError => e
+        Rails.logger.error e.inspect.red
+        Rails.logger.error e.backtrace[0..5].inspect
+
         false
       end
 

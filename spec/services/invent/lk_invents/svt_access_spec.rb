@@ -4,8 +4,8 @@ module Invent
   module LkInvents
     RSpec.describe SvtAccess, type: :model do
       context 'with access' do
-        let(:user) { create :user }
-        let!(:workplace_count) { create :active_workplace_count, users: [user] }
+        let(:user) { create(:user) }
+        let!(:workplace_count) { create(:active_workplace_count, users: [user]) }
         let(:expected_obj) do
           {
             workplace_count_id: workplace_count.workplace_count_id,

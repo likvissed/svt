@@ -1,7 +1,7 @@
 module Invent
   module Workplaces
     # Загрузить все рабочие места
-    class ListWp < ApplicationService
+    class ListWp < BaseService
       # init_filters- флаг, определяющий, нужно ли загрузить данные для фильтров.
       # filters - объект, содержащий выбранные фильтры.
       def initialize(init_filters = false, filters = false)
@@ -17,6 +17,11 @@ module Invent
         load_filters if @init_filters
 
         true
+      rescue RuntimeError => e
+        Rails.logger.error e.inspect.red
+        Rails.logger.error e.backtrace[0..5].inspect
+
+        false
       end
 
       private
@@ -30,15 +35,14 @@ module Invent
           :iss_reference_site,
           :iss_reference_building,
           :iss_reference_room,
-          inv_items: [:inv_type, :inv_model, inv_property_values: %i[inv_property inv_property_list]]
+          items: [:type, :model, property_values: %i[property property_list]]
         ).where(status: :pending_verification)
       end
 
       # Отфильтровать полученные данные
       def run_filters
-        unless @filters['workplace_count_id'].to_i.zero?
-          @workplaces = @workplaces.where(workplace_count_id: @filters['workplace_count_id'])
-        end
+        return if @filters['workplace_count_id'].to_i.zero?
+        @workplaces = @workplaces.where(workplace_count_id: @filters['workplace_count_id'])
       end
 
       def prepare_to_render
@@ -51,21 +55,22 @@ module Invent
             :iss_reference_site,
             :iss_reference_building,
             :iss_reference_room,
-            inv_items: {
+            items: {
               include: [
-                :inv_type,
-                :inv_model,
-                inv_property_values: {
-                  include: %i[inv_property inv_property_list]
+                :type,
+                :model,
+                property_values: {
+                  include: %i[property property_list]
                 }
               ]
             }
           ]
         ).map do |wp|
-          workplace = "ФИО: #{wp['user_iss']['fio']}; Отдел: #{wp['workplace_count']['division']};
+          fio = wp['user_iss'] ? wp['user_iss']['fio'] : wrap_problem_string('Ответственный не найден')
+          workplace = "ФИО: #{fio}; Отдел: #{wp['workplace_count']['division']};
  #{wp['workplace_type']['short_description']}; Расположение: #{wp_location_string(wp)}; Основной вид деятельности:
  #{wp['workplace_specialization']['short_description']}"
-          items = wp['inv_items'].map { |item| item_info(item) }
+          items = wp['items'].map { |item| item_info(item) }
 
           {
             workplace_id: wp['workplace_id'],
@@ -78,9 +83,9 @@ module Invent
       # Преобразовать данные о составе РМ в массив строк.
       def item_info(item)
         model = get_model(item)
-        property_values = item['inv_property_values'].map { |prop_val| property_value_info(prop_val) }
+        property_values = item['property_values'].map { |prop_val| property_value_info(prop_val) }
 
-        "#{item['inv_type']['short_description']}: Инв №: #{item['invent_num']}; #{model}; Конфигурация:
+        "#{item['type']['short_description']}: Инв №: #{item['invent_num']}; #{model}; Конфигурация:
  #{property_values.join('; ')}"
       end
 

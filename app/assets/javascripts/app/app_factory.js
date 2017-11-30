@@ -1,4 +1,4 @@
-(function () {
+(function() {
   'use strict';
 
   app
@@ -35,13 +35,13 @@
    *
    * @param message - сообщение, которое необходимо вывести.
    */
-  Flash.prototype.notice = function (message) {
+  Flash.prototype.notice = function(message) {
     var self = this;
 
     this.flash.alert = null;
     this.flash.notice = message;
 
-    this.$timeout(function () {
+    this.$timeout(function() {
       self.flash.notice = null;
     }, 2000);
   };
@@ -51,7 +51,7 @@
    *
    * @param message - сообщение, которое необходимо вывести.
    */
-  Flash.prototype.alert = function (message) {
+  Flash.prototype.alert = function(message) {
     this.flash.notice = null;
     this.flash.alert = message;
   };
@@ -72,7 +72,7 @@
        * @param status - статус ответа (необязательный параметр, используется, если не удается найти статус в
        * параметре "response")
        */
-      response: function (response, status) {
+      response: function(response, status) {
         var
           // Код ответа
           code,
@@ -132,21 +132,14 @@
             method: 'GET',
             url: '/invent/workplaces/:id/edit.json'
           },
+          update: { method: 'PUT' },
           pcConfigFromAudit: {
             method: 'GET',
             url: '/invent/workplaces/pc_config_from_audit/:invent_num'
           },
-          save: {
-            method: 'POST',
-            headers: { 'Content-Type': undefined },
-            transformRequest: angular.identity
-          },
           pcConfigFromUser: {
             method: 'POST',
-            url: '/invent/workplaces/pc_config_from_user'
-          },
-          update: {
-            method: 'PUT',
+            url: '/invent/workplaces/pc_config_from_user.json',
             headers: { 'Content-Type': undefined },
             transformRequest: angular.identity
           },
@@ -214,10 +207,10 @@
 
     return {
       getRequestsCount: self.requests,
-      incCount: function () {
+      incCount: function() {
         incCount();
       },
-      decCount: function () {
+      decCount: function() {
         decCount();
       },
       request: function(config) {
@@ -279,7 +272,7 @@
         $cookies.putObject(name, obj);
       } else {
         // Проверяем, существуют ли в cookies все ключи объекта obj
-        angular.forEach(obj, function (value, key) {
+        angular.forEach(obj, function(value, key) {
           if (angular.isUndefined($cookies.getObject(name)[key])) {
             setCookie(name, key, value);
           }
@@ -321,13 +314,13 @@
        * Страница /workplaces.
        */
       Workplace: {
-        init: function () {
+        init: function() {
           init('workplace');
         },
-        get: function (key) {
+        get: function(key) {
           return getCookie('workplace', key);
         },
-        set: function (key, value) {
+        set: function(key, value) {
           setCookie('workplace', key, value);
         }
       }

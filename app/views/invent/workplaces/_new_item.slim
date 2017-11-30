@@ -3,10 +3,10 @@ script type="text/ng-template" id="newItem.slim"
     h4 Выбор типа создаваемого устройства
     .modal-body
       .form-group
-        = radio_button_tag :new_item, "new", false, "ng-model": "select.itemType", "ng-change": "select.setInitselectedType()"
+        = radio_button_tag :new_item, "new", false, "ng-model": "select.itemType", "ng-change": "select.setInitSelectedType()"
         = label_tag :new_item_new, "Новая техника", class: "control-label"
         br
-        = radio_button_tag :new_item, "exist", false, "ng-model": "select.itemType", "ng-change": "select.setInitselectedType()"
+        = radio_button_tag :new_item, "exist", false, "ng-model": "select.itemType", "ng-change": "select.setInitSelectedType()"
         = label_tag :new_item_exist, "Б/у техника", class: "control-label"
 
       .form-group ng-show="select.itemType == 'new'"

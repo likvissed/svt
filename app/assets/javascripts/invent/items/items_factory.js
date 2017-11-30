@@ -1,11 +1,11 @@
-(function () {
+(function() {
   'use strict';
 
-  app.service('InvItem', InvItem);
+  app.service('TableItem', TableItem);
 
-  InvItem.$inject = ['Config', 'Server', 'Error'];
+  TableItem.$inject = ['Config', 'Server', 'Error'];
 
-  function InvItem(Config, Server, Error) {
+  function TableItem(Config, Server, Error) {
     this.Config = Config;
     this.Server = Server;
     this.Error = Error;
@@ -26,7 +26,7 @@
       // Фильтры установленные пользователем
       selected: {
         item_id: '',
-        inv_type: { type_id: 0 },
+        type: { type_id: 0 },
         invent_num: '',
         responsible: '',
         properties: [],
@@ -35,13 +35,13 @@
       },
       // Варианты выбора фильтров
       lists: {
-        invTypeFilters: [
+        TypeFilters: [
           {
             type_id: 0,
             short_description: 'Все типы'
           }
         ],
-        invPropertyFilters: [angular.copy(this._filterTemplate)]
+        PropertyFilters: [angular.copy(this._filterTemplate)]
       }
     };
   }
@@ -49,7 +49,7 @@
   /**
    * Инициализация данных.
    */
-  InvItem.prototype.init = function (init) {
+  TableItem.prototype.init = function(init) {
     var
       self = this,
       start = (this.pagination.currentPage - 1) * this.Config.global.uibPaginationConfig.itemsPerPage,
@@ -68,13 +68,13 @@
         init_filters: init,
         filters: {
           item_id: selected.item_id,
-          type_id: selected.inv_type.type_id,
+          type_id: selected.type.type_id,
           invent_num: selected.invent_num,
           responsible: selected.responsible,
-          properties: (function () {
+          properties: (function() {
             var arr = [];
 
-            selected.properties.forEach(function (el) { this.push(el.property_id); }, arr);
+            selected.properties.forEach(function(el) { this.push(el.property_id); }, arr);
 
             return arr;
           })(),
@@ -82,7 +82,7 @@
           exact_prop_values: selected.exact_prop_values
         }
       },
-      function (response) {
+      function(response) {
         // Список всей техники
         self.items = response.data;
         // Данные для составления нумерации страниц
@@ -92,17 +92,17 @@
 
         if (response.filters) {
           // Данные для фильтра выбора типа техники
-          self.filters.lists.invTypeFilters = self.filters.lists.invTypeFilters.concat(response.filters.inv_types);
-          selected.inv_type = self.filters.lists.invTypeFilters[0];
+          self.filters.lists.TypeFilters = self.filters.lists.TypeFilters.concat(response.filters.types);
+          selected.type = self.filters.lists.TypeFilters[0];
 
           // Данные для фильтра выбора свойства и указания значения
-          self.filters.lists.invPropertyFilters = self.filters.lists.invPropertyFilters.concat(response.filters.inv_properties);
-          selected.properties[0] = self.filters.lists.invPropertyFilters[0];
+          self.filters.lists.PropertyFilters = self.filters.lists.PropertyFilters.concat(response.filters.properties);
+          selected.properties[0] = self.filters.lists.PropertyFilters[0];
           selected.prop_values[0] = '';
           selected.exact_prop_values[0] = false;
         }
       },
-      function (response, status) {
+      function(response, status) {
         self.Error.response(response, status);
       });
   };
@@ -110,7 +110,7 @@
   /**
    * Добавить фильтр
    */
-  InvItem.prototype.addPropFilter = function () {
+  TableItem.prototype.addPropFilter = function() {
     this.filters.selected.properties.push(angular.copy(this._filterTemplate));
     this.filters.selected.prop_values.push('');
     this.filters.selected.exact_prop_values.push(false);
@@ -119,7 +119,7 @@
   /**
    * Удалить указанный фильтр
    */
-  InvItem.prototype.delPropFilter = function (index) {
+  TableItem.prototype.delPropFilter = function(index) {
     this.filters.selected.properties.splice(index, 1);
     this.filters.selected.prop_values.splice(index, 1);
     this.filters.selected.exact_prop_values.splice(index, 1);

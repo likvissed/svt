@@ -1,4 +1,4 @@
-(function () {
+(function() {
   'use strict';
 
   app
@@ -20,10 +20,10 @@
   function disableLink() {
     return {
       restrict: 'A',
-      link: function (scope, element, attrs) {
-        var checkLink = function (data) {
+      link: function(scope, element, attrs) {
+        var checkLink = function(data) {
           if (data)
-            element.on('click', function (event) {
+            element.on('click', function(event) {
               event.preventDefault();
             });
           else
@@ -32,7 +32,7 @@
             })
         };
 
-        scope.$watch(attrs.disableLink, function (newValue, oldValue) {
+        scope.$watch(attrs.disableLink, function(newValue, oldValue) {
           checkLink(newValue);
         });
       }
@@ -46,9 +46,9 @@
       restrict: 'E',
       transclude: true,
       template: '<ng-transclude></ng-transclude>',
-      link: function (scope, element, attrs) {
+      link: function(scope, element, attrs) {
         function compileElements() {
-          $timeout(function () {
+          $timeout(function() {
             $compile(element.find('.new-record'))(scope);
 
             $compile(element.find('.workplaces-id-filter'))(scope);
@@ -67,7 +67,7 @@
         compileElements();
 
         scope.$watch(
-          function (scope) {
+          function(scope) {
             // Для таблицы РМ
             if (scope.wpIndex) {
               return [
@@ -92,7 +92,7 @@
               ];
             }
           },
-          function () {
+          function() {
             compileElements();
           },
           true
@@ -108,7 +108,7 @@
       restrict: 'C',
       //template: '<button class="btn-sm btn btn-primary btn-block"
       // ng-click="contactPage.showContactModal()">Добавить</button>'
-      templateUrl: function (element, attrs) {
+      templateUrl: function(element, attrs) {
         return '/link/new_record.json?ctrl_name=' + attrs.id;
       }
     }
@@ -119,7 +119,7 @@
     return {
       require: 'ngModel',
       link: function(scope, element, attrs) {
-        element.on('click', function (event) {
+        element.on('click', function(event) {
           var
             ctrl = element.controller('ngModel'),
             prev = ctrl.$modelValue || '';
@@ -143,7 +143,7 @@
       scope: {
         infoAttrs: "="
       },
-      link: function (scope, element, attrs) {
+      link: function(scope, element, attrs) {
         var
           // Индекс начальной записи
           startRecord,
@@ -174,13 +174,13 @@
           element.text(result);
         }
 
-        $timeout(function () {
+        $timeout(function() {
           setEl();
         }, 0);
 
         scope.$watch(
-          function () { return scope.infoAttrs; },
-          function () { setEl(); },
+          function() { return scope.infoAttrs; },
+          function() { setEl(); },
           true
         );
       }

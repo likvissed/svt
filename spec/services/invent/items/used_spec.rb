@@ -3,8 +3,8 @@ require 'spec_helper'
 module Invent
   module Items
     RSpec.describe Used, type: :model do
-      let!(:items) { create_list(:item_with_model_id, 4, :with_property_values, workplace: nil, type_name: 'monitor') }
-      let(:type) { InvType.find_by(name: :monitor) }
+      let!(:items) { create_list(:item, 4, :with_property_values, type_name: 'monitor') }
+      let(:type) { Type.find_by(name: :monitor) }
       subject { Used.new(type.type_id) }
       before { subject.run }
 

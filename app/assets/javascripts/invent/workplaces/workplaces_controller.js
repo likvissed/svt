@@ -1,4 +1,4 @@
-(function () {
+(function() {
   'use strict';
 
   app
@@ -10,7 +10,7 @@
 
   WorkplaceIndexCtrl.$inject = ['$scope', '$compile', '$controller', 'DTOptionsBuilder', 'DTColumnBuilder', 'ActionCableChannel', 'Server', 'Config', 'Flash', 'Error', 'Cookies'];
   WorkplaceListCtrl.$inject = ['$scope', '$compile', '$controller', 'DTOptionsBuilder', 'DTColumnBuilder', 'ActionCableChannel', 'Server', 'Config', 'Flash', 'Error', 'Cookies'];
-  WorkplaceEditCtrl.$inject = ['$filter', '$timeout', '$uibModal', 'Flash', 'Config', 'Workplace', 'Item'];
+  WorkplaceEditCtrl.$inject = ['$timeout', '$uibModal', 'Flash', 'Config', 'Workplace', 'Item'];
   ManuallyPcDialogCtrl.$inject = ['$uibModalInstance', 'Flash', 'Workplace', 'Item', 'item'];
   SelectItemTypeCtrl.$inject = ['$uibModalInstance', 'data', 'Workplace', 'Flash'];
 
@@ -78,7 +78,7 @@
             workplace_type_id: self.Cookies.Workplace.get('tableTypeFilter') || self.typeFilters[0].workplace_type_id
           }
         },
-        error: function (response) {
+        error: function(response) {
           self.Error.response(response);
         }
       })
@@ -119,11 +119,11 @@
     ];
 
     function initComplete(settings, json) {
-      // $('.dataTables_filter input').off().on('input', function (e) {});
+      // $('.dataTables_filter input').off().on('input', function(e) {});
 
       // Создание подписки на канал WorkplacesChannel для обновления автоматического обновления таблицы.
       var consumer = new ActionCableChannel('WorkplacesChannel');
-      consumer.subscribe(function () {
+      consumer.subscribe(function() {
         self.dtInstance.reloadData(null, self.Config.global.reloadPaging);
       });
 
@@ -188,7 +188,7 @@
    *
    * @param data - данные фильтров, полученные с сервера
    */
-  WorkplaceIndexCtrl.prototype._setFilters = function (data) {
+  WorkplaceIndexCtrl.prototype._setFilters = function(data) {
     var cookieVal;
 
     this.divisionFilters = this.divisionFilters.concat(data.divisions);
@@ -216,7 +216,7 @@
     if (angular.isUndefined(cookieVal)) {
       this.selectedDivisionFilter = this.divisionFilters[0];
     } else {
-      this.selectedDivisionFilter = this.divisionFilters.find(function (el) { return el.workplace_count_id == cookieVal })
+      this.selectedDivisionFilter = this.divisionFilters.find(function(el) { return el.workplace_count_id == cookieVal })
     }
 
     // Установить выбранный фильтр по статусам РМ
@@ -232,14 +232,14 @@
     if (angular.isUndefined(cookieVal)) {
       this.selectedTypeFilter = this.typeFilters[0];
     } else {
-      this.selectedTypeFilter = this.typeFilters.find(function (el) { return el.workplace_type_id == cookieVal })
+      this.selectedTypeFilter = this.typeFilters.find(function(el) { return el.workplace_type_id == cookieVal })
     }
   };
 
   /**
    * Записать выбранные фильтры в cookies.
    */
-  WorkplaceIndexCtrl.prototype._setFilterCookies = function () {
+  WorkplaceIndexCtrl.prototype._setFilterCookies = function() {
     this.Cookies.Workplace.set('tableInventNumFilter', this.selectedInventNumFilter);
     this.Cookies.Workplace.set('tableIdFilter', this.selectedIdFilter);
     this.Cookies.Workplace.set('tableDivisionFilter', this.selectedDivisionFilter.workplace_count_id);
@@ -250,7 +250,7 @@
   /**
    * Сохранить фильтры и обновить данные таблицы с учетом фильтров.
    */
-  WorkplaceIndexCtrl.prototype.changeFilter = function () {
+  WorkplaceIndexCtrl.prototype.changeFilter = function() {
     this._setFilterCookies();
 
     this.dtInstance.changeData({
@@ -271,7 +271,7 @@
    *
    * @params id - id рабочего места.
    */
-  WorkplaceIndexCtrl.prototype.destroyWp = function (id) {
+  WorkplaceIndexCtrl.prototype.destroyWp = function(id) {
     var
       self = this,
       confirm_str = "Вы действительно хотите удалить рабочее место \"" + id + "\"?";
@@ -281,12 +281,12 @@
 
     self.Server.Invent.Workplace.delete(
       { workplace_id: id },
-      function (response) {
+      function(response) {
         console.log(response);
         self.Flash.notice(response.full_message);
         self.dtInstance.reloadData(null, self.Config.global.reloadPaging);
       },
-      function (response, status) {
+      function(response, status) {
         self.Error.response(response, status);
       });
   };
@@ -347,7 +347,7 @@
             workplace_count_id: self.Cookies.Workplace.get('tableListDivisionFilter') || self.divisionFilters[0].workplace_count_id
           }
         },
-        error: function (response) {
+        error: function(response) {
           self.Error.response(response);
         }
       })
@@ -369,7 +369,7 @@
       );
 
     self.dtColumns = [
-      DTColumnBuilder.newColumn(null).withTitle('').renderWith(renderIndex),
+      DTColumnBuilder.newColumn('workplace_id').withTitle('ID').notSortable().withOption('className', 'col-fhd-1'),
       DTColumnBuilder.newColumn(null).withTitle(checkboxCell).notSortable().renderWith(checkboxCellFunc),
       DTColumnBuilder.newColumn(null).withTitle('Описание').notSortable().withOption('className', 'col-fhd-22').renderWith(showWorkplace),
       DTColumnBuilder.newColumn(null).withTitle('').notSortable().withOption('className', 'col-fhd-1 text-center').renderWith(editRecord)
@@ -378,20 +378,13 @@
     function initComplete(settings, json) {
       // Создание подписки на канал WorkplacesChannel для обновления автоматического обновления таблицы.
       // var consumer = new ActionCableChannel('WorkplaceListChannel');
-      // consumer.subscribe(function () {
+      // consumer.subscribe(function() {
       //   self.dtInstance.reloadData(null, self.Config.global.reloadPaging);
       // });
 
       if (json.filters) {
         self._setFilters(json.filters);
       }
-    }
-
-    /**
-     * Показать номер строки.
-     */
-    function renderIndex(data, type, full, meta) {
-      return meta.row + 1;
     }
 
     /**
@@ -432,7 +425,7 @@
         res,
         items = [];
 
-      angular.forEach(data.items, function (value) { items.push('<li>' + value + '</li>'); });
+      data.items.forEach(function(value) { items.push('<li>' + value + '</li>'); });
       res = '<span>' + data.workplace + '</span><br>Состав:<ul>' + items.join('') + '</ul>';
 
       return res;
@@ -444,7 +437,7 @@
    *
    * @param data - данные фильтров, полученные с сервера
    */
-  WorkplaceListCtrl.prototype._setFilters = function (data) {
+  WorkplaceListCtrl.prototype._setFilters = function(data) {
     var cookieVal;
 
     this.divisionFilters = this.divisionFilters.concat(data.divisions);
@@ -454,21 +447,21 @@
     if (angular.isUndefined(cookieVal)) {
       this.selectedDivisionFilter = this.divisionFilters[0];
     } else {
-      this.selectedDivisionFilter = this.divisionFilters.find(function (el) { return el.workplace_count_id == cookieVal });
+      this.selectedDivisionFilter = this.divisionFilters.find(function(el) { return el.workplace_count_id == cookieVal; });
     }
   };
 
   /**
    * Записать выбранные фильтры в cookies.
    */
-  WorkplaceListCtrl.prototype._setFilterCookies = function () {
+  WorkplaceListCtrl.prototype._setFilterCookies = function() {
     this.Cookies.Workplace.set('tableListDivisionFilter', this.selectedDivisionFilter.workplace_count_id);
   };
 
   /**
    * Установить служебные переменные в дефолтные состояния.
    */
-  WorkplaceListCtrl.prototype._setDefaultTableMetadata = function () {
+  WorkplaceListCtrl.prototype._setDefaultTableMetadata = function() {
     this.workplaces = {};
     this.flags.all = false;
     this.flags.single = false;
@@ -479,51 +472,37 @@
    *
    * @param keys - массив ключей, которые необходимо удалить.
    */
-  WorkplaceListCtrl.prototype._removeRow = function (keys) {
-    var self = this;
-
-    keys.forEach(function (id) { delete this[id] }, this.workplaces);
-    this.dtInstance.reloadData(null, self.Config.global.reloadPaging);
-
-    if (this.isEmptyWorkplace()) {
-      this._setDefaultTableMetadata();
-    }
+  WorkplaceListCtrl.prototype._removeRow = function(keys) {
+    keys.forEach(function(id) { delete this[id]; }, this.workplaces);
+    this.dtInstance.reloadData(null, this.Config.global.reloadPaging);
+    this._setDefaultTableMetadata();
   };
 
   /**
    * Возвращает true, если объект workplaces пустой.
    */
-  WorkplaceListCtrl.prototype.isEmptyWorkplace = function () {
+  WorkplaceListCtrl.prototype.isEmptyWorkplace = function() {
     return Object.keys(this.workplaces).length == 0;
   };
 
   /**
    * Выделить или снять всё.
    */
-  WorkplaceListCtrl.prototype.toggleAll = function () {
-    var self = this;
-    angular.forEach(self.workplaces, function (value) { value.selected = self.flags.all; });
+  WorkplaceListCtrl.prototype.toggleAll = function() {
+    angular.forEach(this.workplaces, function(value) { value.selected = this.flags.all; }, this);
   };
 
   /**
    * Проверить, сколько checkbox выделено.
    */
-  WorkplaceListCtrl.prototype.toggleOne = function () {
+  WorkplaceListCtrl.prototype.toggleOne = function() {
     var
-      self = this,
       // Счетчик выделенных полей checkbox
       count = 0,
       // Флаг, который будет присвоен переменной flags.all
       flag = true;
 
-    angular.forEach(self.workplaces, function (wp) {
-      if (!wp.selected) {
-        flag = false;
-      }
-      else {
-        count ++;
-      }
-    });
+    angular.forEach(this.workplaces, function(wp) { wp.selected ? count ++ : flag = false; });
 
     this.flags.all = flag;
     this.flags.single = count != 0;
@@ -532,7 +511,7 @@
   /**
    * Сохранить фильтры и обновить данные таблицы с учетом фильтров.
    */
-  WorkplaceListCtrl.prototype.changeFilter = function () {
+  WorkplaceListCtrl.prototype.changeFilter = function() {
     this._setFilterCookies();
     this._setDefaultTableMetadata();
 
@@ -548,10 +527,11 @@
   /**
    * Обновить данные о РМ.
    */
-  WorkplaceListCtrl.prototype.updateWp = function (type) {
+  WorkplaceListCtrl.prototype.updateWp = function(type) {
     var
       self = this,
-      wpIds = $.grep(Object.keys(this.workplaces), function (el) { return self.workplaces[el].selected });
+      // Список id, которые будут отправлены на сервер
+      wpIds = Object.keys(this.workplaces).filter(function(el) { return this.workplaces[el].selected }, this);
 
     if (wpIds.length == 0) {
       self.Flash.alert('Необходимо выбрать хотя бы одно рабочее место');
@@ -579,8 +559,7 @@
    *
    * @class SVT.WorkplaceEditCtrl
    */
-  function WorkplaceEditCtrl($filter, $timeout, $uibModal, Flash, Config, Workplace, Item) {
-    this.$filter = $filter;
+  function WorkplaceEditCtrl($timeout, $uibModal, Flash, Config, Workplace, Item) {
     this.$timeout = $timeout;
     this.$uibModal = $uibModal;
     this.Flash = Flash;
@@ -589,12 +568,12 @@
     this.Item = Item;
   }
 
-  WorkplaceEditCtrl.prototype.init = function (id) {
+  WorkplaceEditCtrl.prototype.init = function(id) {
     var self = this;
 
     self.additional = self.Item.getAdditional();
 
-    this.Workplace.init(id).then(function () {
+    this.Workplace.init(id).then(function() {
       // Список типов РМ
       self.wp_types = self.Workplace.wp_types;
       // Типы оборудования на РМ с необходимыми для заполнения свойствами
@@ -620,10 +599,10 @@
   /**
    * Загрузить список работников отдела.
    */
-  WorkplaceEditCtrl.prototype.loadUsers = function () {
+  WorkplaceEditCtrl.prototype.loadUsers = function() {
     var self = this;
 
-    this.Workplace.loadUsers().then(function () {
+    this.Workplace.loadUsers().then(function() {
       self.users = self.Workplace.users;
     });
   };
@@ -634,7 +613,7 @@
    *
    * @param id_tn - id_tn выбранного ответственного.
    */
-  WorkplaceEditCtrl.prototype.formatLabel = function (id_tn) {
+  WorkplaceEditCtrl.prototype.formatLabel = function(id_tn) {
     if (!this.users) { return ''; }
 
     for (var i = 0; i < this.users.length; i ++) {
@@ -647,21 +626,21 @@
   /**
    * Установить workplace_type_id рабочего места.
    */
-  WorkplaceEditCtrl.prototype.setWorkplaceType = function () {
+  WorkplaceEditCtrl.prototype.setWorkplaceType = function() {
     this.workplace.workplace_type_id = angular.copy(this.workplace.workplace_type.workplace_type_id);
   };
 
   /**
    * Установить location_site_id рабочего места.
    */
-  WorkplaceEditCtrl.prototype.setLocationSite = function () {
+  WorkplaceEditCtrl.prototype.setLocationSite = function() {
     this.workplace.location_site_id = angular.copy(this.workplace.location_site.site_id);
   };
 
   /**
    * Установить начальное значение для корпуса при изменении площадки.
    */
-  WorkplaceEditCtrl.prototype.setDefaultLocation = function (type) {
+  WorkplaceEditCtrl.prototype.setDefaultLocation = function(type) {
     this.Workplace.setDefaultLocation(type);
   };
 
@@ -670,20 +649,16 @@
    *
    * @param item - объект item массива inv_atems_attributes.
    */
-  WorkplaceEditCtrl.prototype.checkPcInvnum = function (item) {
+  WorkplaceEditCtrl.prototype.checkPcInvnum = function(item) {
     if (
       // Относится ли текущий тип оборудования к тем, что указаны в массиве pcTypes.
-    !this.$filter('contains')(this.additional.pcTypes, item.type.name)
-    // Совпадает ли инв. номер с сохраненным
-    || this.additional.invent_num == item.invent_num
+      !this.additional.pcTypes.includes(item.type.name) ||
+      // Совпадает ли инв. номер с сохраненным
+      this.additional.invent_num == item.invent_num
     ) { return false; }
 
     // Очистить состав ПК
     this.Item.clearPropertyValues(item);
-    // Удалить загруженный файл
-    this.Item.setPcFile(null);
-    // Убрать флаг
-    this.additional.auditData = false;
   };
 
   /**
@@ -691,7 +666,7 @@
    *
    * @param item
    */
-  WorkplaceEditCtrl.prototype.getAuditData = function (item) {
+  WorkplaceEditCtrl.prototype.getAuditData = function(item) {
     if (item.invent_num) {
       this.additional.invent_num = angular.copy(item.invent_num);
       this.Workplace.getAuditData(item);
@@ -703,7 +678,7 @@
   /**
    * Запустить диалоговое окно "Ввод данных вручную".
    */
-  WorkplaceEditCtrl.prototype.runManuallyPcDialog = function (item) {
+  WorkplaceEditCtrl.prototype.runManuallyPcDialog = function(item) {
     if (item.invent_num) {
       this.$uibModal.open({
         animation: this.Config.global.modalAnimation,
@@ -713,7 +688,7 @@
         size: 'md',
         backdrop: 'static',
         resolve: {
-          item: function () { return item; }
+          item: function() { return item; }
         }
       });
     } else {
@@ -722,35 +697,25 @@
   };
 
   /**
-   * Очистить инвентарный номер, данные, полученные от аудита, а также удалить загруженный файл.
-   *
-   * @param item
-   */
-  WorkplaceEditCtrl.prototype.changeAuditData = function (item) {
-    this.Item.clearPcMetadata(item);
-    this.Item.clearPropertyValues(item);
-  };
-
-  /**
-   * Записать в модель workplace.inv_items данные о выбранной модели выбранного типа оборудования.
+   * Записать в модель workplace.items данные о выбранной модели выбранного типа оборудования.
    *
    * @param item - экземпляр техники, у которого изменили модель
    */
-  WorkplaceEditCtrl.prototype.changeItemModel = function (item) {
+  WorkplaceEditCtrl.prototype.changeItemModel = function(item) {
     this.Item.changeModel(item);
   };
 
   /**
    * Отправить данные на сервер для сохранения и закрыть Wizzard.
    */
-  WorkplaceEditCtrl.prototype.saveWorkplace = function () {
+  WorkplaceEditCtrl.prototype.saveWorkplace = function() {
     this.Workplace.saveWorkplace()
   };
 
   /**
    * Запустить диалоговое окно "Выбор типа устройства".
    */
-  WorkplaceEditCtrl.prototype.showSelectItemType = function () {
+  WorkplaceEditCtrl.prototype.showSelectItemType = function() {
     var self = this;
 
     var modalInstance = this.$uibModal.open({
@@ -761,14 +726,14 @@
       size: 'md',
       backdrop: 'static',
       resolve: {
-        data: function () {
+        data: function() {
           return { eq_types: self.eq_types };
         }
       }
     });
 
     modalInstance.result.then(
-      function (result) {
+      function(result) {
         if (result.selectedItem) {
           // Для б/у оборудования
           self.Workplace.addExistingItem(result.selectedType, result.selectedItem);
@@ -777,7 +742,7 @@
           self.Workplace.createItem(result.selectedType);
         }
       },
-      function () {
+      function() {
         self.Workplace.setFirstActiveTab()
       });
   };
@@ -788,7 +753,7 @@
    * @param item - удаляемый элемент.
    * @param $event - объект события.
    */
-  WorkplaceEditCtrl.prototype.delItem = function (item, $event) {
+  WorkplaceEditCtrl.prototype.delItem = function(item, $event) {
     $event.stopPropagation();
     $event.preventDefault();
 
@@ -813,46 +778,41 @@
   /**
    * Скачать скрипт.
    */
-  ManuallyPcDialogCtrl.prototype.downloadPcScript = function () {
+  ManuallyPcDialogCtrl.prototype.downloadPcScript = function() {
     this.Workplace.downloadPcScript();
   };
 
   /**
    * Закрыть модальное окно.
    */
-  ManuallyPcDialogCtrl.prototype.close = function () {
+  ManuallyPcDialogCtrl.prototype.close = function() {
     this.$uibModalInstance.close();
   };
 
   /**
-   * Сохранить файл в общую структуру данных.
+   * Загрузить файл для декодирования.
    *
    * @param file
    */
-  ManuallyPcDialogCtrl.prototype.setPcFile = function (file) {
+  ManuallyPcDialogCtrl.prototype.setPcFile = function(file) {
     var self = this;
 
-    if (!this.Item.fileValidationPassed(file)) {
+    if (!this.Item.isValidFile(file)) {
       this.Flash.alert('Необходимо загрузить текстовый файл, полученный в результате работы скачанной вами программы');
 
       return false;
     }
 
     this.Workplace.matchUploadFile(file).then(
-      function (response) {
-        self.Item.setPcFile(file);
-        self.Item.setAdditional('auditData', true);
-        self.Item.setFileName(self.item, file.name);
-
-        if (!self.Item.matchDataFromUploadedFile(self.item, response.data.data)) {
+      function(response) {
+        if (!self.Item.matchDataFromUploadedFile(self.item, response.data)) {
           self.Flash.alert('Не удалось обработать данные. Убедитесь в том, что вы загружаете файл, созданный скачанной программой. Если ошибка не исчезает, обратитесь к администратору (т.***REMOVED***)');
-          //self.invent.changeAuditData(self.item);
 
           return false;
         }
 
         self.Item.setAdditional('invent_num', angular.copy(self.item.invent_num));
-        self.Flash.notice(response.data.full_message);
+        self.Flash.notice(response.full_message);
         self.$uibModalInstance.close();
       }
     );
@@ -882,15 +842,18 @@
       self = this,
       index;
 
-    self.Workplace.workplace.inv_items_attributes.forEach(function (item) {
-      index = self.items.findIndex(function (el) { return el.item_id == item.id; });
+    self.Workplace.workplace.items_attributes.forEach(function(item) {
+      index = self.items.findIndex(function(el) { return el.item_id == item.id; });
       if (index != -1) {
         self.items.splice(index, 1);
       }
     })
   };
 
-  SelectItemTypeCtrl.prototype.setInitselectedType = function() {
+  /**
+   * Инициализировать выбранный тип техники (новая или б/у).
+   */
+  SelectItemTypeCtrl.prototype.setInitSelectedType = function() {
     this.selectedType = angular.copy(this.eq_types[0]);
   };
 

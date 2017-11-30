@@ -1,6 +1,6 @@
 module Invent
   module WorkplaceCounts
-    # Класс редактирует данные об отделе.
+    # Редактирование доступа для отдела.
     class Update < ApplicationService
       attr_reader :error
 
@@ -15,7 +15,12 @@ module Invent
       def run
         @data = WorkplaceCount.includes(:users).find(@workplace_count_id)
         update_workplace
-      rescue ActiveRecord::RecordInvalid, RuntimeError
+
+        true
+      rescue ActiveRecord::RecordInvalid, RuntimeError => e
+        Rails.logger.error e.inspect.red
+        Rails.logger.error e.backtrace[0..5].inspect
+
         error[:object] = data.errors
         error[:full_message] = data.errors.full_messages.join('. ') + data.wp_resp_errors.join('. ')
 
@@ -28,7 +33,7 @@ module Invent
       def update_workplace
         return true if data.update_attributes(@wpc_params)
 
-        raise 'abort'
+        raise 'Данные не обновлены'
       end
     end
   end

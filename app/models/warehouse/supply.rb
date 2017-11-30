@@ -3,6 +3,6 @@ module Warehouse
     self.primary_key = :warehouse_supply_id
     self.table_name = "#{table_name_prefix}supplies"
 
-    has_many :operations, as: :operationable
+    has_many :operations, as: :operationable, dependent: :restrict_with_error
   end
 end

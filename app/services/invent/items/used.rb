@@ -1,5 +1,6 @@
 module Invent
   module Items
+    # Загрузить список Б/У техники указанного типа
     class Used < ApplicationService
       def initialize(type_id)
         @type_id = type_id
@@ -10,9 +11,9 @@ module Invent
         prepare_params
 
         true
-      rescue StandardError => e
+      rescue RuntimeError => e
         Rails.logger.error e.inspect.red
-        Rails.logger.error e.backtrace.inspect
+        Rails.logger.error e.backtrace[0..5].inspect
 
         false
       end
@@ -20,7 +21,7 @@ module Invent
       private
 
       def load_items
-        @items = InvItem.includes(:inv_model).where(workplace: nil, type_id: @type_id).as_json(include: :inv_model)
+        @items = Item.includes(:model).where(workplace: nil, type_id: @type_id).as_json(include: :model)
       end
 
       def prepare_params

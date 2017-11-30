@@ -1,4 +1,4 @@
-(function () {
+(function() {
   'use strict';
 
   app
@@ -45,7 +45,6 @@
     this._templateWorkplace = {
       // Показывает, нужно ли при создании/редактировании РМ использовать проверки на состав РМ
       enabled_filters: true,
-      workplace_id: 0,
       // Id в таблице отделов
       workplace_count_id: 0,
       // Тип РМ
@@ -67,9 +66,9 @@
       // Дефолтный статус РМ (2 - в ожидании проверки)
       status: 'pending_verification',
       // Состав РМ
-      inv_items_attributes: [],
+      items_attributes: [],
       // Список ID техники, которая уже существует в БД
-      inv_item_ids: []
+      item_ids: []
     };
 
 // =====================================================================================================================
@@ -80,53 +79,51 @@
   /**
    * Добавить объекты, связанные с выбранным типом оборудования, моделями и т.д. (обратная операция _delObjects).
    */
-  Workplace.prototype._addObjects = function () {
+  Workplace.prototype._addObjects = function() {
     var self = this;
 
     // Находим объект с workplace_type_id
-    this.workplace.workplace_type = this.wp_types.find(function (el) {
+    this.workplace.workplace_type = this.wp_types.find(function(el) {
       return self.workplace.workplace_type_id == el.workplace_type_id;
     });
 
-    this.workplace.location_site = this.iss_locations.find(function (el) {
+    this.workplace.location_site = this.iss_locations.find(function(el) {
       return self.workplace.location_site_id == el.site_id;
     });
 
-    angular.forEach(this.workplace.inv_items_attributes, function (item) { self.Item.addProperties(item); });
+    this.workplace.items_attributes.forEach(function(item) { self.Item.addProperties(item); });
   };
 
   /**
    * Очистить копию массива workplace от справочных данных для отправления на сервер.
    */
-  Workplace.prototype._delObjects = function () {
+  Workplace.prototype._delObjects = function() {
     var self = this;
     this.workplaceCopy = angular.copy(this.workplace);
 
     delete(this.workplaceCopy.workplace_type);
     delete(this.workplaceCopy.location_site);
 
-    angular.forEach(this.workplaceCopy.inv_items_attributes, function (item) { self.Item.delProperties(item); });
+    this.workplaceCopy.items_attributes.forEach(function(item) { self.Item.delProperties(item); });
   };
 
   /**
    * Добавить шаблон оборудования к РМ.
    */
-  Workplace.prototype._addNewItem = function () {
-    this.workplace.inv_items_attributes.push(this.Item.getTemplateItem());
-    this.additional.visibleCount ++;
+  Workplace.prototype._addItemTemplate = function() {
+    this.workplace.items_attributes.push(this.Item.getTemplateItem());
   };
 
   /**
    * Установить новый активный экземпляр техники в табах.
+   * 
+   * @param index - индекс таба (от 0)
    */
-  Workplace.prototype._setFirstActiveTab = function () {
-    var
-      self = this,
-      visibleArr = [];
+  Workplace.prototype._setActiveTab = function(index) {
+    var self = this;
 
-    visibleArr = this.workplace.inv_items_attributes.filter(function (el) { if (!el._destroy) return true; });
-    this.$timeout(function () {
-      self.additional.activeTab = self.workplace.inv_items_attributes.indexOf(visibleArr[0]);
+    this.$timeout(function() {
+      self.additional.activeTab = index;
     }, 0);
   };
 
@@ -135,13 +132,13 @@
    *
    * @param data - полученные с сервера данные
    */
-  Workplace.prototype._setProperties = function (data) {
+  Workplace.prototype._setProperties = function(data) {
     var self = this;
 
     // По умолчанию фильтры всегда включены
     this.workplace.enabled_filters = true;
 
-    angular.forEach(data.prop_data.iss_locations, function (value) {
+    data.prop_data.iss_locations.forEach(function(value) {
       value.iss_reference_buildings = [self.selectIssBuilding].concat(value.iss_reference_buildings);
     });
     this.Item.setTypes(data.prop_data.eq_types);
@@ -156,44 +153,43 @@
     this.statuses = data.prop_data.statuses;
     this.divisions = data.divisions;
 
-    this.additional.fileKey = parseInt(data.prop_data.pc_config_key);
-    this.additional.pcAttrs = angular.copy(data.prop_data.file_depending);
-    this.additional.singleItems = angular.copy(data.prop_data.single_pc_items);
-    this.additional.pcTypes = angular.copy(data.prop_data.type_with_files);
-    this.additional.secretExceptions = angular.copy(data.prop_data.secret_exceptions);
+    this.additional.pcAttrs = data.prop_data.file_depending;
+    this.additional.singleItems = data.prop_data.single_pc_items;
+    this.additional.pcTypes = data.prop_data.type_with_files;
+    this.additional.secretExceptions = data.prop_data.secret_exceptions;
   };
 
   /**
    * Получить данные о РМ.
    */
-  Workplace.prototype.init = function (id) {
+  Workplace.prototype.init = function(id) {
     var self = this;
 
     if (id) {
       return this.Server.Invent.Workplace.edit({ id: id },
-        function (data) {
-          self.workplace = angular.copy(data.wp_data);
+        function(data) {
+          self.workplace = data.wp_data;
           self.users = data.prop_data.users;
 
           self._setProperties(data);
           self._addObjects();
 
-          self.workplace.division = self.divisions.find(function (el) {
+          self.workplace.division = self.divisions.find(function(el) {
             if (el.workplace_count_id == self.workplace.workplace_count_id) { return true; }
           });
-        }, function (response, status) {
+        }, function(response, status) {
           self.Error.response(response, status);
         }).$promise;
     } else {
       return this.Server.Invent.Workplace.new(
-        function (data) {
+        function(data) {
           self.workplace = angular.copy(self._templateWorkplace);
           self.users = [];
 
           self._setProperties(data);
 
-          self.workplace.division = angular.copy(self.divisions[0]);
-        }, function (response, status) {
+          self.workplace.division = self.divisions[0];
+        }, function(response, status) {
           self.Error.response(response, status);
         }).$promise;
     }
@@ -202,7 +198,7 @@
   /**
    * Загрузить список работников отдела.
    */
-  Workplace.prototype.loadUsers = function () {
+  Workplace.prototype.loadUsers = function() {
     var self = this;
 
     if (!this.workplace.division)
@@ -212,10 +208,10 @@
 
     return this.Server.UserIss.usersFromDivision(
       { division: this.workplace.division.division },
-      function (data) {
+      function(data) {
         self.users = angular.copy(data);
       },
-      function (response, status) {
+      function(response, status) {
         self.Error.response(response, status);
       }).$promise;
   };
@@ -225,9 +221,10 @@
    *
    * @param type - Тип очищения: если building - очистить корпус и комнату, иначе - только комнату.
    */
-  Workplace.prototype.setDefaultLocation = function (type) {
-    if (type == 'building')
+  Workplace.prototype.setDefaultLocation = function(type) {
+    if (type == 'building') {
       this.workplace.location_building_id = -1;
+    }
 
     this.workplace.location_room_name = '';
   };
@@ -235,7 +232,7 @@
   /**
    * Запросить скрипт для генерации отчета о конфигурации ПК.
    */
-  Workplace.prototype.downloadPcScript = function () {
+  Workplace.prototype.downloadPcScript = function() {
     this.$window.open('/invent/workplaces/pc_script', '_blank');
   };
 
@@ -244,15 +241,15 @@
    *
    * @param item
    */
-  Workplace.prototype.getAuditData = function (item) {
+  Workplace.prototype.getAuditData = function(item) {
     var self = this;
 
     this.Server.Invent.Workplace.pcConfigFromAudit(
       { invent_num: item.invent_num },
-      function (data) {
+      function(data) {
         self.Item.setPcProperties(item, data);
       },
-      function (response, status) {
+      function(response, status) {
         self.Error.response(response, status);
       });
   };
@@ -262,46 +259,34 @@
    *
    * @param file - загружаемый файл
    */
-  Workplace.prototype.matchUploadFile = function (file) {
+  Workplace.prototype.matchUploadFile = function(file) {
     var
       self = this,
       formData = new FormData();
 
     formData.append('pc_file', file);
 
-    return this.$http
-      .post('/invent/workplaces/pc_config_from_user/',
-        formData,
-        {
-          headers: { 'Content-Type': undefined },
-          transformRequest: angular.identity
-        }
-      )
-      .success(function (response) {})
-      .error(function (response, status) {
+    return this.Server.Invent.Workplace.pcConfigFromUser(
+      formData,
+      function(response) {},
+      function(response, status) {
         self.Error.response(response, status);
-      })
+      }
+    ).$promise;
   };
 
   /**
    * Сохранить данные о РМ на сервере.
    */
-  Workplace.prototype.saveWorkplace = function () {
+  Workplace.prototype.saveWorkplace = function() {
     var self = this;
 
     this._delObjects();
 
-    var formData = new FormData();
-
-    // Данные о создаваемом РМ
-    formData.append('workplace', angular.toJson(this.workplaceCopy));
-    // Прикрепленный файл, показывающий состав системного блока
-    formData.append('pc_file', this.Item.getPcFile());
-
     if (this.workplaceCopy.workplace_id) {
       this.Server.Invent.Workplace.update(
         { workplace_id: self.workplace.workplace_id },
-        formData,
+        { workplace: self.workplaceCopy },
         function success(response) {
           self.$window.location.href = response.location;
         },
@@ -309,11 +294,12 @@
           self.Error.response(response, status);
         });
     } else {
-      this.Server.Invent.Workplace.save(formData,
-        function (response) {
+      this.Server.Invent.Workplace.save(
+        { workplace: self.workplaceCopy },
+        function(response) {
           self.$window.location.href = response.location;
         },
-        function (response, status) {
+        function(response, status) {
           self.Error.response(response, status);
         });
     }
@@ -324,27 +310,24 @@
    *
    * @param selectedType - тип создаваемого устройства
    */
-  Workplace.prototype.createItem = function (selectedType) {
+  Workplace.prototype.createItem = function(selectedType) {
     var self = this;
 
-    // Создать шаблон нового оборудования на рабочем месте для заполнения данными.
-    self._addNewItem();
+    self._addItemTemplate();
 
     var
       // Получаем индекс созданного элемента
-      length = self.workplace.inv_items_attributes.length - 1,
+      length = self.workplace.items_attributes.length - 1,
       // Созданный элемент
-      item = self.workplace.inv_items_attributes[length];
+      item = self.workplace.items_attributes[length];
 
-    self.workplace.inv_items_attributes[length].type = angular.copy(selectedType);
-    self.Item.setItemDefaultMetadata(item);
+    self.Item.setType(item, selectedType);
 
     if (item.type_id != 0) {
-      // Установить метаданные для модели
-      self.Item.setModelDefaultMetadata(item, 'new');
+      self.Item.setModel(item);
 
-      // Заполнить начальными данными массив inv_property_values_attributes.
-      angular.forEach(item.type.inv_properties, function (prop_value, prop_index) {
+      // Заполнить начальными данными массив property_values_attributes.
+      item.type.properties.forEach(function(prop_value, prop_index) {
         self.Item.addNewPropertyValue(item);
         self.PropertyValue.setPropertyValue(item, prop_index, 'property_id', prop_value.property_id);
         self.Item.createFilteredList(item, prop_index, prop_value);
@@ -353,9 +336,7 @@
     }
 
     // Сделать созданный элемент активным в табах.
-    self.$timeout(function () {
-      self.additional.activeTab = length;
-    }, 0);
+    this._setActiveTab(length);
   };
 
   /**
@@ -369,53 +350,49 @@
 
     self.Server.Invent.Item.get(
       { item_id: selectedItem.item_id },
-      function (response) {
-        self._addNewItem();
+      function(response) {
+        self._addItemTemplate();
 
         var
           // Получаем индекс созданного элемента
-          length = self.workplace.inv_items_attributes.length - 1,
+          length = self.workplace.items_attributes.length - 1,
           // Созданный элемент
-          item = self.workplace.inv_items_attributes[length];
+          item = self.workplace.items_attributes[length];
 
         self.Item.addProperties(response);
         self.Item.setItemAttributes(item, response, self.workplace.workplace_id);
-        self.workplace.inv_item_ids.push(item.id);
+        self.workplace.item_ids.push(item.id);
 
         // Сделать созданный элемент активным в табах.
-        self.$timeout(function () {
-          self.additional.activeTab = length;
-        }, 0);
+        self._setActiveTab(length);
       },
-      function (response, status) {
+      function(response, status) {
         self.Error.response(response, status);
       });
   };
 
   /**
-   * Удалить элемент из массива inv_items_attributes.
+   * Удалить элемент из массива items_attributes.
    *
    * @param item - удаляемый элемент
    */
-  Workplace.prototype.delItem = function (item) {
+  Workplace.prototype.delItem = function(item) {
+    if (item.status == 'waiting_bring') { return; }
+
     // Если удаляется ПК и т.п., очистить параметры объекта additional
-    if (this.Item.pcValidationPassed(item.type.name)) {
-      this.Item.clearPcAdditionalData(item);
+    if (this.Item.isPc(item.type.name)) {
+      this.additional.invent_num = '';
     }
 
     if (item.id && !item.status) {
+      // Если техника находится на РМ
       item.status = 'waiting_bring';
-    } else if (item.id && item.status == 'waiting_take') {
-      item.workplace_id = null;
-      item.status = null;
-    } else if (!item.id) {
+    } else {
+      // В остальных случаях
       this.setFirstActiveTab(item);
-      this.workplace.inv_items_attributes.splice(this.workplace.inv_items_attributes.indexOf(item), 1);
-      this.workplace.inv_item_ids.splice(this.workplace.inv_item_ids.indexOf(item.id), 1);
-      this.Item.clearPcMetadata(item);
+      this.workplace.items_attributes.splice(this.workplace.items_attributes.indexOf(item), 1);
+      this.workplace.item_ids.splice(this.workplace.item_ids.indexOf(item.id), 1);
     }
-
-    this.additional.visibleCount --;
   };
 
   /**
@@ -424,14 +401,13 @@
    * @param item - удаляемый экземпляр техники (необязательный параметр). Если задан - то новый активный элемент будет
    * установлен только в том случае, если удаляется активный экземпляр техники.
    */
-  Workplace.prototype.setFirstActiveTab = function (item) {
-    if (item) {
-      if (this.workplace.inv_items_attributes.indexOf(item) == this.additional.activeTab) {
-        this._setFirstActiveTab();
-      }
-    } else {
-      this._setFirstActiveTab();
+  Workplace.prototype.setFirstActiveTab = function(item) {
+    if (item && this.workplace.items_attributes.indexOf(item) != this.additional.activeTab) {
+      return;
     }
+
+    var index = this.additional.activeTab == 0 ? 1 : 0;
+    this._setActiveTab(index);
   };
 
   /**
@@ -440,7 +416,7 @@
    *
    * @param type - объект-тип оборудования.
    */
-  Workplace.prototype.validateType = function (type) {
+  Workplace.prototype.validateType = function(type) {
     var self = this;
 
     // Проверка, выбрал ли пользователь тип
@@ -450,13 +426,12 @@
       return false;
     }
 
-    if (self.Item.typeValidationPassed(type.name)) {
+    if (self.Item.isUniqType(type.name)) {
       var countPc = 0;
 
       // Считаем количество СБ/моноблоков/ноутбуков на текущем РМ.
-      this.workplace.inv_items_attributes.forEach(function(item) {
-        // if (self.Item.typeValidationPassed(item.type.name) && !item._destroy) {
-        if (self.Item.typeValidationPassed(item.type.name) && item.status != 'waiting_bring') {
+      this.workplace.items_attributes.forEach(function(item) {
+        if (self.Item.isUniqType(item.type.name) && item.status != 'waiting_bring') {
           countPc ++;
         }
       });
@@ -481,8 +456,8 @@
 
     return this.Server.Invent.Item.used(
       { type_id: type_id },
-      function (response) {},
-      function (response, status) {
+      function(response) {},
+      function(response, status) {
         self.Error.response(response, status);
       }
     ).$promise;

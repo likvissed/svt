@@ -1,4 +1,4 @@
-(function () {
+(function() {
   'use strict';
 
   app
@@ -13,8 +13,8 @@
 
   function fileUpload(){
     return {
-      link: function (scope, element, attrs) {
-        element.on('change', function (event) {
+      link: function(scope, element, attrs) {
+        element.on('change', function(event) {
           // Сохраняется сам файл, а также имя файла в массив данных
           scope.manually.setPcFile(event.target.files[0]);
         });

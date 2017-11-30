@@ -1,6 +1,6 @@
 shared_examples_for '@data into init_properties_service is filleable' do
-  it 'puts the :eq_types at least with %q[name short_description inv_properties] keys' do
-    expect(subject.data[:eq_types].first.keys).to include('name', 'short_description', 'inv_properties')
+  it 'puts the :eq_types at least with %q[name short_description properties] keys' do
+    expect(subject.data[:eq_types].first.keys).to include('name', 'short_description', 'properties')
   end
 
   it 'puts the :wp_types at least with %q[name long_description full_description] keys' do

@@ -1,6 +1,6 @@
 module Invent
   module LkInvents
-    # Класс создает файл, содержащий список РМ отдела
+    # Создать файл, содержащий список РМ отдела
     class DivisionReport < BaseService
       attr_reader :wp
 
@@ -12,6 +12,13 @@ module Invent
       def run
         prepare_tmp_params
         @data = IO.popen("php #{Rails.root}/lib/generate_division_report.php #{@division}")
+
+        true
+      rescue RuntimeError => e
+        Rails.logger.error e.inspect.red
+        Rails.logger.error e.backtrace[0..5].inspect
+
+        false
       end
 
       private

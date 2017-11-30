@@ -1,4 +1,4 @@
-(function () {
+(function() {
   'use strict';
 
   app
@@ -39,7 +39,7 @@
       .withOption('stateSave', true)
       .withOption('ajax', {
         url: '/invent/workplace_counts.json',
-        error: function (response) {
+        error: function(response) {
           Error.response(response);
         }
       })
@@ -79,7 +79,7 @@
      *
      * @param file
      */
-    $scope.uploadFile = function (file) {
+    $scope.uploadFile = function(file) {
       if (!file) { return false }
 
       file.upload = self.Upload.upload({
@@ -87,10 +87,10 @@
         data: { file: file }
       });
 
-      file.upload.then(function (response) {
+      file.upload.then(function(response) {
         self.Flash.notice(response.data.full_message);
         self.dtInstance.reloadData(null, self.Config.global.reloadPaging);
-      }, function (response) {
+      }, function(response) {
         self.Error.response(response);
         self.dtInstance.reloadData(null, self.Config.global.reloadPaging);
       })
@@ -149,7 +149,7 @@
    *
    * @param data - данные, вставляемые в форму
    */
-  WorkplaceCountIndexCtrl.prototype._openWpCountEditModal = function (data) {
+  WorkplaceCountIndexCtrl.prototype._openWpCountEditModal = function(data) {
     var self = this;
 
     var modalInstance = self.$uibModal.open({
@@ -163,10 +163,10 @@
       }
     });
 
-    modalInstance.result.then(function () {
+    modalInstance.result.then(function() {
       // Обновить таблицу после того, как пользователь нажал кнопку "Готово".
       self.dtInstance.reloadData(null, self.Config.global.reloadPaging);
-    }, function () {
+    }, function() {
       // Закрыли модальное окно (все остальные случаи)
       self.WorkplaceCount.clearData();
     });
@@ -177,11 +177,11 @@
    *
    * @param id - id отдела
    */
-  WorkplaceCountIndexCtrl.prototype.openWpCountEditModal = function (id) {
+  WorkplaceCountIndexCtrl.prototype.openWpCountEditModal = function(id) {
     var self = this;
 
     if (id) {
-      self.WorkplaceCount.getDivision(id).then(function (data) {
+      self.WorkplaceCount.getDivision(id).then(function(data) {
         self._openWpCountEditModal(data);
       });
     } else {
@@ -195,7 +195,7 @@
    *
    * @param id - id записи в объекте wpCount
    */
-  WorkplaceCountIndexCtrl.prototype.destroyRecord = function (id) {
+  WorkplaceCountIndexCtrl.prototype.destroyRecord = function(id) {
     var self = this;
 
     var confirm_str = "Вы действительно хотите удалить отдел \"" + self.wpCount[id].division + "\"?";
@@ -205,13 +205,13 @@
 
     self.Server.Invent.WorkplaceCount.delete({ workplace_count_id: id },
       // Success
-      function (response) {
+      function(response) {
         self.Flash.notice(response.full_message);
 
         self.dtInstance.reloadData(null, self.Config.global.reloadPaging);
       },
       // Error
-      function (response) {
+      function(response) {
         self.Error.response(response);
       });
   };
@@ -256,7 +256,7 @@
   /**
    * Добавить ответсвенного.
    */
-  ModalWpCountController.prototype.addResponsible = function () {
+  ModalWpCountController.prototype.addResponsible = function() {
     this.WorkplaceCount.addResponsible();
   };
 
@@ -265,14 +265,14 @@
    *
    * @param obj - удаляемый объект
    */
-  ModalWpCountController.prototype.delResponsible = function (obj) {
+  ModalWpCountController.prototype.delResponsible = function(obj) {
     this.WorkplaceCount.delResponsible(obj);
   };
 
   /**
    * Сохранить данные и закрыть модальное окно.
    */
-  ModalWpCountController.prototype.ok = function () {
+  ModalWpCountController.prototype.ok = function() {
     var self = this;
 
     self.clearErrors();
@@ -309,7 +309,7 @@
   /**
    * Закрыть модальное окно по нажатии кнопки "Закрыть".
    */
-  ModalWpCountController.prototype.cancel = function () {
+  ModalWpCountController.prototype.cancel = function() {
     this.$uibModalInstance.dismiss();
   };
 
@@ -318,7 +318,7 @@
    *
    * @param type - тип календаря, time_start или time_end
    */
-  ModalWpCountController.prototype.openDatePicker = function (type) {
+  ModalWpCountController.prototype.openDatePicker = function(type) {
     this[type].openDatePicker = true;
   };
 })();

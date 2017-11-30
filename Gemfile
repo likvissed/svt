@@ -35,6 +35,7 @@ gem 'font-awesome-rails'
 gem 'php_serialize'
 gem 'rails-i18n'
 gem 'rubocop', require: false
+gem 'safe_attributes'
 gem 'simple_form'
 gem 'slim'
 gem 'webpacker', '~> 3.0'
@@ -75,7 +76,7 @@ group :development, :test do
   # Testing
   gem 'capybara'
   gem 'capybara-webkit'
-  gem 'factory_girl_rails'
+  gem 'factory_bot_rails'
   gem 'rails-controller-testing'
   gem 'rspec-rails', '3.5.0'
   gem 'rspec-its'

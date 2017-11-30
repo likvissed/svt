@@ -1,7 +1,7 @@
 module Invent
   module Workplaces
     # Получить данные о РМ.
-    class Edit < ApplicationService
+    class Edit < BaseService
       # current_uer - текущий пользовтаель
       # workplace_id - workplace_id рабочего места
       def initialize(current_user, workplace_id)
@@ -18,11 +18,14 @@ module Invent
         when :json
           load_workplace_json
         else
-          raise 'abort'
+          raise 'Неизвестный формат данных. Ожидается html или json запрос'
         end
 
         true
-      rescue RuntimeError
+      rescue RuntimeError => e
+        Rails.logger.error e.inspect.red
+        Rails.logger.error e.backtrace[0..5].inspect
+
         false
       end
 

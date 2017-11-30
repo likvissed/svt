@@ -5,8 +5,8 @@ module Invent
     subject { WorkplaceCountPolicy }
 
     permissions :generate_pdf? do
-      let(:***REMOVED***_user) { create :***REMOVED***_user }
-      let!(:workplace_count) { create :active_workplace_count, users: [***REMOVED***_user] }
+      let(:***REMOVED***_user) { create(:***REMOVED***_user) }
+      let!(:workplace_count) { create(:active_workplace_count, users: [***REMOVED***_user]) }
 
       context 'with :***REMOVED***_user role' do
         context 'with valid user' do
@@ -16,7 +16,7 @@ module Invent
         end
 
         context 'with invalid user' do
-          let(:another_user) { create :user, role: ***REMOVED***_user.role }
+          let(:another_user) { create(:user, role: ***REMOVED***_user.role) }
 
           it 'denies access to the workplace_count' do
             expect(subject).not_to permit(another_user, WorkplaceCount.find(workplace_count.workplace_count_id))
@@ -25,7 +25,7 @@ module Invent
       end
 
       context 'with :manager role' do
-        let(:admin_user) { create :user }
+        let(:admin_user) { create(:user) }
 
         it 'allows access to the workplace_count' do
           expect(subject).to permit(admin_user, WorkplaceCount.find(workplace_count.workplace_count_id))

@@ -1,54 +1,54 @@
 = title "Список техники"
 
-#index_inv_item.container ng-controller="InventItemsCtrl as invItems"
+#index_item.container ng-controller="InventItemsCtrl as Items"
   .well
     .table-block
       .row
         .col-sm-15.col-md-13.col-lg-11.col-xlg-9.col-fhd-7
-          .row.multiline-buffer.filter-block ng-repeat="filter in invItems.filters.properties"
+          .row.multiline-buffer.filter-block ng-repeat="filter in Items.filters.properties"
             .col-sm-9.col-md-9.col-lg-9.col-xlg-9.col-fhd-9
-              select{ class="form-control input-sm" ng-model="invItems.filters.properties[$index]"
-              ng-options="prop as prop.long_description for prop in invItems.lists.invPropertyFilters track by prop.property_id" }
+              select{ class="form-control input-sm" ng-model="Items.filters.properties[$index]"
+              ng-options="prop as prop.long_description for prop in Items.lists.PropertyFilters track by prop.property_id" }
             .col-sm-7.col-md-7.col-lg-7.col-xlg-7.col-fhd-8
               = text_field_tag "", "", class: "form-control input-sm", placeholder: "Значение",
-                "ng-model": "invItems.filters.prop_values[$index]", "ng-change": "invItems.changeFilter()",
+                "ng-model": "Items.filters.prop_values[$index]", "ng-change": "Items.changeFilter()",
                 "ng-model-options": "{ debounce: 1000 }"
             .col-sm-3.col-md-3.col-lg-3.col-xlg-3.col-fhd-3
               = button_tag name: "exact_prop_filter[$index]", type: :button,
                 class: "btn-default btn-sm btn-block", "uib-tooltip": "Поиск строго по заданному значению",
-                "ng-click": "invItems.changeFilter(); invItems.filters.exact_prop_values[$index] = !invItems.filters.exact_prop_values[$index]",
+                "ng-click": "Items.changeFilter(); Items.filters.exact_prop_values[$index] = !Items.filters.exact_prop_values[$index]",
                 "tooltip-append-to-body": "true" do
-                = fa_icon "toggle-off lg", "ng-if": "!invItems.filters.exact_prop_values[$index]",
+                = fa_icon "toggle-off lg", "ng-if": "!Items.filters.exact_prop_values[$index]",
                   class: "text-danger"
-                = fa_icon "toggle-on lg", "ng-if": "invItems.filters.exact_prop_values[$index]",
+                = fa_icon "toggle-on lg", "ng-if": "Items.filters.exact_prop_values[$index]",
                   class: "text-success"
             .col-sm-5.col-md-5.col-lg-5.col-xlg-5.col-fhd-4
               .btn-group.btn-group-justified.btn-group-sm
                 .btn-group.btn-group-sm
-                  = button_tag "", type: :button, class: "btn btn-default", "ng-click": "invItems.addPropFilter()",
+                  = button_tag "", type: :button, class: "btn btn-default", "ng-click": "Items.addPropFilter()",
                     "uib-tooltip": "Добавить фильтр", "tooltip-append-to-body": "true" do
                     = fa_icon "plus lg"
                 .btn-group.btn-group-sm
-                  = button_tag "", type: :button, class: "btn btn-default", "ng-click": "invItems.delPropFilter($index)",
-                    "ng-disabled": "invItems.filters.properties.length == 1", "uib-tooltip": "Удалить фильтр",
+                  = button_tag "", type: :button, class: "btn btn-default", "ng-click": "Items.delPropFilter($index)",
+                    "ng-disabled": "Items.filters.properties.length == 1", "uib-tooltip": "Удалить фильтр",
                     "tooltip-append-to-body": "true" do
                     = fa_icon "minus lg"
 
         .col-sm-4.col-md-5.col-lg-3.col-xlg-2.col-fhd-2.col-xlg-offset-3.col-fhd-offset-7.multiline-buffer
           = text_field_tag "", "", class: "form-control input-sm", placeholder: "ID",
-            "ng-model": "invItems.filters.item_id", "ng-model-options": "{ debounce: 500 }",
-            "ng-change": "invItems.changeFilter()"
+            "ng-model": "Items.filters.item_id", "ng-model-options": "{ debounce: 500 }",
+            "ng-change": "Items.changeFilter()"
         .col-sm-5.col-md-5.col-lg-3.col-xlg-3.col-fhd-2.multiline-buffer
-          select{ class="form-control input-sm" ng-model="invItems.filters.inv_type" ng-change="invItems.changeFilter()"
-          ng-options="type as type.short_description for type in invItems.lists.invTypeFilters" }
+          select{ class="form-control input-sm" ng-model="Items.filters.type" ng-change="Items.changeFilter()"
+          ng-options="type as type.short_description for type in Items.lists.TypeFilters" }
         .col-sm-4.col-md-5.col-lg-3.col-xlg-3.col-fhd-2.multiline-buffer
           = text_field_tag "", "", class: "form-control input-sm", placeholder: "Инвентарный №",
-            "ng-model": "invItems.filters.invent_num", "ng-model-options": "{ debounce: 500 }",
-            "ng-change": "invItems.changeFilter()"
+            "ng-model": "Items.filters.invent_num", "ng-model-options": "{ debounce: 500 }",
+            "ng-change": "Items.changeFilter()"
         .col-sm-5.col-md-5.col-lg-4.col-xlg-4.col-fhd-4.multiline-buffer
           = text_field_tag "", "", class: "form-control input-sm", placeholder: "ФИО ответственного",
-            "ng-model": "invItems.filters.responsible", "ng-model-options": "{ debounce: 1000 }",
-            "ng-change": "invItems.changeFilter()"
+            "ng-model": "Items.filters.responsible", "ng-model-options": "{ debounce: 1000 }",
+            "ng-change": "Items.changeFilter()"
       .row
         .col-fhd-24
           table.table.table-striped.table-condensed
@@ -63,9 +63,9 @@
                 th Описание
                 /th
             tbody
-              tr ng-repeat="item in invItems.items"
+              tr ng-repeat="item in Items.items"
                 td.col-lg-1.col-xlg-1.col-fhd-1 ng-bind="item.item_id"
-                td.col-lg-2.col-xlg-2.col-fhd-2 ng-bind="item.inv_type.short_description"
+                td.col-lg-2.col-xlg-2.col-fhd-2 ng-bind="item.type.short_description"
                 td.col-lg-3.col-xlg-3.col-fhd-3 ng-bind="item.model"
                 td.col-lg-1.col-xlg-1.col-fhd-1 ng-bind="item.invent_num"
                 td.col-lg-1.col-xlg-1.col-fhd-1 ng-bind="item.workplace.workplace_id"
@@ -75,7 +75,7 @@
                   = button_tag "Действия", type: :button, class: "btn-default btn-sm"
       .row
         .col-xs-12
-          div.animate-show ng-table-info="" info-attrs="invItems.pagination" ng-if="invItems.pagination.init"
+          div.animate-show ng-table-info="" info-attrs="Items.pagination" ng-if="Items.pagination.init"
         .col-xs-12
-          ul{ uib-pagination="true" total-items="invItems.pagination.filteredRecords" ng-model="invItems.pagination.currentPage"
-            max-size="invItems.pagination.maxSize" class="pagination-sm pull-right" ng-change="invItems.changePage()" }
+          ul{ uib-pagination="true" total-items="Items.pagination.filteredRecords" ng-model="Items.pagination.currentPage"
+            max-size="Items.pagination.maxSize" class="pagination-sm pull-right" ng-change="Items.changePage()" }

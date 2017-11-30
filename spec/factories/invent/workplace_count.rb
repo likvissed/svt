@@ -1,11 +1,11 @@
 module Invent
-  FactoryGirl.define do
+  FactoryBot.define do
     factory :workplace_count, class: WorkplaceCount do
       division { users.empty? ? ***REMOVED*** : users.first.division }
       users []
 
       trait :default_user do
-        after(:build) do |workplace_count, evaluator|
+        after(:build) do |workplace_count|
           # Если массив users пустой, добавить дефолтного тествого пользователя в качестве ответственного за отдел.
           workplace_count.users << build(:user) if workplace_count.users.empty?
         end

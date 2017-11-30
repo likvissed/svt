@@ -118,10 +118,10 @@ GEM
       railties (>= 3.2, < 5.2)
     erubi (1.7.0)
     execjs (2.7.0)
-    factory_girl (4.9.0)
+    factory_bot (4.8.2)
       activesupport (>= 3.0.0)
-    factory_girl_rails (4.9.0)
-      factory_girl (~> 4.9.0)
+    factory_bot_rails (4.8.2)
+      factory_bot (~> 4.8.2)
       railties (>= 3.0.0)
     ffi (1.9.18)
     font-awesome-rails (4.7.0.2)
@@ -249,6 +249,8 @@ GEM
       ruby-progressbar (~> 1.7)
       unicode-display_width (~> 1.0, >= 1.0.1)
     ruby-progressbar (1.9.0)
+    safe_attributes (1.0.10)
+      activerecord (>= 3.0.0)
     sass (3.5.3)
       sass-listen (~> 4.0.0)
     sass-listen (4.0.0)
@@ -334,7 +336,7 @@ DEPENDENCIES
   database_cleaner
   devise
   dotenv-rails
-  factory_girl_rails
+  factory_bot_rails
   font-awesome-rails
   jbuilder (~> 2.5)
   jquery-rails
@@ -353,6 +355,7 @@ DEPENDENCIES
   rspec-its
   rspec-rails (= 3.5.0)
   rubocop
+  safe_attributes
   sass-rails (~> 5.0)
   shoulda-matchers
   simple_form

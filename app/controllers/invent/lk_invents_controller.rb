@@ -43,7 +43,7 @@ module Invent
     end
 
     def pc_config_from_audit
-      @pc_config = LkInvents::PcConfigFromAudit.new(params[:invent_num])
+      @pc_config = Workplaces::PcConfigFromAudit.new(params[:invent_num])
 
       if @pc_config.run
         render json: @pc_config.data
@@ -53,7 +53,7 @@ module Invent
     end
 
     def pc_config_from_user
-      @pc_file = LkInvents::PcConfigFromUser.new(params[:pc_file])
+      @pc_file = Workplaces::PcConfigFromUser.new(params[:pc_file])
 
       if @pc_file.run
         render json: { data: @pc_file.data, full_message: 'Файл добавлен' }
@@ -63,7 +63,7 @@ module Invent
     end
 
     def create_workplace
-      @workplace = LkInvents::CreateWorkplace.new(current_user, workplace_params, params[:pc_file])
+      @workplace = Workplaces::Create.new(current_user, workplace_params)
 
       if @workplace.run
         render json: { workplace: @workplace.data, full_message: 'Рабочее место создано' }
@@ -83,9 +83,7 @@ module Invent
     end
 
     def update_workplace
-      @workplace = LkInvents::UpdateWorkplace.new(
-        current_user, params[:workplace_id], workplace_params, params[:pc_file]
-      )
+      @workplace = Workplaces::Update.new(current_user, params[:workplace_id], workplace_params)
 
       if @workplace.run
         render json: { workplace: @workplace.data, full_message: 'Данные о рабочем месте обновлены' }
@@ -143,7 +141,6 @@ module Invent
     end
 
     def workplace_params
-      params[:workplace] = JSON.parse(params[:workplace])
       params.require(:workplace).permit(
         :workplace_count_id,
         :workplace_type_id,
@@ -155,7 +152,7 @@ module Invent
         :location_room_id,
         :comment,
         :status,
-        inv_items_attributes: [
+        items_attributes: [
           :id,
           :parent_id,
           :type_id,
@@ -165,7 +162,7 @@ module Invent
           :location,
           :invent_num,
           :_destroy,
-          inv_property_values_attributes: %i[id property_id item_id property_list_id value _destroy]
+          property_values_attributes: %i[id property_id item_id property_list_id value _destroy]
         ]
       )
     end

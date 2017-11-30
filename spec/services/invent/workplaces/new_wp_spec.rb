@@ -3,8 +3,8 @@ require 'rails_helper'
 module Invent
   module Workplaces
     RSpec.describe NewWp, type: :model do
-      let(:user) { create :user }
-      let(:workplace_count) { create :active_workplace_count, users: [user] }
+      let(:user) { create(:user) }
+      let(:workplace_count) { create(:active_workplace_count, users: [user]) }
 
       it 'fills the @data with %w[prop_data divisioins] keys' do
         subject.run

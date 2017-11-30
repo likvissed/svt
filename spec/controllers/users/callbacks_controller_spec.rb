@@ -24,7 +24,7 @@ module Users
       end
 
       context 'when attributes is invalid' do
-        sign_in_user({ fullname: '' })
+        sign_in_user(fullname: '')
 
         before { get :open_id_***REMOVED*** }
 

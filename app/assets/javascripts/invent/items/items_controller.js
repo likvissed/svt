@@ -1,15 +1,15 @@
-(function () {
+(function() {
   'use strict';
 
   app.controller('InventItemsCtrl', InventItemsCtrl);
 
-  InventItemsCtrl.$inject = ['InvItem'];
+  InventItemsCtrl.$inject = ['TableItem'];
 
-  function InventItemsCtrl(InvItem) {
-    this.InvItem = InvItem;
-    this.pagination = InvItem.pagination;
-    this.filters = InvItem.filters.selected;
-    this.lists = InvItem.filters.lists;
+  function InventItemsCtrl(Item) {
+    this.Item = Item;
+    this.pagination = Item.pagination;
+    this.filters = Item.filters.selected;
+    this.lists = Item.filters.lists;
 
     this._loadItems(true);
   }
@@ -17,33 +17,33 @@
   /**
    * Загрузить логи с сервера.
    */
-  InventItemsCtrl.prototype._loadItems = function (initFlag) {
+  InventItemsCtrl.prototype._loadItems = function(initFlag) {
     var self = this;
 
-    this.InvItem.init(initFlag).$promise.then(function () {
-      self.items = self.InvItem.items;
+    this.Item.init(initFlag).$promise.then(function() {
+      self.items = self.Item.items;
     });
   };
 
   /**
    * События изменения страницы.
    */
-  InventItemsCtrl.prototype.changePage = function () {
+  InventItemsCtrl.prototype.changePage = function() {
     this._loadItems(false);
   };
 
   /**
    * Событие изменения фильтра.
    */
-  InventItemsCtrl.prototype.changeFilter = function () {
+  InventItemsCtrl.prototype.changeFilter = function() {
     this._loadItems(false);
   };
 
   /**
    * Добавить фильтр по составу техники.
    */
-  InventItemsCtrl.prototype.addPropFilter = function () {
-    this.InvItem.addPropFilter();
+  InventItemsCtrl.prototype.addPropFilter = function() {
+    this.Item.addPropFilter();
   };
 
   /**
@@ -51,9 +51,9 @@
    *
    * @param index - индекс удаляемого элемента.
    */
-  InventItemsCtrl.prototype.delPropFilter = function (index) {
+  InventItemsCtrl.prototype.delPropFilter = function(index) {
     if (this.filters.properties.length > 1) {
-      this.InvItem.delPropFilter(index);
+      this.Item.delPropFilter(index);
       this._loadItems(false);
     }
   };

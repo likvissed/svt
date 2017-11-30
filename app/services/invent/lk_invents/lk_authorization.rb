@@ -1,6 +1,6 @@
 module Invent
   module LkInvents
-    # Класс проверяет запись по указанному sid в таблице user_session. Это необходимо, чтобы убедиться, что
+    # Проверить запись по указанному sid в таблице user_session. Это необходимо, чтобы убедиться, что
     # пользователь действительно авторизован в ЛК
     class LkAuthorization < BaseService
       attr_reader :user_session, :session_data
@@ -15,9 +15,16 @@ module Invent
         @user_session = UserSession.find(@sid)
         check_timeout
         find_user
+
         true
-      rescue RuntimeError, ActiveRecord::RecordNotFound
+      rescue RuntimeError => e
+        Rails.logger.error e.inspect.red
+        Rails.logger.error e.backtrace[0..5].inspect
+
+        false
+      rescue ActiveRecord::RecordNotFound
         errors.add(:base, :access_denied)
+
         false
       end
 
@@ -27,15 +34,14 @@ module Invent
       def check_timeout
         @session_data = PHP.unserialize(user_session.data)
 
-        unless session_data['authed'] &&
-               Time.zone.now < (Time.zone.at(user_session.last_access) + user_session.timeout)
-          raise 'abort'
+        unless session_data['authed'] && Time.zone.now < (Time.zone.at(user_session.last_access) + user_session.timeout)
+          raise 'Время сессии истекло'
         end
       end
 
       # Найти пользователь в локальной таблице users (т.о. проверяем, есть ли у пользователя доступ к сайту).
       def find_user
-        raise 'abort' if (@data = User.find_by(tn: session_data['user_id'])).nil?
+        raise 'Доступ запрещен' if (@data = User.find_by(tn: session_data['user_id'])).nil?
       end
     end
   end

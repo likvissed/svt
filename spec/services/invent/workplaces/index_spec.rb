@@ -3,11 +3,11 @@ require 'spec_helper'
 module Invent
   module Workplaces
     RSpec.describe Index, type: :model do
-      let(:user) { create :user }
-      let(:workplace_count) { create :active_workplace_count, users: [user] }
-      let(:workplace_count_***REMOVED***) { create :active_workplace_count, division: ***REMOVED***, users: [user] }
-      let!(:workplace) { create :workplace_pk, :add_items, items: %i[pc monitor], workplace_count: workplace_count }
-      let!(:workplace_***REMOVED***) { create :workplace_mob, :add_items, items: %i[notebook], status: :confirmed, workplace_count: workplace_count_***REMOVED*** }
+      let(:user) { create(:user) }
+      let(:workplace_count) { create(:active_workplace_count, users: [user]) }
+      let(:workplace_count_***REMOVED***) { create(:active_workplace_count, division: ***REMOVED***, users: [user]) }
+      let!(:workplace) { create(:workplace_pk, :add_items, items: %i[pc monitor], workplace_count: workplace_count) }
+      let!(:workplace_***REMOVED***) { create(:workplace_mob, :add_items, items: %i[notebook], status: :confirmed, workplace_count: workplace_count_***REMOVED***) }
       let(:params) do
         {
           draw: 1,
@@ -51,21 +51,25 @@ module Invent
       end
 
       context 'with filters' do
+        let(:filter) { {} }
+        let(:search) { {} }
         subject do
-          params[:filters] = filter.as_json
+          params[:filters] = filter
+          params[:search] = search
           Index.new(params)
         end
 
-        context 'with invent_num filter' do
-          let(:filter) do
-            {
-              invent_num: workplace.inv_items.first.invent_num,
-              workplace_id: 0,
-              workplace_count_id: 0,
-              status: 'all',
-              workplace_type_id: 0
-            }
+        context 'and with search filter' do
+          let(:search) { { value: workplace.user_iss.fio, regex: '' } }
+
+          it 'return filtered data' do
+            expect(subject.data[:data].count).to eq 1
+            expect(subject.data[:data].first['workplace_count_id']).to eq workplace.workplace_count_id
           end
+        end
+
+        context 'and with invent_num filter' do
+          let(:filter) { { invent_num: workplace.items.first.invent_num } }
 
           it 'returns filtered data' do
             expect(subject.data[:data].count).to eq 1
@@ -73,16 +77,8 @@ module Invent
           end
         end
 
-        context 'with id fitler' do
-          let(:filter) do
-            {
-              invent_num: '',
-              workplace_id: workplace.workplace_id,
-              workplace_count_id: 0,
-              status: 'all',
-              workplace_type_id: 0
-            }
-          end
+        context 'and with id fitler' do
+          let(:filter) { { workplace_id: workplace.workplace_id } }
 
           it 'returns filtered data' do
             expect(subject.data[:data].count).to eq 1
@@ -90,16 +86,8 @@ module Invent
           end
         end
 
-        context 'with division filter' do
-          let(:filter) do
-            {
-              invent_num: '',
-              workplace_id: 0,
-              workplace_count_id: workplace_count.workplace_count_id,
-              status: 'all',
-              workplace_type_id: 0
-            }
-          end
+        context 'and with division filter' do
+          let(:filter) { { workplace_count_id: workplace_count.workplace_count_id } }
 
           it 'returns filtered data' do
             expect(subject.data[:data].count).to eq 1
@@ -107,16 +95,8 @@ module Invent
           end
         end
 
-        context 'with status filter' do
-          let(:filter) do
-            {
-              invent_num: '',
-              workplace_id: 0,
-              workplace_count_id: 0,
-              status: 'confirmed',
-              workplace_type_id: 0
-            }
-          end
+        context 'and with status filter' do
+          let(:filter) { { status: 'confirmed' } }
 
           it 'returns filtered data' do
             expect(subject.data[:data].count).to eq 1
@@ -124,16 +104,8 @@ module Invent
           end
         end
 
-        context 'with type filter' do
-          let(:filter) do
-            {
-              invent_num: '',
-              workplace_id: 0,
-              workplace_count_id: 0,
-              status: 'all',
-              workplace_type_id: workplace.workplace_type_id
-            }
-          end
+        context 'and with type filter' do
+          let(:filter) { { workplace_type_id: workplace.workplace_type_id } }
 
           it 'returns filtered data' do
             expect(subject.data[:data].count).to eq 1
@@ -152,17 +124,19 @@ module Invent
       end
 
       it 'must create @workplaces variable' do
-        expect(subject.instance_variable_get :@workplaces).not_to be_nil
+        expect(subject.instance_variable_get(:@workplaces)).not_to be_nil
       end
 
       context 'when responsible user was dismissed' do
-        let(:dismissed_user) { build :invalid_user }
+        let(:dismissed_user) { build(:invalid_user) }
         let!(:workplace) do
-          w = build :workplace_pk,
-                    :add_items,
-                    items: %i[pc monitor],
-                    workplace_count: workplace_count,
-                    id_tn: dismissed_user.id_tn
+          w = build(
+            :workplace_pk,
+            :add_items,
+            items: %i[pc monitor],
+            workplace_count: workplace_count,
+            id_tn: dismissed_user.id_tn
+          )
 
           w.save(validate: false)
           w

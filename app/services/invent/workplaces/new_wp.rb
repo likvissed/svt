@@ -1,6 +1,6 @@
 module Invent
   module Workplaces
-    class NewWp < ApplicationService
+    class NewWp < BaseService
       def initialize
         @data = {}
       end
@@ -10,7 +10,10 @@ module Invent
         load_divisions
 
         true
-      rescue RuntimeError
+      rescue RuntimeError => e
+        Rails.logger.error e.inspect.red
+        Rails.logger.error e.backtrace[0..5].inspect
+        
         false
       end
 

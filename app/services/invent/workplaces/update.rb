@@ -1,33 +1,32 @@
 module Invent
-  module LkInvents
+  module Workplaces
     # Обновить данные о рабочем месте.
-    class UpdateWorkplace < BaseService
+    class Update < BaseService
       attr_reader :workplace_params, :workplace
 
       # current_user - текущий пользователь
       # workplace_id - workplace_id изменяемого рабочего места
-      # strong_params - параметры, пройденные фильтрацию 'strong_params'
-      # file - объект файл
-      def initialize(current_user, workplace_id, strong_params, file = nil)
+      # workplace_params - параметры, пройденные фильтрацию 'strong_params'
+      def initialize(current_user, workplace_id, workplace_params)
         @current_user = current_user
         @workplace_id = workplace_id
-        @workplace_params = strong_params
-        @file = file
+        @workplace_params = workplace_params
       end
 
       def run
-        @workplace = Workplace
-                       .includes(inv_items: [inv_type: :inv_properties, inv_property_values: :inv_property])
-                       .find(@workplace_id)
+        @workplace = Workplace.find(@workplace_id)
         authorize @workplace, :update?
 
-        prepare_params
+        create_or_get_room
         update_workplace
         broadcast_workplaces
         broadcast_workplace_list
 
         true
-      rescue RuntimeError
+      rescue RuntimeError => e
+        Rails.logger.error e.inspect.red
+        Rails.logger.error e.backtrace[0..5].inspect
+
         false
       end
 
@@ -42,7 +41,7 @@ module Invent
                            :iss_reference_site,
                            :iss_reference_building,
                            :iss_reference_room,
-                           inv_items: [:inv_type, inv_property_values: :inv_property]
+                           items: %i[type property_values]
                          )
                          .find(workplace.workplace_id)
 
@@ -51,7 +50,7 @@ module Invent
           Rails.logger.error workplace.errors.full_messages.inspect.red
 
           errors.add(:base, workplace.errors.full_messages.join('. '))
-          raise 'abort'
+          raise 'Данные не обновлены'
         end
       end
     end

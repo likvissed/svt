@@ -3,8 +3,8 @@ require 'rails_helper'
 module Invent
   RSpec.describe LkInventsController, type: :controller do
     # sign_in_through_***REMOVED***_user
-    let(:***REMOVED***_user) { create :user }
-    let!(:workplace_count) { create :active_workplace_count, users: [***REMOVED***_user] }
+    let(:***REMOVED***_user) { create(:user) }
+    let!(:workplace_count) { create(:active_workplace_count, users: [***REMOVED***_user]) }
     let(:***REMOVED***_auth) { LkInvents::LkAuthorization.new('sid') }
     before do
       allow(LkInvents::LkAuthorization).to receive(:new).and_return(***REMOVED***_auth)
@@ -49,13 +49,13 @@ module Invent
     end
 
     describe 'GET #pc_config_from_audit' do
-      it 'creates instance of the LkInvents::PcConfigFromAudit' do
+      it 'creates instance of the Workplaces::PcConfigFromAudit' do
         get :pc_config_from_audit, params: { invent_num: 111_222 }
-        expect(assigns(:pc_config)).to be_instance_of LkInvents::PcConfigFromAudit
+        expect(assigns(:pc_config)).to be_instance_of Workplaces::PcConfigFromAudit
       end
 
       it 'calls :run method' do
-        expect_any_instance_of(LkInvents::PcConfigFromAudit).to receive(:run)
+        expect_any_instance_of(Workplaces::PcConfigFromAudit).to receive(:run)
         get :pc_config_from_audit, params: { invent_num: 111_222 }
       end
     end
@@ -65,45 +65,38 @@ module Invent
         Rack::Test::UploadedFile.new(Rails.root.join('spec', 'files', 'old_pc_config.txt'), 'text/plain')
       end
 
+      # FIXME: Спека падает
       # it 'creates instance of the LkInvents::PcConfigFromUser' do
       #   get :pc_config_from_user, params: { pc_file: file }
       #   expect(assigns(:pc_file)).to be_instance_of LkInvents::PcConfigFromUser
       # end
 
       it 'calls :run method' do
-        expect_any_instance_of(LkInvents::PcConfigFromUser).to receive(:run)
+        expect_any_instance_of(Workplaces::PcConfigFromUser).to receive(:run)
         post :pc_config_from_user, params: { pc_file: file }
       end
     end
 
     describe 'POST #create_workplace' do
       let(:workplace) do
-        build :workplace_pk, :add_items, items: %i[pc monitor], workplace_count: workplace_count
+        build(:workplace_pk, :add_items, items: %i[pc monitor], workplace_count: workplace_count)
       end
-      let(:file) do
-        Rack::Test::UploadedFile.new(Rails.root.join('spec', 'files', 'old_pc_config.txt'), 'text/plain')
-      end
-      let(:wp_params) do
-        {
-          workplace: workplace.to_json,
-          pc_file: file
-        }
-      end
+      let(:wp_params) { { workplace: workplace.as_json } }
 
-      it 'creates instance of the LkInvents::CreateWorkplace' do
+      it 'creates instance of the Workplaces::Create' do
         post :create_workplace, params: wp_params
-        expect(assigns(:workplace)).to be_instance_of LkInvents::CreateWorkplace
+        expect(assigns(:workplace)).to be_instance_of Workplaces::Create
       end
 
       it 'calls :run method' do
-        expect_any_instance_of(LkInvents::CreateWorkplace).to receive(:run)
+        expect_any_instance_of(Workplaces::Create).to receive(:run)
         post :create_workplace, params: wp_params
       end
     end
 
     describe 'GET #edit_workplace' do
       let!(:workplace) do
-        create :workplace_pk, :add_items, items: %i[pc monitor], workplace_count: workplace_count
+        create(:workplace_pk, :add_items, items: %i[pc monitor], workplace_count: workplace_count)
       end
 
       it 'creates instance of the LkInvents::EditWorkplace' do
@@ -119,26 +112,22 @@ module Invent
 
     describe 'PUT #update_workplace' do
       let!(:workplace) do
-        create :workplace_pk, :add_items, items: %i[pc monitor], workplace_count: workplace_count
-      end
-      let(:file) do
-        Rack::Test::UploadedFile.new(Rails.root.join('spec', 'files', 'old_pc_config.txt'), 'text/plain')
+        create(:workplace_pk, :add_items, items: %i[pc monitor], workplace_count: workplace_count)
       end
       let(:wp_params) do
         {
           workplace_id: workplace.workplace_id,
-          workplace: workplace.to_json,
-          pc_file: file
+          workplace: workplace.as_json
         }
       end
 
-      it 'creates instance of the LkInvents::UpdateWorkplace' do
+      it 'creates instance of the Workplaces::Update' do
         put :update_workplace, params: wp_params
-        expect(assigns(:workplace)).to be_instance_of LkInvents::UpdateWorkplace
+        expect(assigns(:workplace)).to be_instance_of Workplaces::Update
       end
 
       it 'calls :run method' do
-        expect_any_instance_of(LkInvents::UpdateWorkplace).to receive(:run)
+        expect_any_instance_of(Workplaces::Update).to receive(:run)
         put :update_workplace, params: wp_params
       end
     end

@@ -15,7 +15,10 @@ module Invent
         save_workplace
 
         true
-      rescue RuntimeError
+      rescue RuntimeError => e
+        Rails.logger.error e.inspect.red
+        Rails.logger.error e.backtrace[0..5].inspect
+
         false
       end
 
@@ -28,7 +31,7 @@ module Invent
         error[:object] = data.errors
         error[:full_message] = data.errors.full_messages.join('. ')
 
-        raise 'abort'
+        raise 'Данные не сохранены'
       end
     end
   end
