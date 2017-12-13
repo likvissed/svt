@@ -7,5 +7,15 @@ module Warehouse
     belongs_to :location, foreign_key: 'warehouse_location_id'
     belongs_to :stockman, class_name: 'UserIss', foreign_key: 'stockman_id_tn'
     belongs_to :operationable, polymorphic: true
+
+    after_initialize :set_initial_status
+
+    enum status: { processing: 1, done: 2 }
+
+    protected
+
+    def set_initial_status
+      self.status = :processing
+    end
   end
 end

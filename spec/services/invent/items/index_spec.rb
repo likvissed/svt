@@ -95,15 +95,19 @@ module Invent
           let(:prop) { Property.find_by(name: :hdd) }
           let(:filters) do
             {
-              properties: [prop.property_id],
-              prop_values: ['String value'],
-              exact_prop_values: [false]
+              properties: [
+                {
+                  property_id: prop.property_id,
+                  property_value: 'String value',
+                  exact: true
+                }
+              ]
             }
           end
 
           it 'returns filtered data' do
             subject.data[:data].each do |el|
-              expect(el['description']).to match(/#{prop.short_description}: #{filters[:prop_values][0]}/)
+              expect(el['description']).to match(/#{prop.short_description}: #{filters[:properties].first[:property_value]}/)
             end
           end
         end

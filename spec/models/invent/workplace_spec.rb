@@ -2,8 +2,6 @@ require 'rails_helper'
 
 module Invent
   RSpec.describe Workplace, type: :model do
-    let!(:workplace_count) { create(:active_workplace_count, :default_user) }
-
     it { is_expected.to have_many(:items).inverse_of(:workplace).dependent(:nullify) }
     it { is_expected.to have_many(:orders).class_name('Warehouse::Order').dependent(:nullify) }
     it { is_expected.to belong_to(:workplace_type) }
@@ -17,7 +15,7 @@ module Invent
 
     describe '#destroy_from_***REMOVED***' do
       let!(:workplace) do
-        create(:workplace_pk, :add_items, items: %i[pc monitor monitor], workplace_count: workplace_count)
+        create(:workplace_pk, :add_items, items: %i[pc monitor monitor])
       end
       before { workplace.destroy_from_***REMOVED*** }
 
@@ -46,15 +44,13 @@ module Invent
       end
 
       context 'when id_tn is set and right' do
-        subject { build(:workplace_pk, :add_items, items: %i[pc monitor monitor], workplace_count: workplace_count) }
+        subject { build(:workplace_pk, :add_items, items: %i[pc monitor monitor]) }
 
         it { is_expected.to be_valid }
       end
 
       context 'when id_tn is set, but wrong' do
-        subject do
-          build(:workplace_pk, :add_items, items: %i[pc monitor monitor], id_tn: '', workplace_count: workplace_count)
-        end
+        subject { build(:workplace_pk, :add_items, items: %i[pc monitor monitor], id_tn: '') }
 
         it { is_expected.not_to be_valid }
       end
@@ -62,7 +58,7 @@ module Invent
 
     describe '#check_workplace_conditions' do
       context 'when :enabled_filters flag is not set' do
-        subject { build(:workplace_pk, :add_items, items: %i[pc allin1 notebook], workplace_count: workplace_count, enabled_filters: false) }
+        subject { build(:workplace_pk, :add_items, items: %i[pc allin1 notebook], enabled_filters: false) }
 
         it 'does not run :check_workplace_conditions validation' do
           expect(subject).not_to receive(:check_workplace_conditions)
@@ -77,7 +73,7 @@ module Invent
           let(:type) { Type.find_by(name: :pc) }
           let(:item_take) { build(:item, type: type, status: :waiting_take) }
           let(:item_bring) { build(:item, type: type, status: :waiting_bring) }
-          subject { build(:workplace_pk, items: [item_take, item_bring], workplace_count: workplace_count) }
+          subject { build(:workplace_pk, items: [item_take, item_bring]) }
 
           it 'does not have :rm_pk_only_one_pc_or_allin1 error' do
             subject.valid?
@@ -86,7 +82,7 @@ module Invent
         end
 
         context 'and when pc and allin1 are sets' do
-          subject { build(:workplace_pk, :add_items, items: %i[pc allin1], workplace_count: workplace_count) }
+          subject { build(:workplace_pk, :add_items, items: %i[pc allin1]) }
           before { expect(subject).not_to be_valid }
 
           include_examples ':wrong_rm_pk_composition error'
@@ -94,13 +90,13 @@ module Invent
         end
 
         context 'and when notebook is set' do
-          subject { build(:workplace_pk, :add_items, items: [:notebook], workplace_count: workplace_count) }
+          subject { build(:workplace_pk, :add_items, items: [:notebook]) }
 
           it { is_expected.not_to be_valid }
         end
 
         context 'and when tablet is set' do
-          subject { build(:workplace_pk, :add_items, items: [:tablet], workplace_count: workplace_count) }
+          subject { build(:workplace_pk, :add_items, items: [:tablet]) }
 
           it { is_expected.not_to be_valid }
 
@@ -109,7 +105,7 @@ module Invent
         end
 
         context 'and when pc and allin1 are not set' do
-          subject { build(:workplace_pk, workplace_count: workplace_count) }
+          subject { build(:workplace_pk) }
 
           it { is_expected.not_to be_valid }
 
@@ -118,7 +114,7 @@ module Invent
         end
 
         context 'and when monitor and allin1 are not set' do
-          subject { build(:workplace_pk, :add_items, items: [:pc], workplace_count: workplace_count) }
+          subject { build(:workplace_pk, :add_items, items: [:pc]) }
 
           it { is_expected.not_to be_valid }
 
@@ -135,8 +131,7 @@ module Invent
                 :pc,
                 :monitor,
                 { printer: [connection_type: { property_list: Property.find_by(name: :connection_type).property_lists.find_by(value: :network) }] }
-              ],
-              workplace_count: workplace_count
+              ]
             )
           end
 
@@ -147,13 +142,13 @@ module Invent
         end
 
         context 'and when the one pc and at least one monitor are sets' do
-          subject { build(:workplace_pk, :add_items, items: %i[pc monitor monitor], workplace_count: workplace_count) }
+          subject { build(:workplace_pk, :add_items, items: %i[pc monitor monitor]) }
 
           it { is_expected.to be_valid }
         end
 
         context 'and when allin1 is set' do
-          subject { build(:workplace_pk, :add_items, items: [:allin1], workplace_count: workplace_count) }
+          subject { build(:workplace_pk, :add_items, items: [:allin1]) }
 
           it { is_expected.to be_valid }
         end
@@ -167,8 +162,7 @@ module Invent
                 :pc,
                 :monitor,
                 { printer: [connection_type: { property_list: Property.find_by(name: :connection_type).property_lists.find_by(value: :local) }] }
-              ],
-              workplace_count: workplace_count
+              ]
             )
           end
 
@@ -178,7 +172,7 @@ module Invent
 
       context 'when workplace has rm_mob type' do
         context 'and when count of items is zero' do
-          subject { build(:workplace_mob, workplace_count: workplace_count) }
+          subject { build(:workplace_mob) }
 
           it { is_expected.not_to be_valid }
 
@@ -192,7 +186,7 @@ module Invent
           types.each do |mob_type|
             context "#{mob_type.name} (#{mob_type.short_description})" do
               subject do
-                build(:workplace_mob, :add_items, items: [mob_type.name.to_sym], workplace_count: workplace_count)
+                build(:workplace_mob, :add_items, items: [mob_type.name.to_sym])
               end
 
               it { is_expected.not_to be_valid }
@@ -210,8 +204,7 @@ module Invent
                 build(
                   :workplace_mob,
                   :add_items,
-                  items: [type_name.to_sym, type_name.to_sym],
-                  workplace_count: workplace_count
+                  items: [type_name.to_sym, type_name.to_sym]
                 )
               end
 
@@ -225,7 +218,7 @@ module Invent
 
         context 'and when user sets only one allowed item' do
           Type::ALLOWED_MOB_TYPES.each do |type_name|
-            subject { build(:workplace_mob, :add_items, items: [type_name.to_sym], workplace_count: workplace_count) }
+            subject { build(:workplace_mob, :add_items, items: [type_name.to_sym]) }
 
             it { is_expected.to be_valid }
           end
@@ -234,7 +227,7 @@ module Invent
 
       context 'when workplace has rm_net_print type' do
         context 'and when count of network_printers (or print-servers) is zero' do
-          subject { build(:workplace_net_print, workplace_count: workplace_count) }
+          subject { build(:workplace_net_print) }
 
           it { is_expected.not_to be_valid }
 
@@ -263,8 +256,7 @@ module Invent
               build(
                 :workplace_net_print,
                 :add_items,
-                items: [{ printer: [network_connection] }],
-                workplace_count: workplace_count
+                items: [{ printer: [network_connection] }]
               )
             end
 
@@ -276,8 +268,7 @@ module Invent
               build(
                 :workplace_net_print,
                 :add_items,
-                items: [{ printer: [network_connection] }, { mfu: [network_connection] }],
-                workplace_count: workplace_count
+                items: [{ printer: [network_connection] }, { mfu: [network_connection] }]
               )
             end
 
@@ -292,8 +283,7 @@ module Invent
               build(
                 :workplace_net_print,
                 :add_items,
-                items: [{ printer: [network_connection] }, :pc],
-                workplace_count: workplace_count
+                items: [{ printer: [network_connection] }, :pc]
               )
             end
 
@@ -306,7 +296,7 @@ module Invent
           context 'and when user sets not one 3d-printer' do
             subject do
               build(
-                :workplace_net_print, :add_items, items: %i[3d_printer 3d_printer], workplace_count: workplace_count
+                :workplace_net_print, :add_items, items: %i[3d_printer 3d_printer]
               )
             end
 
@@ -317,11 +307,7 @@ module Invent
           end
 
           context 'and when user sets only one 3d-printer' do
-            subject do
-              build(
-                :workplace_net_print, :add_items, items: [:'3d_printer'], workplace_count: workplace_count
-              )
-            end
+            subject { build(:workplace_net_print, :add_items, items: [:'3d_printer']) }
 
             it { is_expected.to be_valid }
           end
@@ -331,8 +317,7 @@ module Invent
               build(
                 :workplace_net_print,
                 :add_items,
-                items: %i[3d_printer pc],
-                workplace_count: workplace_count
+                items: %i[3d_printer pc]
               )
             end
 
@@ -343,11 +328,7 @@ module Invent
           end
 
           context 'and when user sets not one print_server' do
-            subject do
-              build(
-                :workplace_net_print, :add_items, items: %i[print_server print_server], workplace_count: workplace_count
-              )
-            end
+            subject { build(:workplace_net_print, :add_items, items: %i[print_server print_server]) }
 
             it { is_expected.not_to be_valid }
 
@@ -360,8 +341,7 @@ module Invent
               build(
                 :workplace_net_print,
                 :add_items,
-                items: [:print_server, { printer: [network_connection] }],
-                workplace_count: workplace_count
+                items: [:print_server, { printer: [network_connection] }]
               )
             end
 
@@ -376,8 +356,7 @@ module Invent
               build(
                 :workplace_net_print,
                 :add_items,
-                items: [:print_server, { printer: [local_connection] }],
-                workplace_count: workplace_count
+                items: [:print_server, { printer: [local_connection] }]
               )
             end
 
@@ -388,7 +367,7 @@ module Invent
 
       context 'when workplace has rm_server type' do
         context 'and when pc and allin1 are sets' do
-          subject { build(:workplace_server, :add_items, items: %i[pc allin1], workplace_count: workplace_count) }
+          subject { build(:workplace_server, :add_items, items: %i[pc allin1]) }
 
           it { is_expected.not_to be_valid }
 
@@ -398,7 +377,7 @@ module Invent
 
         Type::REJECTED_SERVER_TYPES.each do |item|
           context "and when #{item} is set" do
-            subject { build(:workplace_server, :add_items, items: [item.to_sym], workplace_count: workplace_count) }
+            subject { build(:workplace_server, :add_items, items: [item.to_sym]) }
 
             it { is_expected.not_to be_valid }
 
@@ -408,7 +387,7 @@ module Invent
         end
 
         context 'and when pc and allin1 are not set' do
-          subject { build(:workplace_server, workplace_count: workplace_count) }
+          subject { build(:workplace_server) }
 
           it { is_expected.not_to be_valid }
 
@@ -425,8 +404,7 @@ module Invent
                 :pc,
                 :monitor,
                 { printer: [{ connection_type: { property_list: Property.find_by(name: :connection_type).property_lists.find_by(value: :network) } }] }
-              ],
-              workplace_count: workplace_count
+              ]
             )
           end
 
@@ -437,13 +415,13 @@ module Invent
         end
 
         context 'and when pc is set' do
-          subject { build(:workplace_server, :add_items, items: [:pc], workplace_count: workplace_count) }
+          subject { build(:workplace_server, :add_items, items: [:pc]) }
 
           it { is_expected.to be_valid }
         end
 
         context 'and when allin1 is set' do
-          subject { build(:workplace_server, :add_items, items: [:allin1], workplace_count: workplace_count) }
+          subject { build(:workplace_server, :add_items, items: [:allin1]) }
 
           it { is_expected.to be_valid }
         end
@@ -457,8 +435,7 @@ module Invent
                 :pc,
                 :monitor,
                 { printer: [{ connection_type: { property_list: Property.find_by(name: :connection_type).property_lists.find_by(value: :local) } }] }
-              ],
-              workplace_count: workplace_count
+              ]
             )
           end
 
@@ -474,7 +451,6 @@ module Invent
             :workplace_pk,
             :add_items,
             items: [:allin1],
-            workplace_count: workplace_count,
             status: :freezed
           )
         end
@@ -482,7 +458,7 @@ module Invent
         its(:status_freezed?) { is_expected.to be_truthy }
       end
       context 'when status is not freezed' do
-        subject { build(:workplace_pk, :add_items, items: [:allin1], workplace_count: workplace_count) }
+        subject { build(:workplace_pk, :add_items, items: [:allin1]) }
 
         its(:status_freezed?) { is_expected.to be_falsey }
       end

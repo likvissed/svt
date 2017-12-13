@@ -2,7 +2,7 @@ module Invent
   module WorkplaceCounts
     # Загрузить все данные об отделах, заполняющих данные о РМ, включая отдел, ответственных, телефоны, время доступа для редакитварования,
     # количество ожидающих подстверждения РМ, а также количество подтвержденных РМ
-    class Index < ApplicationService
+    class Index < Invent::ApplicationService
       attr_reader :workplace_counts
 
       def run

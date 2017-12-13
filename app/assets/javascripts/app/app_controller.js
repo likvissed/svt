@@ -139,6 +139,7 @@ FormValidationController.prototype.setFormName = function(name) {
  * @param response - ответ с сервера
  */
 FormValidationController.prototype.errorResponse = function(response) {
+  this.clearErrors();
   this._errors = response.data.object;
   this._setValidations(this._errors, false);
 };

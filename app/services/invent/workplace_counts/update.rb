@@ -1,7 +1,7 @@
 module Invent
   module WorkplaceCounts
     # Редактирование доступа для отдела.
-    class Update < ApplicationService
+    class Update < Invent::ApplicationService
       attr_reader :error
 
       # workplace_count_id - id отдела

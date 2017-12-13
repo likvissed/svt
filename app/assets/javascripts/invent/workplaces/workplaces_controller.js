@@ -10,8 +10,8 @@
 
   WorkplaceIndexCtrl.$inject = ['$scope', '$compile', '$controller', 'DTOptionsBuilder', 'DTColumnBuilder', 'ActionCableChannel', 'Server', 'Config', 'Flash', 'Error', 'Cookies'];
   WorkplaceListCtrl.$inject = ['$scope', '$compile', '$controller', 'DTOptionsBuilder', 'DTColumnBuilder', 'ActionCableChannel', 'Server', 'Config', 'Flash', 'Error', 'Cookies'];
-  WorkplaceEditCtrl.$inject = ['$timeout', '$uibModal', 'Flash', 'Config', 'Workplace', 'Item'];
-  ManuallyPcDialogCtrl.$inject = ['$uibModalInstance', 'Flash', 'Workplace', 'Item', 'item'];
+  WorkplaceEditCtrl.$inject = ['$timeout', '$uibModal', 'Flash', 'Config', 'Workplace', 'WorkplaceItem'];
+  ManuallyPcDialogCtrl.$inject = ['$uibModalInstance', 'Flash', 'Workplace', 'WorkplaceItem', 'item'];
   SelectItemTypeCtrl.$inject = ['$uibModalInstance', 'data', 'Workplace', 'Flash'];
 
   /**
@@ -559,13 +559,13 @@
    *
    * @class SVT.WorkplaceEditCtrl
    */
-  function WorkplaceEditCtrl($timeout, $uibModal, Flash, Config, Workplace, Item) {
+  function WorkplaceEditCtrl($timeout, $uibModal, Flash, Config, Workplace, WorkplaceItem) {
     this.$timeout = $timeout;
     this.$uibModal = $uibModal;
     this.Flash = Flash;
     this.Config = Config;
     this.Workplace = Workplace;
-    this.Item = Item;
+    this.Item = WorkplaceItem;
   }
 
   WorkplaceEditCtrl.prototype.init = function(id) {
@@ -767,11 +767,11 @@
    *
    * @class SVT.WorkplaceEditCtrl
    */
-  function ManuallyPcDialogCtrl($uibModalInstance, Flash, Workplace, Item, item) {
+  function ManuallyPcDialogCtrl($uibModalInstance, Flash, Workplace, WorkplaceItem, item) {
     this.$uibModalInstance = $uibModalInstance;
     this.Flash = Flash;
     this.Workplace = Workplace;
-    this.Item = Item;
+    this.Item = WorkplaceItem;
     this.item = item;
   }
 
@@ -879,7 +879,7 @@
       return false;
     }
 
-    this.Workplace.loadUsedItems(this.selectedType.type_id)
+    this.Workplace.loadAvaliableItems(this.selectedType.type_id)
       .then(function(response) {
         self.items = response;
         self._removeDuplicateItems();

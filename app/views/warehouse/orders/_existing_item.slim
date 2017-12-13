@@ -1,0 +1,28 @@
+script type="text/ng-template" id="existingItem.slim"
+  .modal-header
+    h4 Новая позиция ордера
+  .modal-body
+    .form-group
+      = label_tag "equipment_type", "Тип техники", class: "control-label"
+      = select_tag "equipment_type", "", class: "form-control", "ng-model": "select.selectedType",
+        "ng-options": "type as type.short_description disable when type.type_id == 0 for type in select.eqTypes track by type.type_id"
+    .form-group
+      = label_tag "invent_num", "Инвентарный номер", class: "control-label"
+      .input-group
+        = text_field_tag "invent_num", "", class: "form-control", autocomplete: "off", placeholder: "Инвентарный номер",
+        "ng-model": "select.invent_num"
+        span.input-group-btn
+          = button_tag "", type: :button, class: "btn-default", "ng-click": "select.loadItems()" do
+            = fa_icon "search"
+    .form-group ng-show="select.selectedType.type_id != 0 && select.items.length != 0"
+      = label_tag "", "Выберите технику", class: "control-label"
+      .ui-select
+        ui-select ng-model="select.selectedItem" theme="bootstrap"
+          ui-select-match placeholder="Выберите технику"
+            | {{ $select.selected.main_info }}
+          ui-select-choices repeat="obj in select.items | filter: $select.search"
+            div ng-bind-html="obj.main_info | highlight: $select.search"
+            small ng-bind-html="obj.add_info | highlight: $select.search"
+  .modal-footer
+    = button_tag "Добавить", class: "btn-success", "ng-click": "select.ok()"
+    = button_tag "Отмена", class: "btn-default", "ng-click": "select.cancel()"

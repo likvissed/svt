@@ -20,7 +20,8 @@ module Invent
       def load_properties
         properties = LkInvents::InitProperties.new
         return data[:prop_data] = properties.data if properties.run
-        raise 'abort'
+        
+        raise 'Ошибка сервиса LkInvents::InitProperties'
       end
 
       def load_divisions

@@ -25,7 +25,12 @@ module Invent
 
     accepts_nested_attributes_for :property_values, allow_destroy: true
 
-    enum status: { waiting_bring: 0, waiting_take: 1 }
+    enum status: { waiting_take: 1, waiting_bring: 2 }
+
+    def self.by_invent_num(invent_num)
+      return all if invent_num.blank?
+      where(invent_num: invent_num)
+    end
 
     def model_exists?
       model || !item_model.empty?

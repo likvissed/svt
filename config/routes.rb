@@ -64,13 +64,22 @@ Rails.application.routes.draw do
     get '***REMOVED***_invents/pc_script', to: '***REMOVED***_invents#send_pc_script'
 
     resources :items, only: [:index, :show], param: :item_id do
-      get 'used/:type_id', to: 'items#used', constraints: { type_id: /\d+/ }, on: :collection
+      collection do
+        get 'avaliable/:type_id', to: 'items#avaliable', constraints: { type_id: /\d+/ }
+        get 'busy/:type_id', to: 'items#busy', constraints: { type_id: /\d+/ }
+      end
     end
   end
 
   # Эталоны
   namespace :standard do
 
+  end
+
+  # Склад
+  namespace :warehouse do
+    resources :items, param: :warehouse_item_id
+    resources :orders, param: :warehouse_order_od
   end
 
   # Получить html-код кнопки "Добавить запись"

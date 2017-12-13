@@ -1,7 +1,7 @@
 module Invent
   module Items
     # Загрузить данные по указанной технике
-    class Show < ApplicationService
+    class Show < Invent::ApplicationService
       def initialize(item_id)
         @item_id = item_id
       end

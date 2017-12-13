@@ -6,13 +6,15 @@
     .factory('Error', Error) // Сервис обработки ошибок.
     .factory('Server', Server) // Фабрика для работы с CRUD экшнами.
     .factory('myHttpInterceptor', myHttpInterceptor) // Фабрика для настройки параметрв для индикатора выполнения
-    .factory('Cookies', Cookies);
-
+    .factory('Cookies', Cookies)
+    .factory('TablePaginator', TablePaginator)
+    
   Flash.$inject = ['$timeout'];
   Error.$inject = ['Flash'];
   Server.$inject = ['$resource'];
   myHttpInterceptor.$inject = ['$q'];
   Cookies.$inject = ['$cookies'];
+  TablePaginator.$inject = ['Config'];
 
 // =====================================================================================================================
 
@@ -157,9 +159,14 @@
          */
         Item: $resource('/invent/items/:item_id.json', {}, {
           query: { method: 'GET', isArray: false },
-          used: {
+          busy: {
             method: 'GET',
-            url: '/invent/items/used/:type_id',
+            url: '/invent/items/busy/:type_id',
+            isArray: true
+          },
+          avaliable: {
+            method: 'GET',
+            url: '/invent/items/avaliable/:type_id',
             isArray: true
           }
         })
@@ -173,7 +180,17 @@
           url: ' /user_isses/users_from_division/:division',
           isArray: true
         }
-      })
+      }),
+      Warehouse: {
+        Order: $resource('/warehouse/orders/:warehouse_order_id.json', {}, {
+          query: { method: 'GET', isArray: false },
+          newOrder: {
+            method: 'GET',
+            url: '/warehouse/orders/new',
+            isArray: false
+          }
+        })
+      }
     }
   }
 
@@ -323,6 +340,44 @@
         set: function(key, value) {
           setCookie('workplace', key, value);
         }
+      }
+    }
+  }
+
+// =====================================================================================================================
+
+  /**
+   * Фабрика для работы с нумерацией страниц на таблицах
+   */
+  function TablePaginator(Config) {
+    var _pagination = {
+      filteredRecords: 0,
+      totalRecords: 0,
+      currentPage: 1,
+      maxSize: 5
+    };
+
+    return {
+      /**
+       * Получить конфиг пагинатора
+       */
+      config: function() {
+        return _pagination;
+      },
+      /**
+       * Получить индекс записи, с которой необходимо показать данные.
+       */
+      startNum: function() {
+        return (_pagination.currentPage - 1) * Config.global.uibPaginationConfig.itemsPerPage;
+      },
+      /**
+       * Установить данные пагинатора
+       * 
+       * @param data { recordsFiltered: int, recordsTotal: int }
+       */
+      setData: function(data) {
+        _pagination.filteredRecords = data.recordsFiltered;
+        _pagination.totalRecords = data.recordsTotal;
       }
     }
   }

@@ -1,0 +1,45 @@
+.col-sm-15.col-md-13.col-lg-11.col-xlg-9.col-fhd-7
+  .row.multiline-buffer.filter-block ng-repeat="filter in table.selected.properties track by $index"
+    .col-sm-9.col-md-9.col-lg-9.col-xlg-9.col-fhd-9
+      select{ class="form-control input-sm" ng-model="table.selected.properties[$index].property_id"
+      ng-options="prop.property_id as prop.long_description for prop in table.filters.properties" }
+    .col-sm-7.col-md-7.col-lg-7.col-xlg-7.col-fhd-8
+      = text_field_tag "", "", class: "form-control input-sm", placeholder: "Значение",
+        "ng-model": "table.selected.properties[$index].property_value", "ng-change": "table.changeFilter()",
+        "ng-model-options": "{ debounce: 1000 }"
+    .col-sm-3.col-md-3.col-lg-3.col-xlg-3.col-fhd-3
+      = button_tag name: "exact_prop_filter[$index]", type: :button,
+        class: "btn-default btn-sm btn-block", "uib-tooltip": "Поиск строго по заданному значению",
+        "ng-click": "table.changeFilter(); table.selected.properties[$index].exact = !table.selected.properties[$index].exact",
+        "tooltip-append-to-body": "true" do
+        = fa_icon "toggle-off lg", "ng-if": "!table.filters.properties[$index].exact",
+          class: "text-danger"
+        = fa_icon "toggle-on lg", "ng-if": "table.filters.properties[$index].exact",
+          class: "text-success"
+    .col-sm-5.col-md-5.col-lg-5.col-xlg-5.col-fhd-4
+      .btn-group.btn-group-justified.btn-group-sm
+        .btn-group.btn-group-sm
+          = button_tag "", type: :button, class: "btn btn-default", "ng-click": "table.addPropFilter()",
+            "uib-tooltip": "Добавить фильтр", "tooltip-append-to-body": "true" do
+            = fa_icon "plus lg"
+        .btn-group.btn-group-sm
+          = button_tag "", type: :button, class: "btn btn-default", "ng-click": "table.delPropFilter($index)",
+            "ng-disabled": "table.filters.properties.length == 1", "uib-tooltip": "Удалить фильтр",
+            "tooltip-append-to-body": "true" do
+            = fa_icon "minus lg"
+
+.col-sm-4.col-md-5.col-lg-3.col-xlg-2.col-fhd-2.col-xlg-offset-3.col-fhd-offset-7.multiline-buffer
+  = text_field_tag "", "", class: "form-control input-sm", placeholder: "ID",
+    "ng-model": "table.selected.item_id", "ng-model-options": "{ debounce: 500 }",
+    "ng-change": "table.changeFilter()"
+.col-sm-5.col-md-5.col-lg-3.col-xlg-3.col-fhd-2.multiline-buffer
+  = select_tag "", "", class: "form-control input-sm", "ng-model": "table.selected.type_id", "ng-change": "table.changeFilter()",
+    "ng-options": "type.type_id as type.short_description for type in table.filters.types"
+.col-sm-4.col-md-5.col-lg-3.col-xlg-3.col-fhd-2.multiline-buffer
+  = text_field_tag "", "", class: "form-control input-sm", placeholder: "Инвентарный №",
+    "ng-model": "table.selected.invent_num", "ng-model-options": "{ debounce: 500 }",
+    "ng-change": "table.changeFilter()"
+.col-sm-5.col-md-5.col-lg-4.col-xlg-4.col-fhd-4.multiline-buffer
+  = text_field_tag "", "", class: "form-control input-sm", placeholder: "ФИО ответственного",
+    "ng-model": "table.selected.responsible", "ng-model-options": "{ debounce: 1000 }",
+    "ng-change": "table.changeFilter()"

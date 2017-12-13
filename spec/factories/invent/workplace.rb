@@ -1,14 +1,20 @@
 module Invent
   FactoryBot.define do
     factory :workplace, class: Workplace do
+      workplace_count { WorkplaceCount.find_by(division: dept) || create(:active_workplace_count, :default_user, division: dept) }
       workplace_specialization { WorkplaceSpecialization.last }
-      user_iss { UserIss.where(dept: workplace_count.division).first }
+      user_iss { UserIss.find_by(dept: workplace_count.division)  }
       iss_reference_site { IssReferenceSite.first }
       iss_reference_building { iss_reference_site.iss_reference_buildings.first }
       iss_reference_room { iss_reference_building.iss_reference_rooms.first }
       comment ''
       status :pending_verification
       enabled_filters true
+
+      transient do
+        # Отдел по умолчанию
+        dept ***REMOVED***
+      end
 
       trait :rm_pk do
         workplace_type { WorkplaceType.find_by(name: 'rm_pk') }

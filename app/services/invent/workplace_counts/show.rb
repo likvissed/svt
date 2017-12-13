@@ -1,7 +1,7 @@
 module Invent
   module WorkplaceCounts
     # Загрузить данные доступа отдела.
-    class Show < ApplicationService
+    class Show < Invent::ApplicationService
       def initialize(workplace_count_id)
         @workplace_count_id = workplace_count_id
       end

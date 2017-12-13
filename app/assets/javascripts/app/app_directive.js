@@ -6,7 +6,7 @@
     .directive('datatableWrapper', datatableWrapper)
     .directive('newRecord', newRecord)
     .directive('typeaheadOpenOnFocus', typeaheadOpenOnFocus)
-    .directive('ngTableInfo', ngTableInfo);
+    .directive('ngTableInfo', ngTableInfo)
 
   disableLink.$inject = [];
   datatableWrapper.$inject = ['$timeout', '$compile'];

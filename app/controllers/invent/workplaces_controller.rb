@@ -1,7 +1,5 @@
 module Invent
   class WorkplacesController < ApplicationController
-    protect_from_forgery except: :create
-
     def index
       respond_to do |format|
         format.html

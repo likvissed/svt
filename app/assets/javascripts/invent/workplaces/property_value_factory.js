@@ -5,7 +5,6 @@
     .factory('PropertyValue', PropertyValue);
 
   function PropertyValue() {
-
     var
       // Шаблон объекта значения свойства выбранного экземпляра техники
       templatePropertyValue = {

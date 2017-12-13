@@ -1,7 +1,7 @@
 module Invent
   module Items
     # Загрузить список техники, которая находится в работе в текущий момент.
-    class Index < ApplicationService
+    class Index < Invent::ApplicationService
       def initialize(params)
         @data = {}
         @start = params[:start]
@@ -28,8 +28,8 @@ module Invent
       private
 
       def load_items
-        @data[:recordsTotal] = Item.count
-        @items = Item
+        data[:recordsTotal] = Item.count
+        @items = Item.all
       end
 
       def run_filters
@@ -50,13 +50,13 @@ module Invent
         end
 
         return unless @filters['properties']&.any?
-        @filters['properties'].each_with_index do |prop_id, index|
-          next if prop_id.to_i.zero? || @filters['prop_values'][index].empty?
+        @filters['properties'].each do |prop|
+          next if prop['property_id'].to_i.zero? || prop['property_value'].blank?
 
-          @items = if @filters['exact_prop_values'][index]
-                     @items.where('invent_item.item_id IN (SELECT item_id FROM invent_property_value AS val LEFT JOIN invent_property_list AS list USING(property_list_id) WHERE val.property_id = :prop_id AND (val.value = :val OR list.short_description = :val))', prop_id: prop_id, val: @filters['prop_values'][index])
+          @items = if prop['exact']
+                     @items.where('invent_item.item_id IN (SELECT item_id FROM invent_property_value AS val LEFT JOIN invent_property_list AS list USING(property_list_id) WHERE val.property_id = :prop_id AND (val.value = :val OR list.short_description = :val))', prop_id: prop['property_id'], val: prop['property_value'])
                    else
-                     @items.where('invent_item.item_id IN (SELECT item_id FROM invent_property_value AS val LEFT JOIN invent_property_list AS list USING(property_list_id) WHERE val.property_id = :prop_id AND (val.value LIKE :val OR list.short_description LIKE :val))', prop_id: prop_id, val: "%#{@filters['prop_values'][index]}%")
+                     @items.where('invent_item.item_id IN (SELECT item_id FROM invent_property_value AS val LEFT JOIN invent_property_list AS list USING(property_list_id) WHERE val.property_id = :prop_id AND (val.value LIKE :val OR list.short_description LIKE :val))', prop_id: prop['property_id'], val: "%#{prop['property_value']}%")
                    end
         end
       end

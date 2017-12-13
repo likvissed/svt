@@ -22,7 +22,7 @@
       .navbar-header-menu
         .navbar-collapse
           ul.nav.navbar-nav.navbar-right
-            li
+            / li
               = link_to "" do
                 = fa_icon "bell-o"
                 | Уведомления
@@ -51,11 +51,15 @@
             li= link_to "Список РМ", root_path
             li= link_to "Настройки доступа", invent_workplace_counts_path
             li= link_to "Проверка конфигураций", list_wp_invent_workplaces_path
-        li.dropdown
-          = link_to "", class: "dropdown-toggle", "data-toggle": "dropdown" do
+        li class="#{active_class('/invent/item')}"
+          = link_to invent_items_path do
             = fa_icon "desktop"
             '  Техника
-            b.caret
-          ul.dropdown-menu
-            li= link_to "В работе", invent_items_path
-            /li= link_to "На складе", ""
+        li class="#{active_class('/warehouse/item')}"
+          = link_to warehouse_items_path do
+            = fa_icon "dropbox lg"
+            '  Склад
+        li class="#{active_class('/warehouse/order')}"
+          = link_to warehouse_orders_path do
+            = fa_icon "folder-open-o"
+            '  Ордеры

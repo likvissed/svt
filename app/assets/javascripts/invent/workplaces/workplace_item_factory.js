@@ -1,12 +1,11 @@
 (function() {
   'use strict';
 
-  app
-    .factory('Item', Item);
+  app.factory('WorkplaceItem', WorkplaceItem);
 
-  Item.$inject = ['$filter', 'PropertyValue'];
+  WorkplaceItem.$inject = ['$filter', 'PropertyValue'];
 
-  function Item($filter, PropertyValue) {
+  function WorkplaceItem($filter, PropertyValue) {
     var
       // Типы оборудования
       eqTypes,

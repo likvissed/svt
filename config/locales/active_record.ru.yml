@@ -62,6 +62,31 @@ ru:
       iss_reference_room:
         name: "Номер комнаты"
 
+      warehouse/order:
+        consumer: 'Ответственный'
+        consumer_dept: 'ФИО пользователя'
+        operation: 'Тип ордера'
+        status: 'Статус ордера'
+        operations:
+          out: 'Расходный'
+          in: 'Приходный'
+        statuses:
+          processing: 'В работе'
+          done: 'Исполнен'
+      warehouse/item:
+        inv_item: 'Техника'
+        type: 'Тип техники (Системный блок и т.п.)'
+        model: 'Модель'
+        warehouse_type: 'Тип (расходка или подлежит возврату)'
+        item_type: 'Тип техники (опред. авт.)'
+        item_model: 'Модель (опред. авт.)'
+        used: 'Тип (новая или б/у)'
+        count: 'Количество'
+        count_reserved: 'Зарезервированное количество'
+        warehouse_types:
+          expendable: 'Расходка'
+          returnable: 'Подлежит возврату'
+
     errors:
       messages:
         taken: "'%{value}' уже существует"
@@ -161,6 +186,19 @@ ru:
           attributes:
             base:
               blank: 'Не заполнено поле "%{empty_prop}"'
+
+        warehouse/order:
+          attributes:
+            base:
+              uniq_workplace: 'Ордер может содержать технику только одного рабочего места'
+              at_least_one_inv_item: 'Необходимо добавить хотя бы одну единицу техники'
+
+        warehouse/item:
+          attributes:
+            model:
+              taken: 'уже существует на складе'
+            item_model:
+              taken: "'%{value}' уже существует на складе"
 
         user:
           attributes:

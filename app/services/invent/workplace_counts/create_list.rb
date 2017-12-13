@@ -3,7 +3,7 @@ require 'csv'
 module Invent
   module WorkplaceCounts
     # Создать список отделов и ответственных лиц из загруженного файла.
-    class CreateList < ApplicationService
+    class CreateList < Invent::ApplicationService
       def initialize(file)
         @file = file
         @flag = nil

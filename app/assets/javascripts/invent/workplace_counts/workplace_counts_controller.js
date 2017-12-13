@@ -275,8 +275,6 @@
   ModalWpCountController.prototype.ok = function() {
     var self = this;
 
-    self.clearErrors();
-
     if (self.method == 'POST') {
       self.Server.Invent.WorkplaceCount.save({ workplace_count: self.data },
         function success(response) {

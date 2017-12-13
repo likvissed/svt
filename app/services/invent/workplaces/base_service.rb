@@ -1,6 +1,6 @@
 module Invent
   module Workplaces
-    class BaseService < ApplicationService
+    class BaseService < Invent::ApplicationService
       private
 
       # Создать комнату (если она не существует). Создает объект @room.
@@ -41,11 +41,6 @@ module Invent
       # Возвращает строку, содержащую расположение РМ.
       def wp_location_string(wp)
         "Пл. '#{wp['iss_reference_site']['name']}', корп. '#{wp['iss_reference_building']['name']}', комн. '#{wp['iss_reference_room']['name']}'"
-      end
-
-      # Обернуть строку в тег <span class='manually'>
-      def wrap_problem_string(string)
-        "<span class='manually-val'>#{string}</span>"
       end
     end
   end

@@ -1,0 +1,49 @@
+script type="text/ng-template" id="bringModal.slim"
+  form role="form" name="edit.form" data-method="edit.method"
+    .modal-header
+      h4 Приходный ордер
+    .modal-body
+      .form-group ng-class="edit.errorClass('order[consumer_dept]')"
+        = label_tag "order[consumer_dept]", "Отдел", class: "control-label"
+        = hidden_field_tag "order[consumer_dept]", "", "ng-model": "edit.order.consumer_dept"
+        .ui-select
+          ui-select ng-model="edit.order.consumer_dept" on-select="edit.loadUsers()" theme="bootstrap"
+            ui-select-match
+              | {{ $select.selected }}
+            ui-select-choices repeat="division in edit.divisions | filter: $select.search"
+              div ng-bind-html="division | highlight: $select.search"
+        span.help-block ng-show="edit.form['order[consumer_dept]'].$invalid" ng-bind="edit.errorMessage('order[consumer_dept]')"
+
+      .form-group ng-class="edit.errorClass('order[consumer]')"
+        = label_tag "order[consumer]", "ФИО пользователя", class: "control-label"
+        = text_field_tag "order[consumer]", "", class: "form-control", autocomplete: "off",
+          placeholder: "Введите ФИО", "ng-model": "edit.selectedConsumer", "typeahead-on-select": "edit.changeConsumer()",
+          "uib-typeahead": "user as user.fio for user in edit.users | filter:$viewValue", "typeahead-show-hint": true,
+          "typeahead-min-length": 0, "typeahead-input-formatter": "edit.formatLabel($model)"
+        span.help-block ng-show="edit.form['order[consumer]'].$invalid" ng-bind="edit.errorMessage('order[consumer]')"
+
+      .form-group
+        h4
+          ' Позиции
+          span ng-if="edit.order.item_to_orders_attributes.length == 0"
+            ' отсутствуют
+          = fa_icon "plus-circle", class: "pointer", "tooltip-placement": "top", "uib-tooltip": "Добавить позицию", "ng-click": "edit.addPosition()"
+        table.table.table-striped.table-condensed ng-if="edit.order.item_to_orders_attributes.length != 0"
+          thead
+            tr
+              th.col-fhd-6.col-xlg-6.col-lg-6.col-md-7.col-sm-7 Тип
+              th.col-fhd-5.col-xlg-5.col-lg-5.col-md-5.col-sm-5 Инв. №
+              th.col-fhd-12.col-xlg-12.col-xlg-12.col-md-11.col-sm-11 Модель
+              th.col-fhd-1.col-xlg-1.col-lg-1.col-md-1.col-sm-1
+          tbody
+            tr ng-repeat="item_attr in edit.order.item_to_orders_attributes"
+              td ng-bind="item_attr.item.type_id"
+              td ng-bind="item_attr.item.invent_num"
+              td ng-bind="item_attr.item.add_info"
+              td= fa_icon "minus-circle lg", class: "pointer", "tooltip-placement": "left", "uib-tooltip": "Убрать позицию",
+              "ng-click": "edit.delPosition(item_attr)"
+    .modal-footer
+      = button_tag "Создать", class: "btn-success", "ng-click": "edit.ok()"
+      = button_tag "Закрыть", class: "btn-default", "ng-click": "edit.cancel()"
+
+  = render partial: 'existing_item'

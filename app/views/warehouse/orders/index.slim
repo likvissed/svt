@@ -1,0 +1,46 @@
+= title "Ордеры"
+
+#index_order.container ng-controller="OrdersController as table"
+  .well
+    .row
+      .col-fhd-2
+        .dropdown
+          = button_tag type: :button, class: "btn-primary btn-sm btn-block", "data-toggle": "dropdown" do
+            ' Добавить
+            .pull-right
+              = fa_icon "caret-down"
+          ul.dropdown-menu
+            li= link_to "Приходный ордер", "", "ng-click": "table.newOrder('in')"
+            li= link_to "Расходный ордер", "", "ng-click": "table.newOrder('out')"
+    .row
+      .col-fhd-24
+        table.table.table-striped.table-condensed
+          thead
+            tr
+              th №
+              th Отдел
+              th Тип
+              th Создан
+              th Утвержден
+              th Получил/Принес
+              th Статус
+          tbody
+            tr ng-repeat="order in table.orders"
+              td ng-bind="order.consumer_dept"
+              td ng-bind="order.warehouse_order_id"
+              td ng-bind="order.operation"
+              td ng-bind="order.creator.fio || order.creator_fio"
+              td ng-bind="order.validator.fio || order.validator_fio"
+              td ng-bind="order.consumer.fio || order.consumer_fio"
+              td ng-bind="order.status"
+            tr ng-show="orders.orders.length == 0"
+              td colspan=6 Данных нет
+
+    .row
+      .col-xs-12
+        .animate-show ng-table-info="" info-attrs="table.pagination" ng-if="table.orders"
+      .col-xs-12
+        ul{ uib-pagination="true" total-items="table.pagination.filteredRecords" ng-model="table.pagination.currentPage"
+          max-size="table.pagination.maxSize" class="pagination-sm pull-right" ng-change="v.changePage()" }
+
+= render partial: 'bring_modal'

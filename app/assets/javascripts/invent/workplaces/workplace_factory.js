@@ -4,21 +4,21 @@
   app
     .service('Workplace', Workplace);
 
-  Workplace.$inject = ['$window', '$http', '$timeout', 'Server', 'Flash', 'Error', 'Item', 'PropertyValue'];
+  Workplace.$inject = ['$window', '$http', '$timeout', 'Server', 'Flash', 'Error', 'WorkplaceItem', 'PropertyValue'];
 
   /**
    * Сервис для редактирования(подтверждения или отклонения) РМ.
    *
    * @class SVT.Workplace
    */
-  function Workplace($window, $http, $timeout, Server, Flash, Error, Item, PropertyValue) {
+  function Workplace($window, $http, $timeout, Server, Flash, Error, WorkplaceItem, PropertyValue) {
     this.$window = $window;
     this.$http = $http;
     this.$timeout = $timeout;
     this.Server = Server;
     this.Flash = Flash;
     this.Error = Error;
-    this.Item = Item;
+    this.Item = WorkplaceItem;
     this.PropertyValue = PropertyValue;
 
     // ====================================== Данные с сервера =============================================================
@@ -451,10 +451,10 @@
    *
    * @param type_id - тип загружаемой техники
    */
-  Workplace.prototype.loadUsedItems = function(type_id) {
+  Workplace.prototype.loadAvaliableItems = function(type_id) {
     var self = this;
 
-    return this.Server.Invent.Item.used(
+    return this.Server.Invent.Item.avaliable(
       { type_id: type_id },
       function(response) {},
       function(response, status) {

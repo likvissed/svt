@@ -3,13 +3,15 @@
 
   app.controller('InventItemsCtrl', InventItemsCtrl);
 
-  InventItemsCtrl.$inject = ['TableItem'];
+  InventItemsCtrl.$inject = ['TablePaginator', 'InventItem', 'InventItemFiltersFactory'];
 
-  function InventItemsCtrl(Item) {
-    this.Item = Item;
-    this.pagination = Item.pagination;
-    this.filters = Item.filters.selected;
-    this.lists = Item.filters.lists;
+  function InventItemsCtrl(TablePaginator, InventItem, InventItemFiltersFactory) {
+    this.Item = InventItem;
+    this.Filters = InventItemFiltersFactory;
+    
+    this.pagination = TablePaginator.config();
+    this.filters = this.Filters.getFilters();
+    this.selected= this.Filters.getSelected();
 
     this._loadItems(true);
   }
@@ -43,7 +45,7 @@
    * Добавить фильтр по составу техники.
    */
   InventItemsCtrl.prototype.addPropFilter = function() {
-    this.Item.addPropFilter();
+    this.Filters.addProperty();
   };
 
   /**
@@ -53,7 +55,7 @@
    */
   InventItemsCtrl.prototype.delPropFilter = function(index) {
     if (this.filters.properties.length > 1) {
-      this.Item.delPropFilter(index);
+      this.Filters.delProperty(index);
       this._loadItems(false);
     }
   };
