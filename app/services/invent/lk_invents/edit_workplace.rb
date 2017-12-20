@@ -79,6 +79,7 @@ module Invent
             prop_val.delete('property_value_id')
           end
         end
+        data['inv_item_ids'] = data['inv_items_attributes'].map { |item| item['id'] }
       end
     end
   end

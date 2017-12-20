@@ -27,7 +27,7 @@ module ServiceMacros
 
     tmp.delete(:inv_items)
 
-    tmp.deep_symbolize_keys
+    tmp.as_json
   end
 
   def update_workplace_attributes(current_user, workplace_id, **params)

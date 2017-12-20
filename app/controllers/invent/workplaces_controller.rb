@@ -150,6 +150,7 @@ module Invent
         :location_room_id,
         :comment,
         :status,
+        inv_item_ids: [],
         inv_items_attributes: [
           :id,
           :parent_id,

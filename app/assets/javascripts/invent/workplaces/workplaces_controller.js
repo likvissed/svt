@@ -6,13 +6,15 @@
     .controller('WorkplaceListCtrl', WorkplaceListCtrl)
     .controller('WorkplaceEditCtrl', WorkplaceEditCtrl)
     .controller('ManuallyPcDialogCtrl', ManuallyPcDialogCtrl)
-    .controller('SelectItemTypeCtrl', SelectItemTypeCtrl);
+    .controller('SelectItemTypeCtrl', SelectItemTypeCtrl)
+    .controller('SelectExistingItem', SelectExistingItem);
 
   WorkplaceIndexCtrl.$inject = ['$scope', '$compile', '$controller', 'DTOptionsBuilder', 'DTColumnBuilder', 'ActionCableChannel', 'Server', 'Config', 'Flash', 'Error', 'Cookies'];
   WorkplaceListCtrl.$inject = ['$scope', '$compile', '$controller', 'DTOptionsBuilder', 'DTColumnBuilder', 'ActionCableChannel', 'Server', 'Config', 'Flash', 'Error', 'Cookies'];
   WorkplaceEditCtrl.$inject = ['$filter', '$timeout', '$uibModal', 'Flash', 'Config', 'Workplace', 'Item'];
   ManuallyPcDialogCtrl.$inject = ['$uibModalInstance', 'Flash', 'Workplace', 'Item', 'item'];
   SelectItemTypeCtrl.$inject = ['$uibModalInstance', 'data', 'Workplace'];
+  SelectExistingItem.$inject = ['$uibModalInstance', 'Workplace'];
 
   /**
    * Управление общей таблицей рабочих мест.
@@ -38,7 +40,7 @@
       }
     ];
     // Фильтр по статусам
-    self.statusFilters = { 'all': 'Все статусы' };
+    self.statusFilters = {'all': 'Все статусы'};
     // Фильтр по типам РМ
     self.typeFilters = [
       {
@@ -85,25 +87,25 @@
       .withOption('createdRow', createdRow)
       .withDOM(
         '<"row"' +
-          '<"col-sm-4 col-md-4 col-lg-3 col-xlg-3 col-fhd-2 multiline-buffer"' +
-            '<"#workplaces.new-record">>' +
-          '<"col-lg-3 col-xlg-3 col-fhd-9">' +
-          '<"col-sm-4 col-md-4 col-lg-3 col-xlg-3 col-fhd-2 multiline-buffer"' +
-            '<"workplaces-invent-num-filter">>' +
-          '<"col-sm-4 col-md-4 col-lg-3 col-xlg-3 col-fhd-2 multiline-buffer"' +
-            '<"workplaces-id-filter">>' +
-          '<"col-sm-4 col-md-4 col-lg-3 col-xlg-3 col-fhd-2 multiline-buffer"' +
-            '<"workplaces-type-filter">>' +
-          '<"col-sm-4 col-md-4 col-lg-3 col-xlg-3 col-fhd-2 multiline-buffer"' +
-            '<"workplaces-division-filter">>' +
-          '<"col-sm-4 col-md-4 col-lg-3 col-xlg-3 col-fhd-2 multiline-buffer"' +
-            '<"workplaces-status-filter">>' +
-          '<"col-sm-4 col-md-4 col-lg-3 col-xlg-3 col-fhd-3 multiline-buffer"f>>' +
+        '<"col-sm-4 col-md-4 col-lg-3 col-xlg-3 col-fhd-2 multiline-buffer"' +
+        '<"#workplaces.new-record">>' +
+        '<"col-lg-3 col-xlg-3 col-fhd-9">' +
+        '<"col-sm-4 col-md-4 col-lg-3 col-xlg-3 col-fhd-2 multiline-buffer"' +
+        '<"workplaces-invent-num-filter">>' +
+        '<"col-sm-4 col-md-4 col-lg-3 col-xlg-3 col-fhd-2 multiline-buffer"' +
+        '<"workplaces-id-filter">>' +
+        '<"col-sm-4 col-md-4 col-lg-3 col-xlg-3 col-fhd-2 multiline-buffer"' +
+        '<"workplaces-type-filter">>' +
+        '<"col-sm-4 col-md-4 col-lg-3 col-xlg-3 col-fhd-2 multiline-buffer"' +
+        '<"workplaces-division-filter">>' +
+        '<"col-sm-4 col-md-4 col-lg-3 col-xlg-3 col-fhd-2 multiline-buffer"' +
+        '<"workplaces-status-filter">>' +
+        '<"col-sm-4 col-md-4 col-lg-3 col-xlg-3 col-fhd-3 multiline-buffer"f>>' +
         '<"row"' +
-          '<"col-fhd-24"t>>' +
+        '<"col-fhd-24"t>>' +
         '<"row"' +
-          '<"col-xs-12"i>' +
-          '<"col-xs-12"p>>'
+        '<"col-xs-12"i>' +
+        '<"col-xs-12"p>>'
       );
 
     self.dtColumns = [
@@ -146,7 +148,7 @@
     function statusRecord(data, type, full, meta) {
       var labelClass;
 
-      switch(data) {
+      switch (data) {
         case 'Подтверждено':
           labelClass = 'label-success';
           break;
@@ -216,7 +218,9 @@
     if (angular.isUndefined(cookieVal)) {
       this.selectedDivisionFilter = this.divisionFilters[0];
     } else {
-      this.selectedDivisionFilter = this.divisionFilters.find(function (el) { return el.workplace_count_id == cookieVal })
+      this.selectedDivisionFilter = this.divisionFilters.find(function (el) {
+        return el.workplace_count_id == cookieVal
+      })
     }
 
     // Установить выбранный фильтр по статусам РМ
@@ -232,7 +236,9 @@
     if (angular.isUndefined(cookieVal)) {
       this.selectedTypeFilter = this.typeFilters[0];
     } else {
-      this.selectedTypeFilter = this.typeFilters.find(function (el) { return el.workplace_type_id == cookieVal })
+      this.selectedTypeFilter = this.typeFilters.find(function (el) {
+        return el.workplace_type_id == cookieVal
+      })
     }
   };
 
@@ -280,7 +286,7 @@
       return false;
 
     self.Server.Invent.Workplace.delete(
-      { workplace_id: id },
+      {workplace_id: id},
       function (response) {
         console.log(response);
         self.Flash.notice(response.full_message);
@@ -355,17 +361,17 @@
       .withOption('headerCallback', headerCallback)
       .withDOM(
         '<"row"' +
-          '<"col-sm-6 col-md-6 col-lg-5 col-xlg-4 col-fhd-3"' +
-            '<"workplace-list-approve">>' +
-          '<"col-sm-10 col-md-11 col-lg-13 col-xlg-14 col-fhd-16">' +
-          '<"col-sm-4 col-md-3 col-lg-3 col-xlg-3 col-fhd-2"' +
-            '<"workplace-list-division-filter">>' +
-          '<"col-sm-4 col-md-4 col-lg-3 col-xlg-3 col-fhd-3"f>>' +
+        '<"col-sm-6 col-md-6 col-lg-5 col-xlg-4 col-fhd-3"' +
+        '<"workplace-list-approve">>' +
+        '<"col-sm-10 col-md-11 col-lg-13 col-xlg-14 col-fhd-16">' +
+        '<"col-sm-4 col-md-3 col-lg-3 col-xlg-3 col-fhd-2"' +
+        '<"workplace-list-division-filter">>' +
+        '<"col-sm-4 col-md-4 col-lg-3 col-xlg-3 col-fhd-3"f>>' +
         '<"row"' +
-          '<"col-fhd-24"t>>' +
+        '<"col-fhd-24"t>>' +
         '<"row"' +
-          '<"col-xs-12"i>' +
-          '<"col-xs-12"p>>'
+        '<"col-xs-12"i>' +
+        '<"col-xs-12"p>>'
       );
 
     self.dtColumns = [
@@ -432,7 +438,9 @@
         res,
         items = [];
 
-      angular.forEach(data.items, function (value) { items.push('<li>' + value + '</li>'); });
+      angular.forEach(data.items, function (value) {
+        items.push('<li>' + value + '</li>');
+      });
       res = '<span>' + data.workplace + '</span><br>Состав:<ul>' + items.join('') + '</ul>';
 
       return res;
@@ -454,7 +462,9 @@
     if (angular.isUndefined(cookieVal)) {
       this.selectedDivisionFilter = this.divisionFilters[0];
     } else {
-      this.selectedDivisionFilter = this.divisionFilters.find(function (el) { return el.workplace_count_id == cookieVal });
+      this.selectedDivisionFilter = this.divisionFilters.find(function (el) {
+        return el.workplace_count_id == cookieVal
+      });
     }
   };
 
@@ -482,7 +492,9 @@
   WorkplaceListCtrl.prototype._removeRow = function (keys) {
     var self = this;
 
-    keys.forEach(function (id) { delete this[id] }, this.workplaces);
+    keys.forEach(function (id) {
+      delete this[id]
+    }, this.workplaces);
     this.dtInstance.reloadData(null, self.Config.global.reloadPaging);
 
     if (this.isEmptyWorkplace()) {
@@ -502,7 +514,9 @@
    */
   WorkplaceListCtrl.prototype.toggleAll = function () {
     var self = this;
-    angular.forEach(self.workplaces, function (value) { value.selected = self.flags.all; });
+    angular.forEach(self.workplaces, function (value) {
+      value.selected = self.flags.all;
+    });
   };
 
   /**
@@ -521,7 +535,7 @@
         flag = false;
       }
       else {
-        count ++;
+        count++;
       }
     });
 
@@ -551,7 +565,9 @@
   WorkplaceListCtrl.prototype.updateWp = function (type) {
     var
       self = this,
-      wpIds = $.grep(Object.keys(this.workplaces), function (el) { return self.workplaces[el].selected });
+      wpIds = $.grep(Object.keys(this.workplaces), function (el) {
+        return self.workplaces[el].selected
+      });
 
     if (wpIds.length == 0) {
       self.Flash.alert('Необходимо выбрать хотя бы одно рабочее место');
@@ -613,7 +629,9 @@
       // Данные о рабочем месте
       self.workplace = self.Workplace.workplace;
 
-      if (!id) { self.loadUsers(); }
+      if (!id) {
+        self.loadUsers();
+      }
     });
   };
 
@@ -635,9 +653,11 @@
    * @param id_tn - id_tn выбранного ответственного.
    */
   WorkplaceEditCtrl.prototype.formatLabel = function (id_tn) {
-    if (!this.users) { return ''; }
+    if (!this.users) {
+      return '';
+    }
 
-    for (var i = 0; i < this.users.length; i ++) {
+    for (var i = 0; i < this.users.length; i++) {
       if (id_tn === this.users[i].id_tn) {
         return this.users[i].fio;
       }
@@ -676,7 +696,9 @@
     !this.$filter('contains')(this.additional.pcTypes, item.type.name)
     // Совпадает ли инв. номер с сохраненным
     || this.additional.invent_num == item.invent_num
-    ) { return false; }
+    ) {
+      return false;
+    }
 
     // Очистить состав ПК
     this.Item.clearPropertyValues(item);
@@ -713,7 +735,9 @@
         size: 'md',
         backdrop: 'static',
         resolve: {
-          item: function () { return item; }
+          item: function () {
+            return item;
+          }
         }
       });
     } else {
@@ -762,7 +786,7 @@
       backdrop: 'static',
       resolve: {
         data: function () {
-          return { eq_types: self.eq_types };
+          return {eq_types: self.eq_types};
         }
       }
     });
@@ -774,6 +798,27 @@
       function () {
         self.Workplace.setFirstActiveTab()
       });
+  };
+
+  WorkplaceEditCtrl.prototype.addExistingItem = function () {
+    var self = this;
+
+    var modalInstance = this.$uibModal.open({
+      animation: this.Config.global.modalAnimation,
+      templateUrl: 'existingItem.slim',
+      controller: 'SelectExistingItem',
+      controllerAs: 'select',
+      size: 'md',
+      backdrop: 'static'
+    });
+
+    modalInstance.result.then(
+      function () {
+      },
+      function () {
+        self.Workplace.setFirstActiveTab()
+      }
+    );
   };
 
   /**
@@ -877,6 +922,27 @@
   };
 
   SelectItemTypeCtrl.prototype.cancel = function () {
+    this.$uibModalInstance.dismiss();
+  };
+
+// =====================================================================================================================
+
+  function SelectExistingItem($uibModalInstance, Workplace) {
+    this.$uibModalInstance = $uibModalInstance;
+    this.Workplace = Workplace;
+  }
+
+  SelectExistingItem.prototype.ok = function() {
+    var self = this;
+
+    this.Workplace.loadItem(this.id).then(
+      function() {
+        self.$uibModalInstance.close();
+      }
+    );
+  };
+
+  SelectExistingItem.prototype.cancel = function() {
     this.$uibModalInstance.dismiss();
   };
 })();

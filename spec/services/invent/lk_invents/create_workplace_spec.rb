@@ -11,14 +11,14 @@ module Invent
         let(:workplace) { create_workplace_attributes(room: room) }
         let(:prop_val_count) do
           count = 0
-          workplace[:inv_items_attributes].each { |item| count += item[:inv_property_values_attributes].count }
+          workplace['inv_items_attributes'].each { |item| count += item['inv_property_values_attributes'].count }
           count
         end
         subject { CreateWorkplace.new(user, workplace) }
 
         it 'sets location_room_id variable' do
           subject.run
-          expect(subject.workplace_params[:location_room_id]).to eq room.room_id
+          expect(subject.workplace_params['location_room_id']).to eq room.room_id
         end
 
         it 'creates a @workplace variable' do
@@ -34,7 +34,7 @@ module Invent
         end
 
         it 'saves the new items in the database' do
-          expect { subject.run }.to change(InvItem, :count).by(workplace[:inv_items_attributes].count)
+          expect { subject.run }.to change(InvItem, :count).by(workplace['inv_items_attributes'].count)
         end
 
         it 'saves the new property_values in the database' do
@@ -59,8 +59,9 @@ module Invent
           it 'adds "file" key to workplace' do
             subject.run
             expect(
-              subject.workplace_params[:inv_items_attributes].any? do |item|
-                item[:inv_property_values_attributes].any? { |prop_val| prop_val.key?(:file) }
+              subject.workplace_params['inv_items_attributes'].any? do |item|
+                puts item['inv_property_values_attributes'].inspect
+                item['inv_property_values_attributes'].any? { |prop_val| prop_val.key?('file') }
               end
             ).to be_truthy
           end

@@ -45,7 +45,6 @@
     this._templateWorkplace = {
       // Показывает, нужно ли при создании/редактировании РМ использовать проверки на состав РМ
       enabled_filters: true,
-      workplace_id: 0,
       // Id в таблице отделов
       workplace_count_id: 0,
       // Тип РМ
@@ -67,7 +66,9 @@
       // Дефолтный статус РМ (2 - в ожидании проверки)
       status: 'pending_verification',
       // Состав РМ
-      inv_items_attributes: []
+      inv_items_attributes: [],
+      // Список ID техники, которая уже существует в БД
+      inv_item_ids: []
     };
 
 // =====================================================================================================================
@@ -367,6 +368,13 @@
       this.Item.clearPcAdditionalData(item);
     }
 
+    if (item._existing) {
+      this.workplace.inv_items_attributes.splice($.inArray(item, this.workplace.inv_items_attributes), 1);
+      this.workplace.inv_item_ids.splice(this.workplace.inv_item_ids.indexOf(item.id), 1);
+      this.setFirstActiveTab(item);
+      return false;
+    }
+
     if (item.id) {
       item._destroy = 1;
       item.workplace_id = null;
@@ -379,6 +387,36 @@
     }
 
     this.additional.visibleCount --;
+  };
+
+  Workplace.prototype.loadItem = function(id) {
+    var self = this;
+
+    return this.Server.Invent.Item.get(
+      { item_id: id },
+      function(data) {
+        self._addNewItem();
+
+        var
+          // Получаем индекс созданного элемента
+          length = self.workplace.inv_items_attributes.length - 1,
+          // Созданный элемент
+          item = self.workplace.inv_items_attributes[length];
+
+        self.Item.addProperties(data);
+        self.Item.setItemAttributes(item, data, self.workplace.workplace_id);
+        self.workplace.inv_item_ids.push(item.id);
+
+        self.workplace.inv_items_attributes[length]._existing = true;
+
+        // Сделать созданный элемент активным в табах.
+        self.$timeout(function () {
+          self.additional.activeTab = length;
+        }, 0);
+      },
+      function(response, status) {
+        self.Error.response(response, status);
+      }).$promise;
   };
 
   /**

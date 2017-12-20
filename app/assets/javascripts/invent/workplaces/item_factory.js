@@ -596,7 +596,19 @@
       addNewPropertyValue: function (item) {
         item.inv_property_values_attributes.push(PropertyValue.getTemplatePropertyValue());
       },
-      setInitPropertyListId: _setInitPropertyListId
+      setInitPropertyListId: _setInitPropertyListId,
+      /**
+       * Заполнить созданный элемент массива items_attributes указанными данными.
+       *
+       * @param item
+       * @param data - данные для заполнения объекта item
+       * @param workplace_id - ID рабочего места
+       */
+      setItemAttributes: function(item, data, workplace_id) {
+        Object.keys(templateItem).forEach(function(key) { item[key] = data[key]; });
+
+        item.workplace_id = workplace_id;
+      }
     };
   }
 })();

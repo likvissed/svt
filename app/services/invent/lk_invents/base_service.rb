@@ -14,18 +14,18 @@ module Invent
       # 2. В найденном 'item' ищется 'inv_property_value' со свойством 'Отчет о конфигурации'
       # 3. Создается ключ ':file', в который записывается файл. В ключ ':value' записывается имя файла.
       def set_file_into_params
-        return false if @workplace_params[:inv_items_attributes].nil?
+        return false if @workplace_params['inv_items_attributes'].nil?
 
         type_with_files = InvType.where(name: InvType::TYPE_WITH_FILES).includes(:inv_properties)
 
-        @workplace_params[:inv_items_attributes].each do |item|
-          next if (type = type_with_files.find { |type_f| type_f[:type_id] == item[:type_id] }).nil?
+        @workplace_params['inv_items_attributes'].each do |item|
+          next if (type = type_with_files.find { |type_f| type_f[:type_id] == item['type_id'] }).nil?
 
-          item[:inv_property_values_attributes].each do |prop_val|
-            next unless type.inv_properties.find { |prop| prop[:property_id] == prop_val[:property_id] }.name == 'config_file'
+          item['inv_property_values_attributes'].each do |prop_val|
+            next unless type.inv_properties.find { |prop| prop[:property_id] == prop_val['property_id'] }.name == 'config_file'
 
-            prop_val[:file] = @file
-            prop_val[:value] = @file.original_filename
+            prop_val['file'] = @file
+            prop_val['value'] = @file.original_filename
 
             break
           end
@@ -34,9 +34,9 @@ module Invent
 
       # Создать комнату (если она не существует). Создает объект @room.
       def create_or_get_room
-        @room = Room.new(@workplace_params[:location_room_name], @workplace_params[:location_building_id])
+        @room = Room.new(@workplace_params['location_room_name'], @workplace_params['location_building_id'])
 
-        @workplace_params[:location_room_id] = @room.data.room_id if @room.run
+        @workplace_params['location_room_id'] = @room.data.room_id if @room.run
       end
 
       # Преобразование объекта workplace в специальный вид, чтобы таблица могла отобразить данные.
