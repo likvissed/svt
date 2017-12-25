@@ -135,22 +135,20 @@
    * @param data - полученные с сервера данные
    */
   Workplace.prototype._setProperties = function (data) {
-    var self = this;
-
     // По умолчанию фильтры всегда включены
     this.workplace.enabled_filters = true;
 
-    angular.forEach(data.prop_data.iss_locations, function (value) {
-      value.iss_reference_buildings = [self.selectIssBuilding].concat(value.iss_reference_buildings);
+    angular.forEach(data.prop_data.iss_locations, value => {
+      value.iss_reference_buildings = [this.selectIssBuilding].concat(value.iss_reference_buildings);
     });
     this.Item.setTypes(data.prop_data.eq_types);
 
     // Типы РМ
-    this.wp_types = [self.selectWpType].concat(data.prop_data.wp_types);
+    this.wp_types = [this.selectWpType].concat(data.prop_data.wp_types);
     // Направления работы на рабочих местах
-    this.specs = [self.selectWpSpec].concat(data.prop_data.specs);
+    this.specs = [this.selectWpSpec].concat(data.prop_data.specs);
     // Список площадок и корпусов
-    this.iss_locations = [self.selectIssLocation].concat(data.prop_data.iss_locations);
+    this.iss_locations = [this.selectIssLocation].concat(data.prop_data.iss_locations);
 
     this.statuses = data.prop_data.statuses;
     this.divisions = data.divisions;
