@@ -135,11 +135,13 @@
    * @param data - полученные с сервера данные
    */
   Workplace.prototype._setProperties = function (data) {
+    var self = this;
+
     // По умолчанию фильтры всегда включены
     this.workplace.enabled_filters = true;
 
-    angular.forEach(data.prop_data.iss_locations, value => {
-      value.iss_reference_buildings = [this.selectIssBuilding].concat(value.iss_reference_buildings);
+    angular.forEach(data.prop_data.iss_locations, function(value) {
+      value.iss_reference_buildings = [self.selectIssBuilding].concat(value.iss_reference_buildings);
     });
     this.Item.setTypes(data.prop_data.eq_types);
 
