@@ -4,12 +4,12 @@ module Invent
   module Items
     RSpec.describe ExistingItem, type: :model do
       let(:item) { create(:item, :with_property_values, item_model: 'model', type_name: 'printer') }
-      subject { ExistingItem.new(:printer,item.invent_num) }
+      subject { ExistingItem.new(InvType::ALL_PRINT_TYPES,item.invent_num) }
 
       context 'when item exists' do
         before { subject.run }
 
-        it 'adds %w[exists type model] keys to the data' do
+        it 'adds %w[exists type model connection_type] keys to the data' do
           expect(subject.data).to include(:exists, :type, :model)
         end
 
