@@ -62,6 +62,8 @@ Rails.application.routes.draw do
     get '***REMOVED***_invents/generate_pdf/:division', to: '***REMOVED***_invents#generate_pdf', constraints: { division: /\d+/ }
     # Скачать скрипт для генерации файла конфигурации ПК
     get '***REMOVED***_invents/pc_script', to: '***REMOVED***_invents#send_pc_script'
+    # Проверить, существует ли техника с указанным инвентарным номером
+    get '***REMOVED***_invents/existing_item', to: '***REMOVED***_invents#existing_item'
 
     resources :items, only: [:index, :show], param: :item_id
   end

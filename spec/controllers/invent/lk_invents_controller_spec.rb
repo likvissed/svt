@@ -171,6 +171,18 @@ module Invent
       end
     end
 
+    describe 'GET existing_item' do
+      it 'create instance of the InvItem::ExistingItem' do
+        get :existing_item, params: { invent_num: '123456' }
+        expect(assigns(:existing_item)).to be_instance_of Items::ExistingItem
+      end
+
+      it 'calls :run method' do
+        expect_any_instance_of(Items::ExistingItem).to receive(:run)
+        get :existing_item, params: { invent_num: '123456' }
+      end
+    end
+
     # describe 'GET #send_pc_script'
   end
 end
