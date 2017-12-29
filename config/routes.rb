@@ -79,7 +79,7 @@ Rails.application.routes.draw do
   # Склад
   namespace :warehouse do
     resources :items, param: :warehouse_item_id
-    resources :orders, param: :warehouse_order_od
+    resources :orders, param: :warehouse_order_id
   end
 
   # Получить html-код кнопки "Добавить запись"

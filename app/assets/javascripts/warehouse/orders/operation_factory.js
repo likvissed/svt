@@ -1,25 +1,47 @@
 (function() {
   'use strict';
 
-  app.factory('Operation', Operation);
+  app.factory('WarehouseOperation', WarehouseOperation);
 
-  Operation.$inject = [];
+  WarehouseOperation.$inject = [];
 
-  function Operation() {
+  function WarehouseOperation() {
     var _templateOperation;
+
+    function _getTemplate() {
+      return angular.copy(_templateOperation);
+    }
 
     return {
       /**
        * Установить объект _templateOperation
        */
-      setTemplate: function(obj) { 
+      setTemplate: function(obj) {
         _templateOperation = obj;
-        _templateOperation['id'] = obj['warehouse_operation_id'];
+        _templateOperation['id'] = obj.warehouse_operation_id;
        },
       /**
-       * Получить объект _templateOperation
+       * Получить объект _templateOperation с заполненными данными
+       *
+       * @param type
+       * @param item
        */
-      getTemplate: function() { return angular.copy(_templateOperation); }
+      generate: function(type, item) {
+        var obj = _getTemplate();
+        console.log(item);
+
+        if (type == 'returnable') {
+          obj.inv_item = item;
+          obj.invent_item_id = item.item_id;
+          obj.item_type = item.type.short_description;
+          obj.item_model = item.model ? item.model.item_model : item.item_model;
+        } else {
+          obj.item_type = item.item_type;
+          obj.item_model = item.item_model;
+        }
+
+        return obj;
+      }
     }
   }
 })();

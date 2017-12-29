@@ -2,6 +2,7 @@ require 'rails_helper'
 
 module Invent
   RSpec.describe Item, type: :model do
+    it { is_expected.to have_one(:warehouse_item).with_foreign_key('invent_item_id').class_name('Warehouse::Item') }
     it { is_expected.to have_many(:property_values).inverse_of(:item).dependent(:destroy).order('invent_property.property_order') }
     it { is_expected.to have_many(:standard_discrepancies).class_name('Standard::Discrepancy').dependent(:destroy) }
     it { is_expected.to have_many(:standard_logs).class_name('Standard::Log') }
@@ -104,6 +105,24 @@ module Invent
         subject { build(:item, model: nil, type_name: :monitor) }
 
         its(:model_exists?) { is_expected.to be_falsey }
+      end
+    end
+
+    describe '#get_item_model' do
+      context 'when model exists' do
+        subject { build(:item, type_name: :monitor) }
+
+        it 'returns value from model.item_model' do
+          expect(subject.get_item_model).to eq subject.model.item_model
+        end
+      end
+
+      context 'when item_model exists' do
+        subject { build(:item, type_name: :pc, model: nil, item_model: 'My model') }
+
+        it 'returns value from item_model' do
+          expect(subject.get_item_model).to eq subject.item_model
+        end
       end
     end
   end

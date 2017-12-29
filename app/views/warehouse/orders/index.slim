@@ -24,6 +24,7 @@
               th Утвержден
               th Получил/Принес
               th Статус
+              th
           tbody
             tr ng-repeat="order in table.orders"
               td ng-bind="order.consumer_dept"
@@ -33,6 +34,8 @@
               td ng-bind="order.validator.fio || order.validator_fio"
               td ng-bind="order.consumer.fio || order.consumer_fio"
               td ng-bind="order.status"
+              td= fa_icon "pencil-square-o", class: "pointer", "uib-tooltip": "Редактировать состав ордера",
+                "tooltip-append-to-body": "true", "ng-click": "table.editOrder(order)"
             tr ng-show="orders.orders.length == 0"
               td colspan=6 Данных нет
 

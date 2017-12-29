@@ -64,7 +64,7 @@ ru:
 
       warehouse/order:
         consumer: 'Ответственный'
-        consumer_dept: 'ФИО пользователя'
+        consumer_dept: 'Отдел'
         operation: 'Тип ордера'
         status: 'Статус ордера'
         operations:
@@ -73,6 +73,9 @@ ru:
         statuses:
           processing: 'В работе'
           done: 'Исполнен'
+      wareshouse/order/operations:
+        item_type: 'Тип техники (опред. авт.)'
+        item_model: 'Модель (опред. авт.)'
       warehouse/item:
         inv_item: 'Техника'
         type: 'Тип техники (Системный блок и т.п.)'
@@ -84,8 +87,8 @@ ru:
         count: 'Количество'
         count_reserved: 'Зарезервированное количество'
         warehouse_types:
-          expendable: 'Расходка'
-          returnable: 'Подлежит возврату'
+          expendable: 'Без инв. №'
+          returnable: 'С инв. №'
 
     errors:
       messages:
@@ -191,14 +194,16 @@ ru:
           attributes:
             base:
               uniq_workplace: 'Ордер может содержать технику только одного рабочего места'
-              at_least_one_inv_item: 'Необходимо добавить хотя бы одну единицу техники'
+              dept_does_not_match: 'Указанная техника не входит в состав рабочих мест выбранного отдела'
+              at_least_one_operation: 'Необходимо добавить хотя бы одну позицию'
+              nested_arrs_not_equals: 'Массивы позиций и техники не совпадают (обратитесь к администратору, т.***REMOVED***).'
 
         warehouse/item:
           attributes:
-            model:
+            inv_item:
               taken: 'уже существует на складе'
             item_model:
-              taken: "'%{value}' уже существует на складе"
+              taken: 'уже существует на складе'
 
         user:
           attributes:

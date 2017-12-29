@@ -32,23 +32,6 @@ class Invent::ApplicationService < ApplicationService
     wp
   end
 
-  # Обернуть строку в тег <span class='manually'>
-  def wrap_problem_string(string)
-    "<span class='manually-val'>#{string}</span>"
-  end
-
-  # Получить модель в виде строки
-  def get_model(item)
-    if item['model']
-      "Модель: #{item['model']['item_model']}"
-    elsif !item['model'] && !item['item_model'].empty?
-      # "<span class='manually-val'>Модель: #{item['item_model']}</span>"
-      wrap_problem_string("Модель: #{item['item_model']}")
-    else
-      'Модель не указана'
-    end
-  end
-
   # Подготовить технику для редактирования
   def prepare_to_edit_item(item)
     item['id'] = item['item_id']

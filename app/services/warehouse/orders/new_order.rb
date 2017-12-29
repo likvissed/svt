@@ -1,7 +1,7 @@
 module Warehouse
   module Orders
     # Инициализация объекта Order
-    class NewOrder < ApplicationService
+    class NewOrder < BaseService
       def initialize(operation)
         @data = {}
         @operation = operation
@@ -24,6 +24,7 @@ module Warehouse
 
       def init_order
         data[:order] = Order.new(operation: @operation)
+        data[:operation] = data[:order].operations.build(shift: 1)
       end
 
       def load_divisions

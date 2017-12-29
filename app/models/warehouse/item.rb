@@ -7,10 +7,11 @@ module Warehouse
     belongs_to :type, class_name: 'Invent::Type', optional: true
     belongs_to :model, class_name: 'Invent::Model', optional: true
 
-    validates :warehouse_type, :inv_item, :item_type, :item_model, :used, presence: true
+    validates :warehouse_type, :item_type, :item_model, presence: true
+    validates :used, inclusion: { in: [true, false] }
+    validates :inv_item, uniqueness: true
     validates :count, :count_reserved, numericality: { greater_than_or_equal_to: 0 }, presence: true
-    validates :model, uniqueness: { scope: :type_id }, allow_nil: true
-    validates :item_model, uniqueness: { scope: :item_type }
+    validate :uniq_item_model, if: -> { !used }
 
     after_initialize :set_initial_count
     before_validation :set_string_values
@@ -27,8 +28,14 @@ module Warehouse
     def set_string_values
       return unless inv_item && type
 
-      self.item_type = type.short_description
-      self.item_model = inv_item.model.try(:item_model) || inv_item.item_model
+      self.item_type ||= type.short_description
+      self.item_model ||= inv_item.get_item_model
+    end
+
+    def uniq_item_model
+      return unless self.class.exists?(item_type: item_type, item_model: item_model, used: used)
+
+      errors.add(:item_model, :taken)
     end
   end
 end

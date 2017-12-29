@@ -8,8 +8,8 @@ module Warehouse
       subject { NewOrder.new(:in) }
       before { subject.run }
 
-      it 'fills the @data with %w[order operation divisioins] keys' do
-        expect(subject.data).to include(:order, :eq_types, :divisions)
+      it 'fills the @data with %w[order operation divisioins operation] keys' do
+        expect(subject.data).to include(:order, :eq_types, :divisions, :operation)
       end
 
       it 'loads all divisions to the :divisions key' do
@@ -18,6 +18,24 @@ module Warehouse
 
       it 'creates instance of Order' do
         expect(subject.data[:order]).to be_instance_of(Order)
+      end
+
+      Order.operations.keys.each do |operation|
+        context "when operation is #{operation}" do
+          subject { NewOrder.new(operation) }
+
+          it 'creates Order with specified status' do
+            expect(subject.data[:order].operation).to eq operation
+          end
+        end
+      end
+
+      it 'create instance of :in operation' do
+        expect(subject.data[:operation]).to be_instance_of(Operation)
+      end
+
+      it 'sets operationable_type to "Warehouse::Order"' do
+        expect(subject.data[:operation].operationable_type).to eq 'Warehouse::Order'
       end
 
       it 'loads all types of equipment' do

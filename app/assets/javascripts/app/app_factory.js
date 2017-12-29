@@ -8,7 +8,7 @@
     .factory('myHttpInterceptor', myHttpInterceptor) // Фабрика для настройки параметрв для индикатора выполнения
     .factory('Cookies', Cookies)
     .factory('TablePaginator', TablePaginator)
-    
+
   Flash.$inject = ['$timeout'];
   Error.$inject = ['Flash'];
   Server.$inject = ['$resource'];
@@ -188,7 +188,12 @@
             method: 'GET',
             url: '/warehouse/orders/new',
             isArray: false
-          }
+          },
+          edit: {
+            method: 'GET',
+            url: '/warehouse/orders/:warehouse_order_id/edit.json'
+          },
+          update: { method: 'PUT' }
         })
       }
     }
@@ -372,7 +377,7 @@
       },
       /**
        * Установить данные пагинатора
-       * 
+       *
        * @param data { recordsFiltered: int, recordsTotal: int }
        */
       setData: function(data) {

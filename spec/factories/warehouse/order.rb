@@ -2,31 +2,24 @@ module Warehouse
   FactoryBot.define do
     factory :order, class: Order do
       workplace { create(:workplace_pk, :add_items, items: %i[pc monitor]) }
-      creator { UserIss.where(dept: consumer_dept).first }
-      consumer { UserIss.where(dept: consumer_dept).offset(1).first }
-      validator { UserIss.where(fio: '***REMOVED***', dept: ***REMOVED***).first }
+      creator_id_tn ***REMOVED***
+      validator_id_tn 5336
       operation :in
       status :processing
-      creator_fio { creator.fio }
-      consumer_fio { consumer.fio }
-      validator_fio { validator.fio }
       consumer_dept ***REMOVED***
       comment ''
 
-      transient do
-        without_items false
-      end
+      after(:build) do |order|
+        order.creator_fio = order.creator_id_tn ? UserIss.find(order.creator_id_tn).fio : ''
+        order.validator_fio = order.validator_id_tn ? UserIss.find(order.validator_id_tn).fio : ''
 
-      trait :without_items do
-        without_items true
-      end
-
-      after(:build) do |order, evaluator|
-        unless evaluator.without_items
-          order.item_to_orders_attributes = order.workplace.items.map do |item|
-            { invent_item_id: item.item_id }
-          end
-        end
+        consumer = if order.consumer_id_tn
+                     UserIss.find(order.consumer_id_tn)
+                   else
+                     UserIss.where(dept: order.consumer_dept).where('id_tn > 0').offset(1).first
+                   end
+        order.consumer_id_tn ||= consumer.id_tn
+        order.consumer_fio = consumer.fio
       end
     end
   end

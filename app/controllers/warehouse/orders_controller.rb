@@ -31,7 +31,26 @@ module Warehouse
       if @create.run
         render json: @create.data
       else
-        # render json: { full_message: @create.errors.full_messages.join('. ') }, status: 422
+        render json: @create.error, status: 422
+      end
+    end
+
+    def edit
+      @edit = Orders::Edit.new(params[:warehouse_order_id])
+
+      if @edit.run
+        render json: @edit.data
+      else
+        render json: { full_message: 'Ошибка. Обратитесь к администратору (т.***REMOVED***)' }, status: 422
+      end
+    end
+
+    def update
+      @update = Orders::Update.new
+
+      if @update.run
+        render json: @create.data
+      else
         render json: @create.error, status: 422
       end
     end
@@ -52,11 +71,20 @@ module Warehouse
         :validator_fio,
         :consumer_dept,
         :comment,
-        item_to_orders_attributes: [
+        operations_attributes: [
           :id,
-          :order_id,
-          :invent_item_id,
-          :_destroy
+          :warehouse_item_id,
+          :warehouse_location_id,
+          :stockman_id_tn,
+          :operationable_id,
+          :operationable_type,
+          :item_type,
+          :item_model,
+          :shift,
+          :stockman_fio,
+          :status,
+          :date,
+          :invent_item_id
         ]
       )
     end
