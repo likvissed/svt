@@ -9,7 +9,7 @@ module Invent
           if @index.run
             render json: @index.data
           else
-            render json: { full_message: 'Ошибка. Обратитесь к администратору, т.***REMOVED***' }, status: 422
+            render json: { full_message: I18n.t('controllers.app.unprocessable_entity') }, status: 422
           end
         end
       end
@@ -24,7 +24,7 @@ module Invent
           if @new_wp.run
             render json: @new_wp.data
           else
-            render json: { full_message: 'Ошибка. Обратитесь к администратору, т.***REMOVED***' }, status: 422
+            render json: { full_message: I18n.t('controllers.app.unprocessable_entity') }, status: 422
           end
         end
       end
@@ -34,7 +34,7 @@ module Invent
       @create = Workplaces::Create.new(current_user, workplace_params)
 
       if @create.run
-        flash[:notice] = 'Рабочее место создано'
+        flash[:notice] = I18n.t('controllers.workplace.created')
         render json: { location: session[:workplace_prev_url] }
       else
         render json: { full_message: @create.errors.full_messages.join('. ') }, status: 422
@@ -50,7 +50,7 @@ module Invent
           if @list_wp.run
             render json: @list_wp.data
           else
-            render json: { full_message: 'Ошибка. Обратитесь к администратору, т.***REMOVED***' }, status: 422
+            render json: { full_message: I18n.t('controllers.app.unprocessable_entity') }, status: 422
           end
         end
       end
@@ -70,7 +70,7 @@ module Invent
       @pc_file = Workplaces::PcConfigFromUser.new(params[:pc_file])
 
       if @pc_file.run
-        render json: { data: @pc_file.data, full_message: 'Данные загружены' }
+        render json: { data: @pc_file.data, full_message: I18n.t('controllers.workplace.pc_config_processed') }
       else
         render json: { full_message: @pc_file.errors.full_messages.join('. ') }, status: 422
       end
@@ -88,7 +88,7 @@ module Invent
           if @edit.run(request.format.symbol)
             render json: @edit.data
           else
-            render json: { full_message: 'Ошибка. Обратитесь к администратору, т.***REMOVED***' }, status: 422
+            render json: { full_message: I18n.t('controllers.app.unprocessable_entity') }, status: 422
           end
         end
       end
@@ -98,7 +98,7 @@ module Invent
       @update = Workplaces::Update.new(current_user, params[:workplace_id], workplace_params)
 
       if @update.run
-        flash[:notice] = 'Данные о рабочем месте обновлены'
+        flash[:notice] = I18n.t('controllers.workplace.updated')
         render json: { location: session[:workplace_prev_url] }
       else
         render json: { full_message: @update.errors.full_messages.join('. ') }, status: 422
@@ -110,7 +110,7 @@ module Invent
       authorize @workplace, :destroy?
 
       if @workplace.destroy
-        render json: { full_message: 'Рабочее место удалено' }
+        render json: { full_message: I18n.t('controllers.workplace.destroyed') }
       else
         render json: { full_message: @workplace.errors.full_messages.join('. ') }, status: 422
       end

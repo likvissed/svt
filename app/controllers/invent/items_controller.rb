@@ -9,7 +9,7 @@ module Invent
           if @index.run
             render json: @index.data
           else
-            render json: { full_message: 'Ошибка. Обратитесь к администратору, т.***REMOVED***' }, status: 422
+            render json: { full_message: I18n.t('controllers.app.unprocessable_entity') }, status: 422
           end
         end
       end
@@ -21,7 +21,7 @@ module Invent
       if @busy.run
         render json: @busy.data
       else
-        render json: { full_message: 'Ошибка. Обратитесь к администратору, т.***REMOVED***' }, status: 422
+        render json: { full_message: I18n.t('controllers.app.unprocessable_entity') }, status: 422
       end
     end
 
@@ -37,11 +37,11 @@ module Invent
 
     def avaliable
       @avaliable = Items::Avaliable.new(params[:type_id])
-      
+
       if @avaliable.run
         render json: @avaliable.data
       else
-        render json: { full_message: 'Ошибка. Обратитесь к администратору, т.***REMOVED***' }, status: 422
+        render json: { full_message: I18n.t('controllers.app.unprocessable_entity') }, status: 422
       end
     end
   end

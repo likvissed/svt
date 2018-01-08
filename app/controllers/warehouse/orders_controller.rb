@@ -9,7 +9,7 @@ module Warehouse
           if @index.run
             render json: @index.data
           else
-            render json: { full_message: 'Ошибка. Обратитесь к администратору, т.***REMOVED***' }, status: 422
+            render json: { full_message: I18n.t('controllers.app.unprocessable_entity') }, status: 422
           end
         end
       end
@@ -21,7 +21,7 @@ module Warehouse
       if @new_order.run
         render json: @new_order.data
       else
-        render json: { full_message: 'Ошибка. Обратитесь к администратору (т.***REMOVED***)' }, status: 422
+        render json: { full_message: I18n.t('controllers.app.unprocessable_entity') }, status: 422
       end
     end
 
@@ -41,7 +41,7 @@ module Warehouse
       if @edit.run
         render json: @edit.data
       else
-        render json: { full_message: 'Ошибка. Обратитесь к администратору (т.***REMOVED***)' }, status: 422
+        render json: { full_message: I18n.t('controllers.app.unprocessable_entity') }, status: 422
       end
     end
 

@@ -1,0 +1,18 @@
+ru:
+  controllers:
+    app:
+      access_denied: 'Доступ запрещен'
+      unprocessable_entity: 'Ошибка. Обратитесь к администратору, т.***REMOVED***'
+    workplace:
+      created: 'Рабочее место создано'
+      updated: 'Данные о рабочем месте обновлены'
+      destroyed: 'Рабочее место удалено'
+      pc_config_processed: 'Данные загружены'
+    workplace_count:
+      created: 'Отдел %{dept} добавлен'
+      list_created: 'Список отделов и ответственных обновлен'
+      updated: 'Данные одела %{dept} обновлены'
+      destroyed: 'Отдел удален'
+    ***REMOVED***_invents:
+      unprocessable_entity: 'Обратитесь к администратору, т.***REMOVED***'
+      file_added: 'Файл добавлен'

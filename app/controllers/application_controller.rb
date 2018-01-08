@@ -15,7 +15,7 @@ class ApplicationController < ActionController::Base
   rescue_from Pundit::NotAuthorizedError do |exception|
     respond_to do |format|
       format.html { render_403 }
-      format.json { render json: { full_message: 'Доступ запрещен' }, status: 403 }
+      format.json { render json: { full_message: I18n.t('controllers.app.access_denied') }, status: 403 }
     end
   end
 
