@@ -109,19 +109,33 @@ module Invent
     end
 
     describe '#get_item_model' do
-      context 'when model exists' do
-        subject { build(:item, type_name: :monitor) }
+      context 'when type is :pc' do
+        subject { create(:item, :with_property_values, type_name: :pc) }
+        let(:item_model) do
+          properties = Property.where(name: Property::FILE_DEPENDING)
+          subject.property_values.where(property: properties).map { |prop_val| prop_val.value }.join(' / ')
+        end
 
-        it 'returns value from model.item_model' do
-          expect(subject.get_item_model).to eq subject.model.item_model
+        it 'loads all config parameters' do
+          expect(subject.get_item_model).to eq item_model
         end
       end
 
-      context 'when item_model exists' do
-        subject { build(:item, type_name: :pc, model: nil, item_model: 'My model') }
+      context 'when type is not :pc' do
+        context 'when model exists' do
+          subject { build(:item, type_name: :monitor) }
 
-        it 'returns value from item_model' do
-          expect(subject.get_item_model).to eq subject.item_model
+          it 'returns value from model.item_model' do
+            expect(subject.get_item_model).to eq subject.model.item_model
+          end
+        end
+
+        context 'when item_model exists' do
+          subject { build(:item, type_name: :monitor, model: nil, item_model: 'My model') }
+
+          it 'returns value from item_model' do
+            expect(subject.get_item_model).to eq subject.item_model
+          end
         end
       end
     end

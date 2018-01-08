@@ -38,7 +38,12 @@ module Invent
     end
 
     def get_item_model
-      model.try(:item_model) || item_model
+      if Type::TYPE_WITH_FILES.include?(type.name)
+        props = Property.where(name: Property::FILE_DEPENDING)
+        property_values.where(property: props).map { |prop_val| prop_val.value }.join(' / ')
+      else
+        model.try(:item_model) || item_model
+      end
     end
 
     def get_value(property)
