@@ -2,7 +2,7 @@ require 'rails_helper'
 
 module Invent
   RSpec.describe Item, type: :model do
-    it { is_expected.to have_one(:warehouse_item).with_foreign_key('invent_item_id').class_name('Warehouse::Item') }
+    it { is_expected.to have_one(:warehouse_item).with_foreign_key('invent_item_id').class_name('Warehouse::Item').dependent(:destroy) }
     it { is_expected.to have_many(:property_values).inverse_of(:item).dependent(:destroy).order('invent_property.property_order') }
     it { is_expected.to have_many(:standard_discrepancies).class_name('Standard::Discrepancy').dependent(:destroy) }
     it { is_expected.to have_many(:standard_logs).class_name('Standard::Log') }
@@ -122,6 +122,54 @@ module Invent
 
         it 'returns value from item_model' do
           expect(subject.get_item_model).to eq subject.item_model
+        end
+      end
+    end
+
+    describe '#get_value' do
+      let(:type) { :printer }
+      let(:property) { Invent::Type.find_by(name: type).properties.find_by(name: :date) }
+      subject { create(:item, :with_property_values, type_name: type) }
+
+      context 'when value stored into property_value table' do
+        let(:expected_value) { subject.property_values.find_by(property: property).value }
+
+        include_examples 'for #get_value specs'
+      end
+
+      context 'when value stored into property_list table' do
+        let(:property) { Invent::Type.find_by(name: type).properties.find_by(name: :connection_type) }
+        let(:expected_value) { subject.property_values.find_by(property: property).property_list.short_description }
+
+        include_examples 'for #get_value specs'
+      end
+
+      context 'when property is another type' do
+        it 'raises a RuntimeError error' do
+          expect { subject.get_value('another') }.to raise_error(RuntimeError, 'Неизвестный тип свойства')
+        end
+      end
+
+      context 'when result array has one value' do
+        it 'return only single value' do
+          expect(subject.get_value(property)).to be_a(String)
+        end
+      end
+
+      context 'when result does not have any value' do
+        let(:property) { Invent::Type.find_by(name: :monitor).properties.find_by(name: :diagonal) }
+
+        it 'returns nil' do
+          expect(subject.get_value(property)).to be_nil
+        end
+      end
+
+      context 'when result has more that one value' do
+        let(:prop_val) { property.property_values.first }
+
+        it 'returns array of values' do
+          allow(subject.property_values).to receive_message_chain(:includes, :where, :find_each).and_yield(prop_val).and_yield(prop_val)
+          expect(subject.get_value(property).size).to eq 2
         end
       end
     end

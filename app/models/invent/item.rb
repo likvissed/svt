@@ -3,7 +3,7 @@ module Invent
     self.primary_key = :item_id
     self.table_name = "#{table_name_prefix}item"
 
-    has_one :warehouse_item, foreign_key: 'invent_item_id', class_name: 'Warehouse::Item'
+    has_one :warehouse_item, foreign_key: 'invent_item_id', class_name: 'Warehouse::Item', dependent: :destroy
     has_many :property_values,
              -> { joins('LEFT OUTER JOIN invent_property ON invent_property_value.property_id = invent_property.property_id').order('invent_property.property_order').includes(:property) },
              inverse_of: :item, dependent: :destroy
@@ -39,6 +39,30 @@ module Invent
 
     def get_item_model
       model.try(:item_model) || item_model
+    end
+
+    def get_value(property)
+      res = []
+
+      if property.is_a?(Integer)
+        property_values.includes(:property_list).where(property_id: property).find_each do |prop_val|
+          res.push(prop_val.property_list.try(:short_description) || prop_val.value)
+        end
+      elsif property.is_a?(Property)
+        property_values.includes(:property_list).where(property: property).find_each do |prop_val|
+          res.push(prop_val.property_list.try(:short_description) || prop_val.value)
+        end
+      else
+        raise 'Неизвестный тип свойства'
+      end
+
+      if res.empty?
+        nil
+      elsif res.size == 1
+        res.first
+      else
+        res
+      end
     end
 
     private
