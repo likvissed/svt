@@ -2,12 +2,13 @@ module Invent
   module Items
     # Показать список техники, используемой на РМ в данный момент
     class Busy < Invent::ApplicationService
-      def initialize(type_id, invent_num = '')
+      def initialize(type_id, invent_num)
         @type_id = type_id
         @invent_num = invent_num
       end
 
       def run
+        return false if @invent_num.blank?
         load_items
         prepare_params
 
