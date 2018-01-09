@@ -50,7 +50,8 @@ module Warehouse
                 }
               }
             }
-          })
+          }
+        )
         data[:order]['item_to_orders_attributes'] = data[:order]['item_to_orders']
         data[:order].delete('item_to_orders')
 

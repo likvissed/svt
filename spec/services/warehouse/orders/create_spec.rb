@@ -8,7 +8,7 @@ module Warehouse
       let(:workplace_2) { create(:workplace_pk, :add_items, items: %i[pc monitor], dept: ***REMOVED***) }
       let(:operation_1) { attributes_for(:order_operation, invent_item_id: workplace_1.items.first.item_id) }
       let(:operation_2) { attributes_for(:order_operation, invent_item_id: workplace_2.items.first.item_id) }
-      let(:operation_3) { attributes_for(:order_operation, item_type: 'Мышь', item_model: 'Logitech')  }
+      let(:operation_3) { attributes_for(:order_operation, item_type: 'Мышь', item_model: 'Logitech') }
 
       let(:order_params) do
         order = attributes_for(:order, workplace: nil, consumer_dept: ***REMOVED***)

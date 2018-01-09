@@ -187,8 +187,6 @@
       self = this,
       sendData = this.Order.getObjectToSend();
 
-    console.log(sendData);
-
     if (this.order.warehouse_order_id) {
       this.Server.Warehouse.Order.update(
         { warehouse_order_id: this.order.warehouse_order_id },
@@ -277,6 +275,11 @@
       .then(function(response) {
         self.items = response;
         self._removeDuplicateItems();
+
+        if (response.length == 0) {
+          self.Flash.alert('Техника не найдена. Проверьте корректность введенного инвентарного номера.');
+          return false;
+        }
       });
   };
 

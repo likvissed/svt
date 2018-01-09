@@ -46,13 +46,13 @@ module Warehouse
     end
 
     def update
-      @update = Orders::Update.new
-
-      if @update.run
-        render json: @create.data
-      else
-        render json: @create.error, status: 422
-      end
+      # @update = Orders::Update.new
+      #
+      # if @update.run
+      #   render json: @create.data
+      # else
+      #   render json: @create.error, status: 422
+      # end
     end
 
     private

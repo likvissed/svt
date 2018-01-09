@@ -113,7 +113,7 @@ module Invent
         subject { create(:item, :with_property_values, type_name: :pc) }
         let(:item_model) do
           properties = Property.where(name: Property::FILE_DEPENDING)
-          subject.property_values.where(property: properties).map { |prop_val| prop_val.value }.join(' / ')
+          subject.property_values.where(property: properties).map(&:value).join(' / ')
         end
 
         it 'loads all config parameters' do

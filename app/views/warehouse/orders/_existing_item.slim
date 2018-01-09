@@ -20,9 +20,11 @@ script type="text/ng-template" id="existingItem.slim"
           = text_field_tag "invent_num", "", class: "form-control", autocomplete: "off", placeholder: "Инвентарный номер",
           "ng-model": "select.invent_num"
           span.input-group-btn
-            = button_tag "", type: :button, class: "btn-default", "ng-click": "select.loadItems()" do
+            = button_tag "", type: :button, class: "btn-primary", "ng-click": "select.loadItems()",
+              "ng-disabled": "!select.invent_num || select.selectedType.type_id == 0",
+              "uib-tooltip": "Нажмите для поиска", "tooltip-append-to-body": true do
               = fa_icon "search"
-      .form-group ng-show="select.selectedType.type_id != 0 && select.items.length != 0"
+      .multiline-select.form-group ng-show="select.selectedType.type_id != 0 && select.items.length != 0"
         = label_tag "", "Выберите технику", class: "control-label"
         .ui-select
           ui-select ng-model="select.selectedItem" theme="bootstrap"

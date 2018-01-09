@@ -32,8 +32,8 @@ module Warehouse
     end
 
     describe '#uniqueness_of_workplace' do
-      let!(:workplace_1) { create(:workplace_pk, :add_items, items: [:pc, :monitor], dept: ***REMOVED***) }
-      let!(:workplace_2) { create(:workplace_pk, :add_items, items: [:pc, :monitor]) }
+      let!(:workplace_1) { create(:workplace_pk, :add_items, items: %i[pc monitor], dept: ***REMOVED***) }
+      let!(:workplace_2) { create(:workplace_pk, :add_items, items: %i[pc monitor]) }
       before { subject.valid? }
 
       context 'when items belongs to the different workplaces' do
@@ -67,7 +67,7 @@ module Warehouse
     end
 
     describe '#set_workplace' do
-      let!(:workplace) { create(:workplace_pk, :add_items, items: [:pc, :monitor], dept: ***REMOVED***) }
+      let!(:workplace) { create(:workplace_pk, :add_items, items: %i[pc monitor], dept: ***REMOVED***) }
       let(:item_to_orders) do
         [
           { invent_item_id: workplace.items.first.item_id },
@@ -101,7 +101,7 @@ module Warehouse
     end
 
     describe '#at_least_one_operation' do
-      subject { build(:order) }
+      subject { build(:order, :without_operations) }
 
       it 'adds :at_least_one_inv_item error if operations is empty' do
         subject.valid?
@@ -111,7 +111,7 @@ module Warehouse
 
     describe '#compare_nested_attrs' do
       context 'when nested arrays not equals' do
-        let!(:workplace) { create(:workplace_pk, :add_items, items: [:pc, :monitor], dept: ***REMOVED***) }
+        let!(:workplace) { create(:workplace_pk, :add_items, items: %i[pc monitor], dept: ***REMOVED***) }
         let(:item_to_orders) do
           [
             { invent_item_id: workplace.items.first.item_id },
@@ -130,8 +130,8 @@ module Warehouse
 
     describe '#compare_consumer_dept' do
       context 'when consumer_dept does not match with division of the selected item' do
-        let!(:workplace_***REMOVED***) { create(:workplace_pk, :add_items, items: [:pc, :monitor], dept: ***REMOVED***) }
-        let!(:workplace_***REMOVED***) { create(:workplace_pk, :add_items, items: [:pc, :monitor], dept: ***REMOVED***) }
+        let!(:workplace_***REMOVED***) { create(:workplace_pk, :add_items, items: %i[pc monitor], dept: ***REMOVED***) }
+        let!(:workplace_***REMOVED***) { create(:workplace_pk, :add_items, items: %i[pc monitor], dept: ***REMOVED***) }
         let(:item_to_orders) { [{ invent_item_id: workplace_***REMOVED***.items.last.item_id }] }
         let(:operations) { [attributes_for(:order_operation, invent_item_id: ***REMOVED***)] }
         subject { build(:order, item_to_orders_attributes: item_to_orders, operations_attributes: operations, consumer_dept: ***REMOVED***) }

@@ -73,9 +73,11 @@ ru:
         statuses:
           processing: 'В работе'
           done: 'Исполнен'
+
       wareshouse/order/operations:
         item_type: 'Тип техники (опред. авт.)'
         item_model: 'Модель (опред. авт.)'
+
       warehouse/item:
         inv_item: 'Техника'
         type: 'Тип техники (Системный блок и т.п.)'

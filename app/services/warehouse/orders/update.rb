@@ -28,7 +28,6 @@ module Warehouse
         @order.transaction do
           begin
             find_or_create_warehouse_items
-
           rescue ActiveRecord::RecordNotSaved
             raise ActiveRecord::Rollback
           rescue RuntimeError => e

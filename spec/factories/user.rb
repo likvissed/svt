@@ -9,8 +9,10 @@ FactoryBot.define do
     fullname 'Тест Личного кабинета'
     password 'xxxx1234'
 
-    after(:build) do |user|
-      user.role = Role.find_by(name: :admin) || create(:admin_role)
+    after(:build) do |user, ev|
+      unless ev.role
+        user.role = Role.find_by(name: :admin) || create(:admin_role)
+      end
     end
   end
 
@@ -23,8 +25,10 @@ FactoryBot.define do
     login '***REMOVED***'
     fullname '***REMOVED***'
 
-    after(:build) do |user|
-      user.role = Role.find_by(name: :***REMOVED***_user) || create(:***REMOVED***_user_role)
+    after(:build) do |user, ev|
+      unless ev.role
+        user.role = Role.find_by(name: :***REMOVED***_user) || create(:***REMOVED***_user_role)
+      end
     end
   end
 
@@ -38,8 +42,10 @@ FactoryBot.define do
     fullname '***REMOVED***'
     association :role, factory: :manager_role
 
-    after(:build) do |user|
-      user.role = Role.find_by(name: :manager) || create(:manager_role)
+    after(:build) do |user, ev|
+      unless ev.role
+        user.role = Role.find_by(name: :manager) || create(:manager_role)
+      end
     end
   end
 

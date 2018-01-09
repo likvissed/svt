@@ -28,7 +28,7 @@ module Warehouse
 
       def processing_nested_attributes
         # Массив id возвращаемой техники (с инв. номером)
-        item_id_arr = @order_params['operations_attributes'].map { |attr| attr['invent_item_id'] }.reject { |attr| attr.nil? }
+        item_id_arr = @order_params['operations_attributes'].map { |attr| attr['invent_item_id'] }.reject(&:nil?)
         # Массив операций без инв. номера
         op_without_id_arr = @order_params['operations_attributes'].select { |attr| attr['invent_item_id'].nil? }
         # Массив объектов возвращаемой техники
@@ -54,7 +54,7 @@ module Warehouse
       def wrap_order_with_transaction
         Order.transaction do
           begin
-            Array.wrap(@order_params).each_with_index do |param, index|
+            Array.wrap(@order_params).each do |param|
               init_order(param)
               return false unless fill_order_arr
             end
@@ -115,7 +115,13 @@ module Warehouse
             item = Item.find(io[:invent_item_id])
           end
 
-          @order.operations.where(invent_item_id: io.invent_item_id).each { |op| op.item = item }
+          @order.operations.select { |op| op.invent_item_id == io.invent_item_id }.each do |op|
+            op.item = item
+
+            if Invent::Type::TYPE_WITH_FILES.include?(op.item.inv_item.type.name)
+              op.item_model = op.item.inv_item.get_item_model
+            end
+          end
         end
       end
 

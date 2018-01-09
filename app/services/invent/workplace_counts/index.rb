@@ -6,7 +6,7 @@ module Invent
       attr_reader :workplace_counts
 
       def run
-        workplace_counts
+        get_workplace_counts
         transform_to_json
         prepare_to_render
 
@@ -20,7 +20,7 @@ module Invent
 
       private
 
-      def workplace_counts
+      def get_workplace_counts
         @workplace_counts = WorkplaceCount
                               .includes(users: :user_iss)
                               .left_outer_joins(:workplaces)

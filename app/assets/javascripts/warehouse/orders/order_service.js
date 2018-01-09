@@ -132,7 +132,6 @@
    * @param item
    */
   Order.prototype.delPosition = function(item) {
-    console.log(item);
     if (item.id) {
       item._destroy = 1;
     } else {

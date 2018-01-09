@@ -30,5 +30,21 @@ module Warehouse
         get :new, params: {  }, format: :json
       end
     end
+
+    describe 'GET #edit' do
+      let!(:order) { create(:order) }
+
+      it 'creates instance of the Orders::Edit' do
+        get :edit, params: { warehouse_order_id: order.warehouse_order_id }, format: :json
+        expect(assigns(:edit)).to be_instance_of Orders::Edit
+      end
+
+      it 'calls :run method' do
+        expect_any_instance_of(Orders::Edit).to receive(:run)
+        get :edit, params: { warehouse_order_id: order.warehouse_order_id }, format: :json
+      end
+    end
+
+    describe 'PUT #update'
   end
 end

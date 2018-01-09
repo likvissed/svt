@@ -28,7 +28,6 @@
        */
       generate: function(type, item) {
         var obj = _getTemplate();
-        console.log(item);
 
         if (type == 'returnable') {
           obj.inv_item = item;

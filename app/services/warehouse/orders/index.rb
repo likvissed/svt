@@ -12,7 +12,7 @@ module Warehouse
         load_orders
         limit_records
         prepare_to_render
-        
+
         true
       rescue StandardError => e
         Rails.logger.error e.inspect.red

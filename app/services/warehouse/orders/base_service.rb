@@ -7,4 +7,3 @@ module Warehouse
     end
   end
 end
-  

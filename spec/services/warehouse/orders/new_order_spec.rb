@@ -20,7 +20,7 @@ module Warehouse
         expect(subject.data[:order]).to be_instance_of(Order)
       end
 
-      Order.operations.keys.each do |operation|
+      Order.operations.each_key do |operation|
         context "when operation is #{operation}" do
           subject { NewOrder.new(operation) }
 

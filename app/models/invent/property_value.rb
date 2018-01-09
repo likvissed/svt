@@ -14,6 +14,14 @@ module Invent
     before_save :set_default_property_list_id_to_nil
     after_initialize :set_default_property_list_id_to_zero
 
+    def value
+      if property.name == 'ram'
+        "#{super} Гб"
+      else
+        super
+      end
+    end
+
     # Значение валидно, если:
     # - оно указано вручную или выбрано из списка
     # - оно необязательно
