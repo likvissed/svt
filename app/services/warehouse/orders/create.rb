@@ -12,7 +12,7 @@ module Warehouse
       end
 
       def run
-        processing_nested_attributes if @order_params['operations_attributes'].any?
+        processing_nested_attributes if @order_params['operations_attributes']&.any?
         return false unless wrap_order_with_transaction
         broadcast_orders
 

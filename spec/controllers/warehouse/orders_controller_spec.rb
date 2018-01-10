@@ -20,14 +20,17 @@ module Warehouse
     end
 
     describe 'POST #create' do
+      let(:order) { build(:order) }
+      let(:order_params) { { order: order.as_json } }
+
       it 'creates instance of the Orders::Create' do
-        post :create, params: {  }, format: :json
+        post :create, params: order_params, format: :json
         expect(assigns(:create)).to be_instance_of Orders::Create
       end
 
       it 'calls :run method' do
         expect_any_instance_of(Orders::Create).to receive(:run)
-        get :new, params: {  }, format: :json
+        post :create, params: order_params, format: :json
       end
     end
 

@@ -12,6 +12,7 @@ module Warehouse
 
       def run
         @order = Order.includes(:item_to_orders).find(@order_id)
+        processing_nested_attributes if @order_params['operations_attributes']&.any?
         wrap_order_with_transaction
 
         true
@@ -23,6 +24,10 @@ module Warehouse
       end
 
       protected
+
+      def processing_nested_attributes
+
+      end
 
       def wrap_order_with_transaction
         @order.transaction do

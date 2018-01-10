@@ -46,7 +46,7 @@ module Warehouse
     end
 
     def update
-      # @update = Orders::Update.new
+      # @update = Orders::Update.new(params[:warehouse_order_id], order_params)
       #
       # if @update.run
       #   render json: @create.data

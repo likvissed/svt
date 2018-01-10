@@ -30,11 +30,11 @@ module Warehouse
 
       def limit_records
         data[:recordsFiltered] = @orders.count
-        @orders = @orders.includes(:creator, :consumer, :validator).limit(@length).offset(@start)
+        @orders = @orders.includes(:operations, :creator, :consumer, :validator).limit(@length).offset(@start)
       end
 
       def prepare_to_render
-        data[:data] = @orders.as_json(include: %i[creator consumer validator]).each do |order|
+        data[:data] = @orders.as_json(include: %i[creator consumer validator], methods: :operations_to_string).each do |order|
           order['status'] = Order.translate_enum(:status, order['status'])
           order['operation'] = Order.translate_enum(:operation, order['operation'])
         end

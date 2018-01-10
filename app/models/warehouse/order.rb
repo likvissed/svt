@@ -35,6 +35,10 @@ module Warehouse
       self.creator_fio = current_user.fullname
     end
 
+    def operations_to_string
+      operations.map { |op| "#{op.item_type}: #{op.item_model}" }.join('; ')
+    end
+
     protected
 
     def at_least_one_operation

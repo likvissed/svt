@@ -3,7 +3,7 @@
 #index_order.container ng-controller="OrdersController as table"
   .well
     .row
-      .col-fhd-2
+      .col-fhd-2.col-xlg-2.col-lg-3.col-md-3.col-sm-3
         .dropdown
           = button_tag type: :button, class: "btn-primary btn-sm btn-block", "data-toggle": "dropdown" do
             ' Добавить
@@ -20,22 +20,31 @@
               th №
               th Отдел
               th Тип
-              th Создан
-              th Утвержден
-              th Получил/Принес
+              th Позиции ордера
+              th Кем создан
+              th Кем утвержден
+              th Кто получил/принес
               th Статус
+              th
               th
           tbody
             tr ng-repeat="order in table.orders"
-              td ng-bind="order.consumer_dept"
-              td ng-bind="order.warehouse_order_id"
-              td ng-bind="order.operation"
-              td ng-bind="order.creator.fio || order.creator_fio"
-              td ng-bind="order.validator.fio || order.validator_fio"
-              td ng-bind="order.consumer.fio || order.consumer_fio"
-              td ng-bind="order.status"
-              td= fa_icon "pencil-square-o", class: "pointer", "uib-tooltip": "Редактировать состав ордера",
-                "tooltip-append-to-body": "true", "ng-click": "table.editOrder(order)"
+              td.col-fhd-1 ng-bind="order.warehouse_order_id"
+              td.col-fhd-1 ng-bind="order.consumer_dept"
+              td.col-fhd-2.col-xlg-2.col-lg-2.col-md-2.col-sm-2 ng-bind="order.operation"
+              td.col-fhd-6.col-xlg-6.col-lg-6.col-md-6.col-sm-6 ng-bind="order.operations_to_string"
+              td.col-fhd-4.col-xlg-4.col-lg-4.col-md-4.col-sm-4 ng-bind="order.creator.fio || order.creator_fio"
+              td.col-fhd-4.col-xlg-4.col-lg-3.col-md-3.col-sm-3 ng-bind="order.validator.fio || order.validator_fio"
+              td.col-fhd-4.col-xlg-3.col-lg-3.col-md-3.col-sm-3 ng-bind="order.consumer.fio || order.consumer_fio"
+              td.col-fhd-1.col-xlg-2.col-lg-3.col-md-3.col-sm-3 ng-bind="order.status"
+              td.text-center.col-fhd-1
+                = fa_icon "pencil-square-o fw", class: "pointer",
+                  "ng-click": "table.editOrder(order)", "uib-tooltip": "Редактировать состав ордера",
+                  "tooltip-append-to-body": "true"
+                = fa_icon "check-square-o fw", class: "pointer", "ng-click": "", "uib-tooltip": "Исполнить ордер",
+                  "tooltip-append-to-body": "true"
+                = fa_icon "trash-o fw", class: "pointer text-danger", "ng-click": "", "uib-tooltip": "Удалить ордер",
+                  "tooltip-append-to-body": "true"
             tr ng-show="orders.orders.length == 0"
               td colspan=6 Данных нет
 
