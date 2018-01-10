@@ -129,13 +129,13 @@
   /**
    * Удалить объект operation из ордера
    *
-   * @param item
+   * @param operation
    */
-  Order.prototype.delPosition = function(item) {
-    if (item.id) {
-      item._destroy = 1;
+  Order.prototype.delPosition = function(operation) {
+    if (operation.id) {
+      operation._destroy = 1;
     } else {
-      var index = this.order.operations_attributes.indexOf(item);
+      var index = this.order.operations_attributes.indexOf(operation);
       this.order.operations_attributes.splice(index, 1);
     }
 
@@ -168,9 +168,9 @@
     obj.operations_attributes.forEach(function(el) { delete(el.inv_item); });
 
     if (obj.consumer && obj.consumer.match(/^\d+$/)) {
-      obj.creator_id_tn = obj.consumer;
+      obj.consumer_id_tn = obj.consumer;
     } else {
-      obj.creator_fio = obj.consumer;
+      obj.consumer_fio = obj.consumer;
     }
 
     delete(obj.consumer);

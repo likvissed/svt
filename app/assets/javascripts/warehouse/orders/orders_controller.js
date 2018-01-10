@@ -175,8 +175,8 @@
   /**
    * Убрать позицию
    */
-  EditOrderController.prototype.delPosition = function(item) {
-    this.Order.delPosition(item);
+  EditOrderController.prototype.delPosition = function(operation) {
+    this.Order.delPosition(operation);
   };
 
   /**

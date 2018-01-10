@@ -8,20 +8,28 @@ module Warehouse
       subject { Edit.new(order.warehouse_order_id) }
       before { subject.run }
 
-      it 'fills the @data with %i[order divisions users eq_types order] keys' do
-        expect(subject.data).to include(:order, :divisions, :users, :eq_types, :order)
+      it 'fills the @data with %i[order divisions eq_types order] keys' do
+        expect(subject.data).to include(:order, :divisions, :eq_types)
       end
 
       it 'adds item_to_orders_attributes to order' do
-        expect(subject.data[:order]).to include('item_to_orders_attributes')
+        expect(subject.data[:order]).to include('operations_attributes')
       end
 
-      it 'loads all item_to_orders attributes' do
-        expect(subject.data[:order]['item_to_orders_attributes'].count).to eq order.item_to_orders.count
+      it 'loads all operations attributes' do
+        expect(subject.data[:order]['operations_attributes'].count).to eq order.operations.count
       end
 
       it 'replaces primary_key with id param' do
-        expect(subject.data[:order]['item_to_orders_attributes'].first['id']).to eq order.item_to_orders.first.warehouse_item_to_order_id
+        expect(subject.data[:order]['operations_attributes'].first['id']).to eq order.operations.first.warehouse_operation_id
+      end
+
+      it 'adds invent_item_id to each operation' do
+        expect(subject.data[:order]['operations_attributes'].first['invent_item_id']).to eq order.operations.first.item.inv_item.item_id
+      end
+
+      it 'adds get_item_model key' do
+        expect(subject.data[:order]['operations_attributes'].first['inv_item']['get_item_model']).to eq order.operations.first.item.item_model
       end
     end
   end

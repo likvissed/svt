@@ -10,7 +10,6 @@ module Warehouse
         load_order
         load_divisions
         load_types
-        load_users
         transform_to_json
 
         true
@@ -24,15 +23,11 @@ module Warehouse
       protected
 
       def load_order
-        data[:order] = Order.includes(item_to_orders: { inv_item: %i[model type] }).find(@order_id)
+        data[:order] = Order.includes(operations: { item: { inv_item: %i[model type] } }).find(@order_id)
       end
 
       def load_divisions
         data[:divisions] = Invent::WorkplaceCount.pluck(:division).sort_by(&:to_i)
-      end
-
-      def load_users
-        data[:users] = UserIss.select(:id_tn, :fio).where(dept: data[:order].consumer_dept)
       end
 
       # Получить список типов оборудования с их свойствами и возможными значениями.
@@ -43,23 +38,35 @@ module Warehouse
       def transform_to_json
         data[:order] = data[:order].as_json(
           include: {
-            item_to_orders: {
+            operations: {
               include: {
-                inv_item: {
-                  include: %i[model type]
+                item: {
+                  include: {
+                    inv_item: {
+                      include: %i[model type]
+                    }
+                  }
                 }
               }
             }
           }
         )
-        data[:order]['item_to_orders_attributes'] = data[:order]['item_to_orders']
-        data[:order].delete('item_to_orders')
 
-        data[:order]['item_to_orders_attributes'].each do |io|
-          io['id'] = io['warehouse_item_to_order_id']
-          io['inv_item']['add_info'] = get_model(io['inv_item'])
+        data[:order]['operations_attributes'] = data[:order]['operations']
+        data[:order].delete('operations')
 
-          io.delete('warehouse_item_to_order_id')
+        data[:order]['operations_attributes'].each do |op|
+          op['id'] = op['warehouse_operation_id']
+
+          if op['item']
+            op['invent_item_id'] = op['item']['inv_item']['item_id']
+            op['inv_item'] = op['item']['inv_item']
+            op['item']['inv_item']['get_item_model'] = op['item']['item_model']
+
+            op['item'].delete('inv_item')
+          end
+
+          op.delete('warehouse_operation_id')
         end
       end
     end

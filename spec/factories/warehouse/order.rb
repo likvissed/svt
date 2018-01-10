@@ -30,7 +30,10 @@ module Warehouse
         order.consumer_fio = consumer.fio
 
         if order.operations.empty? && !ev.without_operations
-          order.operations << build(:order_operation)
+          monitor = create(:item, :with_property_values, type_name: :monitor)
+          item = build(:used_item, inv_item: monitor)
+          op = build(:order_operation, item: item)
+          order.operations << op
         end
       end
     end
