@@ -69,6 +69,8 @@ module Warehouse
 
           op.delete('warehouse_operation_id')
         end
+
+        data[:order]['consumer'] = data[:order]['consumer_fio']
       end
     end
   end

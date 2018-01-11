@@ -226,8 +226,8 @@
     } else {
       this.Server.Warehouse.Order.save(
         { order: sendData },
-        function success() {
-          self.Flash.notice('Ордер создан');
+        function success(response) {
+          self.Flash.notice(response.full_message);
           self.$uibModalInstance.close();
         },
         function error(response, status) {

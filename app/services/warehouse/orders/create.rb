@@ -71,6 +71,8 @@ module Warehouse
               end
             end
 
+            @data = @orders_arr.size
+
             true
           rescue ActiveRecord::RecordNotSaved
             raise ActiveRecord::Rollback

@@ -21,14 +21,6 @@ module Warehouse
         order.creator_fio = order.creator_id_tn ? UserIss.find(order.creator_id_tn).fio : ''
         order.validator_fio = order.validator_id_tn ? UserIss.find(order.validator_id_tn).fio : ''
 
-        consumer = if order.consumer_id_tn
-                     UserIss.find(order.consumer_id_tn)
-                   else
-                     UserIss.where(dept: order.consumer_dept).where('id_tn > 0').offset(1).first
-                   end
-        order.consumer_id_tn ||= consumer.id_tn
-        order.consumer_fio = consumer.fio
-
         if order.operations.empty? && !ev.without_operations
           monitor = create(:item, :with_property_values, type_name: :monitor)
           item = build(:used_item, inv_item: monitor)

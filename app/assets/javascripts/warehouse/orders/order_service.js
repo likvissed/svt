@@ -168,7 +168,7 @@
     obj.operations_attributes.forEach(function(el) { delete(el.inv_item); });
 
     if (obj.consumer && obj.consumer.match(/^\d+$/)) {
-      obj.consumer_id_tn = obj.consumer;
+      obj.consumer_tn = obj.consumer;
     } else {
       obj.consumer_fio = obj.consumer;
     }

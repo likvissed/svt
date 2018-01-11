@@ -47,6 +47,11 @@ module Warehouse
         expect { subject.run }.to change(Order, :count).by(3)
       end
 
+      it 'sets total count of created orders to the data variable' do
+        subject.run
+        expect(subject.data).to eq 3
+      end
+
       it 'changes status to :waiting_bring in the each selected item' do
         subject.run
         order_params[:operations_attributes].select { |attr| attr[:invent_item_id] }.each do |op|

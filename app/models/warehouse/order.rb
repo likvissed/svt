@@ -22,6 +22,7 @@ module Warehouse
     validate :compare_consumer_dept, if: -> { item_to_orders.any? && errors.empty? }
 
     after_initialize :set_initial_status
+    before_validation :set_consumer, if: -> { consumer_tn.present? || consumer_fio.present? }
     after_validation :set_workplace, if: -> { errors.empty? && item_to_orders.any? }
 
     enum operation: { out: 1, in: 2 }
@@ -29,6 +30,8 @@ module Warehouse
 
     accepts_nested_attributes_for :operations, allow_destroy: true
     accepts_nested_attributes_for :item_to_orders, allow_destroy: true
+
+    attr_accessor :consumer_tn
 
     def set_creator(current_user)
       self.creator_id_tn = current_user.id_tn
@@ -49,6 +52,25 @@ module Warehouse
 
     def set_initial_status
       self.status = :processing
+    end
+
+    def set_consumer
+      if consumer_fio_changed?
+        user = UserIss.find_by(fio: consumer_fio)
+        if user
+          self.consumer = user
+        else
+          errors.add(:consumer, :user_by_fio_not_found)
+        end
+      elsif consumer_tn
+        user = UserIss.find_by(tn: consumer_tn)
+        if user
+          self.consumer_fio = user.fio
+          self.consumer = user
+        else
+          errors.add(:consumer, :user_by_tn_not_found)
+        end
+      end
     end
 
     def set_workplace

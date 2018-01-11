@@ -34,6 +34,10 @@ module Warehouse
       it 'adds get_item_model key' do
         expect(subject.data[:order]['operations_attributes'].first['inv_item']['get_item_model']).to eq order.operations.first.item.item_model
       end
+
+      it 'adds consumer key' do
+        expect(subject.data[:order]['consumer']).to eq subject.data[:order]['consumer_fio']
+      end
     end
   end
 end

@@ -29,7 +29,7 @@ module Warehouse
       @create = Orders::Create.new(current_user, order_params)
 
       if @create.run
-        render json: @create.data
+        render json: { full_message: I18n.t('controllers.order.created', count: @create.data) }
       else
         render json: @create.error, status: 422
       end
@@ -73,6 +73,7 @@ module Warehouse
         :workplace_id,
         :creator_id_tn,
         :consumer_id_tn,
+        :consumer_tn,
         :validator_id_tn,
         :operation,
         :status,

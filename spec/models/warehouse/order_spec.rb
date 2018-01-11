@@ -66,6 +66,78 @@ module Warehouse
       end
     end
 
+    describe '#set_consumer' do
+      context 'when exists consumer_tn' do
+        let(:tn) { ***REMOVED*** }
+        let(:user_iss) { UserIss.find_by(tn: tn) }
+        let(:new_user) { UserIss.find_by(fio: '***REMOVED***') }
+
+        context 'and when consumer_fio already exists' do
+          subject { build(:order, consumer_tn: tn, consumer_fio: new_user.fio) }
+
+          %w[fio id_tn].each do |attr|
+            it "sets a new #{attr}" do
+              subject.save
+              expect(subject.send("consumer_#{attr}")).to eq new_user.send(attr)
+            end
+          end
+        end
+
+        context 'and when consumer_fio is blank' do
+          subject { build(:order, consumer_tn: tn) }
+
+          %w[fio id_tn].each do |attr|
+            it "sets a new #{attr}" do
+              subject.save
+              expect(subject.send("consumer_#{attr}")).to eq user_iss.send(attr)
+            end
+          end
+        end
+
+        context 'and when consumer not found' do
+          subject { build(:order, consumer_tn: 0) }
+
+          it 'adds :not_found error to the consumer_fio attribute' do
+            subject.save
+            expect(subject.errors.details[:consumer]).to include(error: :user_by_tn_not_found)
+          end
+        end
+      end
+
+
+      context 'when exists consumer_fio' do
+        let(:fio) { '***REMOVED***' }
+        let(:user) { UserIss.find_by(fio: fio) }
+
+        context 'and when consumer_id_tn already exists' do
+          subject { build(:order, consumer_tn: 24_079, consumer_fio: fio) }
+
+          it 'loads a new id_tn from the UserIss table' do
+            subject.save
+            expect(subject.consumer_id_tn).to eq user.id_tn
+          end
+        end
+
+        context 'and when consumer_id_tn is blank' do
+          subject { build(:order, consumer_fio: fio) }
+
+          it 'loads id_tn from the UserIss table' do
+            subject.save
+            expect(subject.consumer_id_tn).to eq user.id_tn
+          end
+        end
+
+        context 'and when consumer not found' do
+          subject { build(:order, consumer_fio: 'Тест') }
+
+          it 'adds :not_found error to the consumer_fio attribute' do
+            subject.save
+            expect(subject.errors.details[:consumer]).to include(error: :user_by_fio_not_found)
+          end
+        end
+      end
+    end
+
     describe '#set_workplace' do
       let!(:workplace) { create(:workplace_pk, :add_items, items: %i[pc monitor], dept: ***REMOVED***) }
       let(:item_to_orders) do
