@@ -1,5 +1,6 @@
 module Warehouse
   module Orders
+    # Загрузить данные об ордере для редактирования
     class Edit < BaseService
       def initialize(order_id)
         @data = {}

@@ -282,7 +282,6 @@
     self.Server.Invent.Workplace.delete(
       { workplace_id: id },
       function(response) {
-        console.log(response);
         self.Flash.notice(response.full_message);
         self.dtInstance.reloadData(null, self.Config.global.reloadPaging);
       },

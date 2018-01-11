@@ -6,7 +6,10 @@ module Warehouse
       let(:workplace) { create(:workplace_pk, :add_items, items: %i[pc monitor]) }
       let!(:order) { create(:order, workplace: workplace) }
       subject { Edit.new(order.warehouse_order_id) }
+
       before { subject.run }
+
+      its(:run) { is_expected.to be_truthy }
 
       it 'fills the @data with %i[order divisions eq_types order] keys' do
         expect(subject.data).to include(:order, :divisions, :eq_types)

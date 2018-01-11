@@ -6,17 +6,19 @@
     .controller('EditOrderController', EditOrderController)
     .controller('ItemsForOrderController', ItemsForOrderController);
 
-  OrdersController.$inject = ['$uibModal', 'ActionCableChannel', 'TablePaginator', 'Order', 'Flash'];
+  OrdersController.$inject = ['$uibModal', 'ActionCableChannel', 'TablePaginator', 'Order', 'Flash', 'Error', 'Server'];
   EditOrderController.$inject = ['$uibModal', '$uibModalInstance', 'Order', 'Flash', 'Error', 'Server'];
   ItemsForOrderController.$inject = ['$uibModalInstance', 'eqTypes', 'Order', 'Flash'];
 
 // =====================================================================================================================
 
-  function OrdersController($uibModal, ActionCableChannel, TablePaginator, Order, Flash) {
+  function OrdersController($uibModal, ActionCableChannel, TablePaginator, Order, Flash, Error, Server) {
     this.$uibModal = $uibModal;
     this.ActionCableChannel = ActionCableChannel;
     this.Order = Order;
     this.Flash = Flash;
+    this.Error = Error;
+    this.Server = Server;
     this.pagination = TablePaginator.config();
 
     this._loadOrders();
@@ -84,6 +86,27 @@
     this.Order.loadOrder(order.warehouse_order_id).then(function() {
       self._openModal();
     });
+  };
+
+  /**
+   * Удалить ордер.
+   */
+  OrdersController.prototype.destroyOrder = function(order) {
+    var
+      self = this,
+      confirm_str = "Вы действительно хотите удалить ордер \"" + order.warehouse_order_id + "\"?";
+
+    if (!confirm(confirm_str))
+      return false;
+
+    self.Server.Warehouse.Order.delete(
+      { warehouse_order_id: order.warehouse_order_id },
+      function(response) {
+        self.Flash.notice(response.full_message);
+      },
+      function(response, status) {
+        self.Error.response(response, status);
+      });
   };
 
 // =====================================================================================================================

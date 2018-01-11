@@ -49,5 +49,19 @@ module Warehouse
     end
 
     describe 'PUT #update'
+
+    describe 'DELETE #destroy' do
+      let!(:order) { create(:order) }
+
+      it 'creates instance of the Orders::Destroy' do
+        delete :destroy, params: { warehouse_order_id: order.warehouse_order_id }, format: :json
+        expect(assigns(:destroy)).to be_instance_of Orders::Destroy
+      end
+
+      it 'calls :run method' do
+        expect_any_instance_of(Orders::Destroy).to receive(:run)
+        delete :destroy, params: { warehouse_order_id: order.warehouse_order_id }, format: :json
+      end
+    end
   end
 end
