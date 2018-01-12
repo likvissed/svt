@@ -13,12 +13,13 @@ script type="text/ng-template" id="existingItem.slim"
       .form-group
         = label_tag "equipment_type", "Тип техники", class: "control-label"
         = select_tag "equipment_type", "", class: "form-control", "ng-model": "select.selectedType",
-          "ng-options": "type as type.short_description disable when type.type_id == 0 for type in select.eqTypes track by type.type_id"
+          "ng-options": "type as type.short_description disable when type.type_id == 0 for type in select.eqTypes track by type.type_id",
+          "ng-change": "select.clearData()"
       .form-group
         = label_tag "invent_num", "Инвентарный номер", class: "control-label"
         .input-group
           = text_field_tag "invent_num", "", class: "form-control", autocomplete: "off", placeholder: "Инвентарный номер",
-          "ng-model": "select.invent_num"
+          "ng-model": "select.invent_num", "ng-change": "select.clearData()"
           span.input-group-btn
             = button_tag "", type: :button, class: "btn-primary", "ng-click": "select.loadItems()",
               "ng-disabled": "!select.invent_num || select.selectedType.type_id == 0",

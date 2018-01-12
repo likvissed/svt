@@ -306,6 +306,14 @@
       });
   };
 
+  /**
+   * Очистить объект selectedItem
+   */
+  ItemsForOrderController.prototype.clearData = function() {
+    this.selectedItem = {};
+    this.items = [];
+  };
+
   ItemsForOrderController.prototype.ok = function() {
     if (this.warehouseType == 'returnable' && Object.keys(this.selectedItem).length == 0) {
       this.Flash.alert('Необходимо указать инвентарный номер и выбрать технику');
