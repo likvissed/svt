@@ -78,6 +78,9 @@ ru:
         item_type: 'Тип техники (опред. авт.)'
         item_model: 'Модель (опред. авт.)'
 
+      warehouse/order/item_to_orders:
+        inv_item: ''
+
       warehouse/item:
         inv_item: 'Техника'
         type: 'Тип техники (Системный блок и т.п.)'
@@ -210,6 +213,11 @@ ru:
               taken: 'уже существует на складе'
             item_model:
               taken: 'уже существует на складе'
+
+        warehouse/item_to_order:
+          attributes:
+            inv_item:
+              uniq_by_processing_order: '%{type} (инв. №%{invent_num}) уже записан в ордер №%{order_id}'
 
         user:
           attributes:
