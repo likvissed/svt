@@ -1,6 +1,10 @@
 script type="text/ng-template" id="existingItem.slim"
-  .modal-header
-    h4 Новая позиция ордера
+  .modal-header.test
+    .pull-left
+      h4 Новая позиция ордера
+    .pull-right
+      .navbar-loading.animate-show ng-controller="AjaxLoadingCtrl as ajax" ng-show="ajax.requests.count != 0"
+        = fa_icon "spinner pulse 2x fw"
   .modal-body
     .form-group
       = radio_button_tag :new_item, "returnable", false, "ng-model": "select.warehouseType"
