@@ -39,11 +39,11 @@ module Warehouse
       context 'when items belongs to the different workplaces' do
         let(:item_to_orders) do
           [
-            { invent_item_id: workplace_1.items.first.item_id },
-            { invent_item_id: workplace_2.items.first.item_id }
+            build(:item_to_order, inv_item: workplace_1.items.first),
+            build(:item_to_order, inv_item: workplace_2.items.first)
           ]
         end
-        subject { build(:order, item_to_orders_attributes: item_to_orders) }
+        subject { build(:order, item_to_orders: item_to_orders) }
 
         it 'adds :uniq_workplace error' do
           expect(subject.errors.details[:base]).to include(error: :uniq_workplace)
@@ -53,8 +53,8 @@ module Warehouse
       end
 
       context 'when items belongs to the one workplace' do
-        let(:operations) { [attributes_for(:order_operation)] }
-        subject { build(:order, operations_attributes: operations) }
+        let(:operations) { [build(:order_operation)] }
+        subject { build(:order, operations: operations) }
 
         it { is_expected.to be_valid }
       end
@@ -142,17 +142,12 @@ module Warehouse
       let!(:workplace) { create(:workplace_pk, :add_items, items: %i[pc monitor], dept: ***REMOVED***) }
       let(:item_to_orders) do
         [
-          { invent_item_id: workplace.items.first.item_id },
-          { invent_item_id: workplace.items.last.item_id }
+          build(:item_to_order, inv_item: workplace.items.first),
+          build(:item_to_order, inv_item: workplace.items.last)
         ]
       end
-      let(:operations) do
-        [
-          attributes_for(:order_operation),
-          attributes_for(:order_operation)
-        ]
-      end
-      subject { build(:order, item_to_orders_attributes: item_to_orders, operations_attributes: operations) }
+      let(:operations) { [build(:order_operation), build(:order_operation)] }
+      subject { build(:order, item_to_orders: item_to_orders, operations: operations) }
 
       it 'sets :workplace references after validate object' do
         expect { subject.valid? }.to change(subject, :workplace_id).to(workplace.workplace_id)
@@ -186,12 +181,12 @@ module Warehouse
         let!(:workplace) { create(:workplace_pk, :add_items, items: %i[pc monitor], dept: ***REMOVED***) }
         let(:item_to_orders) do
           [
-            { invent_item_id: workplace.items.first.item_id },
-            { invent_item_id: workplace.items.last.item_id }
+            build(:item_to_order, inv_item: workplace.items.first),
+            build(:item_to_order, inv_item: workplace.items.last)
           ]
         end
-        let(:operations) { [attributes_for(:order_operation)] }
-        subject { build(:order, item_to_orders_attributes: item_to_orders, operations_attributes: operations) }
+        let(:operations) { [build(:order_operation)] }
+        subject { build(:order, item_to_orders: item_to_orders, operations: operations) }
 
         it 'adds :nested_arrs_not_equals error' do
           subject.valid?
@@ -204,9 +199,9 @@ module Warehouse
       context 'when consumer_dept does not match with division of the selected item' do
         let!(:workplace_***REMOVED***) { create(:workplace_pk, :add_items, items: %i[pc monitor], dept: ***REMOVED***) }
         let!(:workplace_***REMOVED***) { create(:workplace_pk, :add_items, items: %i[pc monitor], dept: ***REMOVED***) }
-        let(:item_to_orders) { [{ invent_item_id: workplace_***REMOVED***.items.last.item_id }] }
-        let(:operations) { [attributes_for(:order_operation, invent_item_id: ***REMOVED***)] }
-        subject { build(:order, item_to_orders_attributes: item_to_orders, operations_attributes: operations, consumer_dept: ***REMOVED***) }
+        let(:item_to_orders) { [build(:item_to_order, inv_item: workplace_***REMOVED***.items.last)] }
+        let(:operations) { [build(:order_operation, invent_item_id: ***REMOVED***)] }
+        subject { build(:order, item_to_orders: item_to_orders, operations: operations, consumer_dept: ***REMOVED***) }
 
         it { is_expected.not_to be_valid }
 

@@ -24,8 +24,8 @@ module Warehouse
         if order.operations.empty? && !ev.without_operations
           monitor = create(:item, :with_property_values, type_name: :monitor)
           item = build(:used_item, inv_item: monitor)
-          op = build(:order_operation, item: item)
-          order.operations << op
+          order.operations << build(:order_operation, item: item)
+          # order.item_to_orders << build(:item_to_order, inv_item: item.inv_item)
         end
       end
     end

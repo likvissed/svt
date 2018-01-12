@@ -1,6 +1,7 @@
 module Invent
   module Items
-    # Показать список техники, используемой на РМ в данный момент
+    # Показать список техники, используемой на РМ в данный момент. В выборку не попадает техника, с которой имеются
+    # связанные не закрытые ордеры
     class Busy < Invent::ApplicationService
       def initialize(type_id, invent_num)
         @type_id = type_id
@@ -23,11 +24,14 @@ module Invent
       private
 
       def load_items
-        @items = Item.includes(:model, :type).by_invent_num(@invent_num).where('workplace_id IS NOT NULL').where(type_id: @type_id)
+        ids = Warehouse::Order.includes(:item_to_orders).where(status: :processing)
+                .map { |order| order.item_to_orders.pluck(:invent_item_id) }.flatten
+        @data = Item.includes(:model, :type).by_invent_num(@invent_num).where('workplace_id IS NOT NULL')
+                   .where(type_id: @type_id).where.not(item_id: ids)
       end
 
       def prepare_params
-        @data = @items.as_json(include: %i[model type], methods: :get_item_model).each do |item|
+        @data = data.as_json(include: %i[model type], methods: :get_item_model).each do |item|
           item[:main_info] = item['invent_num'].blank? ? 'Инв. № отсутствует' : "Инв. №: #{item['invent_num']}"
         end
       end
