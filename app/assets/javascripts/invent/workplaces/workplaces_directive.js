@@ -28,7 +28,7 @@
       restrict: 'C',
       template:
       '<input type="text" class="form-control input-sm" placeholder="Инвентарный №" ' +
-      'ng-model-options="{ debounce: 1500 }" ng-model="wpIndex.selectedInventNumFilter" ng-change="wpIndex.changeFilter()">'
+      'ng-model-options="{ debounce: 5000 }" ng-model="wpIndex.selectedInventNumFilter" ng-change="wpIndex.changeFilter()">'
     }
   }
 
@@ -38,7 +38,7 @@
       restrict: 'C',
       template:
       '<input type="text" class="form-control input-sm" placeholder="ID" ng-model="wpIndex.selectedIdFilter" ' +
-      'ng-model-options="{ debounce: 500 }" ng-change="wpIndex.changeFilter()">'
+      'ng-model-options="{ debounce: 5000 }" ng-change="wpIndex.changeFilter()">'
     }
   }
 
