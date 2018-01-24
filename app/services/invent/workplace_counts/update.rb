@@ -2,8 +2,6 @@ module Invent
   module WorkplaceCounts
     # Редактирование доступа для отдела.
     class Update < Invent::ApplicationService
-      attr_reader :error
-
       # workplace_count_id - id отдела
       # strong_params - данные, прошедшие фильтрацию.
       def initialize(workplace_count_id, strong_params)

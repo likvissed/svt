@@ -55,6 +55,16 @@ module Warehouse
       # end
     end
 
+    def execute
+      @execute = Orders::Execute.new(current_user, params[:warehouse_order_id], order_params)
+
+      if @execute.run
+        render json: { full_message: I18n.t('controllers.order.executed') }
+      else
+        render json: @execute.error, status: 422
+      end
+    end
+
     def destroy
       @destroy = Orders::Destroy.new(params[:warehouse_order_id])
 

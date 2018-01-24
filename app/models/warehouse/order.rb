@@ -14,16 +14,19 @@ module Warehouse
     belongs_to :validator, foreign_key: 'validator_id_tn', class_name: 'UserIss', optional: true
 
     validates :operation, :status, :creator_fio, :consumer_dept, presence: true
-    validates :consumer_fio, presence: true, if: -> { status == 'done' }
     validates :validator_fio, presence: true, if: -> { status == 'done' && operation == 'out' }
+    validate :presence_consumer, if: -> { operations.any?(&:done?) }
     validate :at_least_one_operation
     validate :compare_nested_attrs, if: -> { item_to_orders.any? }
     validate :uniqueness_of_workplace, if: -> { item_to_orders.any? }
     validate :compare_consumer_dept, if: -> { item_to_orders.any? && errors.empty? }
 
-    after_initialize :set_initial_status
+    after_initialize :set_initial_status, if: -> { new_record? }
     before_validation :set_consumer, if: -> { consumer_tn.present? || consumer_fio.present? }
+    before_validation :set_closed_time, if: -> { done? && status_changed? }
     after_validation :set_workplace, if: -> { errors.empty? && item_to_orders.any? }
+    before_save :calculate_status
+    before_update :prevent_update
 
     enum operation: { out: 1, in: 2 }
     enum status: { processing: 1, done: 2 }
@@ -33,16 +36,26 @@ module Warehouse
 
     attr_accessor :consumer_tn
 
-    def set_creator(current_user)
-      self.creator_id_tn = current_user.id_tn
-      self.creator_fio = current_user.fullname
+    def set_creator(user)
+      self.creator_id_tn = user.id_tn
+      self.creator_fio = user.fullname
     end
 
     def operations_to_string
       operations.map { |op| "#{op.item_type}: #{op.item_model}" }.join('; ')
     end
 
+    def done?
+      status == 'done'
+    end
+
     protected
+
+    def presence_consumer
+      return if consumer_fio.present?
+
+      errors.add(:consumer, :blank)
+    end
 
     def at_least_one_operation
       return if operations.any?
@@ -51,11 +64,15 @@ module Warehouse
     end
 
     def set_initial_status
-      self.status = :processing
+      self.status ||= :processing
+    end
+
+    def calculate_status
+      self.status = operations.any?(&:processing?) ? :processing : :done
     end
 
     def set_consumer
-      if consumer_fio_changed?
+      if consumer_fio_changed? && !consumer_fio_changed?(from: nil, to: '')
         user = UserIss.find_by(fio: consumer_fio)
         if user
           self.consumer = user
@@ -71,6 +88,10 @@ module Warehouse
           errors.add(:consumer, :user_by_tn_not_found)
         end
       end
+    end
+
+    def set_closed_time
+      self.closed_time = Time.zone.now
     end
 
     def set_workplace
@@ -93,10 +114,16 @@ module Warehouse
 
     def compare_consumer_dept
       item_id = item_to_orders.first.invent_item_id
-      division = Invent::Item.select(:item_id, :workplace_id).find(item_id).workplace.workplace_count.division
-      return if division == consumer_dept
+      division = Invent::Item.select(:item_id, :workplace_id).find(item_id).workplace.try(:workplace_count).try(:division)
+      return if !division || division == consumer_dept
 
       errors.add(:base, :dept_does_not_match)
+    end
+
+    def prevent_update
+      return true unless done? && !status_changed? || processing? && status_was == 'done'
+
+      errors.add(:base, :cannot_update_done_order)
     end
   end
 end

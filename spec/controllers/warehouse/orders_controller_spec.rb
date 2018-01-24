@@ -5,6 +5,15 @@ module Warehouse
     sign_in_user
 
     describe 'GET #index' do
+      it 'creates instance of the Orders::NewOrder' do
+        get :index, format: :json
+        expect(assigns(:index)).to be_instance_of Orders::Index
+      end
+
+      it 'calls :run method' do
+        expect_any_instance_of(Orders::Index).to receive(:run)
+        get :index, format: :json
+      end
     end
 
     describe 'GET #new' do
@@ -49,6 +58,20 @@ module Warehouse
     end
 
     describe 'PUT #update'
+
+    describe 'POST #execute' do
+      let!(:order) { create(:order) }
+
+      it 'creates instance of the Orders::Execute' do
+        post :execute, params: { warehouse_order_id: order.warehouse_order_id, order: order.as_json  }, format: :json
+        expect(assigns(:execute)).to be_instance_of Orders::Execute
+      end
+
+      it 'calls :run method' do
+        expect_any_instance_of(Orders::Execute).to receive(:run)
+        post :execute, params: { warehouse_order_id: order.warehouse_order_id, order: order.as_json }, format: :json
+      end
+    end
 
     describe 'DELETE #destroy' do
       let!(:order) { create(:order) }

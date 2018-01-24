@@ -2,7 +2,7 @@ class ApplicationService
   include Pundit
   include ActiveModel::Validations
 
-  attr_reader :data, :current_user
+  attr_reader :data, :current_user, :error
 
   # Получить модель в виде строки
   def get_model(item)

@@ -63,7 +63,7 @@ ru:
         name: "Номер комнаты"
 
       warehouse/order:
-        consumer: 'Работник'
+        consumer: 'ФИО (или таб. №) работника'
         consumer_dept: 'Отдел'
         operation: 'Тип ордера'
         status: 'Статус ордера'
@@ -73,6 +73,12 @@ ru:
         statuses:
           processing: 'В работе'
           done: 'Исполнен'
+        consumer_fio: 'ФИО работника'
+
+      operations:
+        base: ''
+        date: 'Дата исполнения позиции'
+        stockman_fio: 'ФИО исполнителя позиции'
 
       wareshouse/order/operations:
         item_type: 'Тип техники (опред. авт.)'
@@ -202,10 +208,17 @@ ru:
               dept_does_not_match: 'Указанная техника не входит в состав рабочих мест выбранного отдела'
               at_least_one_operation: 'Необходимо добавить хотя бы одну позицию'
               nested_arrs_not_equals: 'Массивы позиций и техники не совпадают (обратитесь к администратору, т.***REMOVED***).'
+              cannot_update_done_order: 'Невозможно обновить, т.к. ордер уже исполнен'
             consumer:
               user_by_tn_not_found: 'с указанным табельным номером не найден. Проверьте корректность
               введенных данных'
               user_by_fio_not_found: 'с указанным ФИО не найден. Проверьте корректность введенных данных'
+
+        warehouse/operation:
+          attributes:
+            base:
+              operation_already_exists: '%{type} (инв. №%{invent_num}) уже задан в незакрытых позициях ордера №%{order_id}'
+              cannot_update_done_operation: 'Невозможно обновить, т.к. операция уже исполнена'
 
         warehouse/item:
           attributes:

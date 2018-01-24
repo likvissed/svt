@@ -2,8 +2,6 @@ module Invent
   module WorkplaceCounts
     # Класс создает новый отдел, для заполнения данными о РМ.
     class Create < Invent::ApplicationService
-      attr_reader :error
-
       # strong_params - данные, прошедшие фильтрацию.
       def initialize(strong_params)
         @error = {}

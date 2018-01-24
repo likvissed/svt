@@ -9,18 +9,59 @@ module Warehouse
     belongs_to :operationable, polymorphic: true
 
     validates :item_type, :item_model, :shift, :status, presence: true
-    validates :stockman_fio, :date, presence: true, if: -> { status == 'done' }
+    validates :stockman_fio, :date, presence: true, if: -> { done? }
+    validate :uniq_item_by_processing_operation, if: -> { item.try(:used) && warehouse_item_id_changed? }
 
-    after_initialize :set_initial_status
+    after_initialize :set_initial_status, if: -> { new_record? }
+    before_validation :set_date, if: -> { done? && status_changed? }
+    before_update :prevent_update
 
     attr_accessor :invent_item_id
 
     enum status: { processing: 1, done: 2 }
 
+    accepts_nested_attributes_for :item, allow_destroy: false
+
+    def set_stockman(user)
+      self.stockman_id_tn = user.id_tn
+      self.stockman_fio = user.fullname
+    end
+
+    def done?
+      status == 'done'
+    end
+
+    def processing?
+      status == 'processing'
+    end
+
     protected
 
     def set_initial_status
-      self.status = :processing
+      self.status ||= :processing
+    end
+
+    def uniq_item_by_processing_operation
+      op = item.operations.find(&:processing?)
+      return unless op
+
+      errors.add(
+        :base,
+        :operation_already_exists,
+        type: item.item_type,
+        invent_num: item.inv_item.invent_num,
+        order_id: op.operationable.warehouse_order_id
+      )
+    end
+
+    def set_date
+      self.date = Time.zone.now
+    end
+
+    def prevent_update
+      return true unless done? && !status_changed? || processing? && status_was == 'done'
+
+      errors.add(:base, :cannot_update_done_operation)
     end
   end
 end

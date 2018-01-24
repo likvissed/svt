@@ -4,10 +4,12 @@
   app
     .controller('OrdersController', OrdersController)
     .controller('EditOrderController', EditOrderController)
+    .controller('ExecOrderController', ExecOrderController)
     .controller('ItemsForOrderController', ItemsForOrderController);
 
   OrdersController.$inject = ['$uibModal', 'ActionCableChannel', 'TablePaginator', 'Order', 'Flash', 'Error', 'Server'];
   EditOrderController.$inject = ['$uibModal', '$uibModalInstance', 'Order', 'Flash', 'Error', 'Server'];
+  ExecOrderController.$inject = ['$uibModal', '$uibModalInstance', 'Order', 'Flash', 'Error', 'Server'];
   ItemsForOrderController.$inject = ['$uibModalInstance', 'eqTypes', 'Order', 'Flash'];
 
 // =====================================================================================================================
@@ -54,7 +56,7 @@
   /**
    * Открыть модальное окно
    */
-  OrdersController.prototype._openModal = function() {
+  OrdersController.prototype._openEditModal = function() {
     this.$uibModal.open({
       templateUrl: 'bringModal.slim',
       controller: 'EditOrderController',
@@ -71,7 +73,7 @@
     var self = this;
 
     this.Order.init(type).then(function() {
-      self._openModal();
+      self._openEditModal();
     });
   };
 
@@ -84,7 +86,24 @@
     var self = this;
 
     this.Order.loadOrder(order.warehouse_order_id).then(function() {
-      self._openModal();
+      self._openEditModal();
+    });
+  };
+
+  /**
+   * Открыть модальное окно для исполнения ордера.
+   */
+  OrdersController.prototype.execOrder = function(order) {
+    var self = this;
+
+    this.Order.loadOrder(order.warehouse_order_id).then(function() {
+      self.$uibModal.open({
+        templateUrl: 'execOrder.slim',
+        controller: 'ExecOrderController',
+        controllerAs: 'exec',
+        size: 'md',
+        backdrop: 'static'
+      });
     });
   };
 
@@ -112,8 +131,6 @@
 // =====================================================================================================================
 
   function EditOrderController($uibModal, $uibModalInstance, Order, Flash, Error, Server) {
-    var self = this;
-
     this.setFormName('order');
 
     this.$uibModal = $uibModal;
@@ -242,6 +259,67 @@
    * Закрыть модальное окно.
    */
   EditOrderController.prototype.cancel = function() {
+    this.$uibModalInstance.dismiss();
+  };
+
+// =====================================================================================================================
+
+  function ExecOrderController($uibModal, $uibModalInstance, Order, Flash, Error, Server) {
+    this.setFormName('order');
+
+    this.$uibModal = $uibModal;
+    this.$uibModalInstance = $uibModalInstance;
+    this.Order = Order;
+    this.Flash = Flash;
+    this.Error = Error;
+    this.Server = Server;
+
+    this.order = this.Order.order;
+    this.checkSelected();
+  }
+
+  // Унаследовать методы класса FormValidationController
+  ExecOrderController.prototype = Object.create(FormValidationController.prototype);
+  ExecOrderController.prototype.constructor = ExecOrderController;
+
+  /**
+   * Поставить/убрать все позиции на исполнение.
+   */
+  ExecOrderController.prototype.toggleAll = function() {
+    var status = this.isAllOpSelected ? 'done' : 'processing';
+    this.order.operations_attributes.forEach(function(op) { op.status = status; });
+  };
+
+  ExecOrderController.prototype.checkSelected = function() {
+    this.isAllOpSelected = this.order.operations_attributes.every(function(op) { return op.status == 'done' });
+  }
+
+  /**
+   * Исполнить выбранные поля ордера.
+   */
+  ExecOrderController.prototype.ok = function() {
+    var
+      self = this,
+      sendData = this.Order.getObjectToSend();
+
+    this.Server.Warehouse.Order.execute(
+      { warehouse_order_id: this.order.warehouse_order_id },
+      { order: sendData },
+      function (response) {
+        self.Flash.notice(response.full_message);
+        self.$uibModalInstance.close();
+      },
+      function (response, status) {
+        self.Error.response(response, status);
+        self.errorResponse(response);
+      }
+    )
+  };
+
+  /**
+   * Закрыть модальное окно.
+   */
+  ExecOrderController.prototype.cancel = function() {
     this.$uibModalInstance.dismiss();
   };
 

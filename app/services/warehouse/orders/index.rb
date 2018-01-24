@@ -14,7 +14,7 @@ module Warehouse
         prepare_to_render
 
         true
-      rescue StandardError => e
+      rescue RuntimeError => e
         Rails.logger.error e.inspect.red
         Rails.logger.error e.backtrace[0..5].inspect
 

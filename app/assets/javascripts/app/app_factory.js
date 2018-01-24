@@ -193,7 +193,11 @@
             method: 'GET',
             url: '/warehouse/orders/:warehouse_order_id/edit.json'
           },
-          update: { method: 'PUT' }
+          update: { method: 'PUT' },
+          execute: {
+            method: 'POST',
+            url: '/warehouse/orders/:warehouse_order_id/execute'
+          }
         })
       }
     }

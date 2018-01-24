@@ -45,5 +45,15 @@
       return function(inputArray, search) {
         return inputArray.indexOf(search) >= 0;
       }
+    })
+    /**
+     * Возвращает фамилию и инициалы
+     */
+    .filter('fioInitials', function() {
+      return function(fullName) {
+        var arr = fullName.split(' ');
+
+        return arr.shift() + ' ' + arr.map(function(el) { return el[0].toUpperCase() + '.' }).join(' ');
+      }
     });
 })();

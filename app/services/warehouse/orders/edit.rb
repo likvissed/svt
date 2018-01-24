@@ -59,7 +59,7 @@ module Warehouse
         data[:order]['operations_attributes'].each do |op|
           op['id'] = op['warehouse_operation_id']
 
-          if op['item']
+          if op['item'] && op['item']['inv_item']
             op['invent_item_id'] = op['item']['inv_item']['item_id']
             op['inv_item'] = op['item']['inv_item']
             op['item']['inv_item']['get_item_model'] = op['item']['item_model']

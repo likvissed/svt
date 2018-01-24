@@ -165,7 +165,10 @@
    */
   Order.prototype.getObjectToSend = function() {
     var obj = angular.copy(this.order);
-    obj.operations_attributes.forEach(function(el) { delete(el.inv_item); });
+    obj.operations_attributes.forEach(function(el) {
+      delete(el.item);
+      delete(el.inv_item);
+     });
 
     if (obj.consumer && obj.consumer.match(/^\d+$/)) {
       obj.consumer_tn = obj.consumer;

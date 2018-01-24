@@ -2,8 +2,6 @@ module Warehouse
   module Orders
     # Изменение приходного ордера
     class Update < BaseService
-      attr_reader :error
-
       def initialize(order_id, order_params)
         @error = {}
         @order_id = order_id

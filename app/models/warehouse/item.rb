@@ -3,17 +3,19 @@ module Warehouse
     self.primary_key = :warehouse_item_id
     self.table_name = "#{table_name_prefix}items"
 
+    has_many :operations, foreign_key: 'warehouse_item_id', inverse_of: :item, dependent: :nullify
+
     belongs_to :inv_item, class_name: 'Invent::Item', foreign_key: 'invent_item_id', optional: true
     belongs_to :type, class_name: 'Invent::Type', optional: true
     belongs_to :model, class_name: 'Invent::Model', optional: true
 
     validates :warehouse_type, :item_type, :item_model, presence: true
     validates :used, inclusion: { in: [true, false] }
-    validates :inv_item, uniqueness: true
+    validates :inv_item, uniqueness: true, allow_nil: true
     validates :count, :count_reserved, numericality: { greater_than_or_equal_to: 0 }, presence: true
     validate :uniq_item_model, if: -> { !used }
 
-    after_initialize :set_initial_count
+    after_initialize :set_initial_count, if: -> { new_record? }
     before_validation :set_string_values
 
     enum warehouse_type: { expendable: 1, returnable: 2 }
@@ -21,8 +23,8 @@ module Warehouse
     protected
 
     def set_initial_count
-      self.count = 0
-      self.count_reserved = 0
+      self.count ||= 0
+      self.count_reserved ||= 0
     end
 
     def set_string_values

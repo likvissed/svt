@@ -19,16 +19,41 @@ module Warehouse
     it { is_expected.to accept_nested_attributes_for(:operations).allow_destroy(true) }
     it { is_expected.to accept_nested_attributes_for(:item_to_orders).allow_destroy(true) }
 
-    context 'when status is :done' do
-      subject { build(:order, status: :done) }
-
-      it { is_expected.to validate_presence_of(:consumer_fio) }
-    end
-
     context 'when status is :done and operation is :out' do
       subject { build(:order, status: :done, operation: :out) }
 
       it { is_expected.to validate_presence_of(:validator_fio) }
+    end
+
+    describe '#presence_consumer' do
+      subject { build(:order, operations: operations) }
+      before { subject.valid? }
+
+      context 'when one of operations status is done' do
+        let(:operations) do
+          [
+             build(:order_operation, status: :done),
+             build(:order_operation, status: :processing)
+          ]
+        end
+
+        it 'adds error :blank to the consumer' do
+          expect(subject.errors.details[:consumer]).to include(error: :blank)
+        end
+      end
+
+      context 'when all of operations status is processing' do
+        let(:operations) do
+          [
+             build(:order_operation, status: :processing),
+             build(:order_operation, status: :processing)
+          ]
+        end
+
+        it 'adds error :blank to the consumer' do
+          expect(subject.errors.details[:consumer]).to be_empty
+        end
+      end
     end
 
     describe '#uniqueness_of_workplace' do
@@ -63,6 +88,48 @@ module Warehouse
     describe '#set_initial_status' do
       it 'sets :processing status after initialize object' do
         expect(subject.status).to eq 'processing'
+      end
+
+      context 'when status already exists' do
+        subject { build(:order, status: :done) }
+
+        it 'does not change status' do
+          subject.valid?
+          expect(subject.done?).to be_truthy
+        end
+      end
+    end
+
+    describe '#calculate_status' do
+      let(:user) { create(:user) }
+      subject { build(:order, operations: operations, consumer_tn: user.tn) }
+
+      context 'when all operations is done' do
+        let(:operations) do
+          [
+             build(:order_operation, status: :done, stockman_id_tn: user.id_tn),
+             build(:order_operation, status: :done, stockman_id_tn: user.id_tn)
+          ]
+        end
+
+        it 'sets status :done' do
+          subject.save
+          expect(subject.reload.done?).to be_truthy
+        end
+      end
+
+      context 'when not all operations is done' do
+        let(:operations) do
+          [
+             build(:order_operation, status: :done, stockman_id_tn: user.id_tn),
+             build(:order_operation, status: :processing)
+          ]
+        end
+
+        it 'sets status :processing' do
+          subject.save
+          expect(subject.reload.processing?).to be_truthy
+        end
       end
     end
 
@@ -104,6 +171,27 @@ module Warehouse
         end
       end
 
+      describe '#set_closed_time' do
+        context 'when status is :done' do
+          let(:date) { DateTime.now }
+          before { allow(DateTime).to receive(:new).and_return(date) }
+          subject { build(:order, status: :done) }
+
+          it 'sets current time to the :closed_time attribute' do
+            subject.save
+            expect(subject.closed_time.utc.to_s).to eq date.utc.to_s
+          end
+        end
+
+        context 'when status is :processing' do
+          subject { build(:order, status: :processing) }
+
+          it 'does not change :closed_time attribute' do
+            subject.save
+            expect(subject.closed_time).to be_nil
+          end
+        end
+      end
 
       context 'when exists consumer_fio' do
         let(:fio) { '***REMOVED***' }
@@ -200,7 +288,7 @@ module Warehouse
         let!(:workplace_***REMOVED***) { create(:workplace_pk, :add_items, items: %i[pc monitor], dept: ***REMOVED***) }
         let!(:workplace_***REMOVED***) { create(:workplace_pk, :add_items, items: %i[pc monitor], dept: ***REMOVED***) }
         let(:item_to_orders) { [build(:item_to_order, inv_item: workplace_***REMOVED***.items.last)] }
-        let(:operations) { [build(:order_operation, invent_item_id: ***REMOVED***)] }
+        let(:operations) { [build(:order_operation, invent_item_id: workplace_***REMOVED***.items.last.item_id)] }
         subject { build(:order, item_to_orders: item_to_orders, operations: operations, consumer_dept: ***REMOVED***) }
 
         it { is_expected.not_to be_valid }
@@ -208,6 +296,39 @@ module Warehouse
         it 'adds :dept_does_not_match error' do
           subject.valid?
           expect(subject.errors.details[:base]).to include(error: :dept_does_not_match)
+        end
+      end
+
+      context 'when invent_item already does not have workplace_id' do
+        let(:item) { create(:item, :with_property_values, type_name: :monitor) }
+        let(:item_to_orders) { [build(:item_to_order, inv_item: item)] }
+        let(:operations) { [build(:order_operation, invent_item_id: item.item_id, item_model: item.get_item_model)] }
+        subject { build(:order, item_to_orders: item_to_orders, operations: operations, consumer_dept: ***REMOVED***) }
+
+        it 'does not add :dept_does_not_match error' do
+          subject.valid?
+          expect(subject.errors.details[:base]).not_to include(error: :dept_does_not_match)
+        end
+      end
+    end
+
+    describe '#prevent_update' do
+      let(:user) { create(:user) }
+      let(:operation) { create(:order_operation, status: :done, stockman_id_tn: user.id_tn) }
+      subject { create(:order, operations: [operation], consumer_tn: user.tn) }
+
+      context 'when status was done' do
+        context 'and status changed' do
+          before { subject.status = 'processing' }
+
+          include_examples ':cannot_update_done_order error'
+        end
+
+        context 'and another attribute was changed' do
+          let(:new_user) { create(:***REMOVED***_user) }
+          before { subject.validator_fio = new_user.fullname }
+
+          include_examples ':cannot_update_done_order error'
         end
       end
     end

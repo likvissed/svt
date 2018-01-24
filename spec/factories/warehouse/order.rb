@@ -5,7 +5,7 @@ module Warehouse
       creator_id_tn ***REMOVED***
       validator_id_tn 5336
       operation :in
-      status :processing
+      status 'processing'
       consumer_dept ***REMOVED***
       comment ''
 

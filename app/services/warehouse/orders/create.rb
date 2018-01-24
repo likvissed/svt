@@ -2,8 +2,6 @@ module Warehouse
   module Orders
     # Создание приходного ордера
     class Create < BaseService
-      attr_reader :error
-
       def initialize(current_user, order_params)
         @error = {}
         @current_user = current_user

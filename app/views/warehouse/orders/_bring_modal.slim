@@ -42,7 +42,7 @@ script type="text/ng-template" id="bringModal.slim"
               td ng-bind="op.inv_item.invent_num"
               td ng-bind="op.inv_item.get_item_model"
               td= fa_icon "minus-circle lg", class: "pointer", "tooltip-placement": "left", "uib-tooltip": "Убрать позицию",
-              "ng-click": "edit.delPosition(op)"
+                "ng-click": "edit.delPosition(op)"
             tr.animate-show ng-repeat="op in edit.order.operations_attributes" ng-hide="op._destroy" ng-if="!op.invent_item_id"
               td ng-bind="op.item_type"
               td
@@ -51,7 +51,7 @@ script type="text/ng-template" id="bringModal.slim"
                 "ng-click": "edit.delPosition(op)"
     .modal-footer
       = button_tag "Создать и исполнить", class: "btn-success btn-sm", "ng-click": "", "ng-if": "!edit.order.warehouse_order_id"
-      = button_tag class: "btn-success btn-sm", "ng-click": "edit.ok()" do
+      = button_tag class: "btn-success btn-sm", "ng-click": "edit.ok()", "ng-disabled": "edit.order.status == 'done'" do
         div ng-if="edit.order.warehouse_order_id" Обновить
         div ng-if="!edit.order.warehouse_order_id" Создать
       = button_tag "Закрыть", class: "btn-default btn-sm", "ng-click": "edit.cancel()"

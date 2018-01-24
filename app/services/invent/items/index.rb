@@ -18,7 +18,7 @@ module Invent
         load_filters if @init_filters == 'true'
 
         true
-      rescue StandardError => e
+      rescue RuntimeError => e
         Rails.logger.error e.inspect.red
         Rails.logger.error e.backtrace[0..5].inspect
 

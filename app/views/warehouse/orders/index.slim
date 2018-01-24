@@ -41,8 +41,8 @@
                 = fa_icon "pencil-square-o fw", class: "pointer",
                   "ng-click": "table.editOrder(order)", "uib-tooltip": "Редактировать состав ордера",
                   "tooltip-append-to-body": "true"
-                = fa_icon "check-square-o fw", class: "pointer", "ng-click": "", "uib-tooltip": "Исполнить ордер",
-                  "tooltip-append-to-body": "true"
+                = fa_icon "check-square-o fw", class: "pointer", "ng-click": "table.execOrder(order)",
+                  "uib-tooltip": "Исполнить ордер", "tooltip-append-to-body": "true"
                 = fa_icon "trash-o fw", class: "pointer text-danger", "ng-click": "table.destroyOrder(order)",
                   "uib-tooltip": "Удалить ордер", "tooltip-append-to-body": "true"
             tr ng-show="orders.orders.length == 0"
@@ -56,3 +56,4 @@
           max-size="table.pagination.maxSize" class="pagination-sm pull-right" ng-change="v.changePage()" }
 
 = render partial: 'bring_modal'
+= render partial: 'exec_order'

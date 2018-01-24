@@ -27,3 +27,6 @@ ru:
 
         warehouse/orders/create:
           error_create_warehouse_item: 'Не удалось добавить %{type} (Инв. №: %{invent_num}). Обратитесь к администратору, т. ***REMOVED***'
+
+        warehouse/orders/execute:
+          operation_not_selected: 'Необходимо выбрать хотя бы одну позицию'
