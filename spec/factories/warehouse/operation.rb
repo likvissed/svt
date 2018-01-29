@@ -2,7 +2,7 @@ module Warehouse
   FactoryBot.define do
     factory :order_operation, class: Operation do
       item nil
-      # stockman_id_tn 20868
+      stockman_id_tn nil
       operationable_id nil
       operationable_type 'Warehouse::Order'
       item_type { Invent::Item.find_by(item_id: invent_item_id).try(:type).try(:short_description) || 'Test type' }

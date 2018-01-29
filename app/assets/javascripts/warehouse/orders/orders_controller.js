@@ -231,13 +231,13 @@
       this.Server.Warehouse.Order.update(
         { warehouse_order_id: this.order.warehouse_order_id },
         { order: sendData },
-        function success() {
-          self.Flash.notice('Ордер обновлен');
-          // self.$uibModalInstance.close();
+        function success(response) {
+          self.Flash.notice(response.full_message);
+          self.$uibModalInstance.close();
         },
         function error(response, status) {
           self.Error.response(response, status);
-          // self.errorResponse(response);
+          self.errorResponse(response);
         }
       )
     } else {

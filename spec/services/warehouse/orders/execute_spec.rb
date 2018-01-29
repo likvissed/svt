@@ -134,7 +134,7 @@ module Warehouse
         let(:first_op) { build(:order_operation, item_model: 'Мышь', item_type: 'Logitech') }
         let(:sec_op) { build(:order_operation, item_model: 'Клавиатура', item_type: 'OKLICK') }
         let(:operations) { [first_op, sec_op] }
-        let!(:order) { create(:order, workplace: nil, operations: operations) }
+        let!(:order) { create(:order, operations: operations) }
         let(:order_json) { order.as_json }
         let(:order_params) do
           order_json['consumer_tn'] = ***REMOVED***
@@ -211,8 +211,8 @@ module Warehouse
       context 'when one of operations already done and another just selected' do
         let(:user) { create(:user) }
         let(:item) { create(:used_item, warehouse_type: :expendable, item_type: 'Мышь', item_model: 'Logitech') }
-        let(:first_op) { build(:order_operation, item_model: 'Мышь', item_type: 'Logitech', status: :done, item: item, stockman_id_tn: user.id_tn) }
-        let(:sec_op) { build(:order_operation, item_model: 'Клавиатура', item_type: 'OKLICK') }
+        let(:first_op) { build(:order_operation, item_type: 'Мышь', item_model: 'Logitech', status: :done, item: item, stockman_id_tn: user.id_tn) }
+        let(:sec_op) { build(:order_operation, item_type: 'Клавиатура', item_model: 'OKLICK') }
         let(:operations) { [first_op, sec_op] }
         let!(:order) { create(:order, workplace: nil, operations: operations, consumer_tn: user.tn) }
         let(:order_json) { order.as_json }

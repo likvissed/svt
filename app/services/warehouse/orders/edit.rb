@@ -25,6 +25,7 @@ module Warehouse
 
       def load_order
         data[:order] = Order.includes(operations: { item: { inv_item: %i[model type] } }).find(@order_id)
+        data[:operation] = Operation.new(operationable: data[:order], shift: 1)
       end
 
       def load_divisions

@@ -64,6 +64,7 @@
       { warehouse_order_id: order_id },
       function (data) {
         self._processingData(data);
+        self.Operation.setTemplate(data.operation);
       },
       function (response, status) {
         self.Error.response(response, status);

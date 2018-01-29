@@ -41,8 +41,8 @@ module Warehouse
         let(:workplace) { create(:workplace_pk, :add_items, items: %i[pc monitor monitor]) }
         let(:item) { workplace.items.first }
         let(:used_item) { create(:used_item, inv_item: item) }
-        let(:operations) { [build(:order_operation, invent_item_id: item.item_id, item: used_item)] }
-        let!(:order) { create(:order, operations: operations) }
+        let(:operation) { build(:order_operation, invent_item_id: item.item_id, item: used_item) }
+        let!(:order) { create(:order, workplace: workplace, operations: [operation]) }
         subject { build(:order_operation, item: order.items.first) }
 
         it 'adds :operation_already_exists error' do

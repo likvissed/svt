@@ -11,7 +11,7 @@ module Warehouse
       let(:operation_3) { attributes_for(:order_operation, item_type: 'Мышь', item_model: 'Logitech') }
 
       let(:order_params) do
-        order = attributes_for(:order, workplace: nil, consumer_dept: ***REMOVED***)
+        order = attributes_for(:order)
         # Операции с инв. номером
         order[:operations_attributes] = [operation_1, operation_2]
         # Операции без инв. номера

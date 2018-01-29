@@ -3,8 +3,7 @@ require 'rails_helper'
 module Warehouse
   module Orders
     RSpec.describe Edit, type: :model do
-      let(:workplace) { create(:workplace_pk, :add_items, items: %i[pc monitor]) }
-      let!(:order) { create(:order, workplace: workplace) }
+      let(:order) { create(:order, :default_workplace) }
       subject { Edit.new(order.warehouse_order_id) }
 
       before { subject.run }

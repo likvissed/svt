@@ -18,5 +18,6 @@ ru:
       destroyed: 'Отдел удален'
     order:
       created: 'Готово. Количество созданных ордеров: %{count}'
+      updated: 'Ордер №%{order_id} обновлен'
       destroyed: 'Ордер удален'
       executed: 'Исполнено'

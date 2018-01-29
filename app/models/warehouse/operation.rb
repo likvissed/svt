@@ -62,6 +62,7 @@ module Warehouse
       return true unless done? && !status_changed? || processing? && status_was == 'done'
 
       errors.add(:base, :cannot_update_done_operation)
+      throw(:abort)
     end
   end
 end

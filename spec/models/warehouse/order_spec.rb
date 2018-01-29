@@ -30,12 +30,7 @@ module Warehouse
       before { subject.valid? }
 
       context 'when one of operations status is done' do
-        let(:operations) do
-          [
-             build(:order_operation, status: :done),
-             build(:order_operation, status: :processing)
-          ]
-        end
+        let(:operations) { [build(:order_operation, status: :done), build(:order_operation)] }
 
         it 'adds error :blank to the consumer' do
           expect(subject.errors.details[:consumer]).to include(error: :blank)
@@ -43,12 +38,7 @@ module Warehouse
       end
 
       context 'when all of operations status is processing' do
-        let(:operations) do
-          [
-             build(:order_operation, status: :processing),
-             build(:order_operation, status: :processing)
-          ]
-        end
+        let(:operations) { [build(:order_operation), build(:order_operation)] }
 
         it 'adds error :blank to the consumer' do
           expect(subject.errors.details[:consumer]).to be_empty
@@ -78,10 +68,26 @@ module Warehouse
       end
 
       context 'when items belongs to the one workplace' do
-        let(:operations) { [build(:order_operation)] }
-        subject { build(:order, operations: operations) }
+        let(:operation_1) { build(:order_operation, invent_item_id: workplace_1.items.first.item_id) }
+        let(:operation_2) { build(:order_operation, invent_item_id: workplace_1.items.last.item_id) }
+        subject { build(:order, workplace: workplace_1, operations: [operation_1, operation_2]) }
 
         it { is_expected.to be_valid }
+      end
+
+      context 'when one of item does not have workplace' do
+        let(:item_to_orders) do
+          [
+            build(:item_to_order, inv_item: workplace_1.items.first),
+            build(:item_to_order, inv_item: workplace_1.items.last)
+          ]
+        end
+        subject { build(:order, workplace: workplace_1, item_to_orders: item_to_orders) }
+        before { Invent::Item.first.update(workplace: nil) }
+
+        it 'not adds :uniq_workplace error' do
+          expect(subject.errors.details[:base]).not_to include(error: :uniq_workplace)
+        end
       end
     end
 
@@ -256,15 +262,46 @@ module Warehouse
     end
 
     describe '#at_least_one_operation' do
-      subject { build(:order, :without_operations) }
+      context 'when operations is empty' do
+        subject { build(:order, :without_operations) }
 
-      it 'adds :at_least_one_inv_item error if operations is empty' do
-        subject.valid?
-        expect(subject.errors.details[:base]).to include(error: :at_least_one_operation)
+        it 'adds :at_least_one_inv_item error' do
+          subject.valid?
+          expect(subject.errors.details[:base]).to include(error: :at_least_one_operation)
+        end
+      end
+
+      context 'when operations is exists but _destroy is eq 1' do
+        let(:order) { create(:order) }
+        let(:order_json) { order.as_json(include: :operations) }
+        subject do
+          order_json['operations_attributes'] = order_json['operations']
+          order_json['operations_attributes'].each do |op|
+            op['id'] = op['warehouse_operation_id']
+            op['_destroy'] = 1
+
+            op.delete('warehouse_operation_id')
+          end
+
+          order_json.delete('operations')
+          order.assign_attributes(order_json)
+          order
+        end
+
+        it 'adds :at_least_one_inv_item error' do
+          subject.valid?
+          expect(subject.errors.details[:base]).to include(error: :at_least_one_operation)
+        end
+      end
+
+      context 'when operations exist' do
+        subject { build(:order) }
+
+        it { is_expected.to be_valid }
       end
     end
 
-    describe '#compare_nested_attrs' do
+    describe '#compare_nested_arrs' do
       context 'when nested arrays not equals' do
         let!(:workplace) { create(:workplace_pk, :add_items, items: %i[pc monitor], dept: ***REMOVED***) }
         let(:item_to_orders) do
@@ -273,7 +310,7 @@ module Warehouse
             build(:item_to_order, inv_item: workplace.items.last)
           ]
         end
-        let(:operations) { [build(:order_operation)] }
+        let(:operations) { [build(:order_operation, invent_item_id: workplace.items.first.item_id)] }
         subject { build(:order, item_to_orders: item_to_orders, operations: operations) }
 
         it 'adds :nested_arrs_not_equals error' do
@@ -299,11 +336,11 @@ module Warehouse
         end
       end
 
-      context 'when invent_item already does not have workplace_id' do
+      context 'when invent_item already does not have workplace_id (workplace was removed?)' do
         let(:item) { create(:item, :with_property_values, type_name: :monitor) }
         let(:item_to_orders) { [build(:item_to_order, inv_item: item)] }
-        let(:operations) { [build(:order_operation, invent_item_id: item.item_id, item_model: item.get_item_model)] }
-        subject { build(:order, item_to_orders: item_to_orders, operations: operations, consumer_dept: ***REMOVED***) }
+        let(:operation) { build(:order_operation, invent_item_id: item.item_id) }
+        subject { build(:order, item_to_orders: item_to_orders, operations: [operation], consumer_dept: ***REMOVED***) }
 
         it 'does not add :dept_does_not_match error' do
           subject.valid?
@@ -312,9 +349,40 @@ module Warehouse
       end
     end
 
-    describe '#prevent_update' do
+    describe '#check_operation_list' do
+      let(:workplace) { create(:workplace_pk, :add_items, items: %i[pc monitor]) }
+      before do
+        subject.operations << new_operation
+        subject.valid?
+      end
+
+      context 'when warehouse_type of items is :expendable (workplace is not exist)' do
+        let(:old_operation) { build(:order_operation, item_type: 'Клавиатура', item_model: 'OKLICK') }
+        let(:new_operation) { build(:order_operation, invent_item_id: workplace.items.first.item_id) }
+        subject { create(:order, operations: [old_operation]) }
+
+        it 'not allow to add to the operations any items with invent_item_id' do
+          expect(subject.errors.details[:base]).to include(error: :cannot_have_operations_with_invent_num)
+        end
+      end
+
+      context 'when warehouse_type of items is :returnable (workplace is exists)' do
+        let(:old_operation) { build(:order_operation, invent_item_id: workplace.items.first.item_id) }
+        subject { create(:order, workplace: workplace, operations: [old_operation]) }
+
+        context 'and when add operations without invent_item_id' do
+          let(:new_operation) { build(:order_operation, item_type: 'Клавиатура', item_model: 'OKLICK') }
+
+          it 'adds :cannot_have_operations_without_invent_num error' do
+            expect(subject.errors.details[:base]).to include(error: :cannot_have_operations_without_invent_num)
+          end
+        end
+      end
+    end
+
+    describe '#prevent_update_done_order' do
       let(:user) { create(:user) }
-      let(:operation) { create(:order_operation, status: :done, stockman_id_tn: user.id_tn) }
+      let(:operation) { build(:order_operation, status: :done, stockman_id_tn: user.id_tn) }
       subject { create(:order, operations: [operation], consumer_tn: user.tn) }
 
       context 'when status was done' do
@@ -330,6 +398,39 @@ module Warehouse
 
           include_examples ':cannot_update_done_order error'
         end
+      end
+    end
+
+    describe '#prevent_update_attributes' do
+      let(:user) { create(:user) }
+      subject { create(:order) }
+      let!(:old_params) do
+        {
+          workplace_id: subject.workplace_id,
+          operation: subject.operation,
+          consumer_dept: subject.consumer_dept
+        }
+      end
+
+      it 'prevents changes of :workplace attribute' do
+        subject.workplace_id = 123
+        subject.save
+        expect(subject.reload.workplace_id).to eq old_params[:workplace_id]
+        expect(subject.errors.details[:workplace]).to include(error: :cannot_update)
+      end
+
+      it 'prevents changes of :operation attribute' do
+        subject.operation = :out
+        subject.save
+        expect(subject.reload.operation).to eq old_params[:operation]
+        expect(subject.errors.details[:operation]).to include(error: :cannot_update)
+      end
+
+      it 'prevents changes of :consumer_dept attribute' do
+        subject.consumer_dept = 123
+        subject.save
+        expect(subject.reload.consumer_dept).to eq old_params[:consumer_dept]
+        expect(subject.errors.details[:consumer_dept]).to include(error: :cannot_update)
       end
     end
   end

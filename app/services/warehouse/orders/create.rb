@@ -11,7 +11,7 @@ module Warehouse
 
       def run
         processing_nested_attributes if @order_params['operations_attributes']&.any?
-        return false unless wrap_order_with_transaction
+        return false unless wrap_order_with_transactions
         broadcast_orders
 
         true
@@ -26,7 +26,7 @@ module Warehouse
 
       def processing_nested_attributes
         # Массив id возвращаемой техники (с инв. номером)
-        item_id_arr = @order_params['operations_attributes'].map { |attr| attr['invent_item_id'] }.reject(&:nil?)
+        item_id_arr = @order_params['operations_attributes'].map { |attr| attr['invent_item_id'] }.compact
         # Массив операций без инв. номера
         op_without_id_arr = @order_params['operations_attributes'].select { |attr| attr['invent_item_id'].nil? }
         # Массив объектов возвращаемой техники
@@ -49,7 +49,7 @@ module Warehouse
         @order_params = new_params
       end
 
-      def wrap_order_with_transaction
+      def wrap_order_with_transactions
         Order.transaction do
           begin
             Array.wrap(@order_params).each do |param|
@@ -81,7 +81,7 @@ module Warehouse
             raise ActiveRecord::Rollback
           end
         end
-      end
+        end
 
       def init_order(param)
         @order = Order.new(param)

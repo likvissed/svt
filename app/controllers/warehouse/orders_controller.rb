@@ -46,13 +46,13 @@ module Warehouse
     end
 
     def update
-      # @update = Orders::Update.new(params[:warehouse_order_id], order_params)
-      #
-      # if @update.run
-      #   render json: @create.data
-      # else
-      #   render json: @create.error, status: 422
-      # end
+      @update = Orders::Update.new(current_user, params[:warehouse_order_id], order_params)
+
+      if @update.run
+        render json: { full_message: I18n.t('controllers.order.updated', order_id: params[:warehouse_order_id]) }
+      else
+        render json: @update.error, status: 422
+      end
     end
 
     def execute
@@ -105,7 +105,8 @@ module Warehouse
           :stockman_fio,
           :status,
           :date,
-          :invent_item_id
+          :invent_item_id,
+          :_destroy
         ]
       )
     end
