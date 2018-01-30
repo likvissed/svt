@@ -22,7 +22,7 @@ module Invent
       context 'when users_attributes is empty' do
         subject { build(:active_workplace_count) }
 
-        it { expect { subject.save! }.to raise_error ActiveRecord::RecordInvalid }
+        it { expect { subject.save! }.to raise_error(ActiveRecord::RecordInvalid) }
         it 'adds :add_at_least_one_responsible error to the :base key' do
           subject.valid?
           expect(subject.errors.details[:base].first).to include(error: :add_at_least_one_responsible)
@@ -36,7 +36,7 @@ module Invent
           let(:***REMOVED***_user) { attributes_for(:***REMOVED***_user) }
           subject { build(:active_workplace_count, users_attributes: [***REMOVED***_user, ***REMOVED***_user]) }
 
-          it { expect { subject.save! }.to raise_error ActiveRecord::RecordInvalid }
+          it { expect { subject.save! }.to raise_error(ActiveRecord::RecordInvalid) }
           it 'adds :multiple_user error to the :base key' do
             subject.valid?
             expect(subject.errors.details[:base].first).to include(error: :multiple_user, tn: ***REMOVED***_user[:tn])
@@ -72,7 +72,7 @@ module Invent
             )
           end
 
-          it { expect { subject.save! }.to raise_error ActiveRecord::RecordInvalid }
+          it { expect { subject.save! }.to raise_error(ActiveRecord::RecordInvalid) }
           it 'adds :user_not_found error to the :base key' do
             subject.valid?
             expect(subject.errors.details[:base].first)
@@ -100,7 +100,7 @@ module Invent
           loaded_workplace_count
         end
 
-        it { expect { subject.update!(new_workplace_count.deep_symbolize_keys) }.to raise_error ActiveRecord::RecordInvalid }
+        it { expect { subject.update!(new_workplace_count.deep_symbolize_keys) }.to raise_error(ActiveRecord::RecordInvalid) }
         it 'adds :save_at_least_one_responsible error to the :base key' do
           subject.update(new_workplace_count.deep_symbolize_keys)
           expect(subject.errors.details[:base].first).to include(error: :save_at_least_one_responsible)
@@ -116,7 +116,7 @@ module Invent
           loaded_workplace_count
         end
 
-        it { expect { subject.update(new_workplace_count.deep_symbolize_keys) }.to raise_error ActiveRecord::RecordInvalid, /Ответственный для данного отдела с табельным ***REMOVED*** уже существует \(либо вы его задали несколько раз\)/ }
+        it { expect { subject.update(new_workplace_count.deep_symbolize_keys) }.to raise_error(ActiveRecord::RecordInvalid, /Ответственный для данного отдела с табельным ***REMOVED*** уже существует \(либо вы его задали несколько раз\)/) }
       end
 
       context 'when adds the user which already exist in current list of responsibles' do
@@ -126,7 +126,7 @@ module Invent
           loaded_workplace_count
         end
 
-        it { expect { subject.update(new_workplace_count.deep_symbolize_keys) }.to raise_error ActiveRecord::RecordInvalid, /Ответственный для данного отдела с табельным 101101 уже существует \(либо вы его задали несколько раз\)/ }
+        it { expect { subject.update(new_workplace_count.deep_symbolize_keys) }.to raise_error(ActiveRecord::RecordInvalid, /Ответственный для данного отдела с табельным 101101 уже существует \(либо вы его задали несколько раз\)/) }
       end
 
       context 'when adds valid user with custom phone' do
@@ -186,7 +186,7 @@ module Invent
           loaded_workplace_count
         end
 
-        it { expect { subject.update(new_workplace_count.deep_symbolize_keys) }.to raise_error ActiveRecord::RecordInvalid, /Ответственный для данного отдела с табельным 101101 уже существует \(либо вы его задали несколько раз\)/ }
+        it { expect { subject.update(new_workplace_count.deep_symbolize_keys) }.to raise_error(ActiveRecord::RecordInvalid, /Ответственный для данного отдела с табельным 101101 уже существует \(либо вы его задали несколько раз\)/) }
       end
 
       context 'when set empty phone number in one of users' do

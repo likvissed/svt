@@ -57,7 +57,7 @@ module Invent
       end
 
       def load_divisions
-        data[:divisions] = WorkplaceCount.select(:workplace_count_id, :division)
+        data[:divisions] = WorkplaceCount.select(:workplace_count_id, :division).sort_by { |obj| obj.division.to_i }
       end
     end
   end

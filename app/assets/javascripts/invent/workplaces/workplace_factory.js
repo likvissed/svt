@@ -116,7 +116,7 @@
 
   /**
    * Установить новый активный экземпляр техники в табах.
-   * 
+   *
    * @param index - индекс таба (от 0)
    */
   Workplace.prototype._setActiveTab = function(index) {
@@ -342,10 +342,9 @@
   /**
    * Добавить существующее оборудование к РМ.
    *
-   * @param selectedType - тип создаваемого устройства
    * @param selectedItem - выбранное оборудование
    */
-  Workplace.prototype.addExistingItem = function(selectedType, selectedItem) {
+  Workplace.prototype.addExistingItem = function(selectedItem) {
     var self = this;
 
     self.Server.Invent.Item.get(

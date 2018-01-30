@@ -32,6 +32,12 @@ module Invent
 
     enum status: { confirmed: 0, pending_verification: 1, disapproved: 2, freezed: 3 }
 
+    def destroy
+      raise 'cannot_destroy_workplace_belongs_to_processing_order' if orders.any?(&:processing?)
+
+      super
+    end
+
     # Удалить РМ, связанные экземпляры техники, значения их свойств, а также загруженные файлы.
     def destroy_from_***REMOVED***
       Workplace.transaction do

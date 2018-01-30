@@ -5,6 +5,8 @@ module Warehouse
         expect { subject.run }.not_to change(klass, :count)
       end
     end
+
+    its(:run) { is_expected.to be_falsey }
   end
 
   shared_examples 'failed updating on add' do

@@ -65,8 +65,6 @@ module Warehouse
             order_json
           end
 
-          its(:run) { is_expected.to be_falsey }
-
           include_examples 'failed updating on add'
         end
       end
@@ -196,8 +194,6 @@ module Warehouse
             order_json
           end
 
-          its(:run) { is_expected.to be_falsey }
-
           include_examples 'failed updating models'
         end
 
@@ -273,8 +269,6 @@ module Warehouse
 
           order_json
         end
-
-        its(:run) { is_expected.to be_falsey }
 
         include_examples 'failed updating models'
       end

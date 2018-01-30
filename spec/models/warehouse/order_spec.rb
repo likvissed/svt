@@ -248,6 +248,24 @@ module Warehouse
       end
     end
 
+    describe '#destroy' do
+      context 'when order is done' do
+        let(:user) { create(:user) }
+        let(:operation) { build(:order_operation, status: :done, stockman_id_tn: user.id_tn) }
+        subject { create(:order, operations: [operation], consumer_tn: user.tn) }
+
+        it 'raise error' do
+          expect { subject.destroy }.to raise_error(RuntimeError, 'Невозможно удалить исполненный ордер')
+        end
+      end
+
+      context 'when order still processing' do
+        subject { create(:order) }
+
+        its(:destroy) { is_expected.to be_truthy }
+      end
+    end
+
     describe '#set_creator' do
       let(:user) { create(:user) }
       before { subject.set_creator(user) }

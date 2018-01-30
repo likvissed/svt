@@ -51,6 +51,8 @@
      */
     .filter('fioInitials', function() {
       return function(fullName) {
+        if (!fullName) { return ''; }
+
         var arr = fullName.split(' ');
 
         return arr.shift() + ' ' + arr.map(function(el) { return el[0].toUpperCase() + '.' }).join(' ');

@@ -20,6 +20,7 @@ module Warehouse
       end
       let(:op_with_inv) { order_params[:operations_attributes].select { |attr| attr[:invent_item_id] } }
       let(:op_without_inv) { order_params[:operations_attributes].reject { |attr| attr[:invent_item_id] } }
+      let(:invent_item_ids) { order_params[:operations_attributes].select { |attr| attr[:invent_item_id] }.map { |op| op[:invent_item_id] } }
       subject { Create.new(current_user, order_params.as_json) }
 
       its(:run) { is_expected.to be_truthy }
@@ -59,26 +60,38 @@ module Warehouse
         end
       end
 
-      context 'when invent_item was not updated' do
+      context 'when order was not created' do
         let(:order) { build(:order) }
         before do
           allow(Order).to receive(:new).and_return(order)
           allow(order).to receive(:save).and_return(false)
         end
-        let(:invent_item_ids) { order_params[:operations_attributes].select { |attr| attr[:invent_item_id] }.map { |op| op[:invent_item_id] } }
 
-        [Order, Item, ItemToOrder, Operation].each do |klass|
-          it "does not create #{klass.name} model" do
-            expect { subject.run }.not_to change(klass, :count)
-          end
-        end
+        include_examples 'failed creating'
+      end
 
-        it 'does not change status of Invent::Item model' do
-          subject.run
-          Invent::Item.where(item_id: invent_item_ids).each { |item| expect(item.status).to be_nil }
-        end
+      context 'when invent_item was not updated' do
+        before { allow_any_instance_of(Invent::Item).to receive(:update!).and_raise(ActiveRecord::RecordNotSaved) }
 
-        its(:run) { is_expected.to be_falsey }
+        include_examples 'failed creating'
+      end
+
+      context 'and when invent_item did not pass validations' do
+        before { allow_any_instance_of(Invent::Item).to receive(:update!).and_raise(ActiveRecord::RecordInvalid) }
+
+        include_examples 'failed creating'
+      end
+
+      context 'when item did not pass validations' do
+        before { allow(Item).to receive(:find_or_create_by!).and_raise(ActiveRecord::RecordInvalid) }
+
+        include_examples 'failed creating'
+      end
+
+      context 'and when item was not created' do
+        before { allow(Item).to receive(:find_or_create_by!).and_raise(ActiveRecord::RecordNotSaved) }
+
+        include_examples 'failed creating'
       end
 
       context 'when operations is empty' do

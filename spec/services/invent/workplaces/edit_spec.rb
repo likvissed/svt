@@ -23,7 +23,7 @@ module Invent
           subject { Edit.new(user, 0) }
 
           it 'raises RecordNotFound error' do
-            expect { subject.run :html }.to raise_error ActiveRecord::RecordNotFound
+            expect { subject.run :html }.to raise_error(ActiveRecord::RecordNotFound)
           end
         end
       end

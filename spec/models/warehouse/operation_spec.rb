@@ -21,6 +21,36 @@ module Warehouse
       # it { is_expected.to validate_presence_of(:date) }
     end
 
+    describe '#destroy' do
+      context 'when operation is done' do
+        let(:user) { create(:user) }
+        subject { create(:order_operation, status: :done, stockman_id_tn: user.id_tn) }
+
+        it 'raise error' do
+          expect { subject.destroy }.to raise_error(RuntimeError, 'Невозможно удалить исполненную операцию')
+        end
+      end
+
+      context 'when operation still processing' do
+        subject { create(:order_operation) }
+
+        its(:destroy) { is_expected.to be_truthy }
+      end
+    end
+
+    describe '#set_stockman' do
+      let(:user) { create(:user) }
+      before { subject.set_stockman(user) }
+
+      it 'sets stockman_id_tn' do
+        expect(subject.stockman_id_tn).to eq user.id_tn
+      end
+
+      it 'sets stockman_fio' do
+        expect(subject.stockman_fio).to eq user.fullname
+      end
+    end
+
     describe '#set_initial_status' do
       it 'sets :processing status after initialize object' do
         expect(subject.status).to eq 'processing'

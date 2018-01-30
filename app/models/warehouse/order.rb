@@ -38,6 +38,12 @@ module Warehouse
 
     attr_accessor :consumer_tn
 
+    def destroy
+      raise I18n.t('activerecord.errors.models.warehouse/order.attributes.base.cannot_destroy_done') if done?
+
+      super
+    end
+
     def set_creator(user)
       self.creator_id_tn = user.id_tn
       self.creator_fio = user.fullname

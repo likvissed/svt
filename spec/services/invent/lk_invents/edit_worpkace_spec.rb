@@ -41,7 +41,7 @@ module Invent
         subject { EditWorkplace.new(user, 0) }
 
         it 'raises RecordNotFound error' do
-          expect { subject.run }.to raise_error ActiveRecord::RecordNotFound
+          expect { subject.run }.to raise_error(ActiveRecord::RecordNotFound)
         end
       end
     end

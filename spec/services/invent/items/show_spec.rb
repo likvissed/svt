@@ -22,7 +22,7 @@ module Invent
         subject { Show.new(111) }
 
         it 'raises RecordNotFound error' do
-          expect { subject.run }.to raise_error ActiveRecord::RecordNotFound
+          expect { subject.run }.to raise_error(ActiveRecord::RecordNotFound)
         end
       end
     end

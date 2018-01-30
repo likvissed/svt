@@ -22,6 +22,12 @@ module Warehouse
 
     accepts_nested_attributes_for :item, allow_destroy: false
 
+    def destroy
+      raise I18n.t('activerecord.errors.models.warehouse/operation.attributes.base.cannot_destroy_done') if done?
+
+      super
+    end
+
     def set_stockman(user)
       self.stockman_id_tn = user.id_tn
       self.stockman_fio = user.fullname

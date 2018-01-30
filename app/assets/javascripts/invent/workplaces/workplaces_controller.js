@@ -735,7 +735,7 @@
       function(result) {
         if (result.selectedItem) {
           // Для б/у оборудования
-          self.Workplace.addExistingItem(result.selectedType, result.selectedItem);
+          self.Workplace.addExistingItem(result.selectedItem);
         } else {
           // Для нового оборудования
           self.Workplace.createItem(result.selectedType);

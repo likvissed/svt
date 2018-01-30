@@ -31,7 +31,7 @@ script type="text/ng-template" id="execOrder.slim"
             tbody
               tr ng-repeat="op in exec.order.operations_attributes" ng-hide="op._destroy"
                 td
-                  input type="checkbox" ng-model="op.status" ng-true-value="'done'" ng-false-value="'processing'" ng-click="exec.checkSelected()" ng-disabled="op.status == 'done'"
+                  input type="checkbox" ng-model="op.status" ng-true-value="'done'" ng-false-value="'processing'" ng-click="exec.checkSelected()" ng-disabled="op.status == 'done' && op.status.$pristine"
                 td ng-bind="op.inv_item.type.short_description"
                 td ng-bind="op.inv_item.invent_num"
                 td ng-bind="op.inv_item.get_item_model"
@@ -48,7 +48,7 @@ script type="text/ng-template" id="execOrder.slim"
             tbody
               tr ng-repeat="op in exec.order.operations_attributes" ng-hide="op._destroy"
                 td
-                  input type="checkbox" ng-model="op.status" ng-true-value="'done'" ng-false-value="'processing'" ng-click="exec.checkSelected()" ng-disabled="op.status == 'done'"
+                  input type="checkbox" ng-model="op.status" ng-true-value="'done'" ng-false-value="'processing'" ng-click="exec.checkSelected()" ng-disabled="op.status == 'done' && op.status.$pristine"
                 td ng-bind="op.item_type"
                 td ng-bind="op.item_model"
                 td ng-bind="op.stockman_fio | fioInitials"

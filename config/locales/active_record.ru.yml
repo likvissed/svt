@@ -134,7 +134,7 @@ ru:
         invent/workplace:
           attributes:
             base:
-              cant_destroy_items: 'Не удалось удалить запись (обратитесь к администратору, т. ***REMOVED***)'
+              cannot_destroy_items: 'Не удалось удалить запись (обратитесь к администратору, т. ***REMOVED***)'
               wrong_rm_pk_composition: 'Неправильный состав стационарного рабочего места'
               wrong_rm_mob_composition: 'Неправильный состав мобильного рабочего места'
               wrong_rm_net_print_composition: 'Неправильный состав рабочего места печати'
@@ -205,6 +205,7 @@ ru:
         warehouse/order:
           attributes:
             base:
+              cannot_destroy_done: 'Невозможно удалить исполненный ордер'
               uniq_workplace: 'Ордер может содержать технику только одного рабочего места'
               dept_does_not_match: 'Указанная техника не входит в состав рабочих мест выбранного отдела'
               at_least_one_operation: 'Необходимо добавить хотя бы одну позицию'
@@ -229,6 +230,7 @@ ru:
         warehouse/operation:
           attributes:
             base:
+              cannot_destroy_done: 'Невозможно удалить исполненную операцию'
               operation_already_exists: '%{type} (инв. №%{invent_num}) уже задан в незакрытых позициях ордера №%{order_id}'
               cannot_update_done_operation: 'Невозможно обновить, т.к. позиция уже исполнена'
 
