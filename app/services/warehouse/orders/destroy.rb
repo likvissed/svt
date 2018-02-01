@@ -24,7 +24,7 @@ module Warehouse
         @data = Order.find(@order_id)
         return if @data.destroy
 
-        @data = @data.errors.full_messages.join('. ')
+        @data = data.errors.full_messages.join('. ')
         raise 'Ордер не удален'
       end
     end

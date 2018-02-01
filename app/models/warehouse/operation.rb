@@ -14,19 +14,15 @@ module Warehouse
 
     after_initialize :set_initial_status, if: -> { new_record? }
     before_validation :set_date, if: -> { done? && status_changed? }
+    before_update :prevent_change_status
     before_update :prevent_update
+    before_destroy :prevent_destroy, if: -> { done? }
 
     attr_accessor :invent_item_id
 
     enum status: { processing: 1, done: 2 }
 
     accepts_nested_attributes_for :item, allow_destroy: false
-
-    def destroy
-      raise I18n.t('activerecord.errors.models.warehouse/operation.attributes.base.cannot_destroy_done') if done?
-
-      super
-    end
 
     def set_stockman(user)
       self.stockman_id_tn = user.id_tn
@@ -64,10 +60,22 @@ module Warehouse
       self.date = Time.zone.now
     end
 
+    def prevent_change_status
+      return unless status_was == 'done' && processing?
+
+      errors.add(:base, :cannot_cancel_done_operation)
+      throw(:abort)
+    end
+
     def prevent_update
-      return true unless done? && !status_changed? || processing? && status_was == 'done'
+      return true unless done? && !status_changed?
 
       errors.add(:base, :cannot_update_done_operation)
+      throw(:abort)
+    end
+
+    def prevent_destroy
+      errors.add(:base, :cannot_destroy_done)
       throw(:abort)
     end
   end

@@ -55,6 +55,10 @@ module Warehouse
             true
           rescue ActiveRecord::RecordNotSaved, ActiveRecord::RecordInvalid
             raise ActiveRecord::Rollback
+          rescue ActiveRecord::RecordNotDestroyed
+            process_order_errors(@order)
+
+            raise ActiveRecord::Rollback
           rescue RuntimeError => e
             Rails.logger.error e.inspect.red
             Rails.logger.error e.backtrace[0..5].inspect

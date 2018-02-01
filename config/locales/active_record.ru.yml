@@ -206,6 +206,7 @@ ru:
           attributes:
             base:
               cannot_destroy_done: 'Невозможно удалить исполненный ордер'
+              cannot_destroy_with_done_operations: 'Невозможно удалить ордер с исполненными операциями'
               uniq_workplace: 'Ордер может содержать технику только одного рабочего места'
               dept_does_not_match: 'Указанная техника не входит в состав рабочих мест выбранного отдела'
               at_least_one_operation: 'Необходимо добавить хотя бы одну позицию'
@@ -230,6 +231,7 @@ ru:
         warehouse/operation:
           attributes:
             base:
+              cannot_cancel_done_operation: 'Невозможно отменить исполненную операцию'
               cannot_destroy_done: 'Невозможно удалить исполненную операцию'
               operation_already_exists: '%{type} (инв. №%{invent_num}) уже задан в незакрытых позициях ордера №%{order_id}'
               cannot_update_done_operation: 'Невозможно обновить, т.к. позиция уже исполнена'

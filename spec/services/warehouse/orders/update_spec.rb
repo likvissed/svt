@@ -253,6 +253,29 @@ module Warehouse
             include_examples 'failed updating on del'
           end
         end
+
+        context 'and when remove done operation' do
+          let(:order_params) do
+            order_json['operations_attributes'] = order.operations.as_json(include: { item: { include: :inv_item } })
+            order_json['operations_attributes'].each_with_index do |op, index|
+              op['_destroy'] = 1 if index.zero?
+              op['id'] = op['warehouse_operation_id']
+              op['invent_item_id'] ||= op['item']['inv_item']['item_id'] if op['item'] && op['item']['inv_item']
+
+              op.delete('warehouse_operation_id')
+              op.delete('item')
+            end
+
+            order_json
+          end
+
+          its(:run) { is_expected.to be_falsey }
+
+          it 'adds transalted errors from operations to the :full_message variable' do
+            subject.run
+            expect(subject.error[:full_message]).to match(/Невозможно удалить исполненную операцию/)
+          end
+        end
       end
 
       context 'when removed all operations' do

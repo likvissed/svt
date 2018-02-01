@@ -248,14 +248,31 @@ module Warehouse
       end
     end
 
-    describe '#destroy' do
-      context 'when order is done' do
-        let(:user) { create(:user) }
-        let(:operation) { build(:order_operation, status: :done, stockman_id_tn: user.id_tn) }
-        subject { create(:order, operations: [operation], consumer_tn: user.tn) }
+    describe '#prevent_destroy' do
+      let(:user) { create(:user) }
 
-        it 'raise error' do
-          expect { subject.destroy }.to raise_error(RuntimeError, 'Невозможно удалить исполненный ордер')
+      context 'when order is done' do
+        let(:operation) { build(:order_operation, status: :done, stockman_id_tn: user.id_tn) }
+        let!(:order) { create(:order, operations: [operation], consumer_tn: user.tn) }
+
+        include_examples 'does not destroy'
+
+        it 'adds :cannot_destroy_done error' do
+          order.destroy
+          expect(order.errors.details[:base]).to include(error: :cannot_destroy_done)
+        end
+      end
+
+      context 'when one of operation is done' do
+        let(:operation_1) { build(:order_operation, status: :done, stockman_id_tn: user.id_tn) }
+        let(:operation_2) { build(:order_operation) }
+        let!(:order) { create(:order, operations: [operation_1, operation_2], consumer_tn: user.tn) }
+
+        include_examples 'does not destroy'
+
+        it 'adds :cannot_destroy_with_done_operations error' do
+          order.destroy
+          expect(order.errors.details[:base]).to include(error: :cannot_destroy_with_done_operations)
         end
       end
 

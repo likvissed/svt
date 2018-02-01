@@ -76,8 +76,8 @@ module Warehouse
       def save_order
         return if @order.save
 
-        error[:object] = @order.errors
-        error[:full_message] = @order.errors.full_messages.join('. ')
+        process_order_errors(@order)
+
         raise 'Ордер не исполнен'
       end
 

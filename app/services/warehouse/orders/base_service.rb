@@ -32,9 +32,15 @@ module Warehouse
       def save_order(order)
         return if order.save
 
-        error[:object] = order.errors
-        error[:full_message] = order.errors.full_messages.join('. ')
+        process_order_errors(order)
         raise 'Ордер не сохранен'
+      end
+
+      def process_order_errors(order)
+        error[:object] = order.errors
+        order_errors = order.errors.full_messages
+        operation_errors = order.operations.map { |op| op.errors.full_messages }
+        error[:full_message] = [order_errors, operation_errors].flatten.join('. ')
       end
     end
   end

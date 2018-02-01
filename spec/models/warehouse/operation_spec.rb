@@ -21,23 +21,6 @@ module Warehouse
       # it { is_expected.to validate_presence_of(:date) }
     end
 
-    describe '#destroy' do
-      context 'when operation is done' do
-        let(:user) { create(:user) }
-        subject { create(:order_operation, status: :done, stockman_id_tn: user.id_tn) }
-
-        it 'raise error' do
-          expect { subject.destroy }.to raise_error(RuntimeError, 'Невозможно удалить исполненную операцию')
-        end
-      end
-
-      context 'when operation still processing' do
-        subject { create(:order_operation) }
-
-        its(:destroy) { is_expected.to be_truthy }
-      end
-    end
-
     describe '#set_stockman' do
       let(:user) { create(:user) }
       before { subject.set_stockman(user) }
@@ -110,23 +93,48 @@ module Warehouse
       end
     end
 
+    describe '#prevent_change_status' do
+      context 'when status was done and changed to :processing' do
+        let(:user) { create(:user) }
+        subject { create(:order_operation, status: :done, stockman_id_tn: user.id_tn) }
+        before do
+          subject.status = 'processing'
+          subject.save
+        end
+
+        it 'adds :cannot_cancel_done_operation error' do
+          expect(subject.errors.details[:base]).to include(error: :cannot_cancel_done_operation)
+        end
+
+        it 'does not change status' do
+          expect(Operation.last.done?).to be_truthy
+        end
+      end
+    end
+
     describe '#prevent_update' do
       let(:user) { create(:user) }
       subject { create(:order_operation, status: :done, stockman_id_tn: user.id_tn) }
 
-      context 'when status was done' do
-        context 'and status changed' do
-          before { subject.status = 'processing' }
+      context 'when status is done and another attribute was changed' do
+        let(:new_user) { create(:***REMOVED***_user) }
+        before { subject.set_stockman(new_user) }
 
-          include_examples ':cannot_update_done_operation error'
-        end
+        include_examples ':cannot_update_done_operation error'
+      end
+    end
 
-        context 'and another attribute was changed' do
-          let(:new_user) { create(:***REMOVED***_user) }
-          before { subject.set_stockman(new_user) }
+    describe '#prevent_destroy' do
+      let(:user) { create(:user) }
+      let!(:operation) { create(:order_operation, status: :done, stockman_id_tn: user.id_tn) }
 
-          include_examples ':cannot_update_done_operation error'
-        end
+      it 'does not destroy operation' do
+        expect { operation.destroy }.not_to change(Operation, :count)
+      end
+
+      it 'adds :cannot_destroy_done error' do
+        operation.destroy
+        expect(operation.errors.details[:base]).to include(error: :cannot_destroy_done)
       end
     end
   end

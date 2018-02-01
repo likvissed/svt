@@ -29,6 +29,8 @@ module Warehouse
     before_save :calculate_status
     before_update :prevent_update_done_order
     before_update :prevent_update_attributes
+    before_destroy :prevent_destroy, prepend: true
+
 
     enum operation: { out: 1, in: 2 }
     enum status: { processing: 1, done: 2 }
@@ -37,12 +39,6 @@ module Warehouse
     accepts_nested_attributes_for :item_to_orders, allow_destroy: true
 
     attr_accessor :consumer_tn
-
-    def destroy
-      raise I18n.t('activerecord.errors.models.warehouse/order.attributes.base.cannot_destroy_done') if done?
-
-      super
-    end
 
     def set_creator(user)
       self.creator_id_tn = user.id_tn
@@ -153,6 +149,16 @@ module Warehouse
       errors.add(:consumer_dept, :cannot_update) if consumer_dept_changed?
 
       throw(:abort) if errors.any?
+    end
+
+    def prevent_destroy
+      if done?
+        errors.add(:base, :cannot_destroy_done)
+        throw(:abort)
+      elsif operations.any?(&:done?)
+        errors.add(:base, :cannot_destroy_with_done_operations)
+        throw(:abort)
+      end
     end
   end
 end
