@@ -14,15 +14,28 @@ module Warehouse
     it { is_expected.to validate_presence_of(:status) }
     it { is_expected.to validate_presence_of(:creator_fio) }
     it { is_expected.not_to validate_presence_of(:consumer_fio) }
-    it { is_expected.to validate_presence_of(:consumer_dept) }
+    it { is_expected.not_to validate_presence_of(:consumer_dept) }
     it { is_expected.not_to validate_presence_of(:validator_fio) }
     it { is_expected.to accept_nested_attributes_for(:operations).allow_destroy(true) }
     it { is_expected.to accept_nested_attributes_for(:item_to_orders).allow_destroy(true) }
+    it { is_expected.to accept_nested_attributes_for(:inv_items).allow_destroy(false) }
 
     context 'when status is :done and operation is :out' do
       subject { build(:order, status: :done, operation: :out) }
 
       it { is_expected.to validate_presence_of(:validator_fio) }
+    end
+
+    context 'when operation is :out' do
+      subject { build(:order, operation: :out) }
+
+      it { is_expected.to validate_presence_of(:workplace_id) }
+    end
+
+    context 'when operation is :in' do
+      subject { build(:order, operation: :in) }
+
+      it { is_expected.to validate_presence_of(:consumer_dept) }
     end
 
     describe '#presence_consumer' do
@@ -241,10 +254,43 @@ module Warehouse
         ]
       end
       let(:operations) { [build(:order_operation), build(:order_operation)] }
-      subject { build(:order, item_to_orders: item_to_orders, operations: operations) }
 
-      it 'sets :workplace references after validate object' do
-        expect { subject.valid? }.to change(subject, :workplace_id).to(workplace.workplace_id)
+      context 'when operation is :in' do
+        subject { build(:order, item_to_orders: item_to_orders, operations: operations) }
+
+        it 'sets :workplace attribute' do
+          expect { subject.valid? }.to change(subject, :workplace_id).to(workplace.workplace_id)
+        end
+      end
+
+      context 'when operation is :out' do
+        subject { build(:order, operation: :out, item_to_orders: item_to_orders, operations: operations) }
+
+        it 'does not set :workplace attribute' do
+          expect { subject.valid? }.not_to change(subject, :workplace_id)
+        end
+      end
+    end
+
+    describe '#set_consumer_dept' do
+      let!(:workplace) { create(:workplace_pk, :add_items, items: %i[pc monitor], dept: ***REMOVED***) }
+
+      context 'when operation is :in' do
+        subject { build(:order, workplace: workplace, consumer_dept: nil) }
+
+        it 'does not change :consumer_dept attribute' do
+          subject.valid?
+          expect(subject.consumer_dept).to be_nil
+        end
+      end
+
+      context 'when operation is :out' do
+        subject { build(:order, operation: :out, workplace: workplace, consumer_dept: nil) }
+
+        it 'sets :consumer_dept attribute' do
+          subject.valid?
+          expect(subject.consumer_dept).to eq workplace.workplace_count.division
+        end
       end
     end
 
@@ -391,7 +437,7 @@ module Warehouse
         subject.valid?
       end
 
-      context 'when warehouse_type of items is :expendable (workplace is not exist)' do
+      context 'when warehouse_type of items is :without_invent_num (workplace is not exist)' do
         let(:old_operation) { build(:order_operation, item_type: 'Клавиатура', item_model: 'OKLICK') }
         let(:new_operation) { build(:order_operation, invent_item_id: workplace.items.first.item_id) }
         subject { create(:order, operations: [old_operation]) }
@@ -401,7 +447,7 @@ module Warehouse
         end
       end
 
-      context 'when warehouse_type of items is :returnable (workplace is exists)' do
+      context 'when warehouse_type of items is :with_invent_num (workplace is exists)' do
         let(:old_operation) { build(:order_operation, invent_item_id: workplace.items.first.item_id) }
         subject { create(:order, workplace: workplace, operations: [old_operation]) }
 
@@ -449,21 +495,21 @@ module Warehouse
 
       it 'prevents changes of :workplace attribute' do
         subject.workplace_id = 123
-        subject.save
+        subject.save(validate: false)
         expect(subject.reload.workplace_id).to eq old_params[:workplace_id]
         expect(subject.errors.details[:workplace]).to include(error: :cannot_update)
       end
 
       it 'prevents changes of :operation attribute' do
         subject.operation = :out
-        subject.save
+        subject.save(validate: false)
         expect(subject.reload.operation).to eq old_params[:operation]
         expect(subject.errors.details[:operation]).to include(error: :cannot_update)
       end
 
       it 'prevents changes of :consumer_dept attribute' do
         subject.consumer_dept = 123
-        subject.save
+        subject.save(validate: false)
         expect(subject.reload.consumer_dept).to eq old_params[:consumer_dept]
         expect(subject.errors.details[:consumer_dept]).to include(error: :cannot_update)
       end

@@ -12,6 +12,7 @@
     this.Config = Config;
     this.Flash = Flash;
     this.Error = Error;
+    this._orderTemplate = {};
 
     this.additional = {};
   }
@@ -22,9 +23,9 @@
     this.additional.divisions = data.divisions;
     // Заполнить список типов оборудования
     this.additional.eqTypes = data.eq_types;
-    // Заполнить список работников отдела
-    this.additional.users = data.users || [];
-  };
+
+    this.Operation.setTemplate(data.operation, this.order.operation);
+  }
 
   /**
    * Создать объект Order
@@ -34,6 +35,7 @@
     if (!this.order.operations_attributes) {
       this.order.operations_attributes = [];
     }
+    this._orderTemplate = angular.copy(this.order);
     this.additional.visibleCount = this.order.operations_attributes.length;
   };
 
@@ -64,7 +66,6 @@
       { warehouse_order_id: order_id },
       function (data) {
         self._processingData(data);
-        self.Operation.setTemplate(data.operation);
       },
       function (response, status) {
         self.Error.response(response, status);
@@ -77,19 +78,31 @@
    *
    * @param type - тип ордера (на приход или расход)
    */
-  Order.prototype.init = function(type) {
+  Order.prototype.init = function(type, data) {
     var self = this;
+
+    if (data) {
+      self._processingData(data);
+
+      return true;
+    }
 
     return this.Server.Warehouse.Order.newOrder(
       { operation: type },
       function(data) {
         self._processingData(data);
-        self.Operation.setTemplate(data.operation);
       },
       function(response, status) {
         self.Error.response(response, status);
       }).$promise;
   };
+
+  /**
+   * Заново заполнить объект order начальными данными.
+   */
+  Order.prototype.reinit = function() {
+    angular.extend(this.order, angular.copy(this._orderTemplate));
+  }
 
   // Order.prototype.loadUsers = function() {
   //   var self = this;
@@ -119,15 +132,15 @@
   /**
    * Добавить объект operation к текущему ордеру
    *
-   * @param type
+   * @param warehouseType
    * @param item
    */
-  Order.prototype.addPosition = function(type, item) {
-    this.order.operations_attributes.push(this.Operation.generate(type, item));
+  Order.prototype.addPosition = function(warehouseType, item) {
+    this.order.operations_attributes.push(this.Operation.generate(warehouseType, item));
     this.additional.visibleCount ++;
   };
-
   /**
+
    * Удалить объект operation из ордера
    *
    * @param operation

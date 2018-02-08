@@ -7,13 +7,13 @@ script type="text/ng-template" id="existingItem.slim"
         = fa_icon "spinner pulse 2x fw"
   .modal-body
     .form-group
-      = radio_button_tag :new_item, "returnable", false, "ng-model": "select.warehouseType"
-      = label_tag :new_item_returnable, "С инвентарным номером", class: "control-label"
+      = radio_button_tag :new_item, "with_invent_num", false, "ng-model": "select.warehouseType"
+      = label_tag :new_item_with_invent_num, "С инвентарным номером", class: "control-label"
       br
-      = radio_button_tag :new_item, "expendable", false, "ng-model": "select.warehouseType"
-      = label_tag :new_item_expendable, "Без инвентарного номера", class: "control-label"
+      = radio_button_tag :new_item, "without_invent_num", false, "ng-model": "select.warehouseType"
+      = label_tag :new_item_without_invent_num, "Без инвентарного номера", class: "control-label"
 
-    div ng-show="select.warehouseType == 'returnable'"
+    div ng-show="select.warehouseType == 'with_invent_num'"
       .form-group
         = label_tag "equipment_type", "Тип техники", class: "control-label"
         = select_tag "equipment_type", "", class: "form-control", "ng-model": "select.selectedType",
@@ -38,7 +38,7 @@ script type="text/ng-template" id="existingItem.slim"
             ui-select-choices repeat="obj in select.items | filter: $select.search"
               div ng-bind-html="obj.main_info | highlight: $select.search"
               small ng-bind-html="obj.get_item_model | highlight: $select.search"
-    div ng-show="select.warehouseType == 'expendable'"
+    div ng-show="select.warehouseType == 'without_invent_num'"
       .form-group
         = label_tag "item_type", "Тип", class: "control-label"
         = text_field_tag "item_type", "", class: "form-control", "ng-model": "select.manuallyItem.item_type"

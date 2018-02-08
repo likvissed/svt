@@ -17,10 +17,12 @@ module Invent
     belongs_to :workplace, optional: true
     belongs_to :model, optional: true
 
-    validates :invent_num, presence: true
-    validate :presence_model, :check_mandatory, if: -> { errors.details[:type].empty? }
+    validates :invent_num, presence: true, unless: -> { status == 'waiting_take' }
+    validate :presence_model, :check_mandatory, if: -> { errors.details[:type].empty? && !disable_filters }
 
     before_save :set_default_model
+
+    attr_accessor :disable_filters
 
     delegate :properties, to: :type
 

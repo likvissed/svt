@@ -63,8 +63,9 @@ module Warehouse
         end
 
         context 'when invent_item was not updated' do
+          before { allow_any_instance_of(Invent::Item).to receive(:update_attributes!).and_raise(ActiveRecord::RecordNotSaved) }
+
           it 'does not save all another records' do
-            allow_any_instance_of(Invent::Item).to receive(:update_attributes!).and_raise(ActiveRecord::RecordNotSaved)
             subject.run
 
             expect(operations.first.reload.processing?).to be_truthy
@@ -77,8 +78,9 @@ module Warehouse
         end
 
         context 'when warehouse_item was not updated' do
+            before { allow_any_instance_of(Item).to receive(:save!).and_raise(ActiveRecord::RecordNotSaved) }
+
           it 'does not save all another records' do
-            allow_any_instance_of(Item).to receive(:save!).and_raise(ActiveRecord::RecordNotSaved)
             subject.run
 
             expect(operations.first.reload.processing?).to be_truthy
@@ -159,7 +161,7 @@ module Warehouse
 
           [first_op, sec_op].each do |op|
             op.reload
-            expect(op.item.warehouse_type).to eq 'expendable'
+            expect(op.item.warehouse_type).to eq 'without_invent_num'
             expect(op.item.item_type).to eq op.item_type
             expect(op.item.item_model).to eq op.item_model
             expect(op.item.used).to be_truthy
@@ -174,24 +176,32 @@ module Warehouse
           expect(subject.instance_variable_get(:@item_ids)).to be_empty
         end
 
-        context 'when warehouse_item was not created' do
+        context 'and when warehouse_item was not created' do
+          before { allow_any_instance_of(Operation).to receive(:create_item!).and_raise { ActiveRecord::RecordNotSaved } }
+
           it 'does not save all another records' do
-            allow_any_instance_of(Item).to receive(:save).and_return(false)
             subject.run
 
-            [first_op, sec_op].each do |op|
-              expect(op.reload.processing?).to be_truthy
-              expect(op.reload.stockman_fio).to be_nil
-              expect(op.reload.stockman_id_tn).to be_nil
+            [first_op.reload, sec_op.reload].each do |op|
+              expect(op.processing?).to be_truthy
+              expect(op.stockman_fio).to be_nil
+              expect(op.stockman_id_tn).to be_nil
             end
             expect(order.reload.consumer_id_tn).to be_nil
             expect(order.reload.consumer_fio).to be_nil
           end
+
+          it 'does not create item' do
+            expect { subject.run }.not_to change(Item, :count)
+          end
+
+          its(:run) { is_expected.to be_falsey }
         end
 
-        context 'when order was not updated' do
+        context 'and when order was not updated' do
+          before { allow_any_instance_of(Order).to receive(:save).and_return(false) }
+
           it 'does not save all another records' do
-            allow_any_instance_of(Order).to receive(:save).and_return(false)
             subject.run
 
             [first_op, sec_op].each do |op|
@@ -202,15 +212,16 @@ module Warehouse
           end
 
           it 'does not create item' do
-            allow_any_instance_of(Order).to receive(:save).and_return(false)
             expect { subject.run }.not_to change(Item, :count)
           end
+
+          its(:run) { is_expected.to be_falsey }
         end
       end
 
       context 'when one of operations already done and another just selected' do
         let(:user) { create(:user) }
-        let(:item) { create(:used_item, warehouse_type: :expendable, item_type: 'Мышь', item_model: 'Logitech') }
+        let(:item) { create(:used_item, warehouse_type: :without_invent_num, item_type: 'Мышь', item_model: 'Logitech') }
         let(:first_op) { build(:order_operation, item_type: 'Мышь', item_model: 'Logitech', status: :done, item: item, stockman_id_tn: user.id_tn) }
         let(:sec_op) { build(:order_operation, item_type: 'Клавиатура', item_model: 'OKLICK') }
         let(:operations) { [first_op, sec_op] }

@@ -5,7 +5,7 @@ module Warehouse
     sign_in_user
 
     describe 'GET #index' do
-      it 'creates instance of the Orders::NewOrder' do
+      it 'creates instance of the Orders::Index' do
         get :index, format: :json
         expect(assigns(:index)).to be_instance_of Orders::Index
       end
@@ -28,18 +28,33 @@ module Warehouse
       end
     end
 
-    describe 'POST #create' do
+    describe 'POST #create_in' do
       let(:order) { build(:order) }
       let(:order_params) { { order: order.as_json } }
 
-      it 'creates instance of the Orders::Create' do
-        post :create, params: order_params, format: :json
-        expect(assigns(:create)).to be_instance_of Orders::Create
+      it 'creates instance of the Orders::CreateIn' do
+        post :create_in, params: order_params, format: :json
+        expect(assigns(:create_in)).to be_instance_of Orders::CreateIn
       end
 
       it 'calls :run method' do
-        expect_any_instance_of(Orders::Create).to receive(:run)
-        post :create, params: order_params, format: :json
+        expect_any_instance_of(Orders::CreateIn).to receive(:run)
+        post :create_in, params: order_params, format: :json
+      end
+    end
+
+    describe 'POST #create_out' do
+      let(:order) { build(:order) }
+      let(:order_params) { { order: order.as_json } }
+
+      it 'creates instance of the Orders::CreateOut' do
+        post :create_out, params: order_params, format: :json
+        expect(assigns(:create_out)).to be_instance_of Orders::CreateOut
+      end
+
+      it 'calls :run method' do
+        expect_any_instance_of(Orders::CreateOut).to receive(:run)
+        post :create_out, params: order_params, format: :json
       end
     end
 

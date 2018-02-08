@@ -3,12 +3,14 @@
 
   app
     .controller('OrdersController', OrdersController)
-    .controller('EditOrderController', EditOrderController)
+    .controller('EditInOrderController', EditInOrderController)
+    .controller('EditOutOrderController', EditOutOrderController)
     .controller('ExecOrderController', ExecOrderController)
     .controller('ItemsForOrderController', ItemsForOrderController);
 
   OrdersController.$inject = ['$uibModal', 'ActionCableChannel', 'TablePaginator', 'Order', 'Flash', 'Error', 'Server'];
-  EditOrderController.$inject = ['$uibModal', '$uibModalInstance', 'Order', 'Flash', 'Error', 'Server'];
+  EditInOrderController.$inject = ['$uibModal', '$uibModalInstance', 'Order', 'Flash', 'Error', 'Server'];
+  EditOutOrderController.$inject = ['$uibModal', '$uibModalInstance', 'Order', 'WarehouseItems', 'Flash', 'Error', 'Server'];
   ExecOrderController.$inject = ['$uibModal', '$uibModalInstance', 'Order', 'Flash', 'Error', 'Server'];
   ItemsForOrderController.$inject = ['$uibModalInstance', 'eqTypes', 'Order', 'Flash'];
 
@@ -33,7 +35,7 @@
   OrdersController.prototype._initActionCable = function() {
     var
       self = this,
-      consumer = new this.ActionCableChannel('OrdersChannel');
+      consumer = new this.ActionCableChannel('Warehouse::OrdersChannel');
 
     consumer.subscribe(function() {
       self._loadOrders();
@@ -58,8 +60,8 @@
    */
   OrdersController.prototype._openEditModal = function() {
     this.$uibModal.open({
-      templateUrl: 'bringModal.slim',
-      controller: 'EditOrderController',
+      templateUrl: 'inOrderModal.slim',
+      controller: 'EditInOrderController',
       controllerAs: 'edit',
       size: 'md',
       backdrop: 'static'
@@ -67,12 +69,19 @@
   };
 
   /**
+   * События изменения страницы.
+   */
+  OrdersController.prototype.changePage = function() {
+    this._loadOrders();
+  };
+
+  /**
    * Открыть окно создания ордера.
    */
-  OrdersController.prototype.newOrder = function(type) {
+  OrdersController.prototype.newOrder = function() {
     var self = this;
 
-    this.Order.init(type).then(function() {
+    this.Order.init('in').then(function() {
       self._openEditModal();
     });
   };
@@ -130,7 +139,7 @@
 
 // =====================================================================================================================
 
-  function EditOrderController($uibModal, $uibModalInstance, Order, Flash, Error, Server) {
+  function EditInOrderController($uibModal, $uibModalInstance, Order, Flash, Error, Server) {
     this.setFormName('order');
 
     this.$uibModal = $uibModal;
@@ -147,13 +156,13 @@
   }
 
   // Унаследовать методы класса FormValidationController
-  EditOrderController.prototype = Object.create(FormValidationController.prototype);
-  EditOrderController.prototype.constructor = EditOrderController;
+  EditInOrderController.prototype = Object.create(FormValidationController.prototype);
+  EditInOrderController.prototype.constructor = EditInOrderController;
 
   /**
    * Открыть форму добавления техники в позицию ордера
    */
-  EditOrderController.prototype._openFormToAddExistingItem = function() {
+  EditInOrderController.prototype._openFormToAddExistingItem = function() {
     var self = this;
 
     var modalInstance = this.$uibModal.open({
@@ -167,16 +176,15 @@
       }
     });
 
-    modalInstance.result.then(
-      function(result) {
-        self.Order.addPosition(result.type, result.item);
-      });
+    modalInstance.result.then(function(result) {
+      self.Order.addPosition(result.warehouseType, result.item);
+    });
   };
 
   /**
    * Событие выбора отдела.
    */
-  // EditOrderController.prototype.changeDivision = function() {
+  // EditInOrderController.prototype.changeDivision = function() {
   //   this.selectedConsumer = {};
   //   this.Order.setConsumer();
   //   this.Order.loadUsers();
@@ -185,7 +193,7 @@
   /**
    * Установить параметры пользователя, сдающего технику
    */
-  EditOrderController.prototype.changeConsumer = function() {
+  EditInOrderController.prototype.changeConsumer = function() {
     this.Order.setConsumer(this.selectedConsumer);
   };
 
@@ -195,7 +203,7 @@
    *
    * @param obj - объект выбранного ответственного.
    */
-  EditOrderController.prototype.formatLabel = function(obj) {
+  EditInOrderController.prototype.formatLabel = function(obj) {
     if (!this.extra.users) { return ''; }
 
     for (var i = 0; i < this.extra.users.length; i ++) {
@@ -208,21 +216,21 @@
   /**
    * Добавить позицию
    */
-  EditOrderController.prototype.addPosition = function() {
+  EditInOrderController.prototype.addPosition = function() {
     this._openFormToAddExistingItem();
   };
 
   /**
    * Убрать позицию
    */
-  EditOrderController.prototype.delPosition = function(operation) {
+  EditInOrderController.prototype.delPosition = function(operation) {
     this.Order.delPosition(operation);
   };
 
   /**
    * Создать ордер
    */
-  EditOrderController.prototype.ok = function() {
+  EditInOrderController.prototype.ok = function() {
     var
       self = this,
       sendData = this.Order.getObjectToSend();
@@ -241,7 +249,7 @@
         }
       )
     } else {
-      this.Server.Warehouse.Order.save(
+      this.Server.Warehouse.Order.saveIn(
         { order: sendData },
         function success(response) {
           self.Flash.notice(response.full_message);
@@ -258,9 +266,95 @@
   /**
    * Закрыть модальное окно.
    */
-  EditOrderController.prototype.cancel = function() {
+  EditInOrderController.prototype.cancel = function() {
     this.$uibModalInstance.dismiss();
   };
+
+// =====================================================================================================================
+
+  function EditOutOrderController($uibModal, $uibModalInstance, Order, WarehouseItems, Flash, Error, Server) {
+    var self = this;
+
+    this.setFormName('order');
+
+    this.$uibModal = $uibModal;
+    this.$uibModalInstance = $uibModalInstance;
+    this.Order = Order;
+    this.Items = WarehouseItems;
+    this.Flash = Flash;
+    this.Error = Error;
+    this.Server = Server;
+
+    this.order = this.Order.order;
+    this.extra = this.Order.additional;
+
+    this.order.createShiftGetterSetter = function(op) {
+      op.shiftGetterSetter = function(newShift) {
+        if (angular.isDefined(newShift)) {
+          op.shift = -newShift;
+        }
+
+        return Math.abs(op.shift);
+      };
+
+      return op.shiftGetterSetter;
+    }
+  }
+
+  // Унаследовать методы класса FormValidationController
+  EditOutOrderController.prototype = Object.create(FormValidationController.prototype);
+  EditOutOrderController.prototype.constructor = EditInOrderController;
+
+  /**
+   * Убрать позицию
+   */
+  EditOutOrderController.prototype.delPosition = function(operation) {
+    this.Order.delPosition(operation);
+    this.Items.items.find(function(item) { return item.warehouse_item_id == operation.warehouse_item_id; }).added_to_order = false
+  };
+
+  /**
+   * Закрыть модальное окно.
+   */
+  EditOutOrderController.prototype.cancel = function() {
+    this.$uibModalInstance.dismiss();
+  };
+
+  /**
+   * Создать ордер
+   */
+  EditOutOrderController.prototype.ok = function() {
+    var
+      self = this,
+      sendData = this.Order.getObjectToSend();
+
+    if (this.order.warehouse_order_id) {
+      this.Server.Warehouse.Order.update(
+        { warehouse_order_id: this.order.warehouse_order_id },
+        { order: sendData },
+        function success(response) {
+          self.Flash.notice(response.full_message);
+          self.$uibModalInstance.close();
+        },
+        function error(response, status) {
+          self.Error.response(response, status);
+          self.errorResponse(response);
+        }
+      )
+    } else {
+      this.Server.Warehouse.Order.saveOut(
+        { order: sendData },
+        function success(response) {
+          self.Flash.notice(response.full_message);
+          self.$uibModalInstance.close();
+        },
+        function error(response, status) {
+          self.Error.response(response, status);
+          self.errorResponse(response);
+        }
+      )
+    }
+  }
 
 // =====================================================================================================================
 
@@ -393,19 +487,19 @@
   };
 
   ItemsForOrderController.prototype.ok = function() {
-    if (this.warehouseType == 'returnable' && Object.keys(this.selectedItem).length == 0) {
+    if (this.warehouseType == 'with_invent_num' && Object.keys(this.selectedItem).length == 0) {
       this.Flash.alert('Необходимо указать инвентарный номер и выбрать технику');
       return false;
     }
 
-    if (this.warehouseType == 'expendable' && !this.manuallyItem.item_model && !this.manuallyItem.item_type) {
+    if (this.warehouseType == 'without_invent_num' && !this.manuallyItem.item_model && !this.manuallyItem.item_type) {
       this.Flash.alert('Необходимо указать тип и наименование техники');
       return false;
     }
 
     var result = {
-      type: this.warehouseType,
-      item: this.warehouseType == 'returnable' ? this.selectedItem : this.manuallyItem
+      warehouseType: this.warehouseType,
+      item: this.warehouseType == 'with_invent_num' ? this.selectedItem : this.manuallyItem
     };
 
     this.$uibModalInstance.close(result);

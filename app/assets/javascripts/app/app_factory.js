@@ -182,6 +182,9 @@
         }
       }),
       Warehouse: {
+        Item: $resource('/warehouse/items/:warehouse_item_id.json', {}, {
+          query: { method: 'GET', isArray: false }
+        }),
         Order: $resource('/warehouse/orders/:warehouse_order_id.json', {}, {
           query: { method: 'GET', isArray: false },
           newOrder: {
@@ -192,6 +195,14 @@
           edit: {
             method: 'GET',
             url: '/warehouse/orders/:warehouse_order_id/edit.json'
+          },
+          saveIn: {
+            method: 'POST',
+            url: '/warehouse/orders/create_in'
+          },
+          saveOut: {
+            method: 'POST',
+            url: '/warehouse/orders/create_out'
           },
           update: { method: 'PUT' },
           execute: {

@@ -1,7 +1,7 @@
 module Warehouse
   module Orders
     # Создание приходного ордера
-    class Create < BaseService
+    class CreateIn < BaseService
       def initialize(current_user, order_params)
         @error = {}
         @current_user = current_user
@@ -36,7 +36,7 @@ module Warehouse
           order = @order_params.deep_dup
           # Выбор операций для текущего РМ из полученного массива операций
           order['operations_attributes'] = order['operations_attributes'].select { |attr| items.select { |i| i['workplace_id'] == item.workplace_id }.map(&:item_id).include?(attr['invent_item_id']) }
-          order['item_to_orders_attributes'] = order['operations_attributes'].map { |attr| { invent_item_id: attr['invent_item_id'] } }
+          order['inv_item_ids'] = order['operations_attributes'].map { |attr| attr['invent_item_id'] }
           order
         end
 
@@ -61,7 +61,7 @@ module Warehouse
               save_order(order)
 
               Invent::Item.transaction(requires_new: true) do
-                order.item_to_orders.each { |io| io.inv_item.update!(status: :waiting_bring) }
+                order.inv_items.each { |item| item.update!(status: :waiting_bring) }
               end
             end
 
@@ -77,7 +77,7 @@ module Warehouse
             raise ActiveRecord::Rollback
           end
         end
-        end
+      end
 
       def init_order(param)
         @order = Order.new(param)
@@ -98,7 +98,7 @@ module Warehouse
       end
 
       def find_or_create_warehouse_items
-        @order.item_to_orders.each { |io| warehouse_item(io) }
+        @order.inv_items.each { |item| warehouse_item(item) }
       end
     end
   end

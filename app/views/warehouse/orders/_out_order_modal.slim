@@ -1,0 +1,46 @@
+script type="text/ng-template" id="outOrderModal.slim"
+  form role="form" name="edit.form" data-method="edit.method"
+    .modal-header
+      h4 Расходный ордер
+    .modal-body
+      .form-group ng-class="edit.errorClass('order[consumer]')"
+        = label_tag "order[consumer]", "ФИО или таб. № получающего технику", class: "control-label"
+        = text_field_tag "order[consumer]", "", class: "form-control", autocomplete: "off", "ng-model": "edit.order.consumer"
+        span.help-block ng-show="edit.form['order[consumer]'].$invalid" ng-bind="edit.errorMessage('order[consumer]')"
+
+      .form-group ng-class="edit.errorClass('order[workplace_id]')"
+        = label_tag "order[workplace_id]", "ID рабочего места", class: "control-label"
+        = text_field_tag "order[workplace_id]", "", class: "form-control", autocomplete: "off", "ng-model": "edit.order.workplace_id"
+        span.help-block ng-show="edit.form['order[workplace_id]'].$invalid" ng-bind="edit.errorMessage('order[workplace_id]')"
+
+      .form-group
+        h4
+          ' Позиции
+          span ng-if="!edit.extra.visibleCount"
+            ' отсутствуют
+        table.table.table-striped.table-condensed ng-if="edit.extra.visibleCount"
+          thead
+            tr
+              th.col-fhd-6.col-xlg-6.col-lg-6.col-md-7.col-sm-7 Тип
+              th.col-fhd-3.col-xlg-4.col-lg-4.col-md-4.col-sm-4 Инв. №
+              th.col-fhd-11.col-xlg-11.col-xlg-10.col-md-10.col-sm-10 Модель
+              th.col-fhd-3.col-xlg-3.col-lg-3.col-md-3.col-sm-3 Кол-во
+              th.col-fhd-1
+          tbody
+            tr.animate-repeat ng-repeat="op in edit.order.operations_attributes" ng-hide="op._destroy"
+              td ng-bind="op.item_type"
+              td ng-bind="op.inv_item.invent_num"
+              td ng-bind="op.item_model"
+              td
+                input type="text" ng-model="edit.order.createShiftGetterSetter(op)" ng-model-options="{ getterSetter: true }" class="form-control"
+              td
+                = fa_icon "minus-circle lg", class: "pointer", "tooltip-placement": "left", "uib-tooltip": "Убрать позицию",
+                "ng-click": "edit.delPosition(op)"
+
+        .form-group
+          = label_tag "order[comment]", "Комментарий", class: "control-label"
+          = text_area_tag "order[comment]", "", class: "form-control", rows: "3", "ng-model": "exec.order.comment"
+
+    .modal-footer
+      = button_tag "Вернуться к списку", class: "btn-default btn-sm", "ng-click": "edit.cancel()"
+      = button_tag "Создать", class: "btn-success btn-sm", "ng-click": "edit.ok()"

@@ -25,13 +25,23 @@ module Warehouse
       end
     end
 
-    def create
-      @create = Orders::Create.new(current_user, order_params)
+    def create_in
+      @create_in = Orders::CreateIn.new(current_user, order_params)
 
-      if @create.run
-        render json: { full_message: I18n.t('controllers.order.created', count: @create.data) }
+      if @create_in.run
+        render json: { full_message: I18n.t('controllers.order.created_in', count: @create_in.data) }
       else
-        render json: @create.error, status: 422
+        render json: @create_in.error, status: 422
+      end
+    end
+
+    def create_out
+      @create_out = Orders::CreateOut.new(current_user, order_params)
+
+      if @create_out.run
+        render json: { full_message: I18n.t('controllers.order.created_out') }
+      else
+        render json: @create_out.error, status: 422
       end
     end
 

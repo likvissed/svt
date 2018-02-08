@@ -4,13 +4,13 @@ module Warehouse
     class NewOrder < BaseService
       def initialize(operation)
         @data = {}
-        @operation = operation
+        @operation = operation.to_sym
       end
 
       def run
         init_order
         load_divisions
-        load_types
+        load_types if @operation == :in
 
         true
       rescue RuntimeError => e
@@ -24,7 +24,7 @@ module Warehouse
 
       def init_order
         data[:order] = Order.new(operation: @operation)
-        data[:operation] = data[:order].operations.build(shift: 1)
+        data[:operation] = data[:order].operations.build
       end
 
       def load_divisions

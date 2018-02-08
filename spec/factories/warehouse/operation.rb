@@ -7,7 +7,6 @@ module Warehouse
       operationable_type 'Warehouse::Order'
       item_type { Invent::Item.find_by(item_id: invent_item_id).try(:type).try(:short_description) || 'Test type' }
       item_model { Invent::Item.find_by(item_id: invent_item_id).try(:get_item_model) || 'Test model' }
-      shift 1
       status 'processing'
       invent_item_id nil
 

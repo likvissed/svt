@@ -5,22 +5,26 @@ module Warehouse
         ActionCable.server.broadcast 'orders', nil
       end
 
+      def broadcast_items
+        ActionCable.server.broadcast 'items', nil
+      end
+
       protected
 
-      def warehouse_item(io)
+      def warehouse_item(inv_item)
         begin
-          item = Item.find_or_create_by!(invent_item_id: io[:invent_item_id]) do |w_item|
-            w_item.inv_item = io.inv_item
-            w_item.type = io.inv_item.type
-            w_item.model = io.inv_item.model
-            w_item.warehouse_type = :returnable
+          item = Item.find_or_create_by!(invent_item_id: inv_item.item_id) do |w_item|
+            w_item.inv_item = inv_item
+            w_item.type = inv_item.type
+            w_item.model = inv_item.model
+            w_item.warehouse_type = :with_invent_num
             w_item.used = true
           end
         rescue ActiveRecord::RecordNotUnique
           item = Item.find(io[:invent_item_id])
         end
 
-        @order.operations.select { |op| op.invent_item_id == io.invent_item_id }.each do |op|
+        @order.operations.select { |op| op.invent_item_id == inv_item.item_id }.each do |op|
           op.item = item
 
           if Invent::Type::TYPE_WITH_FILES.include?(op.item.inv_item.type.name)
@@ -36,11 +40,15 @@ module Warehouse
         raise 'Ордер не сохранен'
       end
 
-      def process_order_errors(order)
+      def process_order_errors(order, with_operations = false)
         error[:object] = order.errors
-        order_errors = order.errors.full_messages
-        operation_errors = order.operations.map { |op| op.errors.full_messages }
-        error[:full_message] = [order_errors, operation_errors].flatten.join('. ')
+        error[:full_message] = if with_operations
+                                 order_errors = order.errors.full_messages
+                                 operation_errors = order.operations.map { |op| op.errors.full_messages }
+                                 [order_errors, operation_errors].flatten.join('. ')
+                               else
+                                 order.errors.full_messages.join('. ')
+                               end
       end
     end
   end

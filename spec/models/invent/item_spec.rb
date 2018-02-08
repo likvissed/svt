@@ -15,6 +15,12 @@ module Invent
     it { is_expected.to delegate_method(:properties).to(:type) }
     it { is_expected.to accept_nested_attributes_for(:property_values).allow_destroy(true) }
 
+    context 'when status is :waiting_take' do
+      before { subject.status = :waiting_take }
+
+      it { is_expected.not_to validate_presence_of(:invent_num) }
+    end
+
     describe '#presence_model' do
       context 'when item_type belongs to array Type::PRESENCE_MODEL_EXCEPT' do
         Type::PRESENCE_MODEL_EXCEPT.each do |type|
@@ -84,6 +90,12 @@ module Invent
           subject.properties.where(mandatory: true) do |prop|
             expect(item.errors.details[:base]).to include(error: :property_not_filled, empty_field: prop.short_description)
           end
+        end
+
+        context 'and when flag disable_filters is set' do
+          before { subject.disable_filters = true }
+
+          it { is_expected.to be_valid }
         end
       end
     end

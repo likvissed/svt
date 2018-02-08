@@ -103,6 +103,7 @@
 
     delete(this.workplaceCopy.workplace_type);
     delete(this.workplaceCopy.location_site);
+    delete(this.workplaceCopy.division);
 
     this.workplaceCopy.items_attributes.forEach(function(item) { self.Item.delProperties(item); });
   };

@@ -1,4 +1,4 @@
-script type="text/ng-template" id="bringModal.slim"
+script type="text/ng-template" id="inOrderModal.slim"
   form role="form" name="edit.form" data-method="edit.method"
     .modal-header
       h4 Приходный ордер
@@ -35,7 +35,7 @@ script type="text/ng-template" id="bringModal.slim"
               th.col-fhd-6.col-xlg-6.col-lg-6.col-md-7.col-sm-7 Тип
               th.col-fhd-5.col-xlg-5.col-lg-5.col-md-5.col-sm-5 Инв. №
               th.col-fhd-12.col-xlg-12.col-xlg-12.col-md-11.col-sm-11 Модель
-              th.col-fhd-1.col-xlg-1.col-lg-1.col-md-1.col-sm-1
+              th.col-fhd-1
           tbody
             tr.animate-show ng-repeat="op in edit.order.operations_attributes" ng-hide="op._destroy" ng-if="op.invent_item_id"
               td ng-bind="op.inv_item.type.short_description"

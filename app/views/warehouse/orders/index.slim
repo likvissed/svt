@@ -3,15 +3,9 @@
 #index_order.container ng-controller="OrdersController as table"
   .well
     .row
-      .col-fhd-2.col-xlg-2.col-lg-3.col-md-3.col-sm-3
-        .dropdown
-          = button_tag type: :button, class: "btn-primary btn-sm btn-block", "data-toggle": "dropdown" do
-            ' Добавить
-            .pull-right
-              = fa_icon "caret-down"
-          ul.dropdown-menu
-            li= link_to "Приходный ордер", "", "ng-click": "table.newOrder('in')"
-            li= link_to "Расходный ордер", "", "ng-click": "table.newOrder('out')"
+      .col-fhd-4.col-xlg-5.col-lg-6.col-md-6.col-sm-7
+        = button_tag "Сформировать приходный ордер", type: :button, class: "btn-primary btn-sm btn-block", "ng-click": "table.newOrder()"
+
     .row
       .col-fhd-24
         table.table.table-striped.table-condensed
@@ -54,7 +48,7 @@
         .animate-show ng-table-info="" info-attrs="table.pagination" ng-if="table.orders"
       .col-xs-12
         ul{ uib-pagination="true" total-items="table.pagination.filteredRecords" ng-model="table.pagination.currentPage"
-          max-size="table.pagination.maxSize" class="pagination-sm pull-right" ng-change="v.changePage()" }
+          max-size="table.pagination.maxSize" class="pagination-sm pull-right" ng-change="table.changePage()" }
 
-= render partial: 'bring_modal'
+= render partial: 'in_order_modal'
 = render partial: 'exec_order'

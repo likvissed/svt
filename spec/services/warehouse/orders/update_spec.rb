@@ -6,7 +6,7 @@ module Warehouse
       let(:user) { create(:user) }
       subject { Update.new(user, order.warehouse_order_id, order_params) }
 
-      context 'when warehouse_type is :expendable' do
+      context 'when warehouse_type is :without_invent_num' do
         let!(:order) { create(:order) }
         let(:order_json) { order.as_json }
 
@@ -69,7 +69,7 @@ module Warehouse
         end
       end
 
-      context 'when warehouse_type is :returnable' do
+      context 'when warehouse_type is :with_invent_num' do
         let(:workplace) { create(:workplace_pk, :add_items, items: %i[pc monitor monitor]) }
         let(:operation_1) { attributes_for(:order_operation, invent_item_id: workplace.items.first.item_id) }
         let(:operation_2) { attributes_for(:order_operation, invent_item_id: workplace.items[1].item_id) }
@@ -95,7 +95,7 @@ module Warehouse
         end
 
         before do
-          Create.new(user, create_order_params.as_json).run
+          CreateIn.new(user, create_order_params.as_json).run
           Execute.new(user, order.warehouse_order_id, execute_order_params.as_json).run
           order.reload
         end
@@ -157,10 +157,7 @@ module Warehouse
           end
 
           context 'and when order is not updated' do
-            before do
-              allow(Order).to receive_message_chain(:includes, :find).and_return(order)
-              allow(order).to receive(:save).and_return(false)
-            end
+            before { allow_any_instance_of(Order).to receive(:save).and_return(false) }
 
             include_examples 'failed updating on add'
           end

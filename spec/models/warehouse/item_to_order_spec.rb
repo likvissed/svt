@@ -26,7 +26,13 @@ module Warehouse
         end
       end
 
-      context 'when order is not exist' do
+      it { is_expected.to be_valid }
+
+      context 'when operation has :operation_already_exists error' do
+        let!(:order) { create(:order) }
+        subject { build(:item_to_order, inv_item: item, order: order) }
+        before { allow_any_instance_of(Order).to receive_message_chain(:errors, :details, :[], :any?).and_return(true) }
+
         it { is_expected.to be_valid }
       end
     end

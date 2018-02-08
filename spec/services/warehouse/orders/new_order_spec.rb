@@ -8,12 +8,32 @@ module Warehouse
       subject { NewOrder.new(:in) }
       before { subject.run }
 
-      it 'fills the @data with %w[order operation divisioins operation] keys' do
-        expect(subject.data).to include(:order, :eq_types, :divisions, :operation)
+      context 'when order has :out type' do
+        subject { NewOrder.new('out') }
+
+        it 'does not fill the @data with :eq_types key' do
+          expect(subject.data).not_to include(:eq_types)
+        end
       end
 
-      it 'loads all divisions to the :divisions key' do
-        expect(subject.data[:divisions].length).to eq Invent::WorkplaceCount.count
+      context 'when order has :in type' do
+        subject { NewOrder.new('in') }
+
+        it 'fills the @data with :eq_types key' do
+          expect(subject.data).to include(:order, :eq_types, :divisions, :operation)
+        end
+
+        it 'loads all divisions to the :divisions key' do
+          expect(subject.data[:divisions].length).to eq Invent::WorkplaceCount.count
+        end
+
+        it 'loads all types of equipment' do
+          expect(subject.data[:eq_types].count).to eq Invent::Type.count - 1
+        end
+      end
+
+      it 'fills the @data with %w[order divisioins operation] keys' do
+        expect(subject.data).to include(:order, :divisions, :operation)
       end
 
       it 'creates instance of Order' do
@@ -36,10 +56,6 @@ module Warehouse
 
       it 'sets operationable_type to "Warehouse::Order"' do
         expect(subject.data[:operation].operationable_type).to eq 'Warehouse::Order'
-      end
-
-      it 'loads all types of equipment' do
-        expect(subject.data[:eq_types].count).to eq Invent::Type.count - 1
       end
     end
   end

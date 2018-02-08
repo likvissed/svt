@@ -21,7 +21,6 @@ module Warehouse
 
       it 'uniqueness inv_item' do
         subject.valid?
-        puts subject.errors.full_messages
         expect(subject.errors.details[:inv_item]).to include(error: :taken, value: inv_item)
       end
     end
@@ -62,7 +61,7 @@ module Warehouse
 
       context 'when :used is true' do
         let!(:item) { create(:used_item, inv_item: inv_item) }
-        subject { build(:used_item, inv_item: inv_item, used: true) }
+        subject { build(:used_item, inv_item: inv_item) }
 
         it 'does not have :taken error' do
           subject.valid?
@@ -83,6 +82,55 @@ module Warehouse
             subject.valid?
             expect(subject.errors.details[:item_model]).to include(error: :taken)
           end
+        end
+      end
+    end
+
+    describe 'max_count' do
+      let(:inv_item) { create(:item, :with_property_values, type_name: 'monitor') }
+
+      context 'when count > 1' do
+        subject { build(:used_item, inv_item: inv_item, count: 2) }
+
+        it 'adds error' do
+          subject.valid?
+
+          expect(subject.errors.details[:count]).to include(error: :max_count_exceeded)
+        end
+      end
+
+      context 'when count = 1' do
+        subject { build(:used_item, inv_item: inv_item, count: 1) }
+
+        it { is_expected.to be_valid }
+      end
+
+      context 'when count < 1' do
+        subject { build(:used_item, inv_item: inv_item, count: 0) }
+
+        it { is_expected.to be_valid }
+      end
+    end
+
+    describe '#compare_counts' do
+      context 'when count > count_reserved' do
+        subject { build(:used_item, count: 1, count_reserved: 0) }
+
+        it { is_expected.to be_valid }
+      end
+
+      context 'when count = count_reserved' do
+        subject { build(:used_item, count: 1, count_reserved: 1) }
+
+        it { is_expected.to be_valid }
+      end
+
+      context 'when count < count_reserved' do
+        subject { build(:used_item, count: 0, count_reserved: 1) }
+
+        it 'adds :out_of_stock error' do
+          subject.valid?
+          expect(subject.errors.details[:base]).to include(error: :out_of_stock, type: subject.item_type)
         end
       end
     end

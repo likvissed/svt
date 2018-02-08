@@ -12,7 +12,6 @@ module Warehouse
     it { is_expected.to validate_presence_of(:status) }
     it { is_expected.not_to validate_presence_of(:stockman_fio) }
     it { is_expected.not_to validate_presence_of(:date) }
-    it { is_expected.to accept_nested_attributes_for(:item).allow_destroy(false) }
 
     context 'when status is done' do
       subject { build(:order_operation, status: :done) }
@@ -132,9 +131,9 @@ module Warehouse
         expect { operation.destroy }.not_to change(Operation, :count)
       end
 
-      it 'adds :cannot_destroy_done error' do
+      it 'adds :cannot_destroy_done_operation error' do
         operation.destroy
-        expect(operation.errors.details[:base]).to include(error: :cannot_destroy_done)
+        expect(operation.errors.details[:base]).to include(error: :cannot_destroy_done_operation)
       end
     end
   end

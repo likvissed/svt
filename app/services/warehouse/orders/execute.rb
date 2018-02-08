@@ -13,6 +13,7 @@ module Warehouse
         find_order
         return false unless wrap_order
         broadcast_orders
+        broadcast_items
 
         true
       rescue RuntimeError => e
@@ -35,11 +36,17 @@ module Warehouse
               error[:full_message] = I18n.t('activemodel.errors.models.warehouse/orders/execute.operation_not_selected')
               raise 'Позиции не выбраны'
             end
+
             save_order
-            update_items if @item_ids.any?
+            update_invent_items if @item_ids.any?
 
             true
-          rescue ActiveRecord::RecordNotSaved
+          rescue ActiveRecord::RecordNotSaved, ActiveRecord::RecordInvalid
+            raise ActiveRecord::Rollback
+          rescue RuntimeError => e
+            Rails.logger.error e.inspect.red
+            Rails.logger.error e.backtrace[0..5].inspect
+
             raise ActiveRecord::Rollback
           end
         end
@@ -58,8 +65,8 @@ module Warehouse
             op.item.count = op.item.count + op.shift.to_i
             op.warehouse_item_id
           else
-            op.build_item(
-              warehouse_type: :expendable,
+            op.create_item!(
+              warehouse_type: :without_invent_num,
               item_type: op.item_type,
               item_model: op.item_model,
               used: true,
@@ -77,12 +84,11 @@ module Warehouse
         return if @order.save
 
         process_order_errors(@order)
-
         raise 'Ордер не исполнен'
       end
 
-      def update_items
-        @order.transaction(requires_new: true) do
+      def update_invent_items
+        Invent::Item.transaction(requires_new: true) do
           @order.operations.each do |op|
             next unless @item_ids.include?(op.warehouse_item_id)
 

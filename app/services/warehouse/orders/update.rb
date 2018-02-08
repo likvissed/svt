@@ -36,16 +36,14 @@ module Warehouse
           io.delete('warehouse_item_to_order_id')
           io
         end
-        @order_params['item_to_orders_attributes'].concat(
-          @new_operations.select { |op| op['invent_item_id'] }.map { |op| { invent_item_id: op['invent_item_id'] } }.as_json
-        )
+        @order_params['inv_item_ids'] = @new_operations.map { |op| op['invent_item_id'] }.compact.as_json
       end
 
       def wrap_order_with_transactions
-        assign_order_params
-
         Item.transaction do
           begin
+            assign_order_params
+
             find_or_create_warehouse_items
             Invent::Item.transaction(requires_new: true) do
               update_items
@@ -56,7 +54,7 @@ module Warehouse
           rescue ActiveRecord::RecordNotSaved, ActiveRecord::RecordInvalid
             raise ActiveRecord::Rollback
           rescue ActiveRecord::RecordNotDestroyed
-            process_order_errors(@order)
+            process_order_errors(@order, true)
 
             raise ActiveRecord::Rollback
           rescue RuntimeError => e
@@ -74,10 +72,10 @@ module Warehouse
       end
 
       def find_or_create_warehouse_items
-        @order.item_to_orders.each do |io|
-          next if @new_operations.none? { |op| op['invent_item_id'] == io.invent_item_id }
+        @order.inv_items.each do |item|
+          next if @new_operations.none? { |op| op['invent_item_id'] == item.item_id }
 
-          warehouse_item(io)
+          warehouse_item(item)
         end
       end
 

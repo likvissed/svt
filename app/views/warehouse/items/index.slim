@@ -1,15 +1,42 @@
 = title "Склад"
 
-#index_item.container
+#index_item.container ng-controller="WarehouseItemsCtrl as table"
   .well
+    .row
+      .col-fhd-4.col-xlg-5.col-lg-6.col-md-6.col-sm-7
+        = button_tag "Сформировать расходный ордер", type: :button, class: "btn-primary btn-sm btn-block", "ng-click": "table.newOrder()"
+
     .row
       .col-fhd-24
         table.table.table-striped.table-condensed
           thead
             tr
               th Тип техники
-              th Наименование
-              th Тип
+              th Модель
+              th Инв. №
+              th Состояние
               th Доступно
               th Зарезервировано
+              th
           tbody
+            tr ng-repeat="item in table.items"
+              td ng-bind="item.item_type"
+              td ng-bind="item.item_model"
+              td ng-bind="item.inv_item.invent_num"
+              td ng-bind="item.translated_used"
+              td ng-bind="item.count"
+              td ng-bind="item.count_reserved"
+              td
+                div ng-if="!item.added_to_order" ng-click="table.addPosition(item)"
+                  = fa_icon "square-o"
+                div ng-if="item.added_to_order" ng-click="table.delPosition(item)"
+                  = fa_icon "check-square-o"
+
+    .row
+      .col-xs-12
+        .animate-show ng-table-info="" info-attrs="table.pagination" ng-if="table.items"
+      .col-xs-12
+        ul{ uib-pagination="true" total-items="table.pagination.filteredRecords" ng-model="table.pagination.currentPage"
+          max-size="table.pagination.maxSize" class="pagination-sm pull-right" ng-change="table.changePage()" }
+
+= render partial: '/warehouse/orders/out_order_modal'
