@@ -1,7 +1,7 @@
 module Warehouse
   module Orders
     # Исполнить выбранные позиции указанного ордера
-    class Execute < BaseService
+    class ExecuteIn < BaseService
       def initialize(current_user, order_id, order_params)
         @error = {}
         @current_user = current_user
@@ -14,6 +14,7 @@ module Warehouse
         return false unless wrap_order
         broadcast_orders
         broadcast_items
+        broadcast_workplaces
 
         true
       rescue RuntimeError => e
@@ -37,11 +38,14 @@ module Warehouse
               raise 'Позиции не выбраны'
             end
 
-            save_order
-            update_invent_items if @item_ids.any?
+            save_order(@order)
+            update_items if @item_ids.any?
 
             true
-          rescue ActiveRecord::RecordNotSaved, ActiveRecord::RecordInvalid
+          rescue ActiveRecord::RecordNotSaved, ActiveRecord::RecordInvalid => e
+            Rails.logger.error e.inspect.red
+            Rails.logger.error e.backtrace[0..5].inspect
+
             raise ActiveRecord::Rollback
           rescue RuntimeError => e
             Rails.logger.error e.inspect.red
@@ -80,14 +84,7 @@ module Warehouse
         op_selected
       end
 
-      def save_order
-        return if @order.save
-
-        process_order_errors(@order)
-        raise 'Ордер не исполнен'
-      end
-
-      def update_invent_items
+      def update_items
         Invent::Item.transaction(requires_new: true) do
           @order.operations.each do |op|
             next unless @item_ids.include?(op.warehouse_item_id)

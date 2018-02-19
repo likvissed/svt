@@ -20,4 +20,9 @@ class ApplicationService
   def wrap_problem_string(string)
     "<span class='manually-val'>#{string}</span>"
   end
+
+  # Разослать сообщение о необходимости обновления сводной таблицы рабочих мест.
+  def broadcast_workplaces
+    ActionCable.server.broadcast 'workplaces', nil
+  end
 end

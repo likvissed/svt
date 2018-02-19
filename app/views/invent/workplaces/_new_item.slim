@@ -1,32 +1,32 @@
 script type="text/ng-template" id="newItem.slim"
   .modal-header
     h4 Выбор типа создаваемого устройства
-    .modal-body
+  .modal-body
+    .form-group
+      = radio_button_tag :new_item, "new", false, "ng-model": "select.itemType", "ng-change": "select.setInitSelectedType()"
+      = label_tag :new_item_new, "Новая техника", class: "control-label"
+      br
+      = radio_button_tag :new_item, "exist", false, "ng-model": "select.itemType", "ng-change": "select.setInitSelectedType()"
+      = label_tag :new_item_exist, "Б/у техника", class: "control-label"
+
+    .form-group ng-show="select.itemType == 'new'"
+      = select_tag "", "", class: "form-control", "ng-change": "select.validateSelectedType()", "ng-model": "select.selectedType",
+        "ng-options": "type as type.short_description disable when type.type_id == -1 for type in select.eq_types track by type.type_id"
+
+    div ng-show="select.itemType == 'exist'"
       .form-group
-        = radio_button_tag :new_item, "new", false, "ng-model": "select.itemType", "ng-change": "select.setInitSelectedType()"
-        = label_tag :new_item_new, "Новая техника", class: "control-label"
-        br
-        = radio_button_tag :new_item, "exist", false, "ng-model": "select.itemType", "ng-change": "select.setInitSelectedType()"
-        = label_tag :new_item_exist, "Б/у техника", class: "control-label"
-
-      .form-group ng-show="select.itemType == 'new'"
-        = select_tag "", "", class: "form-control", "ng-change": "select.validateSelectedType()", "ng-model": "select.selectedType",
+        = select_tag "", "", class: "form-control", "ng-change": "select.loadItems()", "ng-model": "select.selectedType",
           "ng-options": "type as type.short_description disable when type.type_id == -1 for type in select.eq_types track by type.type_id"
+      .form-group.ui-select ng-show="select.selectedType.type_id != -1 && select.items.length != 0"
+        ui-select ng-model="select.selectedItem" theme="bootstrap"
+          ui-select-match placeholder="Выберите технику"
+            | {{ $select.selected.main_info }}
+          ui-select-choices repeat="obj in select.items | filter: $select.search"
+            div ng-bind-html="obj.main_info | highlight: $select.search"
+            small ng-bind-html="obj.add_info | highlight: $select.search"
+      p.animate-show.info-block.bg-warning ng-show="select.selectedType.type_id != -1 && select.items.length == 0"
+        | Б/у техника данного типа на складе отсутствует
 
-      div ng-show="select.itemType == 'exist'"
-        .form-group
-          = select_tag "", "", class: "form-control", "ng-change": "select.loadItems()", "ng-model": "select.selectedType",
-            "ng-options": "type as type.short_description disable when type.type_id == -1 for type in select.eq_types track by type.type_id"
-        .form-group.ui-select ng-show="select.selectedType.type_id != -1 && select.items.length != 0"
-          ui-select ng-model="select.selectedItem" theme="bootstrap"
-            ui-select-match placeholder="Выберите технику"
-              | {{ $select.selected.main_info }}
-            ui-select-choices repeat="obj in select.items | filter: $select.search"
-              div ng-bind-html="obj.main_info | highlight: $select.search"
-              small ng-bind-html="obj.add_info | highlight: $select.search"
-        p.animate-show.info-block.bg-warning ng-show="select.selectedType.type_id != -1 && select.items.length == 0"
-          | Б/у техника данного типа на складе отсутствует
-
-    .modal-footer
-      = button_tag "Готово", type: :button, class: "btn-success", "ng-click": "select.ok()"
-      = button_tag "Отмена", type: :button, class: "btn-default", "ng-click": "select.cancel()"
+  .modal-footer
+    = button_tag "Готово", type: :button, class: "btn-success", "ng-click": "select.ok()"
+    = button_tag "Отмена", type: :button, class: "btn-default", "ng-click": "select.cancel()"

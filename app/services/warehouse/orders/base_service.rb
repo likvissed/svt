@@ -1,12 +1,8 @@
 module Warehouse
   module Orders
-    class BaseService < ApplicationService
+    class BaseService < Warehouse::ApplicationService
       def broadcast_orders
         ActionCable.server.broadcast 'orders', nil
-      end
-
-      def broadcast_items
-        ActionCable.server.broadcast 'items', nil
       end
 
       protected

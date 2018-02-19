@@ -348,7 +348,7 @@
   Workplace.prototype.addExistingItem = function(selectedItem) {
     var self = this;
 
-    self.Server.Invent.Item.get(
+    self.Server.Invent.Item.edit(
       { item_id: selectedItem.item_id },
       function(response) {
         self._addItemTemplate();

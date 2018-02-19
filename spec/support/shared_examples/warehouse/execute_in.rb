@@ -1,5 +1,5 @@
 module Warehouse
-  shared_examples 'execute specs' do
+  shared_examples 'execute_in specs' do
     its(:run) { is_expected.to be_truthy }
 
     it 'creates order instance variable' do

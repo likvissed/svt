@@ -39,6 +39,28 @@
     this.additional.visibleCount = this.order.operations_attributes.length;
   };
 
+  /**
+   * Установить связь объектов массива operations_attributes и inv_items_attributes
+   */
+  Order.prototype._associateSelectedOperations = function() {
+    var
+      self = this,
+      operation,
+      index;
+
+    this.order.selected_op.forEach(function(sel_op) {
+      operation = self.order.operations_attributes.find(function(op) { return op.id == sel_op.warehouse_operation_id; });
+      index = self.order.inv_items_attributes.findIndex(function(inv_item) { return inv_item.id == sel_op.invent_item_id; });
+      if (index != -1) {
+        operation.inv_item_index = index;
+        operation.invent_item_id = self.order.inv_items_attributes[index].id;
+      }
+    });
+  }
+
+  /**
+   * Загрузить список ордеров
+   */
   Order.prototype.loadOrders = function() {
     var self = this;
 
@@ -59,6 +81,9 @@
     ).$promise;
   };
 
+  /**
+   * Загрузить данные указанного ордера
+   */
   Order.prototype.loadOrder = function(order_id) {
     var self = this;
 
@@ -66,6 +91,7 @@
       { warehouse_order_id: order_id },
       function (data) {
         self._processingData(data);
+        console.log(self.order);
       },
       function (response, status) {
         self.Error.response(response, status);
@@ -179,10 +205,20 @@
    */
   Order.prototype.getObjectToSend = function() {
     var obj = angular.copy(this.order);
+
     obj.operations_attributes.forEach(function(el) {
       delete(el.item);
       delete(el.inv_item);
-     });
+      delete(el.inv_item_index);
+      delete(el.formatted_date);
+    });
+
+    if (obj.inv_items_attributes) {
+      obj.inv_items_attributes.forEach(function(el) {
+        delete(el.property_values);
+        delete(el.model);
+       });
+    }
 
     if (obj.consumer && obj.consumer.match(/^\d+$/)) {
       obj.consumer_tn = obj.consumer;
@@ -191,8 +227,53 @@
     }
 
     delete(obj.consumer);
+    delete(obj.selected_op);
 
     return obj;
+  }
+
+  /**
+   * Проверить корректность данных ордера перед выдачей оборудования
+   */
+  Order.prototype.prepareToDeliver = function() {
+    var
+      self = this,
+      sendData = this.getObjectToSend();
+
+    return this.Server.Warehouse.Order.prepareToDeliver(
+      { warehouse_order_id: this.order.warehouse_order_id },
+      { order: sendData },
+      function (response) {
+        angular.extend(self.order, response);
+        self._associateSelectedOperations();
+      },
+      function (response, status) {
+        self.Error.response(response, status);
+      }
+    ).$promise;
+  };
+
+  /**
+   * Удалить установленные ассоциации из массива operations_attributes
+   */
+  Order.prototype.clearAssociations = function() {
+    this.order.operations_attributes.forEach(function(op) { delete op.inv_item_index; });
+
+    delete(this.order.inv_items_attributes);
+  };
+
+  /**
+   * Обновить данные о технике, связанной с операцией текущего ордера
+   *
+   * @param op - операция
+   * @param data - новые данные
+   */
+  Order.prototype.refreshInvItemData = function(op, data) {
+    var refreshItem = this.order.inv_items_attributes.find(function(item) {
+      return item.id == op.invent_item_id;
+    })
+
+    angular.extend(refreshItem, data);
   }
 })();
 

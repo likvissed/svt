@@ -91,7 +91,18 @@ module Invent
       end
     end
 
-    describe '#run_validation?' do
+    describe '#need_validation?' do
+      context 'when invent_num does not exist' do
+        let(:item) { build(:item, type_name: :monitor, invent_num: nil) }
+        let(:property) { item.properties.find_by(mandatory: false) }
+        subject { build(:property_value, item: item, property: property) }
+
+        it 'does not run :presence_val validation' do
+          expect(subject).not_to receive(:presence_val)
+          subject.valid?
+        end
+      end
+
       context 'when property is not :mandatory' do
         let(:item) { build(:item, type_name: :printer) }
         let(:property) { item.properties.find_by(mandatory: false) }

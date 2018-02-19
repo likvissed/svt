@@ -74,13 +74,15 @@ module Warehouse
         let!(:item_2) { create(:new_item, type: Invent::Type.find_by(name: :monitor), item_type: 'Монитор', item_model: 'SAMSUNG NEW MODEL', count: 2) }
         let!(:item_3) { create(:new_item, warehouse_type: :without_invent_num, item_type: 'Мышь', item_model: 'ASUS', count: 2) }
         let!(:item_4) { create(:used_item, inv_item: monitor, count: 1) }
+        let!(:item_5) { create(:new_item, type: Invent::Type.find_by(name: :monitor), model: Invent::Type.find_by(name: :monitor).models.first, count: 2) }
         let(:operation_1) { attributes_for(:order_operation, warehouse_item_id: item_1.warehouse_item_id, shift: -1) }
         let(:operation_2) { attributes_for(:order_operation, warehouse_item_id: item_2.warehouse_item_id, shift: -1) }
         let(:operation_3) { attributes_for(:order_operation, warehouse_item_id: item_3.warehouse_item_id, shift: -1) }
         let(:operation_4) { attributes_for(:order_operation, warehouse_item_id: item_4.warehouse_item_id, shift: -1) }
+        let(:operation_5) { attributes_for(:order_operation, warehouse_item_id: item_5.warehouse_item_id, shift: -2) }
         let(:order_params) do
           order = attributes_for(:order, operation: :out, workplace_id: workplace.workplace_id)
-          order[:operations_attributes] = [operation_1, operation_2, operation_3, operation_4]
+          order[:operations_attributes] = [operation_1, operation_2, operation_3, operation_4, operation_5]
           order
         end
 
@@ -91,33 +93,60 @@ module Warehouse
         end
 
         it 'creates warehouse_item_to_orders records' do
-          expect { subject.run }.to change(ItemToOrder, :count).by(3)
+          expect { subject.run }.to change(ItemToOrder, :count).by(5)
         end
 
         it 'creates invent_items records' do
-          expect { subject.run }.to change(Invent::Item, :count).by(2)
+          expect { subject.run }.to change(Invent::Item, :count).by(4)
         end
 
-        # it 'sets warehouse values to the each corresponding item' do
-        #   subject.run
+        context 'and when model does not exist' do
+          let(:type) { Invent::Type.find_by(name: :pc) }
+          let(:pc_properties) { type.properties }
 
-        #   [item_2, item_1].each_with_index do |item, index|
-        #     inv_items = Invent::Item.first(2)
+          it 'creates property_values' do
+            subject.run
+            expect(Invent::Item.find_by(type: type).property_values.size).to eq pc_properties.size
+          end
 
-        #     expect(inv_items[index].type_id).to eq item.type_id
-        #     expect(inv_items[index].model_id).to eq item.model_id
-        #     expect(inv_items[index].item_model).to eq item.item_model
-        #     expect(inv_items[index].invent_num).to be_nil
-        #   end
-        # end
+          it 'fills property_values with empty values' do
+            subject.run
+            Invent::Item.find_by(type: type).property_values.each do |prop_val|
+              expect(prop_val.value).to be_empty
+              expect(prop_val.property_list).to be_nil
+            end
+          end
+        end
+
+        context 'and when model exists' do
+          let(:type) { Invent::Type.find_by(name: :monitor) }
+          let(:pc_properties) { type.properties }
+          let(:prop) { pc_properties.find_by(property_type: %w[list list_plus]) }
+          let(:item) { Invent::Item.where(invent_num: nil).where('model_id IS NOT NULL').find_by(type: type) }
+``
+          it 'creates property_values' do
+            subject.run
+            expect(Invent::Item.find_by(type: type).property_values.size).to eq pc_properties.size
+          end
+
+          it 'fills property_values from the invent_model_property_list table' do
+            subject.run
+            expect(item.property_values.find_by(property: prop).property_list).to eq item.model.model_property_lists.find_by(property: prop).property_list
+          end
+        end
 
         it 'creates order' do
           expect { subject.run }.to change(Order, :count).by(1)
         end
 
-        it 'changes :count_reserved of the each item' do
+        it 'sets :count_reserved attribute of the each item (except last) to 1' do
           subject.run
-          Warehouse::Item.find_each { |item| expect(item.count_reserved).to eq 1 }
+          [item_1, item_2, item_3, item_4].each { |item| expect(item.reload.count_reserved).to eq 1 }
+        end
+
+        it 'sets :count_reserved attribute of last item to 2' do
+          subject.run
+          expect(item_5.reload.count_reserved).to eq 2
         end
 
         context 'and when order was not created' do

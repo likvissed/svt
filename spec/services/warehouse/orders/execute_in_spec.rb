@@ -2,9 +2,9 @@ require 'rails_helper'
 
 module Warehouse
   module Orders
-    RSpec.describe Execute, type: :model do
+    RSpec.describe ExecuteIn, type: :model do
       let!(:current_user) { create(:***REMOVED***_user) }
-      subject { Execute.new(current_user, order.warehouse_order_id, order_params) }
+      subject { ExecuteIn.new(current_user, order.warehouse_order_id, order_params) }
 
       context 'when operations belongs_to item' do
         let(:first_inv_item) { create(:item, :with_property_values, type_name: :pc, status: :waiting_bring) }
@@ -14,8 +14,8 @@ module Warehouse
           wp.save(validate: false)
           wp
         end
-        let(:first_item) { create(:used_item, inv_item: first_inv_item) }
-        let(:sec_item) { create(:used_item, inv_item: sec_inv_item) }
+        let(:first_item) { create(:used_item, inv_item: first_inv_item, count: 0, count_reserved: 0) }
+        let(:sec_item) { create(:used_item, inv_item: sec_inv_item, count: 0, count_reserved: 0) }
         let(:operations) do
           [
             build(:order_operation, item: first_item, invent_item_id: first_item.invent_item_id),
@@ -37,13 +37,7 @@ module Warehouse
           order_json
         end
 
-        include_examples 'execute specs'
-
-        it 'creates item_ids instance_variable' do
-          subject.run
-
-          expect(subject.instance_variable_get(:@item_ids)).to eq [first_item.warehouse_item_id]
-        end
+        include_examples 'execute_in specs'
 
         it 'changes count of warehouse_items' do
           expect { subject.run }.to change { Item.first.count }.by(operations.first.shift)
@@ -62,7 +56,7 @@ module Warehouse
           expect(sec_inv_item.reload.workplace).to eq workplace
         end
 
-        context 'when invent_item was not updated' do
+        context 'and when invent_item was not updated' do
           before { allow_any_instance_of(Invent::Item).to receive(:update_attributes!).and_raise(ActiveRecord::RecordNotSaved) }
 
           it 'does not save all another records' do
@@ -77,8 +71,8 @@ module Warehouse
           end
         end
 
-        context 'when warehouse_item was not updated' do
-            before { allow_any_instance_of(Item).to receive(:save!).and_raise(ActiveRecord::RecordNotSaved) }
+        context 'and when warehouse_item was not updated' do
+          before { allow_any_instance_of(Item).to receive(:save!).and_raise(ActiveRecord::RecordNotSaved) }
 
           it 'does not save all another records' do
             subject.run
@@ -92,7 +86,7 @@ module Warehouse
           end
         end
 
-        context 'when order was not updated' do
+        context 'and when order was not updated' do
           before do
             allow_any_instance_of(Order).to receive(:save).and_return(false)
             subject.run
@@ -111,7 +105,7 @@ module Warehouse
           end
         end
 
-        context 'when operations is not selected' do
+        context 'and when operations is not selected' do
           let(:order_params) do
             order_json['consumer_tn'] = ***REMOVED***
             order_json['operations_attributes'] = operations.as_json
@@ -132,7 +126,7 @@ module Warehouse
         end
       end
 
-      context 'when operations is not belongs_to item' do
+      context 'and when operations is not belong to item' do
         let(:first_op) { build(:order_operation, item_model: 'Мышь', item_type: 'Logitech') }
         let(:sec_op) { build(:order_operation, item_model: 'Клавиатура', item_type: 'OKLICK') }
         let(:operations) { [first_op, sec_op] }
@@ -150,7 +144,7 @@ module Warehouse
           order_json
         end
 
-        include_examples 'execute specs'
+        include_examples 'execute_in specs'
 
         it 'creates a new warehouse_item' do
           expect { subject.run }.to change(Item, :count).by(2)
@@ -168,12 +162,6 @@ module Warehouse
             expect(op.item.count).to eq op.shift
             expect(op.item.count_reserved).to be_zero
           end
-        end
-
-        it 'creates item_ids instance_variable' do
-          subject.run
-
-          expect(subject.instance_variable_get(:@item_ids)).to be_empty
         end
 
         context 'and when warehouse_item was not created' do
@@ -219,7 +207,7 @@ module Warehouse
         end
       end
 
-      context 'when one of operations already done and another just selected' do
+      context 'and when one of operations already done and another just selected' do
         let(:user) { create(:user) }
         let(:item) { create(:used_item, warehouse_type: :without_invent_num, item_type: 'Мышь', item_model: 'Logitech') }
         let(:first_op) { build(:order_operation, item_type: 'Мышь', item_model: 'Logitech', status: :done, item: item, stockman_id_tn: user.id_tn) }

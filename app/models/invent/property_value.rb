@@ -9,13 +9,13 @@ module Invent
     belongs_to :item, optional: false
     belongs_to :property_list, optional: true
 
-    validate :presence_val, if: :run_validation?
+    validate :presence_val, if: :need_validation?
 
     before_save :set_default_property_list_id_to_nil
     after_initialize :set_default_property_list_id_to_zero
 
     def value
-      if property.name == 'ram'
+      if property.name == 'ram' && super.present? && !super.match(/.* Гб/)
         "#{super} Гб"
       else
         super
@@ -50,7 +50,9 @@ module Invent
 
     private
 
-    def run_validation?
+    def need_validation?
+      return false if item.invent_num.blank?
+
       @pc_exceptions ||= PcException.pluck(:invent_num)
       # 1 - если инв. № относится к исключениям и при этом свойство также относится к исключениям - false
       # 2 - если свойство обязательно - true

@@ -63,7 +63,7 @@ Rails.application.routes.draw do
     # Скачать скрипт для генерации файла конфигурации ПК
     get '***REMOVED***_invents/pc_script', to: '***REMOVED***_invents#send_pc_script'
 
-    resources :items, only: [:index, :show], param: :item_id do
+    resources :items, only: [:index, :show, :edit], param: :item_id do
       collection do
         get 'avaliable/:type_id', to: 'items#avaliable', constraints: { type_id: /\d+/ }
         get 'busy/:type_id', to: 'items#busy', constraints: { type_id: /\d+/ }
@@ -82,7 +82,9 @@ Rails.application.routes.draw do
     resources :orders, only: [:index, :new, :edit, :update, :destroy], param: :warehouse_order_id do
       post 'create_in', to: 'orders#create_in', on: :collection
       post 'create_out', to: 'orders#create_out', on: :collection
-      post 'execute', to: 'orders#execute', on: :member
+      post 'execute_in', to: 'orders#execute_in', on: :member
+      post 'execute_out', to: 'orders#execute_out', on: :member
+      post 'prepare_to_deliver', to: 'orders#prepare_to_deliver', on: :member
     end
   end
 

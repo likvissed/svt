@@ -89,6 +89,7 @@ module Warehouse
 
             op.delete('item')
             op.delete('inv_item')
+            op.delete('formatted_date')
           end
 
           edit.data[:order]
@@ -96,7 +97,7 @@ module Warehouse
 
         before do
           CreateIn.new(user, create_order_params.as_json).run
-          Execute.new(user, order.warehouse_order_id, execute_order_params.as_json).run
+          ExecuteIn.new(user, order.warehouse_order_id, execute_order_params.as_json).run
           order.reload
         end
 

@@ -35,6 +35,11 @@ module Invent
       where(invent_num: invent_num)
     end
 
+    def self.not_by_items(rejected)
+      return where('item_id IS NOT NULL') if rejected.compact.empty?
+      where('item_id NOT IN (?)', rejected)
+    end
+
     def model_exists?
       model || !item_model.empty?
     end
@@ -42,7 +47,7 @@ module Invent
     def get_item_model
       if Type::TYPE_WITH_FILES.include?(type.name)
         props = Property.where(name: Property::FILE_DEPENDING)
-        property_values.where(property: props).map { |prop_val| prop_val.value }.join(' / ')
+        property_values.where(property: props).map { |prop_val| prop_val.value }.reject(&:blank?).join(' / ')
       else
         model.try(:item_model) || item_model
       end
@@ -88,9 +93,9 @@ module Invent
       @properties ||= type.properties
 
       @properties.where(mandatory: true).find_each do |prop|
-        unless property_values.reject(&:_destroy).find { |prop_val| prop_val[:property_id] == prop.property_id }
-          errors.add(:base, :property_not_filled, empty_prop: prop.short_description)
-        end
+        next if property_values.reject(&:_destroy).find { |prop_val| prop_val[:property_id] == prop.property_id && prop_val.valid? }
+
+        errors.add(:base, :property_not_filled, empty_prop: prop.short_description)
       end
     end
   end

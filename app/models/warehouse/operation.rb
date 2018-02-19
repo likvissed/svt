@@ -36,6 +36,10 @@ module Warehouse
       status == 'processing'
     end
 
+    def formatted_date
+      date.strftime("%d-%m-%Y") if date
+    end
+
     protected
 
     def set_initial_status

@@ -7,8 +7,15 @@ module Invent
       end
 
       def run
-        load_item
-        prepare_to_edit_item(data)
+        @data = Item.includes(property_values: [:property, :property_list]).find(@item_id)
+                  .as_json(
+                    include: {
+                      property_values: {
+                        include: [:property, :property_list]
+                      }
+                    },
+                    methods: :get_item_model
+                  )
 
         true
       rescue RuntimeError => e
@@ -16,17 +23,6 @@ module Invent
         Rails.logger.error e.backtrace[0..5].inspect
 
         false
-      end
-
-      private
-
-      def load_item
-        @data = Item
-                  .includes(property_values: :property)
-                  .find(@item_id)
-                  .as_json(include: { property_values: { include: :property } })
-
-        data['status'] = :waiting_take
       end
     end
   end

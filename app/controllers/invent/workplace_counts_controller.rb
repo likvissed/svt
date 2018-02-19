@@ -19,7 +19,7 @@ module Invent
       @create = WorkplaceCounts::Create.new(workplace_count_params)
 
       if @create.run
-        render json: { full_message: I18n.t('controllers.workplace_count.created', dept: @create.data.division) }
+        render json: { full_message: I18n.t('controllers.invent/workplace_count.created', dept: @create.data.division) }
       else
         render json: @create.error, status: 422
       end
@@ -29,7 +29,7 @@ module Invent
       @create_list = WorkplaceCounts::CreateList.new(params[:file])
 
       if @create_list.run
-        render json: { full_message: I18n.t('controllers.workplace_count.list_created') }
+        render json: { full_message: I18n.t('controllers.invent/workplace_count.list_created') }
       else
         render json: { full_message: @create_list.errors.full_messages.join('. ') }, status: 422
       end
@@ -49,7 +49,7 @@ module Invent
       @update = WorkplaceCounts::Update.new(params[:workplace_count_id], workplace_count_params)
 
       if @update.run
-        render json: { full_message: I18n.t('controllers.workplace_count.updated', dept: @update.data.division) }
+        render json: { full_message: I18n.t('controllers.invent/workplace_count.updated', dept: @update.data.division) }
       else
         render json: @update.error, status: 422
       end
@@ -59,7 +59,7 @@ module Invent
       @workplace_count = WorkplaceCount.find(params[:workplace_count_id])
 
       if @workplace_count.destroy
-        render json: { full_message: I18n.t('controllers.workplace_count.destroyed') }
+        render json: { full_message: I18n.t('controllers.invent/workplace_count.destroyed') }
       else
         render json: { full_message: "Ошибка. #{@workplace_count.errors.full_messages.join(', ')}" }, status: 422
       end

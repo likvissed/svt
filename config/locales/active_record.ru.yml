@@ -55,6 +55,7 @@ ru:
         item_model: "Наименование модели"
 
       invent/item/property_values:
+        base: ''
         property: "Свойство"
         property_list: "Значение"
         value: "Значение"
@@ -88,6 +89,13 @@ ru:
 
       warehouse/order/item_to_orders:
         inv_item: ''
+
+      warehouse/order/inv_items:
+        base: ''
+        invent_num: 'Инвентарный номер'
+
+      warehouse/order/inv_items/property_values:
+        base: ''
 
       warehouse/item:
         inv_item: 'Техника'
@@ -242,6 +250,8 @@ ru:
           attributes:
             base:
               out_of_stock: '%{type}: запрашиваемое количество отсутствует на складе'
+              cannot_destroy_with_count_reserved: 'Невозможно удалить зарезервированную технику'
+              cannot_destroy_with_processing_operation: 'Невозможно удалить технику, т.к. она используется в незакрытых позициях ордера №%{order_id}'
             inv_item:
               taken: 'уже существует на складе'
             item_model:

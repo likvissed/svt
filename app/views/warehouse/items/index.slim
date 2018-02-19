@@ -4,13 +4,15 @@
   .well
     .row
       .col-fhd-4.col-xlg-5.col-lg-6.col-md-6.col-sm-7
-        = button_tag "Сформировать расходный ордер", type: :button, class: "btn-primary btn-sm btn-block", "ng-click": "table.newOrder()"
+        = button_tag "Сформировать расходный ордер", type: :button, class: "btn-primary btn-sm btn-block", "ng-click": "table.newOrder()",
+          "ng-disabled": "table.extraOrder.visibleCount == 0"
 
     .row
       .col-fhd-24
         table.table.table-striped.table-condensed
           thead
             tr
+              th
               th Тип техники
               th Модель
               th Инв. №
@@ -20,17 +22,17 @@
               th
           tbody
             tr ng-repeat="item in table.items"
-              td ng-bind="item.item_type"
-              td ng-bind="item.item_model"
-              td ng-bind="item.inv_item.invent_num"
-              td ng-bind="item.translated_used"
-              td ng-bind="item.count"
-              td ng-bind="item.count_reserved"
               td
-                div ng-if="!item.added_to_order" ng-click="table.addPosition(item)"
-                  = fa_icon "square-o"
-                div ng-if="item.added_to_order" ng-click="table.delPosition(item)"
-                  = fa_icon "check-square-o"
+                input type="checkbox" ng-model="item.added_to_order" ng-true-value="true" ng-false-value="false" ng-click="table.togglePosition(item)" ng-disabled="item.count == 0 || item.count <= item.count_reserved"
+              td.col-fhd-3 ng-bind="item.item_type"
+              td.col-fhd-13 ng-bind="item.item_model"
+              td.col-fhd-2 ng-bind="item.inv_item.invent_num"
+              td.col-fhd-2 ng-bind="item.translated_used"
+              td.col-fhd-2 ng-bind="item.count"
+              td.col-fhd-2 ng-bind="item.count_reserved"
+              td
+                = fa_icon "trash-o fw", class: "pointer text-danger", "ng-click": "table.destroyItem(item)",
+                  "uib-tooltip": "Удалить технику со склада", "tooltip-append-to-body": "true"
 
     .row
       .col-xs-12

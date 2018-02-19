@@ -29,7 +29,7 @@ module Warehouse
       @create_in = Orders::CreateIn.new(current_user, order_params)
 
       if @create_in.run
-        render json: { full_message: I18n.t('controllers.order.created_in', count: @create_in.data) }
+        render json: { full_message: I18n.t('controllers.warehouse/order.created_in', count: @create_in.data) }
       else
         render json: @create_in.error, status: 422
       end
@@ -39,7 +39,7 @@ module Warehouse
       @create_out = Orders::CreateOut.new(current_user, order_params)
 
       if @create_out.run
-        render json: { full_message: I18n.t('controllers.order.created_out') }
+        render json: { full_message: I18n.t('controllers.warehouse/order.created_out') }
       else
         render json: @create_out.error, status: 422
       end
@@ -59,19 +59,29 @@ module Warehouse
       @update = Orders::Update.new(current_user, params[:warehouse_order_id], order_params)
 
       if @update.run
-        render json: { full_message: I18n.t('controllers.order.updated', order_id: params[:warehouse_order_id]) }
+        render json: { full_message: I18n.t('controllers.warehouse/order.updated', order_id: params[:warehouse_order_id]) }
       else
         render json: @update.error, status: 422
       end
     end
 
-    def execute
-      @execute = Orders::Execute.new(current_user, params[:warehouse_order_id], order_params)
+    def execute_in
+      @execute_in = Orders::ExecuteIn.new(current_user, params[:warehouse_order_id], order_params)
 
-      if @execute.run
-        render json: { full_message: I18n.t('controllers.order.executed') }
+      if @execute_in.run
+        render json: { full_message: I18n.t('controllers.warehouse/order.executed') }
       else
-        render json: @execute.error, status: 422
+        render json: @execute_in.error, status: 422
+      end
+    end
+
+    def execute_out
+      @execute_out = Orders::ExecuteOut.new(current_user, params[:warehouse_order_id], order_params)
+
+      if @execute_out.run
+        render json: { full_message: I18n.t('controllers.warehouse/order.executed') }
+      else
+        render json: @execute_out.error, status: 422
       end
     end
 
@@ -79,9 +89,19 @@ module Warehouse
       @destroy = Orders::Destroy.new(params[:warehouse_order_id])
 
       if @destroy.run
-        render json: { full_message: I18n.t('controllers.order.destroyed') }
+        render json: { full_message: I18n.t('controllers.warehouse/order.destroyed') }
       else
         render json: { full_message: @destroy.data }, status: 422
+      end
+    end
+
+    def prepare_to_deliver
+      @deliver = Orders::PrepareToDeliver.new(current_user, params[:warehouse_order_id], order_params)
+
+      if @deliver.run
+        render json: @deliver.data
+      else
+        render json: @deliver.error, status: 422
       end
     end
 
@@ -116,6 +136,12 @@ module Warehouse
           :status,
           :date,
           :invent_item_id,
+          :_destroy
+        ],
+        inv_items_attributes: [
+          :id,
+          :serial_num,
+          :invent_num,
           :_destroy
         ]
       )

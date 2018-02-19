@@ -46,6 +46,7 @@
         if (init) {
           self.Order.init('out', response.order);
           self.order = self.Order.order;
+          self.extraOrder = self.Order.additional;
         } else {
           self.Items.findSelected();
         }
@@ -79,31 +80,47 @@
   };
 
   /**
-   * Добавить технику к ордеру
+   * Добавить/удалить технику из ордера
    *
    * @param item
    */
-  WarehouseItemsCtrl.prototype.addPosition = function(item) {
-    item.added_to_order = true;
-    this.Order.addPosition(this.order.warehouse_type, angular.copy(item));
-  }
+  WarehouseItemsCtrl.prototype.togglePosition = function(item) {
+    if (item.added_to_order) {
+      this.Order.addPosition(this.order.warehouse_type, angular.copy(item));
+    } else {
+      var operation = this.order.operations_attributes.find(function(op) { return op.warehouse_item_id == item.warehouse_item_id; })
+
+      this.Order.delPosition(operation);
+    }
+  };
 
   /**
-   * Удалить техника из ордера
-   *
-   * @param item
-   */
-  WarehouseItemsCtrl.prototype.delPosition = function(item) {
-    var operation = this.order.operations_attributes.find(function(op) { return op.warehouse_item_id == item.warehouse_item_id; })
-
-    item.added_to_order = false;
-    this.Order.delPosition(operation);
-  }
-
-    /**
    * Открыть окно создания ордера.
    */
   WarehouseItemsCtrl.prototype.newOrder = function() {
     this._openEditModal();
   };
+
+  /**
+   * Удалить технику со склада
+   *
+   * @param item
+   */
+  WarehouseItemsCtrl.prototype.destroyItem = function(item) {
+    var
+      self = this,
+      confirm_str = "Вы действительно хотите удалить \"" + item.item_type + "\" со склада?";
+
+    if (!confirm(confirm_str))
+      return false;
+
+    self.Server.Warehouse.Item.delete(
+      { warehouse_item_id: item.warehouse_item_id },
+      function(response) {
+        self.Flash.notice(response.full_message);
+      },
+      function(response, status) {
+        self.Error.response(response, status);
+      });
+    };
 })();

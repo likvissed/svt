@@ -6,16 +6,31 @@ script type="text/ng-template" id="execOrder.slim"
           | Ордер исполнен
         span ng-if="exec.order.status == 'processing'"
           | Исполнить ордер
+
     .modal-body
       fieldset ng-disabled="exec.order.status == 'done'"
-        .form-group
-          = label_tag "order[consumer_dept]", "Отдел", class: "control-label"
-          = text_field_tag "order[consumer_dept]", "", class: "form-control", "ng-model": "exec.order.consumer_dept",
-            disabled: true
-        .form-group ng-class="exec.errorClass('order[consumer]')"
-          = label_tag "order[consumer]", "ФИО или таб. № сдающего технику", class: "control-label"
-          = text_field_tag "order[consumer]", "", class: "form-control", autocomplete: "off", "ng-model": "exec.order.consumer"
-          span.help-block ng-show="exec.form['order[consumer]'].$invalid" ng-bind="exec.errorMessage('order[consumer]')"
+        .row
+          .col-lg-8
+            .form-group
+              = label_tag "order[consumer_dept]", "Отдел", class: "control-label"
+              = text_field_tag "order[consumer_dept]", "", class: "form-control", "ng-model": "exec.order.consumer_dept",
+                disabled: true
+          .col-lg-8
+            .form-group ng-class="exec.errorClass('order[workplace_id]')"
+              = label_tag "order[workplace_id]", "ID рабочего места", class: "control-label"
+              = text_field_tag "order[workplace_id]", "", class: "form-control", autocomplete: "off", "ng-model": "exec.order.workplace_id",
+                disabled: true
+              span.help-block ng-show="exec.form['order[workplace_id]'].$invalid" ng-bind="exec.errorMessage('order[workplace_id]')"
+          .col-lg-8
+            .form-group ng-class="exec.errorClass('order[consumer]')"
+              = label_tag "order[consumer]", class: "control-label" do
+                span ng-if="exec.order.operation == 'in'"
+                  | ФИО или таб. № сдающего технику
+                span ng-if="exec.order.operation == 'out'"
+                  | ФИО или таб. № получающего технику
+
+              = text_field_tag "order[consumer]", "", class: "form-control", autocomplete: "off", "ng-model": "exec.order.consumer"
+              span.help-block ng-show="exec.form['order[consumer]'].$invalid" ng-bind="exec.errorMessage('order[consumer]')"
 
         .form-group
           h4 Позиции
@@ -24,27 +39,30 @@ script type="text/ng-template" id="execOrder.slim"
               tr
                 th.col-fhd-1
                   input type="checkbox" ng-model="exec.isAllOpSelected" ng-click="exec.toggleAll()"
-                th.col-fhd-4.col-xlg-4.col-lg-4.col-md-4.col-sm-4 Тип
+                th.col-fhd-3.col-xlg-4.col-lg-4.col-md-4.col-sm-4 Тип
                 th.col-fhd-3.col-xlg-3.col-lg-4.col-md-4.col-sm-4 Инв. №
-                th.col-fhd-11.col-xlg-11.col-lg-10.col-md-10.col-sm-10 Модель
-                th.col-fhd-5.col-xlg-5.col-lg-5.col-md-5.col-sm-5 Исполнитель
+                th.col-fhd-10.col-xlg-11.col-lg-10.col-md-10.col-sm-10 Модель
+                th.col-fhd-4.col-xlg-5.col-lg-5.col-md-5.col-sm-5 Исполнитель
+                th.col-fhd-3 Дата
             tbody
               tr ng-repeat="op in exec.order.operations_attributes" ng-hide="op._destroy"
                 td
                   input type="checkbox" ng-model="op.status" ng-true-value="'done'" ng-false-value="'processing'" ng-click="exec.checkSelected()"
-                td ng-bind="op.inv_item.type.short_description"
+                td ng-bind="op.inv_item.type.short_description || op.item.item_type"
                 td ng-bind="op.inv_item.invent_num"
-                td ng-bind="op.inv_item.get_item_model"
+                td ng-bind="op.inv_item.get_item_model || op.item.item_model"
                 td ng-bind="op.stockman_fio | fioInitials"
+                td ng-bind="op.formatted_date"
 
           table.table.table-striped.table-condensed ng-if="!exec.order.operations_attributes[0].invent_item_id"
             thead
               tr
                 th.col-fhd-1
                   input type="checkbox" ng-model="exec.isAllOpSelected" ng-click="exec.toggleAll()"
-                th.col-fhd-6.col-xlg-6.col-lg-6.col-md-7.col-sm-7 Тип
+                th.col-fhd-3.col-xlg-3.col-lg-3.col-md-4.col-sm-4 Тип
                 th.col-fhd-10.col-xlg-10.col-xlg-10.col-md-9.col-sm-9 Модель
                 th.col-fhd-7.col-xlg-7.col-lg-7.col-md-7.col-sm-7 Исполнитель
+                th.col-fhd-3 Дата
             tbody
               tr ng-repeat="op in exec.order.operations_attributes" ng-hide="op._destroy"
                 td
@@ -52,11 +70,13 @@ script type="text/ng-template" id="execOrder.slim"
                 td ng-bind="op.item_type"
                 td ng-bind="op.item_model"
                 td ng-bind="op.stockman_fio | fioInitials"
+                td ng-bind="op.formatted_date"
 
         .form-group
           = label_tag "order[comment]", "Комментарий", class: "control-label"
           = text_area_tag "order[comment]", "", class: "form-control", rows: "3", "ng-model": "exec.order.comment"
 
     .modal-footer
-      = button_tag "Исполнить", class: "btn-success btn-sm", "ng-click": "exec.ok()", "ng-disabled": "exec.order.status == 'done'"
+      = button_tag "Исполнить...", class: "btn-success btn-sm", "ng-click": "exec.deliveryItems()", "ng-disabled": "exec.order.status == 'done'", "ng-if": "exec.order.operation == 'out'"
+      = button_tag "Исполнить", class: "btn-success btn-sm", "ng-click": "exec.ok()", "ng-disabled": "exec.order.status == 'done'", "ng-if": "exec.order.operation == 'in'"
       = button_tag "Закрыть", class: "btn-default btn-sm", "ng-click": "exec.cancel()"

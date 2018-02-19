@@ -159,6 +159,10 @@
          */
         Item: $resource('/invent/items/:item_id.json', {}, {
           query: { method: 'GET', isArray: false },
+          edit: {
+            method: 'GET',
+            url: '/invent/items/:item_id/edit.json'
+          },
           busy: {
             method: 'GET',
             url: '/invent/items/busy/:type_id',
@@ -196,6 +200,10 @@
             method: 'GET',
             url: '/warehouse/orders/:warehouse_order_id/edit.json'
           },
+          prepareToDeliver: {
+            method: 'POST',
+            url: '/warehouse/orders/:warehouse_order_id/prepare_to_deliver.json'
+          },
           saveIn: {
             method: 'POST',
             url: '/warehouse/orders/create_in'
@@ -205,9 +213,13 @@
             url: '/warehouse/orders/create_out'
           },
           update: { method: 'PUT' },
-          execute: {
+          executeIn: {
             method: 'POST',
-            url: '/warehouse/orders/:warehouse_order_id/execute'
+            url: '/warehouse/orders/:warehouse_order_id/execute_in'
+          },
+          executeOut: {
+            method: 'POST',
+            url: '/warehouse/orders/:warehouse_order_id/execute_out'
           }
         })
       }

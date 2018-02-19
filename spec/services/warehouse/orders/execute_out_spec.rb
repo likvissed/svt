@@ -1,0 +1,247 @@
+# require 'feature_helper'
+
+# module Warehouse
+#   module Orders
+#     RSpec.describe ExecuteOut, type: :model do
+#       let!(:current_user) { create(:***REMOVED***_user) }
+#       subject { ExecuteOut.new(current_user, order.warehouse_order_id, order_params) }
+#       let!(:workplace) do
+#         wp = build(:workplace_pk, dept: ***REMOVED***)
+#         wp.save(validate: false)
+#         wp
+#       end
+#       let(:order_json) { order.as_json }
+
+#       context 'when operations is not belong to item' do
+#         let(:first_item) { create(:used_item, count: 1, count_reserved: 1, item_model: 'Мышь', item_type: 'Logitech') }
+#         let(:sec_item) { create(:new_item, count: 3, count_reserved: 1, item_model: 'Клавиатура', item_type: 'OKLICK') }
+#         let(:first_op) { build(:order_operation, item: first_item, shift: -1) }
+#         let(:sec_op) { build(:order_operation, item: sec_item, shift: -1) }
+#         let(:operations) { [first_op, sec_op] }
+#         let!(:order) { create(:order, workplace: workplace, operation: :out, operations: operations) }
+#         let(:order_params) do
+#           order_json['consumer_tn'] = ***REMOVED***
+#           order_json['operations_attributes'] = operations.as_json
+#           order_json['operations_attributes'].each do |op|
+#             op['status'] = 'done'
+#             op['id'] = op['warehouse_operation_id']
+
+#             op.delete('warehouse_operation_id')
+#           end
+#           order_json
+#         end
+
+#         include_examples 'execute_out specs'
+
+#         it 'changes count of selected items' do
+#           subject.run
+
+#           expect(first_item.reload.count).to be_zero
+#           expect(first_item.reload.count_reserved).to be_zero
+#           expect(sec_item.reload.count).to eq 2
+#           expect(sec_item.reload.count_reserved).to be_zero
+#         end
+#       end
+
+#       context 'when operations belongs_to item' do
+#         context 'and when item has valid property_values' do
+#           let(:first_inv_item) { create(:item, :with_property_values, type_name: :pc, status: :waiting_take) }
+#           let(:sec_inv_item) { create(:item, :with_property_values, type_name: :monitor, status: :waiting_take) }
+#           let(:workplace) do
+#             wp = build(:workplace_pk, items: [first_inv_item, sec_inv_item], dept: ***REMOVED***)
+#             wp.save(validate: false)
+#             wp
+#           end
+#           let(:first_item) { create(:used_item, count_reserved: 1, inv_item: first_inv_item) }
+#           let(:sec_item) { create(:used_item, count_reserved: 1, inv_item: sec_inv_item) }
+#           let(:operations) do
+#             [
+#               build(:order_operation, item: first_item, invent_item_id: first_item.invent_item_id, shift: -1),
+#               build(:order_operation, item: sec_item, invent_item_id: sec_item.invent_item_id, shift: -1)
+#             ]
+#           end
+#           let(:inv_items) { [first_inv_item, sec_inv_item] }
+#           let!(:order) { create(:order, workplace: workplace, operation: :out, operations: operations, inv_items: inv_items) }
+#           let(:order_params) do
+#             order_json['consumer_tn'] = ***REMOVED***
+#             order_json['operations_attributes'] = operations.as_json
+#             order_json['operations_attributes'].each_with_index do |op, index|
+#               if index == 1
+#                 op['status'] = 'done'
+#                 op['invent_item_id'] = sec_inv_item.item_id
+
+#                 order_json['inv_items_attributes'] = [{
+#                   id: sec_inv_item.item_id,
+#                   serial_num: '111111',
+#                   invent_num: '234234'
+#                 }]
+#               end
+
+#               op['id'] = op['warehouse_operation_id']
+#               operation = operations.find { |obj| obj.warehouse_operation_id == op['warehouse_operation_id'] }
+
+#               op.delete('warehouse_operation_id')
+#             end
+#             order_json
+#           end
+
+#           include_examples 'execute_out specs'
+
+#           it 'does not change count of non-selected items' do
+#             expect(first_item.reload.count).to eq 1
+#             expect(sec_item.reload.count_reserved).to eq 1
+#           end
+
+#           it 'changes count of selected items' do
+#             subject.run
+
+#             expect(sec_item.reload.count).to be_zero
+#             expect(sec_item.reload.count_reserved).to be_zero
+#           end
+
+#           it 'does not change status of non-selected item' do
+#             subject.run
+
+#             expect(first_inv_item.reload.status).to eq 'waiting_take'
+#           end
+
+#           it 'sets nil status selected item' do
+#             subject.run
+
+#             expect(sec_inv_item.reload.status).to be_nil
+#           end
+
+#           it 'sets serial_num to the each selected item' do
+#             subject.run
+
+#             expect(sec_inv_item.reload.serial_num).to eq '111111'
+#           end
+
+#           it 'sets invent_num to the each selected item' do
+#             subject.run
+
+#             expect(sec_inv_item.reload.invent_num).to eq '234234'
+#           end
+#         end
+
+#         context 'and when one of items does not have valid property' do
+#           let(:first_inv_item) { create(:item, :with_property_values, type_name: :pc, status: :waiting_take, invent_num: nil, disable_filters: true) }
+#           let(:sec_inv_item) { create(:item, :with_property_values, type_name: :monitor, status: :waiting_take, invent_num: nil, disable_filters: true) }
+#           let(:workplace) do
+#             wp = build(:workplace_pk, items: [first_inv_item, sec_inv_item], dept: ***REMOVED***)
+#             wp.save(validate: false)
+#             wp
+#           end
+#           let(:first_item) { create(:used_item, count_reserved: 1, inv_item: first_inv_item) }
+#           let(:sec_item) { create(:used_item, count_reserved: 1, inv_item: sec_inv_item) }
+#           let(:operations) do
+#             [
+#               build(:order_operation, item: first_item, invent_item_id: first_item.invent_item_id, shift: -1),
+#               build(:order_operation, item: sec_item, invent_item_id: sec_item.invent_item_id, shift: -1)
+#             ]
+#           end
+#           let(:inv_items) { [first_inv_item, sec_inv_item] }
+#           let!(:order) { create(:order, workplace: workplace, operation: :out, operations: operations, inv_items: inv_items) }
+#           let(:order_params) do
+#             order_json['consumer_tn'] = ***REMOVED***
+#             order_json['operations_attributes'] = operations.as_json
+#             order_json['operations_attributes'].each do |op|
+#               op['status'] = 'done'
+#               op['id'] = op['warehouse_operation_id']
+#               operation = operations.find { |el| el.warehouse_operation_id == op['warehouse_operation_id'] }
+#               op['invent_item_id'] = inv_items.find { |inv_item| inv_item.type_id == operation.item.type_id }.item_id
+
+#               op.delete('warehouse_operation_id')
+#             end
+#             order_json['inv_items_attributes'] = inv_items.as_json
+#             order_json['inv_items_attributes'].each_with_index do |inv_item, index|
+#               inv_item['id'] = inv_item['item_id']
+#               inv_item['invent_num'] = 123456 if index.zero?
+
+#               inv_item.delete('item_id')
+#             end
+#             order_json
+#           end
+
+#           include_examples 'execute_out failed specs'
+
+#           it 'does not change invent_num of inv_items' do
+#             subject.run
+#             expect(first_inv_item.reload.invent_num).to be_nil
+#           end
+#         end
+
+#         context 'and when one of item does not have valid property_values' do
+#           let(:first_inv_item) { create(:item, :without_property_values, type_name: :pc, invent_num: nil, status: :waiting_take, disable_filters: true) }
+#           let(:sec_inv_item) { create(:item, :with_property_values, type_name: :monitor, status: :waiting_take) }
+#           let(:workplace) do
+#             wp = build(:workplace_pk, items: [first_inv_item, sec_inv_item], dept: ***REMOVED***)
+#             wp.save(validate: false)
+#             wp
+#           end
+#           let(:first_item) { create(:used_item, count_reserved: 1, inv_item: first_inv_item) }
+#           let(:sec_item) { create(:used_item, count_reserved: 1, inv_item: sec_inv_item) }
+#           let(:operations) do
+#             [
+#               build(:order_operation, item: first_item, invent_item_id: first_item.invent_item_id, shift: -1),
+#               build(:order_operation, item: sec_item, invent_item_id: sec_item.invent_item_id, shift: -1)
+#             ]
+#           end
+#           let(:inv_items) { [first_inv_item, sec_inv_item] }
+#           let!(:order) { create(:order, workplace: workplace, operation: :out, operations: operations, inv_items: inv_items) }
+#           let(:order_params) do
+#             order_json['consumer_tn'] = ***REMOVED***
+#             order_json['operations_attributes'] = operations.as_json
+#             order_json['operations_attributes'].each do |op|
+#               op['status'] = 'done'
+#               op['id'] = op['warehouse_operation_id']
+#               operation = operations.find { |el| el.warehouse_operation_id == op['warehouse_operation_id'] }
+#               op['invent_item_id'] = inv_items.find { |inv_item| inv_item.type_id == operation.item.type_id }.item_id
+
+#               op.delete('warehouse_operation_id')
+#             end
+#             order_json['inv_items_attributes'] = inv_items.as_json
+#             order_json['inv_items_attributes'].each_with_index do |inv_item, index|
+#               inv_item['id'] = inv_item['item_id']
+#               inv_item['invent_num'] = 123456 if index.zero?
+
+#               inv_item.delete('item_id')
+#             end
+#             order_json
+#           end
+
+#           include_examples 'execute_out failed specs'
+#         end
+
+#         context 'and when workplace already has pc' do
+#           let!(:workplace) { create(:workplace_pk, :add_items, items: %i[pc monitor]) }
+#           let(:inv_item) { create(:item, :with_property_values, workplace: workplace, type_name: :pc, invent_num: nil, status: :waiting_take, disable_filters: true) }
+#           let(:item) { create(:used_item, count_reserved: 1, inv_item: inv_item) }
+#           let(:operation) { build(:order_operation, item: item, invent_item_id: item.invent_item_id, shift: -1) }
+#           let!(:order) { create(:order, workplace: workplace, operation: :out, operations: [operation], inv_items: [inv_item]) }
+#           let(:order_params) do
+#             order_json['consumer_tn'] = ***REMOVED***
+#             order_json['operations_attributes'] = [operation].as_json
+#             order_json['operations_attributes'].each do |op|
+#               op['status'] = 'done'
+#               op['id'] = op['warehouse_operation_id']
+#               op['invent_item_id'] = operation.invent_item_id
+
+#               op.delete('warehouse_operation_id')
+#             end
+#             order_json['inv_items_attributes'] = [inv_item].as_json
+#             order_json['inv_items_attributes'].each do |inv_item|
+#               inv_item['id'] = inv_item['item_id']
+#               inv_item['invent_num'] = 123456
+
+#               inv_item.delete('item_id')
+#             end
+#             order_json
+#           end
+
+#           its(:run) { is_expected.to be_truthy }
+#         end
+#       end
+#     end
+#   end
+# end

@@ -122,14 +122,28 @@ module Invent
 
     describe '#get_item_model' do
       context 'when type is :pc' do
-        subject { create(:item, :with_property_values, type_name: :pc) }
-        let(:item_model) do
-          properties = Property.where(name: Property::FILE_DEPENDING)
-          subject.property_values.where(property: properties).map(&:value).join(' / ')
+        context 'and values is present' do
+          subject { create(:item, :with_property_values, type_name: :pc) }
+          let(:item_model) do
+            properties = Property.where(name: Property::FILE_DEPENDING)
+            subject.property_values.where(property: properties).map(&:value).join(' / ')
+          end
+
+          it 'loads all config parameters' do
+            expect(subject.get_item_model).to eq item_model
+          end
         end
 
-        it 'loads all config parameters' do
-          expect(subject.get_item_model).to eq item_model
+        context 'and values is blank' do
+          subject do
+            i = build(:item, :without_property_values, type_name: :pc, disable_filters: true)
+            i.save(validate: false)
+            i
+          end
+
+          it 'removes skips blank values' do
+            expect(subject.get_item_model).to be_empty
+          end
         end
       end
 

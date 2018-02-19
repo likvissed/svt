@@ -35,6 +35,16 @@ module Invent
       end
     end
 
+    def edit
+      @edit = Items::Edit.new(params[:item_id])
+
+      if @edit.run
+        render json: @edit.data
+      else
+        render json: { full_message: @edit.errors.full_messages.join('. ') }, status: 422
+      end
+    end
+
     def avaliable
       @avaliable = Items::Avaliable.new(params[:type_id])
 

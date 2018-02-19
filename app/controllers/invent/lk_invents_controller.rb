@@ -66,7 +66,7 @@ module Invent
       @workplace = Workplaces::Create.new(current_user, workplace_params)
 
       if @workplace.run
-        render json: { workplace: @workplace.data, full_message: I18n.t('controllers.workplace.created') }
+        render json: { workplace: @workplace.data, full_message: I18n.t('controllers.invent/workplace.created') }
       else
         render json: { full_message: @workplace.errors.full_messages.join('. ') }, status: 422
       end
@@ -86,7 +86,7 @@ module Invent
       @workplace = Workplaces::Update.new(current_user, params[:workplace_id], workplace_params)
 
       if @workplace.run
-        render json: { workplace: @workplace.data, full_message: I18n.t('controllers.workplace.updated') }
+        render json: { workplace: @workplace.data, full_message: I18n.t('controllers.invent/workplace.updated') }
       else
         render json: { full_message: @workplace.errors.full_messages.join('. ') }, status: 422
       end
@@ -96,7 +96,7 @@ module Invent
       @workplace = LkInvents::DestroyWorkplace.new(current_user, params[:workplace_id])
 
       if @workplace.run
-        render json: { full_message: I18n.t('controllers.workplace.destroyed') }
+        render json: { full_message: I18n.t('controllers.invent/workplace.destroyed') }
       else
         render json: { full_message: @workplace.errors.full_messages.join('. ') }, status: 422
       end

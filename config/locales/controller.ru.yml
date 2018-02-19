@@ -6,19 +6,21 @@ ru:
     ***REMOVED***_invents:
       unprocessable_entity: 'Обратитесь к администратору, т.***REMOVED***'
       file_added: 'Файл добавлен'
-    workplace:
+    invent/workplace:
       created: 'Рабочее место создано'
       updated: 'Данные о рабочем месте обновлены'
       destroyed: 'Рабочее место удалено'
       pc_config_processed: 'Данные загружены'
-    workplace_count:
+    invent/workplace_count:
       created: 'Отдел %{dept} добавлен'
       list_created: 'Список отделов и ответственных обновлен'
       updated: 'Данные одела %{dept} обновлены'
       destroyed: 'Отдел удален'
-    order:
+    warehouse/order:
       created_in: 'Готово. Количество созданных ордеров: %{count}'
       created_out: 'Ордер создан'
       updated: 'Ордер №%{order_id} обновлен'
       destroyed: 'Ордер удален'
       executed: 'Исполнено'
+    warehouse/item:
+      destroyed: 'Указанная техника удалена со склада'

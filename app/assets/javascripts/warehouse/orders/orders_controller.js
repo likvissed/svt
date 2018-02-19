@@ -6,13 +6,15 @@
     .controller('EditInOrderController', EditInOrderController)
     .controller('EditOutOrderController', EditOutOrderController)
     .controller('ExecOrderController', ExecOrderController)
-    .controller('ItemsForOrderController', ItemsForOrderController);
+    .controller('ItemsForOrderController', ItemsForOrderController)
+    .controller('DeliveryItemsCtrl', DeliveryItemsCtrl);
 
   OrdersController.$inject = ['$uibModal', 'ActionCableChannel', 'TablePaginator', 'Order', 'Flash', 'Error', 'Server'];
   EditInOrderController.$inject = ['$uibModal', '$uibModalInstance', 'Order', 'Flash', 'Error', 'Server'];
   EditOutOrderController.$inject = ['$uibModal', '$uibModalInstance', 'Order', 'WarehouseItems', 'Flash', 'Error', 'Server'];
   ExecOrderController.$inject = ['$uibModal', '$uibModalInstance', 'Order', 'Flash', 'Error', 'Server'];
   ItemsForOrderController.$inject = ['$uibModalInstance', 'eqTypes', 'Order', 'Flash'];
+  DeliveryItemsCtrl.$inject = ['$uibModal', '$uibModalInstance', 'Order', 'Flash', 'Error', 'Server'];
 
 // =====================================================================================================================
 
@@ -110,7 +112,7 @@
         templateUrl: 'execOrder.slim',
         controller: 'ExecOrderController',
         controllerAs: 'exec',
-        size: 'md',
+        size: 'lg',
         backdrop: 'static'
       });
     });
@@ -118,6 +120,8 @@
 
   /**
    * Удалить ордер.
+   *
+   * @param order
    */
   OrdersController.prototype.destroyOrder = function(order) {
     var
@@ -384,8 +388,35 @@
     this.order.operations_attributes.forEach(function(op) { op.status = status; });
   };
 
+  /**
+   * Установить/снять флаг, показывающий, выбраны ли все пункты
+   */
   ExecOrderController.prototype.checkSelected = function() {
     this.isAllOpSelected = this.order.operations_attributes.every(function(op) { return op.status == 'done' });
+  }
+
+  ExecOrderController.prototype.deliveryItems = function() {
+    var self = this;
+
+    this.Order.prepareToDeliver()
+      .then(
+        function(response) {
+          self.clearErrors();
+          var modalInstance = self.$uibModal.open({
+            templateUrl: 'deliveryOfItems.slim',
+            controller: 'DeliveryItemsCtrl',
+            controllerAs: 'delivery',
+            size: 'lg',
+            backdrop: 'static'
+          });
+
+          modalInstance.result.then(function() {
+            self.cancel();
+          });
+        },
+        function(response) {
+          self.errorResponse(response);
+        })
   }
 
   /**
@@ -396,7 +427,7 @@
       self = this,
       sendData = this.Order.getObjectToSend();
 
-    this.Server.Warehouse.Order.execute(
+    this.Server.Warehouse.Order.executeIn(
       { warehouse_order_id: this.order.warehouse_order_id },
       { order: sendData },
       function (response) {
@@ -508,4 +539,84 @@
   ItemsForOrderController.prototype.cancel = function() {
     this.$uibModalInstance.dismiss();
   };
+
+  // =====================================================================================================================
+
+  function DeliveryItemsCtrl($uibModal, $uibModalInstance, Order, Flash, Error, Server) {
+    this.setFormName('order');
+
+    this.$uibModal = $uibModal;
+    this.$uibModalInstance = $uibModalInstance;
+    this.Order = Order;
+    this.Flash = Flash;
+    this.Error = Error;
+    this.Server = Server;
+
+    this.order = this.Order.order;
+    console.log(this.order);
+  }
+
+  // Унаследовать методы класса FormValidationController
+  DeliveryItemsCtrl.prototype = Object.create(FormValidationController.prototype);
+  DeliveryItemsCtrl.prototype.constructor = ExecOrderController;
+
+  /**
+   * Обновить данные техники указанной оперции
+   *
+   * @param op
+   */
+  DeliveryItemsCtrl.prototype.refreshInvItemData = function(op) {
+    if (!op.invent_item_id) { return false; }
+
+    var self = this;
+
+    this.Server.Invent.Item.get(
+      { item_id: op.invent_item_id },
+      function(response) {
+        self.Order.refreshInvItemData(op, response);
+      },
+      function(response, status) {
+        self.Error.response(response, status);
+      }
+    )
+  };
+
+  /**
+   * Выдать технику
+   */
+  DeliveryItemsCtrl.prototype.ok = function() {
+    var
+      self = this,
+      sendData = this.Order.getObjectToSend();
+
+    this.Server.Warehouse.Order.executeOut(
+      { warehouse_order_id: this.order.warehouse_order_id },
+      { order: sendData },
+      function (response) {
+        self.Flash.notice(response.full_message);
+        self.$uibModalInstance.close();
+      },
+      function (response, status) {
+        self.Error.response(response, status);
+        self.errorResponse(response);
+      }
+    )
+  };
+
+  /**
+   * Закрыть окно
+   */
+  DeliveryItemsCtrl.prototype.cancel = function() {
+    this.$uibModalInstance.dismiss();
+    this.Order.clearAssociations();
+  };
+
+  /**
+   * Фильтр, определяющий, какие операции только что были выбраны пользователем для исполнения
+   */
+  DeliveryItemsCtrl.prototype.selectedOpFilter = function(selectedOp) {
+    return function(op) {
+      return selectedOp.find(function(el) { return el.warehouse_operation_id == op.id });
+    }
+  }
 })();

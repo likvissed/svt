@@ -19,6 +19,7 @@ module Warehouse
 
     after_initialize :set_initial_count, if: -> { new_record? }
     before_validation :set_string_values
+    before_destroy :prevent_destroy, prepend: true
 
     enum warehouse_type: { without_invent_num: 1, with_invent_num: 2 }
 
@@ -30,10 +31,8 @@ module Warehouse
     end
 
     def set_string_values
-      return unless inv_item && type
-
-      self.item_type ||= type.short_description
-      self.item_model ||= inv_item.get_item_model
+      self.item_type ||= type.short_description if type
+      self.item_model ||= inv_item.try(:get_item_model) || model.try(:item_model) if inv_item || model
     end
 
     def uniq_item_model
@@ -54,6 +53,17 @@ module Warehouse
       return if count >= count_reserved
 
       errors.add(:base, :out_of_stock, type: item_type)
+    end
+
+    def prevent_destroy
+      op = operations.find(&:processing?)
+      if op
+        errors.add(:base, :cannot_destroy_with_processing_operation, order_id: op.operationable.warehouse_order_id)
+        throw(:abort)
+      elsif count_reserved > 0
+        errors.add(:base, :cannot_destroy_with_count_reserved)
+        throw(:abort)
+      end
     end
   end
 end

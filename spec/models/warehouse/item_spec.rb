@@ -42,16 +42,34 @@ module Warehouse
     end
 
     describe '#set_string_values' do
-      let(:inv_item) { create(:item, :with_property_values, type_name: :monitor) }
-      subject { build(:used_item, inv_item: inv_item) }
-      before { subject.valid? }
+      context 'when inv_item exists' do
+        let(:inv_item) { create(:item, :with_property_values, type_name: :monitor) }
+        subject { build(:used_item, inv_item: inv_item) }
 
-      it 'adds item_model value' do
-        expect(subject.item_model).to eq inv_item.get_item_model
+        it 'adds item_model value' do
+          subject.valid?
+
+          expect(subject.item_model).to eq inv_item.get_item_model
+        end
       end
 
-      it 'adds item_type value' do
-        expect(subject.item_type).to eq inv_item.type.short_description
+      context 'when type exists' do
+        let(:type) { Invent::Type.find_by(name: :monitor) }
+        subject { build(:used_item, type: type) }
+
+        it 'adds item_type value' do
+          expect(subject.item_type).to eq type.short_description
+        end
+      end
+
+      context 'when inv_item does not exist but model exists' do
+        let(:model) { Invent::Type.find_by(name: :monitor).models.first }
+        subject { build(:new_item, model: model) }
+
+        it 'adds item_model value' do
+          subject.valid?
+          expect(subject.item_model).to eq model.item_model
+        end
       end
     end
 
@@ -131,6 +149,37 @@ module Warehouse
         it 'adds :out_of_stock error' do
           subject.valid?
           expect(subject.errors.details[:base]).to include(error: :out_of_stock, type: subject.item_type)
+        end
+      end
+    end
+
+    describe '#prevent_destroy' do
+      its(:destroy) { is_expected.to be_truthy }
+
+      context 'when item has operation with :processing status' do
+        let!(:order) { create(:order, :default_workplace) }
+        subject { order.items.first }
+
+        it 'does not destroy Item' do
+          expect { subject.destroy }.not_to change(Item, :count)
+        end
+
+        it 'adds :cannot_destroy_with_processing_operation error' do
+          subject.destroy
+          expect(subject.errors.details[:base]).to include(error: :cannot_destroy_with_processing_operation, order_id: order.warehouse_order_id)
+        end
+      end
+
+      context 'when :count_reserved attribute is not zero' do
+        let!(:item) { create(:used_item, count: 1, count_reserved: 1) }
+
+        it 'does not destroy Item' do
+          expect { item.destroy }.not_to change(Item, :count)
+        end
+
+        it 'adds :cannot_destroy_with_count_reserved error' do
+          item.destroy
+          expect(item.errors.details[:base]).to include(error: :cannot_destroy_with_count_reserved)
         end
       end
     end

@@ -41,6 +41,7 @@ module Warehouse
         data[:order] = data[:order].as_json(
           include: {
             operations: {
+              methods: :formatted_date,
               include: {
                 item: {
                   include: {

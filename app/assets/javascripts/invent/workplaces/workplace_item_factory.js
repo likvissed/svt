@@ -54,12 +54,12 @@
 
     /**
      * Установить объект model и model_id к указанному item. Создать полный массив models, из которого пользователь будет выбирать модель.
-     * 
+     *
      * @param item
      */
     function _setModel(item) {
       if (!item.type.models.length) { return; }
-      
+
       // Добавить к моделям запись "Выберите модель" и "Другое"
       item.type.models = templateSelectModel.concat(item.type.models);
 
@@ -222,6 +222,10 @@
           .getTemplateSelectProp(prop_value.short_description, PropertyValue.isPropListPlus(prop_value))
           .concat(filteredList);
 
+      console.log(item);
+      console.log(prop_index);
+      console.log('filteredList');
+      console.log(filteredList);
       PropertyValue.setPropertyValue(item, prop_index, 'filteredList', filteredList);
     }
 
@@ -232,7 +236,7 @@
      * @param data - объект данных { cpu: [], hdd: [], mb: [], ... }
      */
     function _setPcProperties(item, data) {
-      var 
+      var
         // Индекс объекта prop_obj
         prop_index,
         // Объект массива properties

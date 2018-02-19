@@ -56,7 +56,7 @@ module Warehouse
     protected
 
     def presence_consumer
-      return if consumer_fio.present?
+      return if consumer_fio.present? || errors.details[:consumer].any?
 
       errors.add(:consumer, :blank)
     end

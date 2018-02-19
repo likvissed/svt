@@ -34,7 +34,7 @@ module Invent
       @create = Workplaces::Create.new(current_user, workplace_params)
 
       if @create.run
-        flash[:notice] = I18n.t('controllers.workplace.created')
+        flash[:notice] = I18n.t('controllers.invent/workplace.created')
         render json: { location: session[:workplace_prev_url] }
       else
         render json: { full_message: @create.errors.full_messages.join('. ') }, status: 422
@@ -70,7 +70,7 @@ module Invent
       @pc_file = Workplaces::PcConfigFromUser.new(params[:pc_file])
 
       if @pc_file.run
-        render json: { data: @pc_file.data, full_message: I18n.t('controllers.workplace.pc_config_processed') }
+        render json: { data: @pc_file.data, full_message: I18n.t('controllers.invent/workplace.pc_config_processed') }
       else
         render json: { full_message: @pc_file.errors.full_messages.join('. ') }, status: 422
       end
@@ -98,7 +98,7 @@ module Invent
       @update = Workplaces::Update.new(current_user, params[:workplace_id], workplace_params)
 
       if @update.run
-        flash[:notice] = I18n.t('controllers.workplace.updated')
+        flash[:notice] = I18n.t('controllers.invent/workplace.updated')
         render json: { location: session[:workplace_prev_url] }
       else
         render json: { full_message: @update.errors.full_messages.join('. ') }, status: 422
@@ -110,7 +110,7 @@ module Invent
       authorize @workplace, :destroy?
 
       if @workplace.destroy
-        render json: { full_message: I18n.t('controllers.workplace.destroyed') }
+        render json: { full_message: I18n.t('controllers.invent/workplace.destroyed') }
       else
         render json: { full_message: @workplace.errors.full_messages.join('. ') }, status: 422
       end

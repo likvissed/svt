@@ -1,7 +1,7 @@
 module Warehouse
   module Items
     # Загрузить список склада
-    class Index < ApplicationService
+    class Index < Warehouse::ApplicationService
       def initialize(params)
         @data = {}
         @start = params[:start]

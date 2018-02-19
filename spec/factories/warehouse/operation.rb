@@ -5,8 +5,8 @@ module Warehouse
       stockman_id_tn nil
       operationable_id nil
       operationable_type 'Warehouse::Order'
-      item_type { Invent::Item.find_by(item_id: invent_item_id).try(:type).try(:short_description) || 'Test type' }
-      item_model { Invent::Item.find_by(item_id: invent_item_id).try(:get_item_model) || 'Test model' }
+      item_type { Invent::Item.find_by(item_id: invent_item_id).try(:type).try(:short_description) || item.try(:item_type) || 'Test type' }
+      item_model { Invent::Item.find_by(item_id: invent_item_id).try(:get_item_model) || item.try(:item_model) || 'Test model' }
       status 'processing'
       invent_item_id nil
 
