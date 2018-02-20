@@ -2,6 +2,8 @@ require 'rails_helper'
 
 module Warehouse
   RSpec.describe Operation, type: :model do
+    it { is_expected.to have_many(:item_to_orders).dependent(:destroy) }
+    it { is_expected.to have_many(:inv_items).through(:item_to_orders).class_name('Invent::Item') }
     it { is_expected.to belong_to(:item).with_foreign_key('warehouse_item_id') }
     it { is_expected.to belong_to(:location).with_foreign_key('warehouse_location_id') }
     it { is_expected.to belong_to(:stockman).class_name('UserIss').with_foreign_key('stockman_id_tn') }
@@ -49,22 +51,58 @@ module Warehouse
     end
 
     describe '#uniq_item_by_processing_operation' do
-      context 'when operation with :processing status for specified item exists' do
-        let(:workplace) { create(:workplace_pk, :add_items, items: %i[pc monitor monitor]) }
-        let(:item) { workplace.items.first }
-        let(:used_item) { create(:used_item, inv_item: item) }
-        let(:operation) { build(:order_operation, invent_item_id: item.item_id, item: used_item) }
-        let!(:order) { create(:order, workplace: workplace, operations: [operation]) }
-        subject { build(:order_operation, item: order.items.first) }
+      context 'when item type is :with_ivnent_num' do
+        context 'and when operation with :processing status for specified item is not exist' do
+          let(:item) { create(:item, :with_property_values, type_name: :monitor) }
+          let(:used_item) { create(:used_item, inv_item: item) }
+          subject { build(:order_operation, item: used_item) }
 
-        it 'adds :operation_already_exists error' do
-          subject.valid?
-          expect(subject.errors.details[:base]).to include(
-            error: :operation_already_exists,
-            type: used_item.item_type,
-            invent_num: item.invent_num,
-            order_id: order.warehouse_order_id
-          )
+          it { is_expected.to be_valid }
+        end
+
+        context 'and when operation with :processing status for specified item exists' do
+          let(:workplace) { create(:workplace_pk, :add_items, items: %i[pc monitor monitor]) }
+          let(:item) { workplace.items.first }
+          let(:used_item) { create(:used_item, inv_item: item) }
+          let(:operation) { build(:order_operation, invent_item_id: item.item_id, item: used_item) }
+          let!(:order) { create(:order, workplace: workplace, operations: [operation]) }
+          subject { build(:order_operation, item: order.items.first) }
+
+          it 'adds :operation_already_exists error' do
+            subject.valid?
+            expect(subject.errors.details[:base]).to include(
+              error: :operation_with_invent_num_already_exists,
+              type: used_item.item_type,
+              invent_num: item.invent_num,
+              order_id: order.warehouse_order_id
+            )
+          end
+        end
+      end
+
+      context 'when item type is :without_ivnent_num' do
+        context 'and when operation with :processing status for specified item is not exist' do
+          let(:used_item) { create(:used_item, item_type: 'test', item_model: 'test', warehouse_type: :without_invent_num, count: 1) }
+          subject { build(:order_operation, item: used_item) }
+
+          it { is_expected.to be_valid }
+        end
+
+        context 'and when operation with :processing status for specified item exists' do
+          let(:used_item) { create(:used_item, item_type: 'test', item_model: 'test', warehouse_type: :without_invent_num, count: 1) }
+          let(:operation) { build(:order_operation, item: used_item) }
+          let!(:order) { create(:order, operations: [operation]) }
+          subject { build(:order_operation, item: order.items.first) }
+
+          it 'adds :operation_already_exists error' do
+            subject.valid?
+            expect(subject.errors.details[:base]).to include(
+              error: :operation_without_invent_num_already_exists,
+              type: used_item.item_type,
+              model: used_item.item_model,
+              order_id: order.warehouse_order_id
+            )
+          end
         end
       end
     end

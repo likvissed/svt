@@ -3,6 +3,9 @@ module Warehouse
     self.primary_key = :warehouse_operation_id
     self.table_name = "#{table_name_prefix}operations"
 
+    has_many :item_to_orders, dependent: :destroy
+    has_many :inv_items, through: :item_to_orders, class_name: 'Invent::Item'
+
     belongs_to :item, foreign_key: 'warehouse_item_id', optional: true
     belongs_to :location, foreign_key: 'warehouse_location_id', optional: true
     belongs_to :stockman, class_name: 'UserIss', foreign_key: 'stockman_id_tn', optional: true
@@ -54,13 +57,23 @@ module Warehouse
       op = item.operations.find(&:processing?)
       return unless op
 
-      errors.add(
-        :base,
-        :operation_already_exists,
-        type: item.item_type,
-        invent_num: item.inv_item.invent_num,
-        order_id: op.operationable.warehouse_order_id
-      )
+      if item.inv_item
+        errors.add(
+          :base,
+          :operation_with_invent_num_already_exists,
+          type: item.item_type,
+          invent_num: item.inv_item.invent_num,
+          order_id: op.operationable.warehouse_order_id
+        )
+      else
+        errors.add(
+          :base,
+          :operation_without_invent_num_already_exists,
+          type: item.item_type,
+          model: item.item_model,
+          order_id: op.operationable.warehouse_order_id
+        )
+      end
     end
 
     def set_date
