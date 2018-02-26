@@ -1,10 +1,10 @@
-require 'rails_helper'
+require 'feature_helper'
 
 module Warehouse
   module Orders
     RSpec.describe ExecuteIn, type: :model do
       let!(:current_user) { create(:***REMOVED***_user) }
-      subject { ExecuteIn.new(current_user, order.warehouse_order_id, order_params) }
+      subject { ExecuteIn.new(current_user, order.id, order_params) }
 
       context 'when operations belongs_to item' do
         let(:first_inv_item) { create(:item, :with_property_values, type_name: :pc, status: :waiting_bring) }
@@ -18,22 +18,19 @@ module Warehouse
         let(:sec_item) { create(:used_item, inv_item: sec_inv_item, count: 0, count_reserved: 0) }
         let(:operations) do
           [
-            build(:order_operation, item: first_item, invent_item_id: first_item.invent_item_id),
-            build(:order_operation, item: sec_item, invent_item_id: sec_item.invent_item_id)
+            build(:order_operation, item: first_item, inv_items: [first_inv_item]),
+            build(:order_operation, item: sec_item, inv_items: [sec_inv_item])
           ]
         end
-        let!(:order) { create(:order, workplace: workplace, operations: operations, inv_items: [first_inv_item, sec_inv_item]) }
+        let!(:order) { create(:order, inv_workplace: workplace, operations: operations) }
         let(:order_json) { order.as_json }
         let(:order_params) do
           order_json['consumer_tn'] = ***REMOVED***
           order_json['operations_attributes'] = operations.as_json
           order_json['operations_attributes'].each_with_index do |op, index|
             op['status'] = 'done' if index.zero?
-            op['id'] = op['warehouse_operation_id']
-            op['invent_item_id'] = operations.find { |el| el.warehouse_operation_id == op['id'] }.invent_item_id
-
-            op.delete('warehouse_operation_id')
           end
+
           order_json
         end
 
@@ -109,12 +106,6 @@ module Warehouse
           let(:order_params) do
             order_json['consumer_tn'] = ***REMOVED***
             order_json['operations_attributes'] = operations.as_json
-            order_json['operations_attributes'].each do |op|
-              op['id'] = op['warehouse_operation_id']
-              op['invent_item_id'] = operations.find { |el| el.warehouse_operation_id == op['id'] }.invent_item_id
-
-              op.delete('warehouse_operation_id')
-            end
             order_json
           end
 
@@ -137,9 +128,6 @@ module Warehouse
           order_json['operations_attributes'] = operations.as_json
           order_json['operations_attributes'].each do |op|
             op['status'] = 'done'
-            op['id'] = op['warehouse_operation_id']
-
-            op.delete('warehouse_operation_id')
           end
           order_json
         end
@@ -213,16 +201,13 @@ module Warehouse
         let(:first_op) { build(:order_operation, item_type: 'Мышь', item_model: 'Logitech', status: :done, item: item, stockman_id_tn: user.id_tn) }
         let(:sec_op) { build(:order_operation, item_type: 'Клавиатура', item_model: 'OKLICK') }
         let(:operations) { [first_op, sec_op] }
-        let!(:order) { create(:order, workplace: nil, operations: operations, consumer_tn: user.tn) }
+        let!(:order) { create(:order, inv_workplace: nil, operations: operations, consumer_tn: user.tn) }
         let(:order_json) { order.as_json }
         let(:order_params) do
           order_json['consumer_tn'] = ***REMOVED***
           order_json['operations_attributes'] = operations.as_json
           order_json['operations_attributes'].each do |op|
             op['status'] = 'done'
-            op['id'] = op['warehouse_operation_id']
-
-            op.delete('warehouse_operation_id')
           end
           order_json
         end

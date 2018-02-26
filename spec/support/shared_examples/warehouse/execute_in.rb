@@ -5,7 +5,7 @@ module Warehouse
     it 'creates order instance variable' do
       subject.run
 
-      expect(subject.instance_variable_get(:@order)).to eq Order.find(order.warehouse_order_id)
+      expect(subject.instance_variable_get(:@order)).to eq Order.find(order.id)
     end
 
     it 'sets stockman attributes to the done operations' do

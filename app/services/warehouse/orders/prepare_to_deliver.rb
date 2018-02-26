@@ -33,19 +33,7 @@ module Warehouse
 
       def search_inv_items
         data[:selected_op] = @order.operations.select { |op| op.status_changed? && op.done? }
-        @rejected = @order.operations.reject { |op| op.status_changed? && op.done? }.map { |op| op.item.try(:inv_item).try(:item_id) }.compact
-
-        @finded_inv_items = []
-        data[:selected_op].each do |op|
-          op.set_stockman(current_user)
-
-          if op.item.inv_item
-            @finded_inv_items << op.item.inv_item.item_id
-          else
-            op.invent_item_id = @order.inv_items.not_by_items(@finded_inv_items).not_by_items(@rejected).where(type_id: op.item.type_id).where(model_id: op.item.model_id).first.try(:item_id)
-            @finded_inv_items << op.invent_item_id if op.invent_item_id
-          end
-        end
+        data[:selected_op].each { |op| op.set_stockman(current_user) }
 
         if data[:selected_op].empty?
           error[:full_message] = I18n.t('activemodel.errors.models.warehouse/orders/execute.operation_not_selected')
@@ -61,22 +49,30 @@ module Warehouse
       end
 
       def prepare_params
-        data[:inv_items_attributes] = Invent::Item.where(item_id: @finded_inv_items.compact).includes(:model, property_values: :property_list)
-                                        .as_json(
-                                          include: {
-                                            property_values: {
-                                              include: [:property, :property_list]
-                                            }
-                                          },
-                                          methods: :get_item_model
-                                        )
-        data[:inv_items_attributes].each do |item|
-          item['id'] = item['item_id']
+        data[:operations_attributes] = @order.operations.includes(inv_items: [:model, property_values: :property_list])
+                                         .as_json(
+                                           include: {
+                                             inv_items: {
+                                               include: {
+                                                 property_values: {
+                                                   include: [:property, :property_list]
+                                                 }
+                                               },
+                                               methods: :get_item_model
+                                             }
+                                           },
+                                         )
+        data[:operations_attributes].each do |op|
+          op['inv_items_attributes'] = op['inv_items']
+          op['inv_items_attributes'].each do |inv_item|
+            inv_item['id'] = inv_item['item_id']
+            inv_item.delete('item_id')
+          end
+          op['status'] = :done if data[:selected_op].any? { |sel| sel.id == op['id'] }
 
-          item.delete('item_id')
+          op.delete('inv_items')
         end
-
-        data[:selected_op] = data[:selected_op].as_json(methods: :invent_item_id, only: :warehouse_operation_id)
+        data[:selected_op] = data[:selected_op].as_json(only: :id)
       end
     end
   end

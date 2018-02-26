@@ -24,7 +24,9 @@ module Warehouse
 
       def init_order
         data[:order] = Order.new(operation: @operation)
-        data[:operation] = data[:order].operations.build
+
+        shift = @operation == :in ? 1 : -1
+        data[:operation] = data[:order].operations.build(shift: shift)
       end
 
       def load_divisions

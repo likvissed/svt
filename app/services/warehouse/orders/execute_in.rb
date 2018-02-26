@@ -67,7 +67,7 @@ module Warehouse
           op.set_stockman(current_user)
           if op.item
             op.item.count = op.item.count + op.shift.to_i
-            op.warehouse_item_id
+            op.item_id
           else
             op.create_item!(
               warehouse_type: :without_invent_num,
@@ -87,7 +87,7 @@ module Warehouse
       def update_items
         Invent::Item.transaction(requires_new: true) do
           @order.operations.each do |op|
-            next unless @item_ids.include?(op.warehouse_item_id)
+            next unless @item_ids.include?(op.item_id)
 
             op.item.save!
             op&.item&.inv_item&.update_attributes!(workplace: nil, status: nil)

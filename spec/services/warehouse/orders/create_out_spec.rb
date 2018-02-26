@@ -1,4 +1,4 @@
-require 'rails_helper'
+require 'feature_helper'
 
 module Warehouse
   module Orders
@@ -11,21 +11,31 @@ module Warehouse
       end
       subject { CreateOut.new(current_user, order_params.as_json) }
 
+      context 'when item was not selected' do
+        let(:order_params) do
+          order = attributes_for(:order, operation: :out, invent_workplace_id: workplace.workplace_id)
+          order[:operations_attributes] = []
+          order
+        end
+
+        its(:run) { is_expected.to be_falsey }
+      end
+
       context 'when item is used' do
         let(:pc) { create(:item, :with_property_values, type_name: 'pc') }
         let!(:item_1) { create(:used_item, count: 1) }
         let!(:item_2) { create(:used_item, inv_item: pc, count: 1) }
         let!(:item_3) { create(:used_item, warehouse_type: :without_invent_num, item_type: 'Клавиатура', item_model: 'OKLICK', count: 1) }
-        let(:operation_1) { attributes_for(:order_operation, warehouse_item_id: item_1.warehouse_item_id, shift: -1) }
-        let(:operation_2) { attributes_for(:order_operation, warehouse_item_id: item_2.warehouse_item_id, shift: -1) }
-        let(:operation_3) { attributes_for(:order_operation, warehouse_item_id: item_3.warehouse_item_id, shift: -1) }
+        let(:operation_1) { attributes_for(:order_operation, item_id: item_1.id, shift: -1) }
+        let(:operation_2) { attributes_for(:order_operation, item_id: item_2.id, shift: -1) }
+        let(:operation_3) { attributes_for(:order_operation, item_id: item_3.id, shift: -1) }
         let(:order_params) do
-          order = attributes_for(:order, operation: :out, workplace_id: workplace.workplace_id)
+          order = attributes_for(:order, operation: :out, invent_workplace_id: workplace.workplace_id)
           order[:operations_attributes] = [operation_1, operation_2, operation_3]
           order
         end
-        let(:inv_items) { Item.includes(:inv_item).find(order_params[:operations_attributes].map { |op| op[:warehouse_item_id] }).map(&:inv_item).compact }
-        let(:items) { Item.find(order_params[:operations_attributes].map { |op| op[:warehouse_item_id] }) }
+        let(:inv_items) { Item.includes(:inv_item).find(order_params[:operations_attributes].map { |op| op[:item_id] }).map(&:inv_item).compact }
+        let(:items) { Item.find(order_params[:operations_attributes].map { |op| op[:item_id] }) }
 
         its(:run) { is_expected.to be_truthy }
 
@@ -34,7 +44,7 @@ module Warehouse
         end
 
         it 'creates warehouse_item_to_orders records' do
-          expect { subject.run }.to change(ItemToOrder, :count).by(2)
+          expect { subject.run }.to change(InvItemToOperation, :count).by(2)
         end
 
         it 'creates order' do
@@ -56,7 +66,7 @@ module Warehouse
         end
 
         context 'and when order was not created' do
-          let(:order) { build(:order, :without_operations, operation: :out, workplace_id: workplace.workplace_id) }
+          let(:order) { build(:order, :without_operations, operation: :out, invent_workplace_id: workplace.workplace_id) }
           before do
             allow(Order).to receive(:new).and_return(order)
             allow(order).to receive(:save).and_return(false)
@@ -75,13 +85,13 @@ module Warehouse
         let!(:item_3) { create(:new_item, warehouse_type: :without_invent_num, item_type: 'Мышь', item_model: 'ASUS', count: 2) }
         let!(:item_4) { create(:used_item, inv_item: monitor, count: 1) }
         let!(:item_5) { create(:new_item, type: Invent::Type.find_by(name: :monitor), model: Invent::Type.find_by(name: :monitor).models.first, count: 2) }
-        let(:operation_1) { attributes_for(:order_operation, warehouse_item_id: item_1.warehouse_item_id, shift: -1) }
-        let(:operation_2) { attributes_for(:order_operation, warehouse_item_id: item_2.warehouse_item_id, shift: -1) }
-        let(:operation_3) { attributes_for(:order_operation, warehouse_item_id: item_3.warehouse_item_id, shift: -1) }
-        let(:operation_4) { attributes_for(:order_operation, warehouse_item_id: item_4.warehouse_item_id, shift: -1) }
-        let(:operation_5) { attributes_for(:order_operation, warehouse_item_id: item_5.warehouse_item_id, shift: -2) }
+        let(:operation_1) { attributes_for(:order_operation, item_id: item_1.id, shift: -1) }
+        let(:operation_2) { attributes_for(:order_operation, item_id: item_2.id, shift: -1) }
+        let(:operation_3) { attributes_for(:order_operation, item_id: item_3.id, shift: -1) }
+        let(:operation_4) { attributes_for(:order_operation, item_id: item_4.id, shift: -1) }
+        let(:operation_5) { attributes_for(:order_operation, item_id: item_5.id, shift: -2) }
         let(:order_params) do
-          order = attributes_for(:order, operation: :out, workplace_id: workplace.workplace_id)
+          order = attributes_for(:order, operation: :out, invent_workplace_id: workplace.workplace_id)
           order[:operations_attributes] = [operation_1, operation_2, operation_3, operation_4, operation_5]
           order
         end
@@ -93,7 +103,7 @@ module Warehouse
         end
 
         it 'creates warehouse_item_to_orders records' do
-          expect { subject.run }.to change(ItemToOrder, :count).by(5)
+          expect { subject.run }.to change(InvItemToOperation, :count).by(5)
         end
 
         it 'creates invent_items records' do
@@ -154,7 +164,7 @@ module Warehouse
 
           its(:run) { is_expected.to be_falsey }
 
-          [Invent::Item, Order, Item, ItemToOrder, Operation].each do |klass|
+          [Invent::Item, Order, Item, InvItemToOperation, Operation].each do |klass|
             it "does not create #{klass.name} record" do
               expect { subject.run }.not_to change(klass, :count)
             end

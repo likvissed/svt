@@ -57,5 +57,8 @@
 
         return arr.shift() + ' ' + arr.map(function(el) { return el[0].toUpperCase() + '.' }).join(' ');
       }
+    })
+    .filter('positiveVal', function() {
+      return function(val) { return Math.abs(val); }
     });
 })();

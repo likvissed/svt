@@ -1,10 +1,10 @@
-require 'rails_helper'
+require 'feature_helper'
 
 module Warehouse
   module Orders
     RSpec.describe Edit, type: :model do
       let(:order) { create(:order, :default_workplace) }
-      subject { Edit.new(order.warehouse_order_id) }
+      subject { Edit.new(order.id) }
 
       before { subject.run }
 
@@ -22,12 +22,12 @@ module Warehouse
         expect(subject.data[:order]['operations_attributes'].count).to eq order.operations.count
       end
 
-      it 'replaces primary_key with id param' do
-        expect(subject.data[:order]['operations_attributes'].first['id']).to eq order.operations.first.warehouse_operation_id
+      it 'loads inv_item_ids array for each operations attributes' do
+        expect(subject.data[:order]['operations_attributes'].first['inv_item_ids']).to eq order.inv_item_to_operations.pluck(:invent_item_id)
       end
 
-      it 'adds invent_item_id to each operation' do
-        expect(subject.data[:order]['operations_attributes'].first['invent_item_id']).to eq order.operations.first.item.inv_item.item_id
+      it 'replaces primary_key with id param' do
+        expect(subject.data[:order]['operations_attributes'].first['id']).to eq order.operations.first.id
       end
 
       it 'adds get_item_model key' do

@@ -6,8 +6,9 @@ module Invent
     it { is_expected.to have_many(:property_values).inverse_of(:item).dependent(:destroy).order('invent_property.property_order') }
     it { is_expected.to have_many(:standard_discrepancies).class_name('Standard::Discrepancy').dependent(:destroy) }
     it { is_expected.to have_many(:standard_logs).class_name('Standard::Log') }
-    it { is_expected.to have_many(:item_to_orders).class_name('Warehouse::ItemToOrder').with_foreign_key('invent_item_id').dependent(:destroy) }
-    it { is_expected.to have_many(:orders).through(:item_to_orders).class_name('Warehouse::Order') }
+    it { is_expected.to have_many(:warehouse_inv_item_to_operations).class_name('Warehouse::InvItemToOperation').with_foreign_key('invent_item_id').dependent(:destroy) }
+    it { is_expected.to have_many(:warehouse_operations).through(:warehouse_inv_item_to_operations).class_name('Warehouse::Operation').source(:operation) }
+    it { is_expected.to have_many(:warehouse_orders).through(:warehouse_operations).class_name('Warehouse::Order').source(:operationable) }
     it { is_expected.to belong_to(:type) }
     it { is_expected.to belong_to(:workplace) }
     it { is_expected.to belong_to(:model) }
@@ -122,19 +123,29 @@ module Invent
 
     describe '#get_item_model' do
       context 'when type is :pc' do
-        context 'and values is present' do
+        let(:item_model) do
+          properties = Property.where(name: Property::FILE_DEPENDING)
+          subject.property_values.where(property: properties).map(&:value).join(' / ')
+        end
+
+        context 'and when values is present' do
           subject { create(:item, :with_property_values, type_name: :pc) }
-          let(:item_model) do
-            properties = Property.where(name: Property::FILE_DEPENDING)
-            subject.property_values.where(property: properties).map(&:value).join(' / ')
-          end
 
           it 'loads all config parameters' do
             expect(subject.get_item_model).to eq item_model
           end
         end
 
-        context 'and values is blank' do
+        context 'and when item_model is present' do
+          let(:str_item_model) { 'UNIT 1' }
+          subject { create(:item, :with_property_values, item_model: str_item_model, type_name: :pc) }
+
+          it 'loads item_model and config parameters' do
+            expect(subject.get_item_model).to eq "#{str_item_model}: #{item_model}"
+          end
+        end
+
+        context 'and when values is blank' do
           subject do
             i = build(:item, :without_property_values, type_name: :pc, disable_filters: true)
             i.save(validate: false)

@@ -10,8 +10,9 @@ module Invent
     has_many :properties, -> { order('invent_property.property_order') }, through: :property_values
     has_many :standard_discrepancies, class_name: 'Standard::Discrepancy', dependent: :destroy
     has_many :standard_logs, class_name: 'Standard::Log'
-    has_many :item_to_orders, class_name: 'Warehouse::ItemToOrder', foreign_key: 'invent_item_id', dependent: :destroy
-    has_many :orders, through: :item_to_orders, class_name: 'Warehouse::Order'
+    has_many :warehouse_inv_item_to_operations, class_name: 'Warehouse::InvItemToOperation', foreign_key: 'invent_item_id', dependent: :destroy
+    has_many :warehouse_operations, through: :warehouse_inv_item_to_operations, class_name: 'Warehouse::Operation', source: :operation
+    has_many :warehouse_orders, through: :warehouse_operations, source: :operationable, source_type: 'Warehouse::Order'
 
     belongs_to :type, optional: false
     belongs_to :workplace, optional: true
@@ -47,7 +48,8 @@ module Invent
     def get_item_model
       if Type::TYPE_WITH_FILES.include?(type.name)
         props = Property.where(name: Property::FILE_DEPENDING)
-        property_values.where(property: props).map { |prop_val| prop_val.value }.reject(&:blank?).join(' / ')
+        attrs = property_values.where(property: props).map { |prop_val| prop_val.value }.reject(&:blank?).join(' / ')
+        item_model.blank? ? attrs : "#{item_model}: #{attrs}"
       else
         model.try(:item_model) || item_model
       end

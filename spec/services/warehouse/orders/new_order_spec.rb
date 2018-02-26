@@ -1,4 +1,4 @@
-require 'spec_helper'
+require 'feature_helper'
 
 module Warehouse
   module Orders
@@ -13,6 +13,10 @@ module Warehouse
 
         it 'does not fill the @data with :eq_types key' do
           expect(subject.data).not_to include(:eq_types)
+        end
+
+        it 'sets -1 to the shift attribute' do
+          expect(subject.data[:operation].shift).to eq -1
         end
       end
 
@@ -29,6 +33,10 @@ module Warehouse
 
         it 'loads all types of equipment' do
           expect(subject.data[:eq_types].count).to eq Invent::Type.count - 1
+        end
+
+        it 'sets 1 to the shift attribute' do
+          expect(subject.data[:operation].shift).to eq 1
         end
       end
 

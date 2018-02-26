@@ -46,7 +46,7 @@ module Warehouse
     end
 
     def edit
-      @edit = Orders::Edit.new(params[:warehouse_order_id])
+      @edit = Orders::Edit.new(params[:id])
 
       if @edit.run
         render json: @edit.data
@@ -56,17 +56,17 @@ module Warehouse
     end
 
     def update
-      @update = Orders::Update.new(current_user, params[:warehouse_order_id], order_params)
+      @update = Orders::Update.new(current_user, params[:id], order_params)
 
       if @update.run
-        render json: { full_message: I18n.t('controllers.warehouse/order.updated', order_id: params[:warehouse_order_id]) }
+        render json: { full_message: I18n.t('controllers.warehouse/order.updated', order_id: params[:id]) }
       else
         render json: @update.error, status: 422
       end
     end
 
     def execute_in
-      @execute_in = Orders::ExecuteIn.new(current_user, params[:warehouse_order_id], order_params)
+      @execute_in = Orders::ExecuteIn.new(current_user, params[:id], order_params)
 
       if @execute_in.run
         render json: { full_message: I18n.t('controllers.warehouse/order.executed') }
@@ -76,7 +76,7 @@ module Warehouse
     end
 
     def execute_out
-      @execute_out = Orders::ExecuteOut.new(current_user, params[:warehouse_order_id], order_params)
+      @execute_out = Orders::ExecuteOut.new(current_user, params[:id], order_params)
 
       if @execute_out.run
         render json: { full_message: I18n.t('controllers.warehouse/order.executed') }
@@ -86,7 +86,7 @@ module Warehouse
     end
 
     def destroy
-      @destroy = Orders::Destroy.new(params[:warehouse_order_id])
+      @destroy = Orders::Destroy.new(params[:id])
 
       if @destroy.run
         render json: { full_message: I18n.t('controllers.warehouse/order.destroyed') }
@@ -96,7 +96,7 @@ module Warehouse
     end
 
     def prepare_to_deliver
-      @deliver = Orders::PrepareToDeliver.new(current_user, params[:warehouse_order_id], order_params)
+      @deliver = Orders::PrepareToDeliver.new(current_user, params[:id], order_params)
 
       if @deliver.run
         render json: @deliver.data
@@ -109,8 +109,8 @@ module Warehouse
 
     def order_params
       params.require(:order).permit(
-        :warehouse_order_id,
-        :workplace_id,
+        :id,
+        :invent_workplace_id,
         :creator_id_tn,
         :consumer_id_tn,
         :consumer_tn,
@@ -124,8 +124,8 @@ module Warehouse
         :comment,
         operations_attributes: [
           :id,
-          :warehouse_item_id,
-          :warehouse_location_id,
+          :item_id,
+          :location_id,
           :stockman_id_tn,
           :operationable_id,
           :operationable_type,
@@ -135,14 +135,14 @@ module Warehouse
           :stockman_fio,
           :status,
           :date,
-          :invent_item_id,
-          :_destroy
-        ],
-        inv_items_attributes: [
-          :id,
-          :serial_num,
-          :invent_num,
-          :_destroy
+          :_destroy,
+          inv_item_ids: [],
+          inv_items_attributes: [
+            :id,
+            :serial_num,
+            :invent_num,
+            :_destroy
+          ]
         ]
       )
     end

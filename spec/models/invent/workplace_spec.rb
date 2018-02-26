@@ -32,8 +32,8 @@ module Invent
       subject { create(:workplace_pk, :add_items, items: %i[pc monitor monitor]) }
 
       context 'when workplace belongs to processing order' do
-        let(:operation) { build(:order_operation, invent_item_id: subject.items.first.item_id) }
-        let!(:order) { create(:order, workplace: subject, operations: [operation]) }
+        let(:operation) { build(:order_operation, inv_items: [subject.items.first]) }
+        let!(:order) { create(:order, inv_workplace: subject, operations: [operation]) }
 
         it 'raise error' do
           expect { subject.destroy }.to raise_error(RuntimeError, 'cannot_destroy_workplace_belongs_to_processing_order')
@@ -42,8 +42,8 @@ module Invent
 
       context 'when workplace belongs to done order' do
         let(:stockman) { create(:***REMOVED***_user) }
-        let(:operation) { build(:order_operation, status: :done, invent_item_id: subject.items.first.item_id, stockman_id_tn: stockman.id_tn) }
-        let!(:order) { create(:order, workplace: subject, operations: [operation], consumer_tn: stockman.tn) }
+        let(:operation) { build(:order_operation, status: :done, inv_items: [subject.items.first], stockman_id_tn: stockman.id_tn) }
+        let!(:order) { create(:order, inv_workplace: subject, operations: [operation], consumer_tn: stockman.tn) }
 
         its(:destroy) { is_expected.to be_truthy }
       end

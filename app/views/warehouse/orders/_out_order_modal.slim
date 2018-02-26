@@ -8,10 +8,10 @@ script type="text/ng-template" id="outOrderModal.slim"
         = text_field_tag "order[consumer]", "", class: "form-control", autocomplete: "off", "ng-model": "edit.order.consumer"
         span.help-block ng-show="edit.form['order[consumer]'].$invalid" ng-bind="edit.errorMessage('order[consumer]')"
 
-      .form-group ng-class="edit.errorClass('order[workplace_id]')"
-        = label_tag "order[workplace_id]", "ID рабочего места", class: "control-label"
-        = text_field_tag "order[workplace_id]", "", class: "form-control", autocomplete: "off", "ng-model": "edit.order.workplace_id"
-        span.help-block ng-show="edit.form['order[workplace_id]'].$invalid" ng-bind="edit.errorMessage('order[workplace_id]')"
+      .form-group ng-class="edit.errorClass('order[invent_workplace_id]')"
+        = label_tag "order[invent_workplace_id]", "ID рабочего места", class: "control-label"
+        = text_field_tag "order[invent_workplace_id]", "", class: "form-control", autocomplete: "off", "ng-model": "edit.order.invent_workplace_id"
+        span.help-block ng-show="edit.form['order[invent_workplace_id]'].$invalid" ng-bind="edit.errorMessage('order[invent_workplace_id]')"
 
       .form-group
         h4

@@ -24,7 +24,7 @@ module Warehouse
       protected
 
       def load_order
-        data[:order] = Order.includes(operations: { item: { inv_item: %i[model type] } }).find(@order_id)
+        data[:order] = Order.includes(operations: [:inv_item_to_operations, item: { inv_item: %i[model type] }]).find(@order_id)
         data[:operation] = Operation.new(operationable: data[:order], shift: 1)
       end
 
@@ -42,7 +42,8 @@ module Warehouse
           include: {
             operations: {
               methods: :formatted_date,
-              include: {
+              include: [
+                :inv_item_to_operations,
                 item: {
                   include: {
                     inv_item: {
@@ -50,7 +51,7 @@ module Warehouse
                     }
                   }
                 }
-              }
+              ]
             }
           }
         )
@@ -59,17 +60,14 @@ module Warehouse
         data[:order].delete('operations')
 
         data[:order]['operations_attributes'].each do |op|
-          op['id'] = op['warehouse_operation_id']
+          next unless op['item'] && op['item']['inv_item']
 
-          if op['item'] && op['item']['inv_item']
-            op['invent_item_id'] = op['item']['inv_item']['item_id']
-            op['inv_item'] = op['item']['inv_item']
-            op['item']['inv_item']['get_item_model'] = op['item']['item_model']
+          op['inv_item_ids'] = op['inv_item_to_operations'].map { |io| io['invent_item_id'] }
+          op['inv_item'] = op['item']['inv_item']
+          op['item']['inv_item']['get_item_model'] = op['item']['item_model']
 
-            op['item'].delete('inv_item')
-          end
-
-          op.delete('warehouse_operation_id')
+          op['item'].delete('inv_item')
+          op.delete('inv_item_to_operations')
         end
 
         data[:order]['consumer'] = data[:order]['consumer_fio']

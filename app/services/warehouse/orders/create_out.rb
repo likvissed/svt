@@ -28,29 +28,31 @@ module Warehouse
 
       def processing_params
         # Все задействованные элементы склада
-        items = Item.includes(:inv_item).where(warehouse_item_id: @order_params['operations_attributes'].map { |op| op['warehouse_item_id'] }.compact)
+        items = Item.includes(:inv_item).where(id: @order_params['operations_attributes'].map { |op| op['item_id'] }.compact)
         # Массив объектов выдаваемой новой техники (с инв. номером)
         items_new = items.where(invent_item_id: nil, warehouse_type: :with_invent_num)
         # Массив объектов выдаваемой б/у техники (с инв. номерами)
-        items_old = items.where('invent_item_id IS NOT NULL').where(warehouse_type: :with_invent_num).pluck(:invent_item_id)
+        items_old = items.where('invent_item_id IS NOT NULL').where(warehouse_type: :with_invent_num)
 
-        @order_params['inv_item_ids'] = items_old
-        @order_params['inv_items_attributes'] = items_new.map do |item|
-          shift = @order_params['operations_attributes'].find { |op| op['warehouse_item_id'] == item.warehouse_item_id }['shift'].abs
-          shift.times.map do
-            invent_item = Invent::Item.new(
-              type: item.type,
-              workplace_id: @order_params['workpalce_id'],
-              model: item.model,
-              item_model: item.item_model,
-              invent_num: nil,
-              serial_num: nil,
-              status: :waiting_take
-            ).as_json
-            invent_item['property_values_attributes'] = init_property_values(item)
-            invent_item
+        @order_params['operations_attributes'].each do |op|
+          if item_new = items_new.find { |item| item.id == op['item_id'] }
+            op['inv_items_attributes'] = op['shift'].abs.times.map do
+              invent_item = Invent::Item.new(
+                type: item_new.type,
+                workplace_id: @order_params['workpalce_id'],
+                model: item_new.model,
+                item_model: item_new.item_model,
+                invent_num: nil,
+                serial_num: nil,
+                status: :waiting_take
+              ).as_json
+              invent_item['property_values_attributes'] = init_property_values(item_new)
+              invent_item
+            end
+          elsif item_old = items_old.find { |item| item.id == op['item_id'] }
+            op['inv_item_ids'] = [item_old.invent_item_id]
           end
-        end.flatten.compact
+        end
       end
 
       def init_order
@@ -61,7 +63,9 @@ module Warehouse
       def wrap_order
         Invent::Item.transaction do
           begin
-            @order.inv_items.each { |item| item.update!(status: :waiting_take, workplace: @order.workplace, disable_filters: true) }
+            @order.operations.each do |op|
+              op.inv_items.each { |inv_item| inv_item.update!(status: :waiting_take, workplace: @order.inv_workplace, disable_filters: true) }
+            end
 
             Item.transaction(requires_new: true) do
               save_order(@order)

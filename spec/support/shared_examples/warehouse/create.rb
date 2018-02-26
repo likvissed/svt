@@ -1,6 +1,6 @@
 module Warehouse
   shared_examples 'failed creating :in models' do
-    [Order, Item, ItemToOrder, Operation].each do |klass|
+    [Order, Item, InvItemToOperation, Operation].each do |klass|
       it "does not create #{klass.name} record" do
         expect { subject.run }.not_to change(klass, :count)
       end
@@ -19,7 +19,7 @@ module Warehouse
   end
 
   shared_examples 'failed creating :out models' do
-    [Invent::Item, Order, Item, ItemToOrder, Operation].each do |klass|
+    [Invent::Item, Order, Item, InvItemToOperation, Operation].each do |klass|
       it "does not create #{klass.name} record" do
         expect { subject.run }.not_to change(klass, :count)
       end

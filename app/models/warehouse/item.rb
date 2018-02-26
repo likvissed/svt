@@ -1,9 +1,8 @@
 module Warehouse
   class Item < BaseWarehouse
-    self.primary_key = :warehouse_item_id
     self.table_name = "#{table_name_prefix}items"
 
-    has_many :operations, foreign_key: 'warehouse_item_id', inverse_of: :item, dependent: :nullify
+    has_many :operations, inverse_of: :item, dependent: :nullify
 
     belongs_to :inv_item, class_name: 'Invent::Item', foreign_key: 'invent_item_id', optional: true
     belongs_to :type, class_name: 'Invent::Type', optional: true
@@ -22,6 +21,8 @@ module Warehouse
     before_destroy :prevent_destroy, prepend: true
 
     enum warehouse_type: { without_invent_num: 1, with_invent_num: 2 }
+
+    attr_accessor :was_created
 
     protected
 
@@ -58,7 +59,7 @@ module Warehouse
     def prevent_destroy
       op = operations.find(&:processing?)
       if op
-        errors.add(:base, :cannot_destroy_with_processing_operation, order_id: op.operationable.warehouse_order_id)
+        errors.add(:base, :cannot_destroy_with_processing_operation, order_id: op.operationable.id)
         throw(:abort)
       elsif count_reserved > 0
         errors.add(:base, :cannot_destroy_with_count_reserved)

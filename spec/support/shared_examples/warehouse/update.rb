@@ -1,6 +1,6 @@
 module Warehouse
   shared_examples 'failed updating models' do
-    [Item, ItemToOrder, Operation].each do |klass|
+    [Item, InvItemToOperation, Operation].each do |klass|
       it "does not create #{klass.name} record" do
         expect { subject.run }.not_to change(klass, :count)
       end
@@ -14,7 +14,7 @@ module Warehouse
 
     it 'does not change status of Invent::Item record' do
       subject.run
-      expect(Invent::Item.find(new_operation[:invent_item_id]).status).to be_nil
+      expect(Invent::Item.find(new_operation[:inv_item_ids][0]).status).to be_nil
     end
   end
 
@@ -23,7 +23,7 @@ module Warehouse
 
     it 'does not change status of Invent::Item record' do
       subject.run
-      expect(Invent::Item.find(removed_operation['invent_item_id']).status).to eq 'waiting_bring'
+      expect(updated_item.status).to eq 'waiting_bring'
     end
   end
 end

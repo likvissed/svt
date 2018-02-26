@@ -24,8 +24,8 @@ module Invent
       private
 
       def load_items
-        ids = Warehouse::Order.includes(:item_to_orders).where(status: :processing)
-                .map { |order| order.item_to_orders.pluck(:invent_item_id) }.flatten
+        ids = Warehouse::Order.includes(:inv_item_to_operations).where(status: :processing)
+                .map { |order| order.inv_item_to_operations.pluck(:invent_item_id) }.flatten
         @data = Item.includes(:model, :type).by_invent_num(@invent_num).where('workplace_id IS NOT NULL')
                    .where(type_id: @type_id).where.not(item_id: ids)
       end

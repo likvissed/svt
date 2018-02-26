@@ -1,19 +1,18 @@
 module Warehouse
   class Operation < BaseWarehouse
-    self.primary_key = :warehouse_operation_id
     self.table_name = "#{table_name_prefix}operations"
 
-    has_many :item_to_orders, dependent: :destroy
-    has_many :inv_items, through: :item_to_orders, class_name: 'Invent::Item'
+    has_many :inv_item_to_operations, dependent: :destroy
+    has_many :inv_items, through: :inv_item_to_operations, class_name: 'Invent::Item'
 
-    belongs_to :item, foreign_key: 'warehouse_item_id', optional: true
-    belongs_to :location, foreign_key: 'warehouse_location_id', optional: true
+    belongs_to :item, optional: true
+    belongs_to :location, optional: true
     belongs_to :stockman, class_name: 'UserIss', foreign_key: 'stockman_id_tn', optional: true
     belongs_to :operationable, polymorphic: true
 
     validates :item_type, :item_model, :shift, :status, presence: true
     validates :stockman_fio, :date, presence: true, if: -> { done? }
-    validate :uniq_item_by_processing_operation, if: -> { item.try(:used) && warehouse_item_id_changed? }
+    validate :uniq_item_by_processing_operation, if: -> { item.try(:used) && item_id_changed? }
 
     after_initialize :set_initial_status, if: -> { new_record? }
     after_initialize :set_initial_shift, if: -> { new_record? }
@@ -22,7 +21,7 @@ module Warehouse
     before_update :prevent_update
     before_destroy :prevent_destroy, if: -> { done? }
 
-    attr_accessor :invent_item_id
+    accepts_nested_attributes_for :inv_items, allow_destroy: false
 
     enum status: { processing: 1, done: 2 }
 
@@ -63,7 +62,7 @@ module Warehouse
           :operation_with_invent_num_already_exists,
           type: item.item_type,
           invent_num: item.inv_item.invent_num,
-          order_id: op.operationable.warehouse_order_id
+          order_id: op.operationable.id
         )
       else
         errors.add(
@@ -71,7 +70,7 @@ module Warehouse
           :operation_without_invent_num_already_exists,
           type: item.item_type,
           model: item.item_model,
-          order_id: op.operationable.warehouse_order_id
+          order_id: op.operationable.id
         )
       end
     end

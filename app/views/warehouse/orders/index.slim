@@ -23,9 +23,9 @@
               th
           tbody
             tr ng-repeat="order in table.orders"
-              td.col-fhd-1 ng-bind="order.warehouse_order_id"
+              td.col-fhd-1 ng-bind="order.id"
               td.col-fhd-1 ng-bind="order.consumer_dept"
-              td.col-fhd-1 ng-bind="order.workplace_id"
+              td.col-fhd-1 ng-bind="order.invent_workplace_id"
               td.col-fhd-2.col-xlg-2.col-lg-2.col-md-2.col-sm-2 ng-bind="order.operation"
               td.col-fhd-6.col-xlg-6.col-lg-6.col-md-5.col-sm-5 ng-bind="order.operations_to_string"
               td.col-fhd-4.col-xlg-4.col-lg-3.col-md-4.col-sm-3 ng-bind="order.creator.fio || order.creator_fio"
@@ -40,7 +40,7 @@
                   "uib-tooltip": "Исполнить ордер", "tooltip-append-to-body": "true"
                 = fa_icon "trash-o fw", class: "pointer text-danger", "ng-click": "table.destroyOrder(order)",
                   "uib-tooltip": "Удалить ордер", "tooltip-append-to-body": "true"
-            tr ng-show="orders.orders.length == 0"
+            tr ng-if="table.orders.length == 0"
               td colspan=10 Данных нет
 
     .row

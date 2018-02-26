@@ -78,8 +78,8 @@ Rails.application.routes.draw do
 
   # Склад
   namespace :warehouse do
-    resources :items, param: :warehouse_item_id
-    resources :orders, only: [:index, :new, :edit, :update, :destroy], param: :warehouse_order_id do
+    resources :items
+    resources :orders, only: [:index, :new, :edit, :update, :destroy] do
       post 'create_in', to: 'orders#create_in', on: :collection
       post 'create_out', to: 'orders#create_out', on: :collection
       post 'execute_in', to: 'orders#execute_in', on: :member

@@ -61,31 +61,24 @@ module Warehouse
         op_selected = false
 
         @order.assign_attributes(@order_params)
-        Rails.logger.info "PARAMS: #{@order_params}".red
-
-        inv_item_ids = []
         @item_ids = @order.operations.map do |op|
           next unless op.status_changed? && op.done?
 
           op_selected = true
           op.set_stockman(current_user)
-
           op.item.count = op.item.count + op.shift.to_i
           op.item.count_reserved = op.item.count_reserved + op.shift.to_i
-
-          inv_item_ids << op.invent_item_id if op.invent_item_id
-
-          op.warehouse_item_id
+          op.inv_items.each { |inv_item| inv_item.status = nil }
+          op.item_id
         end
 
-        @order.inv_items.select { |inv_item| inv_item_ids.include?(inv_item.item_id) }.each { |inv_item| inv_item.status = nil }
         op_selected
       end
 
       def update_items
         Item.transaction(requires_new: true) do
           @order.operations.each do |op|
-            next unless @item_ids.include?(op.warehouse_item_id)
+            next unless @item_ids.include?(op.item_id)
 
             op.item.save!
           end

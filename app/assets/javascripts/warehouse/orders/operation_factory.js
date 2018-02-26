@@ -22,7 +22,7 @@
        */
       setTemplate: function(obj, order_operation) {
         _templateOperation = obj;
-        _templateOperation['id'] = obj.warehouse_operation_id;
+        // _templateOperation['id'] = obj.warehouse_operation_id;
 
         _order_operation = order_operation;
        },
@@ -38,16 +38,16 @@
         if (_order_operation == 'in') {
           if (warehouseType == 'with_invent_num') {
             obj.inv_item = item;
-            obj.invent_item_id = item.item_id;
+            obj.inv_item_ids = [item.item_id];
             obj.item_type = item.type.short_description;
-            obj.item_model = item.model ? item.model.item_model : item.item_model;
+            obj.item_model = item.get_item_model;
           } else {
             obj.item_type = item.item_type;
             obj.item_model = item.item_model;
           }
         } else if (_order_operation == 'out') {
           obj.inv_item = item.inv_item;
-          obj.warehouse_item_id = item.warehouse_item_id;
+          obj.item_id = item.id;
           obj.item_type = item.item_type;
           obj.item_model = item.item_model;
         } else { return false; }

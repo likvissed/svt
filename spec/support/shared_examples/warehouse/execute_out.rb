@@ -40,11 +40,5 @@ module Warehouse
         expect(inv_item.reload.count_reserved).to eq 1
       end
     end
-
-    it 'does not change invent_num of selected items' do
-      subject.run
-
-      expect(first_inv_item.reload.invent_num).to be_nil
-    end
   end
 end

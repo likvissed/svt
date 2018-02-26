@@ -60,7 +60,7 @@ module Warehouse
 
     describe 'GET #edit' do
       let!(:order) { create(:order) }
-      let(:params) { { warehouse_order_id: order.warehouse_order_id } }
+      let(:params) { { id: order.id } }
 
       it 'creates instance of the Orders::Edit' do
         get :edit, params: params, format: :json
@@ -77,7 +77,7 @@ module Warehouse
       let!(:order) { create(:order) }
       let(:params) do
         {
-          warehouse_order_id: order.warehouse_order_id,
+          id: order.id,
           order: order.as_json
         }
       end
@@ -97,7 +97,7 @@ module Warehouse
       let!(:order) { create(:order) }
       let(:params) do
         {
-          warehouse_order_id: order.warehouse_order_id,
+          id: order.id,
           order: order.as_json
         }
       end
@@ -117,7 +117,7 @@ module Warehouse
       let!(:order) { create(:order) }
       let(:params) do
         {
-          warehouse_order_id: order.warehouse_order_id,
+          id: order.id,
           order: order.as_json
         }
       end
@@ -135,7 +135,7 @@ module Warehouse
 
     describe 'DELETE #destroy' do
       let!(:order) { create(:order) }
-      let(:params) { { warehouse_order_id: order.warehouse_order_id } }
+      let(:params) { { id: order.id } }
 
       it 'creates instance of the Orders::Destroy' do
         delete :destroy, params: params, format: :json
@@ -152,7 +152,7 @@ module Warehouse
       let!(:order) { create(:order) }
       let(:params) do
         {
-          warehouse_order_id: order.warehouse_order_id,
+          id: order.id,
           order: order.as_json
         }
       end

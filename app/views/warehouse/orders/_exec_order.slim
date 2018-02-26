@@ -34,41 +34,25 @@ script type="text/ng-template" id="execOrder.slim"
 
         .form-group
           h4 Позиции
-          table.table.table-striped.table-condensed ng-if="exec.order.operations_attributes[0].invent_item_id"
+          table.table.table-striped.table-condensed
             thead
               tr
                 th.col-fhd-1
                   input type="checkbox" ng-model="exec.isAllOpSelected" ng-click="exec.toggleAll()"
-                th.col-fhd-3.col-xlg-4.col-lg-4.col-md-4.col-sm-4 Тип
-                th.col-fhd-3.col-xlg-3.col-lg-4.col-md-4.col-sm-4 Инв. №
-                th.col-fhd-10.col-xlg-11.col-lg-10.col-md-10.col-sm-10 Модель
-                th.col-fhd-4.col-xlg-5.col-lg-5.col-md-5.col-sm-5 Исполнитель
+                th.col-fhd-3 Тип
+                th.col-fhd-3 Инв. №
+                th.col-fhd-2 Кол-во
+                th.col-fhd-9 Модель
+                th.col-fhd-3 Исполнитель
                 th.col-fhd-3 Дата
             tbody
               tr ng-repeat="op in exec.order.operations_attributes" ng-hide="op._destroy"
                 td
                   input type="checkbox" ng-model="op.status" ng-true-value="'done'" ng-false-value="'processing'" ng-click="exec.checkSelected()"
-                td ng-bind="op.inv_item.type.short_description || op.item.item_type"
+                td ng-bind="op.inv_item.type.short_description || op.item_type"
                 td ng-bind="op.inv_item.invent_num"
-                td ng-bind="op.inv_item.get_item_model || op.item.item_model"
-                td ng-bind="op.stockman_fio | fioInitials"
-                td ng-bind="op.formatted_date"
-
-          table.table.table-striped.table-condensed ng-if="!exec.order.operations_attributes[0].invent_item_id"
-            thead
-              tr
-                th.col-fhd-1
-                  input type="checkbox" ng-model="exec.isAllOpSelected" ng-click="exec.toggleAll()"
-                th.col-fhd-3.col-xlg-3.col-lg-3.col-md-4.col-sm-4 Тип
-                th.col-fhd-10.col-xlg-10.col-xlg-10.col-md-9.col-sm-9 Модель
-                th.col-fhd-7.col-xlg-7.col-lg-7.col-md-7.col-sm-7 Исполнитель
-                th.col-fhd-3 Дата
-            tbody
-              tr ng-repeat="op in exec.order.operations_attributes" ng-hide="op._destroy"
-                td
-                  input type="checkbox" ng-model="op.status" ng-true-value="'done'" ng-false-value="'processing'" ng-click="exec.checkSelected()"
-                td ng-bind="op.item_type"
-                td ng-bind="op.item_model"
+                td ng-bind="op.shift | positiveVal"
+                td ng-bind="op.inv_item.get_item_model || op.item_model"
                 td ng-bind="op.stockman_fio | fioInitials"
                 td ng-bind="op.formatted_date"
 

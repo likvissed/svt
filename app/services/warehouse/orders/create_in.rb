@@ -26,17 +26,19 @@ module Warehouse
 
       def processing_nested_attributes
         # Массив id возвращаемой техники (с инв. номером)
-        item_id_arr = @order_params['operations_attributes'].map { |attr| attr['invent_item_id'] }.compact
+        item_id_arr = @order_params['operations_attributes'].map { |op_attr| op_attr['inv_item_ids'] }.flatten.compact
         # Массив операций без инв. номера
-        op_without_id_arr = @order_params['operations_attributes'].select { |attr| attr['invent_item_id'].nil? }
+        op_without_id_arr = @order_params['operations_attributes'].select { |op_attr| !op_attr['inv_item_ids'] || op_attr['inv_item_ids'].compact.empty? }
         # Массив объектов возвращаемой техники
         items = Invent::Item.select(:item_id, :workplace_id).find(item_id_arr)
 
         new_params = items.uniq(&:workplace_id).map do |item|
           order = @order_params.deep_dup
           # Выбор операций для текущего РМ из полученного массива операций
-          order['operations_attributes'] = order['operations_attributes'].select { |attr| items.select { |i| i['workplace_id'] == item.workplace_id }.map(&:item_id).include?(attr['invent_item_id']) }
-          order['inv_item_ids'] = order['operations_attributes'].map { |attr| attr['invent_item_id'] }
+          order['operations_attributes'] = order['operations_attributes'].select do |op_attr|
+            next if !op_attr['inv_item_ids']
+            items.select { |i| i['workplace_id'] == item.workplace_id }.map(&:item_id).include?(op_attr['inv_item_ids'].first)
+          end
           order
         end
 
@@ -61,14 +63,17 @@ module Warehouse
               save_order(order)
 
               Invent::Item.transaction(requires_new: true) do
-                order.inv_items.each { |item| item.update!(status: :waiting_bring) }
+                order.operations.each { |op| op.inv_items.each { |inv_item| inv_item.update!(status: :waiting_bring) } }
               end
             end
 
             @data = @orders_arr.size
 
             true
-          rescue ActiveRecord::RecordNotSaved, ActiveRecord::RecordInvalid
+          rescue ActiveRecord::RecordNotSaved, ActiveRecord::RecordInvalid => e
+            Rails.logger.error e.inspect.red
+            Rails.logger.error e.backtrace[0..5].inspect
+
             raise ActiveRecord::Rollback
           rescue RuntimeError => e
             Rails.logger.error e.inspect.red
@@ -98,7 +103,7 @@ module Warehouse
       end
 
       def find_or_create_warehouse_items
-        @order.inv_items.each { |item| warehouse_item(item) }
+        @order.operations.each { |op| op.inv_items.each { |inv_item| warehouse_item_in(inv_item) } }
       end
     end
   end

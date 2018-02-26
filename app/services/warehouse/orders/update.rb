@@ -10,8 +10,7 @@ module Warehouse
       end
 
       def run
-        @order = Order.includes(:item_to_orders).find(@order_id)
-        processing_nested_attributes if @order_params['operations_attributes']&.any?
+        @order = Order.includes(:inv_item_to_operations).find(@order_id)
         return false unless wrap_order_with_transactions
         broadcast_orders
 
@@ -25,20 +24,6 @@ module Warehouse
 
       protected
 
-      def processing_nested_attributes
-        @new_operations = @order_params['operations_attributes'].reject { |op| op['id'] }
-        @del_operations = @order_params['operations_attributes'].select { |op| op['_destroy'] }
-
-        @order_params['item_to_orders_attributes'] = @order.item_to_orders.as_json.map do |io|
-          io['id'] = io['warehouse_item_to_order_id']
-          io['_destroy'] = @del_operations.any? { |op| op['invent_item_id'] == io['invent_item_id'] }
-
-          io.delete('warehouse_item_to_order_id')
-          io
-        end
-        @order_params['inv_item_ids'] = @new_operations.map { |op| op['invent_item_id'] }.compact.as_json
-      end
-
       def wrap_order_with_transactions
         Item.transaction do
           begin
@@ -46,12 +31,15 @@ module Warehouse
 
             find_or_create_warehouse_items
             Invent::Item.transaction(requires_new: true) do
-              update_items
+              update_inv_items
               save_order(@order)
             end
 
             true
-          rescue ActiveRecord::RecordNotSaved, ActiveRecord::RecordInvalid
+          rescue ActiveRecord::RecordNotSaved, ActiveRecord::RecordInvalid => e
+            Rails.logger.error e.inspect.red
+            Rails.logger.error e.backtrace[0..5].inspect
+
             raise ActiveRecord::Rollback
           rescue ActiveRecord::RecordNotDestroyed
             process_order_errors(@order, true)
@@ -72,21 +60,21 @@ module Warehouse
       end
 
       def find_or_create_warehouse_items
-        @order.inv_items.each do |item|
-          next if @new_operations.none? { |op| op['invent_item_id'] == item.item_id }
+        @order.operations.each do |op|
+          next if op.id || op._destroy
 
-          warehouse_item(item)
+          op.inv_items.each { |inv_item| warehouse_item_in(inv_item) }
         end
       end
 
-      def update_items
-        return unless @order.workplace
+      def update_inv_items
+        return unless @order.inv_workplace
 
-        @order.item_to_orders.each do |io|
-          if @new_operations.any? { |op| op['invent_item_id'] == io.invent_item_id }
-            io.inv_item.update!(status: :waiting_bring)
-          elsif @del_operations.any? { |op| op['invent_item_id'] == io.invent_item_id }
-            io.inv_item.update!(status: nil)
+        @order.operations.each do |op|
+          if op.new_record?
+            op.inv_items.each { |inv_item| inv_item.update!(status: :waiting_bring) }
+          elsif op._destroy
+            op.inv_items.each { |inv_item| inv_item.update!(status: nil) }
           end
         end
       end

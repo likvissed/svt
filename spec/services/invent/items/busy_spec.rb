@@ -1,4 +1,4 @@
-require 'spec_helper'
+require 'feature_helper'
 
 module Invent
   module Items
@@ -28,9 +28,8 @@ module Invent
       end
 
       context 'when item belongs to order with processing status' do
-        let(:operations) { [build(:order_operation, invent_item_id: item.item_id)] }
-        let(:item_to_orders) { [build(:item_to_order, inv_item: item)] }
-        let!(:order) { create(:order, consumer_dept: item.workplace.workplace_count.division, operations: operations, item_to_orders: item_to_orders) }
+        let(:operations) { [build(:order_operation, inv_items: [item])] }
+        let!(:order) { create(:order, consumer_dept: item.workplace.workplace_count.division, operations: operations) }
         subject { Busy.new(item.type.type_id, item.invent_num) }
 
         it 'does not show this item in result array' do

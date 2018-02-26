@@ -1,10 +1,10 @@
-require 'rails_helper'
+require 'feature_helper'
 
 module Warehouse
   module Orders
     RSpec.describe Update, type: :model do
       let(:user) { create(:user) }
-      subject { Update.new(user, order.warehouse_order_id, order_params) }
+      subject { Update.new(user, order.id, order_params) }
 
       context 'when warehouse_type is :without_invent_num' do
         let!(:order) { create(:order) }
@@ -15,11 +15,6 @@ module Warehouse
           let(:order_params) do
             order_json['operations_attributes'] = order.operations.as_json
             order_json['operations_attributes'] << new_operation
-            order_json['operations_attributes'].each do |op|
-              op['id'] = op['warehouse_operation_id']
-
-              op.delete('warehouse_operation_id')
-            end
 
             order_json
           end
@@ -36,9 +31,6 @@ module Warehouse
             order_json['operations_attributes'] = order.operations.as_json
             order_json['operations_attributes'].each_with_index do |op, index|
               op['_destroy'] = 1 if index.zero?
-              op['id'] = op['warehouse_operation_id']
-
-              op.delete('warehouse_operation_id')
             end
 
             order_json
@@ -51,15 +43,12 @@ module Warehouse
 
         context 'and when added operation with invent_num' do
           let(:workplace) { create(:workplace_pk, :add_items, items: %i[pc monitor monitor]) }
-          let(:new_operation) { attributes_for(:order_operation, invent_item_id: workplace.items.first.item_id) }
+          let(:new_operation) { attributes_for(:order_operation, inv_item_ids: [workplace.items.first.item_id]) }
           let(:order_params) do
             order_json['operations_attributes'] = order.operations.as_json
             order_json['operations_attributes'] << new_operation.as_json
             order_json['operations_attributes'].each_with_index do |op, index|
               op['_destroy'] = 1 if index.zero?
-              op['id'] = op['warehouse_operation_id']
-
-              op.delete('warehouse_operation_id')
             end
 
             order_json
@@ -71,8 +60,8 @@ module Warehouse
 
       context 'when warehouse_type is :with_invent_num' do
         let(:workplace) { create(:workplace_pk, :add_items, items: %i[pc monitor monitor]) }
-        let(:operation_1) { attributes_for(:order_operation, invent_item_id: workplace.items.first.item_id) }
-        let(:operation_2) { attributes_for(:order_operation, invent_item_id: workplace.items[1].item_id) }
+        let(:operation_1) { attributes_for(:order_operation, inv_item_ids: [workplace.items.first.item_id]) }
+        let(:operation_2) { attributes_for(:order_operation, inv_item_ids: [workplace.items[1].item_id]) }
         let(:create_order_params) do
           order = attributes_for(:order, consumer_dept: workplace.workplace_count.division)
           order[:operations_attributes] = [operation_1, operation_2]
@@ -81,7 +70,7 @@ module Warehouse
         let(:order) { Order.last }
         let(:order_json) { order.as_json }
         let(:execute_order_params) do
-          edit = Edit.new(order.warehouse_order_id)
+          edit = Edit.new(order.id)
           edit.run
           edit.data[:order]['consumer_tn'] = user.tn
           edit.data[:order]['operations_attributes'].each_with_index do |op, index|
@@ -97,22 +86,15 @@ module Warehouse
 
         before do
           CreateIn.new(user, create_order_params.as_json).run
-          ExecuteIn.new(user, order.warehouse_order_id, execute_order_params.as_json).run
+          ExecuteIn.new(user, order.id, execute_order_params.as_json).run
           order.reload
         end
 
         context 'and when added a new operation' do
-          let(:new_operation) { attributes_for(:order_operation, invent_item_id: workplace.items[2].item_id) }
+          let(:new_operation) { attributes_for(:order_operation, inv_item_ids: [workplace.items[2].item_id]) }
           let(:order_params) do
-            order_json['operations_attributes'] = order.operations.as_json(include: { item: { include: :inv_item } })
+            order_json['operations_attributes'] = order.operations.as_json
             order_json['operations_attributes'] << new_operation.as_json
-            order_json['operations_attributes'].each do |op|
-              op['id'] = op['warehouse_operation_id']
-              op['invent_item_id'] ||= op['item']['inv_item']['item_id']
-
-              op.delete('warehouse_operation_id')
-              op.delete('item')
-            end
 
             order_json
           end
@@ -124,7 +106,7 @@ module Warehouse
           end
 
           it 'creates a new item_to_order record' do
-            expect { subject.run }.to change(ItemToOrder, :count).by(1)
+            expect { subject.run }.to change(InvItemToOperation, :count).by(1)
           end
 
           context 'and when item does not exist' do
@@ -136,12 +118,42 @@ module Warehouse
               subject.run
               expect(Item.last.count).to be_zero
             end
+
+            it 'sets item data to the corresponding operation and warehouse_item records' do
+              subject.run
+
+              expect(Operation.last.item).to eq Item.last
+              expect(Item.last.inv_item).to eq workplace.items[2]
+              # expect(Item.last.item_model).to eq workplace.items[2].get_item_model
+            end
+          end
+
+          context 'and when item already exists' do
+            before { create(:used_item, inv_item: workplace.items[2], item_model: 'qwerty') }
+
+            it 'sets item data to the corresponding operation and warehouse_item records' do
+              subject.run
+
+              expect(Item.last.item_model).to eq workplace.items[2].get_item_model
+            end
+
+            context 'and when order was not saved' do
+              before do
+                allow(Order).to receive_message_chain(:includes, :find).and_return(order)
+                allow(order).to receive(:save).and_return(false)
+              end
+
+              it 'does not change warehouse_item' do
+                expect(Item.last.item_model).to eq 'qwerty'
+              end
+            end
           end
 
           it 'changes status to :waiting_bring in the each selected item' do
             subject.run
-            order_params['operations_attributes'].select { |attr| attr['invent_item_id'] }.reject { |attr| attr['status'] == 'done' }.each do |op|
-              expect(Invent::Item.find(op['invent_item_id']).status).to eq 'waiting_bring'
+
+            order_params['operations_attributes'].select { |attr| attr['inv_item_ids'] }.reject { |attr| attr['status'] == 'done' }.each do |op|
+              expect(Invent::Item.find(op['inv_item_ids'].first).status).to eq 'waiting_bring'
             end
           end
 
@@ -179,15 +191,8 @@ module Warehouse
         context 'and when added item without invent_num' do
           let(:new_operation) { attributes_for(:order_operation) }
           let(:order_params) do
-            order_json['operations_attributes'] = order.operations.as_json(include: { item: { include: :inv_item } })
+            order_json['operations_attributes'] = order.operations.as_json
             order_json['operations_attributes'] << new_operation.as_json
-            order_json['operations_attributes'].each do |op|
-              op['id'] = op['warehouse_operation_id']
-              op['invent_item_id'] ||= op['item']['inv_item']['item_id'] if op['item'] && op['item']['inv_item']
-
-              op.delete('warehouse_operation_id')
-              op.delete('item')
-            end
 
             order_json
           end
@@ -196,16 +201,10 @@ module Warehouse
         end
 
         context 'and when removed existing operation' do
+          let(:destroyed) { order.operations.last }
+          let!(:updated_item) { destroyed.inv_items.first }
           let(:order_params) do
-            order_json['operations_attributes'] = order.operations.as_json(include: { item: { include: :inv_item } })
-            order_json['operations_attributes'].each do |op|
-              op['id'] = op['warehouse_operation_id']
-              op['invent_item_id'] ||= op['item']['inv_item']['item_id']
-
-              op.delete('warehouse_operation_id')
-              op.delete('item')
-            end
-
+            order_json['operations_attributes'] = order.operations.as_json
             order_json['operations_attributes'].last['_destroy'] = 1
             order_json
           end
@@ -218,7 +217,7 @@ module Warehouse
           end
 
           it 'destroys a corresponding item_to_order record' do
-            expect { subject.run }.to change(ItemToOrder, :count).by(-1)
+            expect { subject.run }.to change(InvItemToOperation, :count).by(-1)
           end
 
           it 'does not destroy item record' do
@@ -227,7 +226,8 @@ module Warehouse
 
           it 'sets nil value to the :status attribute into the invent_item record' do
             subject.run
-            expect(Invent::Item.find(removed_operation['invent_item_id']).status).to be_nil
+
+            expect(updated_item.reload.status).to be_nil
           end
 
           context 'and when order is not updated' do
@@ -254,16 +254,10 @@ module Warehouse
 
         context 'and when remove done operation' do
           let(:order_params) do
-            order_json['operations_attributes'] = order.operations.as_json(include: { item: { include: :inv_item } })
+            order_json['operations_attributes'] = order.operations.as_json
             order_json['operations_attributes'].each_with_index do |op, index|
               op['_destroy'] = 1 if index.zero?
-              op['id'] = op['warehouse_operation_id']
-              op['invent_item_id'] ||= op['item']['inv_item']['item_id'] if op['item'] && op['item']['inv_item']
-
-              op.delete('warehouse_operation_id')
-              op.delete('item')
             end
-
             order_json
           end
 
@@ -281,13 +275,7 @@ module Warehouse
         let(:order_json) { order.as_json }
         let(:order_params) do
           order_json['operations_attributes'] = order.operations.as_json
-          order_json['operations_attributes'].each do |op|
-            op['id'] = op['warehouse_operation_id']
-            op['_destroy'] = 1
-
-            op.delete('warehouse_operation_id')
-          end
-
+          order_json['operations_attributes'].each { |op| op['_destroy'] = 1 }
           order_json
         end
 

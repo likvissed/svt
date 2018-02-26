@@ -33,6 +33,8 @@
               td
                 = fa_icon "trash-o fw", class: "pointer text-danger", "ng-click": "table.destroyItem(item)",
                   "uib-tooltip": "Удалить технику со склада", "tooltip-append-to-body": "true"
+            tr ng-if="table.items.length == 0"
+              td colspan=8 Данных нет
 
     .row
       .col-xs-12

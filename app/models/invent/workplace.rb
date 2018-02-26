@@ -4,7 +4,7 @@ module Invent
     self.table_name = "#{table_name_prefix}workplace"
 
     has_many :items, inverse_of: :workplace, dependent: :nullify
-    has_many :orders, class_name: 'Warehouse::Order', dependent: :nullify
+    has_many :orders, class_name: 'Warehouse::Order', foreign_key: 'invent_workplace_id', dependent: :nullify
 
     belongs_to :workplace_type, optional: false
     belongs_to :workplace_specialization, optional: false

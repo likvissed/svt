@@ -186,10 +186,10 @@
         }
       }),
       Warehouse: {
-        Item: $resource('/warehouse/items/:warehouse_item_id.json', {}, {
+        Item: $resource('/warehouse/items/:id.json', {}, {
           query: { method: 'GET', isArray: false }
         }),
-        Order: $resource('/warehouse/orders/:warehouse_order_id.json', {}, {
+        Order: $resource('/warehouse/orders/:id.json', {}, {
           query: { method: 'GET', isArray: false },
           newOrder: {
             method: 'GET',
@@ -198,11 +198,11 @@
           },
           edit: {
             method: 'GET',
-            url: '/warehouse/orders/:warehouse_order_id/edit.json'
+            url: '/warehouse/orders/:id/edit.json'
           },
           prepareToDeliver: {
             method: 'POST',
-            url: '/warehouse/orders/:warehouse_order_id/prepare_to_deliver.json'
+            url: '/warehouse/orders/:id/prepare_to_deliver.json'
           },
           saveIn: {
             method: 'POST',
@@ -215,11 +215,11 @@
           update: { method: 'PUT' },
           executeIn: {
             method: 'POST',
-            url: '/warehouse/orders/:warehouse_order_id/execute_in'
+            url: '/warehouse/orders/:id/execute_in'
           },
           executeOut: {
             method: 'POST',
-            url: '/warehouse/orders/:warehouse_order_id/execute_out'
+            url: '/warehouse/orders/:id/execute_out'
           }
         })
       }

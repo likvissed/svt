@@ -64,8 +64,8 @@ ru:
         name: "Номер комнаты"
 
       warehouse/order:
-        workplace: 'Рабочее место'
-        workplace_id: 'ID рабочего места'
+        inv_workplace: 'Рабочее место'
+        invent_workplace_id: 'ID рабочего места'
         consumer: 'ФИО (или таб. №) работника'
         consumer_dept: 'Отдел'
         operation: 'Тип ордера'
@@ -87,21 +87,21 @@ ru:
         item_type: 'Тип техники (опред. авт.)'
         item_model: 'Модель (опред. авт.)'
 
-      warehouse/order/item_to_orders:
+      warehouse/order/operations/inv_item_to_operations:
         inv_item: ''
 
-      warehouse/order/inv_items:
+      warehouse/order/operations/inv_items:
         base: ''
         invent_num: 'Инвентарный номер'
 
-      warehouse/order/inv_items/property_values:
+      warehouse/order/operations/inv_items/property_values:
         base: ''
 
       warehouse/item:
         inv_item: 'Техника'
         type: 'Тип техники (Системный блок и т.п.)'
         model: 'Модель'
-        warehouse_type: 'Тип (расходка или подлежит возврату)'
+        warehouse_type: 'Тип (с инв. номером или без)'
         item_type: 'Тип техники (опред. авт.)'
         item_model: 'Модель (опред. авт.)'
         used: 'Тип (новая или б/у)'

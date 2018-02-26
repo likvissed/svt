@@ -7,7 +7,7 @@ module Warehouse
 
       protected
 
-      def warehouse_item(inv_item)
+      def warehouse_item_in(inv_item)
         begin
           item = Item.find_or_create_by!(invent_item_id: inv_item.item_id) do |w_item|
             w_item.inv_item = inv_item
@@ -15,12 +15,18 @@ module Warehouse
             w_item.model = inv_item.model
             w_item.warehouse_type = :with_invent_num
             w_item.used = true
+
+            w_item.was_created = true
           end
         rescue ActiveRecord::RecordNotUnique
           item = Item.find(io[:invent_item_id])
         end
 
-        @order.operations.select { |op| op.invent_item_id == inv_item.item_id }.each do |op|
+        unless item.was_created
+          item.update!(item_model: inv_item.get_item_model)
+        end
+
+        @order.operations.select { |op| op.inv_item_ids.first == inv_item.item_id }.each do |op|
           op.item = item
 
           if Invent::Type::TYPE_WITH_FILES.include?(op.item.inv_item.type.name)

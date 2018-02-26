@@ -96,7 +96,7 @@
   OrdersController.prototype.editOrder = function(order) {
     var self = this;
 
-    this.Order.loadOrder(order.warehouse_order_id).then(function() {
+    this.Order.loadOrder(order.id).then(function() {
       self._openEditModal();
     });
   };
@@ -107,7 +107,7 @@
   OrdersController.prototype.execOrder = function(order) {
     var self = this;
 
-    this.Order.loadOrder(order.warehouse_order_id).then(function() {
+    this.Order.loadOrder(order.id).then(function() {
       self.$uibModal.open({
         templateUrl: 'execOrder.slim',
         controller: 'ExecOrderController',
@@ -126,13 +126,13 @@
   OrdersController.prototype.destroyOrder = function(order) {
     var
       self = this,
-      confirm_str = "Вы действительно хотите удалить ордер \"" + order.warehouse_order_id + "\"?";
+      confirm_str = "Вы действительно хотите удалить ордер \"" + order.id + "\"?";
 
     if (!confirm(confirm_str))
       return false;
 
     self.Server.Warehouse.Order.delete(
-      { warehouse_order_id: order.warehouse_order_id },
+      { id: order.id },
       function(response) {
         self.Flash.notice(response.full_message);
       },
@@ -221,6 +221,7 @@
    * Добавить позицию
    */
   EditInOrderController.prototype.addPosition = function() {
+    if (this.order.status == 'done') { return false; }
     this._openFormToAddExistingItem();
   };
 
@@ -239,9 +240,9 @@
       self = this,
       sendData = this.Order.getObjectToSend();
 
-    if (this.order.warehouse_order_id) {
+    if (this.order.id) {
       this.Server.Warehouse.Order.update(
-        { warehouse_order_id: this.order.warehouse_order_id },
+        { id: this.order.id },
         { order: sendData },
         function success(response) {
           self.Flash.notice(response.full_message);
@@ -332,9 +333,9 @@
       self = this,
       sendData = this.Order.getObjectToSend();
 
-    if (this.order.warehouse_order_id) {
+    if (this.order.id) {
       this.Server.Warehouse.Order.update(
-        { warehouse_order_id: this.order.warehouse_order_id },
+        { id: this.order.id },
         { order: sendData },
         function success(response) {
           self.Flash.notice(response.full_message);
@@ -428,7 +429,7 @@
       sendData = this.Order.getObjectToSend();
 
     this.Server.Warehouse.Order.executeIn(
-      { warehouse_order_id: this.order.warehouse_order_id },
+      { id: this.order.id },
       { order: sendData },
       function (response) {
         self.Flash.notice(response.full_message);
@@ -484,7 +485,7 @@
       index;
 
     this.Order.order.operations_attributes.forEach(function(attr) {
-      index = self.items.findIndex(function(el) { return el.item_id == attr.invent_item_id; });
+      index = self.items.findIndex(function(el) { return attr.inv_item_ids.includes(el.item_id); });
       if (index != -1) {
         self.items.splice(index, 1);
       }
@@ -505,6 +506,8 @@
         if (response.length == 0) {
           self.Flash.alert('Техника не найдена. Проверьте корректность введенного инвентарного номера.');
           return false;
+        } else if (self.items.length == 1) {
+          self.selectedItem = self.items[0];
         }
       });
   };
@@ -553,7 +556,6 @@
     this.Server = Server;
 
     this.order = this.Order.order;
-    console.log(this.order);
   }
 
   // Унаследовать методы класса FormValidationController
@@ -563,17 +565,17 @@
   /**
    * Обновить данные техники указанной оперции
    *
-   * @param op
+   * @param inv_item
    */
-  DeliveryItemsCtrl.prototype.refreshInvItemData = function(op) {
-    if (!op.invent_item_id) { return false; }
+  DeliveryItemsCtrl.prototype.refreshInvItemData = function(inv_item) {
+    if (!inv_item.id) { return false; }
 
     var self = this;
 
     this.Server.Invent.Item.get(
-      { item_id: op.invent_item_id },
+      { item_id: inv_item.id },
       function(response) {
-        self.Order.refreshInvItemData(op, response);
+        angular.extend(inv_item, response);
       },
       function(response, status) {
         self.Error.response(response, status);
@@ -590,7 +592,7 @@
       sendData = this.Order.getObjectToSend();
 
     this.Server.Warehouse.Order.executeOut(
-      { warehouse_order_id: this.order.warehouse_order_id },
+      { id: this.order.id },
       { order: sendData },
       function (response) {
         self.Flash.notice(response.full_message);
@@ -608,7 +610,6 @@
    */
   DeliveryItemsCtrl.prototype.cancel = function() {
     this.$uibModalInstance.dismiss();
-    this.Order.clearAssociations();
   };
 
   /**
@@ -616,7 +617,7 @@
    */
   DeliveryItemsCtrl.prototype.selectedOpFilter = function(selectedOp) {
     return function(op) {
-      return selectedOp.find(function(el) { return el.warehouse_operation_id == op.id });
+      return selectedOp.find(function(el) { return el.id == op.id });
     }
   }
 })();
