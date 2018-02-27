@@ -24,7 +24,7 @@ module Warehouse
       # Это будет выдаваться
       let(:third_item) { create(:used_item, warehouse_type: :without_invent_num, item_type: 'test type', item_model: 'test model') }
       # Это будет выдаваться
-      let(:fourth_item) { create(:new_item, inv_item: nil, type: fourth_inv_item.type, model: fourth_inv_item.model, count: 5, count_reserved: 3) }
+      let(:fourth_item) { create(:new_item, inv_item: nil, inv_type: fourth_inv_item.type, inv_model: fourth_inv_item.model, count: 5, count_reserved: 3) }
       let(:operations) do
         [
           build(:order_operation, item: first_item, inv_item_ids: [first_inv_item.item_id], shift: -1),

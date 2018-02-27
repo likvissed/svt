@@ -74,10 +74,11 @@ module Warehouse
           edit.run
           edit.data[:order]['consumer_tn'] = user.tn
           edit.data[:order]['operations_attributes'].each_with_index do |op, index|
-            op['status'] = :done if index.zero?
+            op['status'] = 'done' if index.zero?
 
             op.delete('item')
-            op.delete('inv_item')
+            op.delete('inv_items')
+            op.delete('inv_item_ids')
             op.delete('formatted_date')
           end
 
@@ -94,8 +95,7 @@ module Warehouse
           let(:new_operation) { attributes_for(:order_operation, inv_item_ids: [workplace.items[2].item_id]) }
           let(:order_params) do
             order_json['operations_attributes'] = order.operations.as_json
-            order_json['operations_attributes'] << new_operation.as_json
-
+            order_json['operations_attributes'] << new_operation
             order_json
           end
 

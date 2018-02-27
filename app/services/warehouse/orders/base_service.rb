@@ -11,8 +11,8 @@ module Warehouse
         begin
           item = Item.find_or_create_by!(invent_item_id: inv_item.item_id) do |w_item|
             w_item.inv_item = inv_item
-            w_item.type = inv_item.type
-            w_item.model = inv_item.model
+            w_item.inv_type = inv_item.type
+            w_item.inv_model = inv_item.model
             w_item.warehouse_type = :with_invent_num
             w_item.used = true
 

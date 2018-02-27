@@ -35,8 +35,8 @@ module Warehouse
 
       def prepare_to_render
         data[:data] = @orders.as_json(include: %i[creator consumer validator], methods: :operations_to_string).each do |order|
-          order['status'] = Order.translate_enum(:status, order['status'])
-          order['operation'] = Order.translate_enum(:operation, order['operation'])
+          order['status_translated'] = Order.translate_enum(:status, order['status'])
+          order['operation_translated'] = Order.translate_enum(:operation, order['operation'])
         end
       end
     end

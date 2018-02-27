@@ -72,6 +72,7 @@
       { id: order_id },
       function (data) {
         self._processingData(data);
+        console.log(self.order);
       },
       function (response, status) {
         self.Error.response(response, status);

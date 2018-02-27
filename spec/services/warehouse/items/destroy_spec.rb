@@ -1,10 +1,10 @@
-require 'rails_helper'
+require 'feature_helper'
 
 module Warehouse
   module Items
     RSpec.describe Destroy, type: :model do
       let!(:item) { create(:new_item) }
-      subject { Destroy.new(item.warehouse_item_id) }
+      subject { Destroy.new(item.id) }
 
       its(:run) { is_expected.to be_truthy }
 

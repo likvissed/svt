@@ -80,11 +80,11 @@ module Warehouse
 
       context 'when item is not used' do
         let(:monitor) { create(:item, :with_property_values, type_name: 'monitor') }
-        let!(:item_1) { create(:new_item, type: Invent::Type.find_by(name: :pc), item_type: 'Системный блок', item_model: 'UNIT', count: 2) }
-        let!(:item_2) { create(:new_item, type: Invent::Type.find_by(name: :monitor), item_type: 'Монитор', item_model: 'SAMSUNG NEW MODEL', count: 2) }
+        let!(:item_1) { create(:new_item, inv_type: Invent::Type.find_by(name: :pc), item_type: 'Системный блок', item_model: 'UNIT', count: 2) }
+        let!(:item_2) { create(:new_item, inv_type: Invent::Type.find_by(name: :monitor), item_type: 'Монитор', item_model: 'SAMSUNG NEW MODEL', count: 2) }
         let!(:item_3) { create(:new_item, warehouse_type: :without_invent_num, item_type: 'Мышь', item_model: 'ASUS', count: 2) }
         let!(:item_4) { create(:used_item, inv_item: monitor, count: 1) }
-        let!(:item_5) { create(:new_item, type: Invent::Type.find_by(name: :monitor), model: Invent::Type.find_by(name: :monitor).models.first, count: 2) }
+        let!(:item_5) { create(:new_item, inv_type: Invent::Type.find_by(name: :monitor), inv_model: Invent::Type.find_by(name: :monitor).models.first, count: 2) }
         let(:operation_1) { attributes_for(:order_operation, item_id: item_1.id, shift: -1) }
         let(:operation_2) { attributes_for(:order_operation, item_id: item_2.id, shift: -1) }
         let(:operation_3) { attributes_for(:order_operation, item_id: item_3.id, shift: -1) }

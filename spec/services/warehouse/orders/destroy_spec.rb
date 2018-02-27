@@ -54,8 +54,8 @@ module Warehouse
         let(:inv_item_2) { create(:item, :with_property_values, type_name: :monitor, status: :waiting_take) }
         let(:inv_item_3) { create(:item, :with_property_values, type_name: :monitor, status: nil) }
         let(:new_items) { [item_1, item_2] }
-        let(:item_1) { create(:new_item, type: inv_item_1.type, model: nil, item_model: 'Unit', count: 10, count_reserved: 1) }
-        let(:item_2) { create(:new_item, type: inv_item_2.type, model: inv_item_2.model, count: 8, count_reserved: 1) }
+        let(:item_1) { create(:new_item, inv_type: inv_item_1.type, inv_model: nil, item_model: 'Unit', count: 10, count_reserved: 1) }
+        let(:item_2) { create(:new_item, inv_type: inv_item_2.type, inv_model: inv_item_2.model, count: 8, count_reserved: 1) }
         let(:workplace) do
           w = build(:workplace_pk, items: [inv_item_1, inv_item_2, inv_item_3])
           w.save(validate: false)
@@ -84,10 +84,7 @@ module Warehouse
         context 'and when order is not destroyed' do
           before { allow_any_instance_of(Order).to receive(:destroy).and_return(false) }
 
-          # include_examples 'failed destroy :out order'
-          it 'does not destroy inv_item_to_operations' do
-            expect { subject.run }.not_to change(InvItemToOperation, :count)
-          end
+          include_examples 'failed destroy :out order'
         end
 
         context 'and when inv_item is not destroyed' do

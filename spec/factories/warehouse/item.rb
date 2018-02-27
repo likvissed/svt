@@ -7,8 +7,8 @@ module Warehouse
       count_reserved 0
 
       after(:build) do |item, ev|
-        item.item_type = item.type.short_description if item.type
-        item.item_model = item.model.item_model if item.model
+        item.item_type = item.inv_type.short_description if item.inv_type
+        item.item_model = item.inv_model.item_model if item.inv_model
 
         # Если не задан тип и модель
         if !item.item_type && !item.item_model
@@ -16,8 +16,8 @@ module Warehouse
         end
 
         if item.inv_item
-          item.type ||= item.inv_item.type
-          item.model ||= item.inv_item.model
+          item.inv_type ||= item.inv_item.type
+          item.inv_model ||= item.inv_item.model
         end
       end
     end

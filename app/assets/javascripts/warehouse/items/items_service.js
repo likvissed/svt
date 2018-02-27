@@ -38,7 +38,7 @@
     var self = this;
 
     this.items.forEach(function(item) {
-      if (self.Order.order.operations_attributes.find((function (op) { return op.warehouse_item_id == item.warehouse_item_id }))) {
+      if (self.Order.order.operations_attributes.find((function (op) { return op.item_id == item.id }))) {
         item.added_to_order = true;
       }
     });

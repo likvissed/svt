@@ -59,15 +59,27 @@
 
   /**
    * Открыть модальное окно
+   *
+   * @param operation
    */
-  OrdersController.prototype._openEditModal = function() {
-    this.$uibModal.open({
-      templateUrl: 'inOrderModal.slim',
-      controller: 'EditInOrderController',
-      controllerAs: 'edit',
-      size: 'md',
-      backdrop: 'static'
-    });
+  OrdersController.prototype._openEditModal = function(operation) {
+    if (operation == 'in') {
+      this.$uibModal.open({
+        templateUrl: 'inOrderModal.slim',
+        controller: 'EditInOrderController',
+        controllerAs: 'edit',
+        size: 'md',
+        backdrop: 'static'
+      });
+    } else if (operation == 'out') {
+      this.$uibModal.open({
+        templateUrl: 'outOrderModal.slim',
+        controller: 'EditOutOrderController',
+        controllerAs: 'edit',
+        size: 'md',
+        backdrop: 'static'
+      });
+    }
   };
 
   /**
@@ -81,10 +93,12 @@
    * Открыть окно создания ордера.
    */
   OrdersController.prototype.newOrder = function() {
-    var self = this;
+    var
+      self = this,
+      operation = 'in'
 
-    this.Order.init('in').then(function() {
-      self._openEditModal();
+    this.Order.init(operation).then(function() {
+      self._openEditModal(operation);
     });
   };
 
@@ -97,7 +111,7 @@
     var self = this;
 
     this.Order.loadOrder(order.id).then(function() {
-      self._openEditModal();
+      self._openEditModal(order.operation);
     });
   };
 
@@ -315,7 +329,7 @@
    */
   EditOutOrderController.prototype.delPosition = function(operation) {
     this.Order.delPosition(operation);
-    this.Items.items.find(function(item) { return item.warehouse_item_id == operation.warehouse_item_id; }).added_to_order = false
+    this.Items.items.find(function(item) { return item.id == operation.item_id; }).added_to_order = false
   };
 
   /**

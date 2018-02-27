@@ -1,3 +1,5 @@
+require 'feature_helper'
+
 module Invent
   module Workplaces
     RSpec.describe Confirm, type: :model do

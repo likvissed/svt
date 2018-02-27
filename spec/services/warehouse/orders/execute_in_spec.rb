@@ -31,6 +31,7 @@ module Warehouse
             op['status'] = 'done' if index.zero?
           end
 
+          p order_json
           order_json
         end
 

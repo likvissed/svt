@@ -22,7 +22,6 @@
        */
       setTemplate: function(obj, order_operation) {
         _templateOperation = obj;
-        // _templateOperation['id'] = obj.warehouse_operation_id;
 
         _order_operation = order_operation;
        },

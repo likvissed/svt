@@ -1,4 +1,4 @@
-require 'rails_helper'
+require 'feature_helper'
 
 module Invent
   module Workplaces

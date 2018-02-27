@@ -88,7 +88,7 @@
     if (item.added_to_order) {
       this.Order.addPosition(this.order.warehouse_type, angular.copy(item));
     } else {
-      var operation = this.order.operations_attributes.find(function(op) { return op.warehouse_item_id == item.warehouse_item_id; })
+      var operation = this.order.operations_attributes.find(function(op) { return op.item_id == item.id; })
 
       this.Order.delPosition(operation);
     }
@@ -115,7 +115,7 @@
       return false;
 
     self.Server.Warehouse.Item.delete(
-      { warehouse_item_id: item.warehouse_item_id },
+      { id: item.id },
       function(response) {
         self.Flash.notice(response.full_message);
       },

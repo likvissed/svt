@@ -38,9 +38,9 @@ module Warehouse
           if item_new = items_new.find { |item| item.id == op['item_id'] }
             op['inv_items_attributes'] = op['shift'].abs.times.map do
               invent_item = Invent::Item.new(
-                type: item_new.type,
+                type: item_new.inv_type,
                 workplace_id: @order_params['workpalce_id'],
-                model: item_new.model,
+                model: item_new.inv_model,
                 item_model: item_new.item_model,
                 invent_num: nil,
                 serial_num: nil,
@@ -101,9 +101,9 @@ module Warehouse
       end
 
       def init_property_values(item)
-        item.type.properties.map do |prop|
-          prop_list = if item.model && %w[list list_plus].include?(prop.property_type)
-                        item.model.model_property_lists.find_by(property: prop).property_list
+        item.inv_type.properties.map do |prop|
+          prop_list = if item.inv_model && %w[list list_plus].include?(prop.property_type)
+                        item.inv_model.model_property_lists.find_by(property: prop).property_list
                       else
                         nil
                       end

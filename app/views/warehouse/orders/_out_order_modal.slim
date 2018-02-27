@@ -29,7 +29,7 @@ script type="text/ng-template" id="outOrderModal.slim"
           tbody
             tr.animate-repeat ng-repeat="op in edit.order.operations_attributes" ng-hide="op._destroy"
               td ng-bind="op.item_type"
-              td ng-bind="op.inv_item.invent_num"
+              td ng-bind="op.inv_items | inventNumsToStr"
               td ng-bind="op.item_model"
               td
                 input type="text" ng-model="edit.order.createShiftGetterSetter(op)" ng-model-options="{ getterSetter: true }" class="form-control"
@@ -43,4 +43,6 @@ script type="text/ng-template" id="outOrderModal.slim"
 
     .modal-footer
       = button_tag "Вернуться к списку", class: "btn-default btn-sm", "ng-click": "edit.cancel()"
-      = button_tag "Создать", class: "btn-success btn-sm", "ng-click": "edit.ok()"
+      = button_tag class: "btn-success btn-sm", "ng-click": "edit.ok()" do
+        div ng-if="edit.order.id" Обновить
+        div ng-if="!edit.order.id" Создать

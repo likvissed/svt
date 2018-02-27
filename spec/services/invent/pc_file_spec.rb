@@ -1,4 +1,4 @@
-require 'spec_helper'
+require 'feature_helper'
 
 module Invent
   RSpec.describe PcFile, type: :model do

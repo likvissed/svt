@@ -5,8 +5,8 @@ module Warehouse
     has_many :operations, inverse_of: :item, dependent: :nullify
 
     belongs_to :inv_item, class_name: 'Invent::Item', foreign_key: 'invent_item_id', optional: true
-    belongs_to :type, class_name: 'Invent::Type', optional: true
-    belongs_to :model, class_name: 'Invent::Model', optional: true
+    belongs_to :inv_type, class_name: 'Invent::Type', foreign_key: 'invent_type_id', optional: true
+    belongs_to :inv_model, class_name: 'Invent::Model', foreign_key: 'invent_model_id', optional: true
 
     validates :warehouse_type, :item_type, :item_model, presence: true
     validates :used, inclusion: { in: [true, false] }
@@ -32,8 +32,8 @@ module Warehouse
     end
 
     def set_string_values
-      self.item_type ||= type.short_description if type
-      self.item_model ||= inv_item.try(:get_item_model) || model.try(:item_model) if inv_item || model
+      self.item_type ||= inv_type.short_description if inv_type
+      self.item_model ||= inv_item.try(:get_item_model) || inv_model.try(:item_model) if inv_item || inv_model
     end
 
     def uniq_item_model

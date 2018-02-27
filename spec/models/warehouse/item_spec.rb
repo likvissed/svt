@@ -4,8 +4,8 @@ module Warehouse
   RSpec.describe Item, type: :model do
     it { is_expected.to have_many(:operations).dependent(:nullify) }
     it { is_expected.to belong_to(:inv_item).class_name('Invent::Item').with_foreign_key('invent_item_id') }
-    it { is_expected.to belong_to(:type).class_name('Invent::Type') }
-    it { is_expected.to belong_to(:model).class_name('Invent::Model') }
+    it { is_expected.to belong_to(:inv_type).class_name('Invent::Type').with_foreign_key('invent_type_id') }
+    it { is_expected.to belong_to(:inv_model).class_name('Invent::Model').with_foreign_key('invent_model_id') }
     it { is_expected.to validate_presence_of(:warehouse_type) }
     it { is_expected.to validate_presence_of(:item_type) }
     it { is_expected.to validate_presence_of(:item_model) }
@@ -26,8 +26,8 @@ module Warehouse
     end
 
     context 'when item and type are nil' do
-      let!(:item) { create(:used_item, type: nil, model: nil, item_model: 'Model 1', item_type: 'Type 1') }
-      let(:item_sec) { build(:used_item, type: nil, model: nil, item_model: 'Model 2', item_type: 'Type 2') }
+      let!(:item) { create(:used_item, inv_type: nil, inv_model: nil, item_model: 'Model 1', item_type: 'Type 1') }
+      let(:item_sec) { build(:used_item, inv_type: nil, inv_model: nil, item_model: 'Model 2', item_type: 'Type 2') }
 
       it 'should be valid' do
         expect(item_sec).to be_valid
@@ -55,7 +55,7 @@ module Warehouse
 
       context 'when type exists' do
         let(:type) { Invent::Type.find_by(name: :monitor) }
-        subject { build(:used_item, type: type) }
+        subject { build(:used_item, inv_type: type) }
 
         it 'adds item_type value' do
           expect(subject.item_type).to eq type.short_description
@@ -64,7 +64,7 @@ module Warehouse
 
       context 'when inv_item does not exist but model exists' do
         let(:model) { Invent::Type.find_by(name: :monitor).models.first }
-        subject { build(:new_item, model: model) }
+        subject { build(:new_item, inv_model: model) }
 
         it 'adds item_model value' do
           subject.valid?
