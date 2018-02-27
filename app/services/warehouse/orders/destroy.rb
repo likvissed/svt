@@ -7,21 +7,59 @@ module Warehouse
       end
 
       def run
-        destroy_order
-        broadcast_orders
+        Invent::Item.transaction do
+          begin
+            @data = Order.find(@order_id)
 
-        true
-      rescue RuntimeError => e
-        Rails.logger.error e.inspect.red
-        Rails.logger.error e.backtrace[0..5].inspect
+            case @data.operation
+            when 'in'
+              in_order
+            when 'out'
+              out_order
+            else
+              raise 'Неизвестная тип ордера'
+            end
 
-        false
+            broadcast_orders
+
+            true
+          rescue ActiveRecord::RecordNotSaved, ActiveRecord::RecordInvalid => e
+            Rails.logger.error e.inspect.red
+            Rails.logger.error e.backtrace[0..5].inspect
+
+            raise ActiveRecord::Rollback
+          rescue RuntimeError => e
+            Rails.logger.error e.inspect.red
+            Rails.logger.error e.backtrace[0..5].inspect
+
+            raise ActiveRecord::Rollback
+          end
+        end
       end
 
       protected
 
+      def in_order
+        @data.inv_items.each { |inv_item| inv_item.update_attributes!(status: nil) }
+        destroy_order
+      end
+
+      def out_order
+        InvItemToOperation.transaction(requires_new: true) do
+          @data.operations.each do |op|
+            op.inv_items.each { |inv_item| raise "Ошибка удаления Invent::Item #{inv_item}" unless inv_item.destroy }
+          end
+
+          Item.transaction(requires_new: true) do
+            @data.operations.each do |op|
+              op.item.tap { |i| i.count_reserved -= op.shift.abs }.save!(validate: false)
+            end
+            destroy_order
+          end
+        end
+      end
+
       def destroy_order
-        @data = Order.find(@order_id)
         return if @data.destroy
 
         @data = data.errors.full_messages.join('. ')
