@@ -26,7 +26,7 @@ module Warehouse
     end
 
     def create_in
-      @create_in = Orders::CreateIn.new(current_user, order_params)
+      @create_in = Orders::CreateIn.new(current_user, order_params, params[:done])
 
       if @create_in.run
         render json: { full_message: I18n.t('controllers.warehouse/order.created_in', count: @create_in.data) }
@@ -55,13 +55,23 @@ module Warehouse
       end
     end
 
-    def update
-      @update = Orders::Update.new(current_user, params[:id], order_params)
+    def update_in
+      @update_in = Orders::UpdateIn.new(current_user, params[:id], order_params)
 
-      if @update.run
+      if @update_in.run
         render json: { full_message: I18n.t('controllers.warehouse/order.updated', order_id: params[:id]) }
       else
-        render json: @update.error, status: 422
+        render json: @update_in.error, status: 422
+      end
+    end
+
+    def update_out
+      @update_out = Orders::UpdateOut.new(current_user, params[:id], order_params)
+
+      if @update_out.run
+        render json: { full_message: I18n.t('controllers.warehouse/order.updated', order_id: params[:id]) }
+      else
+        render json: @update_out.error, status: 422
       end
     end
 

@@ -212,7 +212,14 @@
             method: 'POST',
             url: '/warehouse/orders/create_out'
           },
-          update: { method: 'PUT' },
+          updateIn: {
+            method: 'PUT',
+            url: '/warehouse/orders/:id/update_in'
+          },
+          updateOut: {
+            method: 'PUT',
+            url: '/warehouse/orders/:id/update_out'
+          },
           executeIn: {
             method: 'POST',
             url: '/warehouse/orders/:id/execute_in'

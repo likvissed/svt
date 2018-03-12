@@ -434,6 +434,25 @@ module Warehouse
       end
     end
 
+    describe '#check_operation_shift' do
+      context 'when one of operations :shift attribtue is not equal 1' do
+        let(:operations) { [build(:order_operation), build(:order_operation, shift: 2)] }
+        subject { build(:order, operations: operations) }
+
+        it 'adds :shift_must_be_equal_1 error' do
+          subject.valid?
+          expect(subject.errors.details[:base]).to include(error: :shift_must_be_equal_1)
+        end
+      end
+
+      context 'when all operations :shift attribtue is equal 1' do
+        let(:operations) { [build(:order_operation), build(:order_operation)] }
+        subject { build(:order, operations: operations) }
+
+        it { is_expected.to be_valid }
+      end
+    end
+
     describe '#check_operation_list' do
       let(:workplace) { create(:workplace_pk, :add_items, items: %i[pc monitor]) }
       before { subject.operations << new_operation }

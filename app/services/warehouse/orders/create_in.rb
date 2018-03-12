@@ -2,17 +2,21 @@ module Warehouse
   module Orders
     # Создание приходного ордера
     class CreateIn < BaseService
-      def initialize(current_user, order_params)
+      def initialize(current_user, order_params, done_flag = false)
         @error = {}
         @current_user = current_user
         @order_params = order_params
         @orders_arr = []
+        @done_flag = done_flag
       end
 
       def run
+        raise 'Неверные данные' if order_out?
+
         processing_nested_attributes if @order_params['operations_attributes']&.any?
         return false unless wrap_order_with_transactions
         broadcast_orders
+        broadcast_items if @done_flag
 
         true
       rescue RuntimeError => e
@@ -59,14 +63,17 @@ module Warehouse
               return false unless fill_order_arr
             end
 
-            @orders_arr.each do |order|
-              save_order(order)
+            Invent::Item.transaction(requires_new: true) do
+              @orders_arr.each do |order|
+                save_order(order)
 
-              Invent::Item.transaction(requires_new: true) do
-                order.operations.each { |op| op.inv_items.each { |inv_item| inv_item.update!(status: :waiting_bring) } }
+                if @done_flag
+                  order.operations.each { |op| op.inv_items.each { |inv_item| inv_item.update!(status: nil, workplace: nil) } }
+                else
+                  order.operations.each { |op| op.inv_items.each { |inv_item| inv_item.update!(status: :waiting_bring) } }
+                end
               end
             end
-
             @data = @orders_arr.size
 
             true
@@ -87,6 +94,13 @@ module Warehouse
       def init_order(param)
         @order = Order.new(param)
         @order.set_creator(current_user)
+
+        if @done_flag
+          @order.operations.each do |op|
+            op.set_stockman(current_user)
+            op.status = :done
+          end
+        end
       end
 
       def fill_order_arr
@@ -103,7 +117,20 @@ module Warehouse
       end
 
       def find_or_create_warehouse_items
-        @order.operations.each { |op| op.inv_items.each { |inv_item| warehouse_item_in(inv_item) } }
+        @order.operations.each do |op|
+          if op.inv_items.any?
+            op.inv_items.each { |inv_item| warehouse_item_in(inv_item) }
+          elsif @done_flag
+            op.build_item(
+              warehouse_type: :without_invent_num,
+              item_type: op.item_type,
+              item_model: op.item_model,
+              used: true,
+              count: 1,
+              count_reserved: 0
+            )
+          end
+        end
       end
     end
   end

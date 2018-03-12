@@ -7,6 +7,14 @@ module Warehouse
 
       protected
 
+      def order_out?
+        @order_params['operation'] == 'out' || @order_params['operations_attributes']&.any? { |op| op['shift'].to_i.negative? }
+      end
+
+      def order_in?
+        @order_params['operation'] == 'in' || @order_params['operations_attributes']&.any? { |op| op['shift'].to_i.positive? }
+      end
+
       def warehouse_item_in(inv_item)
         begin
           item = Item.find_or_create_by!(invent_item_id: inv_item.item_id) do |w_item|
@@ -16,6 +24,11 @@ module Warehouse
             w_item.warehouse_type = :with_invent_num
             w_item.used = true
 
+            if @done_flag
+              w_item.count = 1
+              w_item.count_reserved = 0
+            end
+
             w_item.was_created = true
           end
         rescue ActiveRecord::RecordNotUnique
@@ -23,7 +36,11 @@ module Warehouse
         end
 
         unless item.was_created
-          item.update!(item_model: inv_item.get_item_model)
+          if @done_flag
+            item.update!(item_model: inv_item.get_item_model, count: 1, count_reserved: 0)
+          else
+            item.update!(item_model: inv_item.get_item_model)
+          end
         end
 
         @order.operations.select { |op| op.inv_item_ids.first == inv_item.item_id }.each do |op|
@@ -47,7 +64,8 @@ module Warehouse
         error[:full_message] = if with_operations
                                  order_errors = order.errors.full_messages
                                  operation_errors = order.operations.map { |op| op.errors.full_messages }
-                                 [order_errors, operation_errors].flatten.join('. ')
+                                 item_errors = order.operations.map { |op| op.item.errors.full_messages }
+                                 [order_errors, operation_errors, item_errors].flatten.join('. ')
                                else
                                  order.errors.full_messages.join('. ')
                                end

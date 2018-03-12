@@ -43,7 +43,7 @@ module Warehouse
     end
 
     def operations_to_string
-      operations.map { |op| "#{op.item_type}: #{op.item_model}" }.join('; ')
+      operations.map { |op| "#{op.item_type}: #{op.item_model} (#{op.shift.abs} шт.)" }.join('; ')
     end
 
     def done?
@@ -77,6 +77,7 @@ module Warehouse
       check_operation_list
       uniqueness_of_workplace if any_inv_item_to_operation?
       compare_consumer_dept if any_inv_item_to_operation? && errors.empty?
+      check_operation_shift
 
       # Эта валидация должна быть самой последней
       compare_nested_arrs if any_inv_item_to_operation? && errors.empty?
@@ -153,6 +154,13 @@ module Warehouse
       return if !division || division == consumer_dept
 
       errors.add(:base, :dept_does_not_match)
+    end
+
+    # Для приходящего ордера shift должен быть равен 1
+    def check_operation_shift
+      return if operations.none? { |op| op.shift != 1 }
+
+      errors.add(:base, :shift_must_be_equal_1)
     end
 
     def prevent_update_done_order

@@ -16,8 +16,7 @@
             span data-role="user-name"
               = current_user.fullname
 
-        .navbar-loading.animate-show ng-controller="AjaxLoadingCtrl as ajax" ng-show="ajax.requests.count != 0"
-          = fa_icon "spinner pulse 2x fw"
+        = render partial: 'templates/load_spinner'
 
       .navbar-header-menu
         .navbar-collapse

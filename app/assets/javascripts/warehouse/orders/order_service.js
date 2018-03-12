@@ -12,31 +12,40 @@
     this.Config = Config;
     this.Flash = Flash;
     this.Error = Error;
-    this._orderTemplate = {};
 
     this.additional = {};
+    this.order = {};
   }
 
-  Order.prototype._processingData = function(data) {
-    this._setOrder(data.order);
-    // Заполнить список отделов
-    this.additional.divisions = data.divisions;
-    // Заполнить список типов оборудования
-    this.additional.eqTypes = data.eq_types;
+  Order.prototype._initVisibleCount = function(count) {
+    this.additional.visibleCount = count || 0;
+  }
 
-    this.Operation.setTemplate(data.operation, this.order.operation);
+  Order.prototype._processingData = function(data, onlyOrder = false) {
+    this._setOrder(data.order);
+
+    if (!onlyOrder) {
+      // Заполнить список отделов
+      this.additional.divisions = data.divisions;
+      // Заполнить список типов оборудования
+      this.additional.eqTypes = data.eq_types;
+
+      this.Operation.setTemplate(data.operation, this.order.operation);
+    }
   }
 
   /**
    * Создать объект Order
    */
   Order.prototype._setOrder = function(order) {
-    this.order = order;
-    if (!this.order.operations_attributes) {
-      this.order.operations_attributes = [];
+    angular.extend(this.order, order);
+    this.order.operations_attributes = order.operations_attributes || [];
+    this.order.consumer = order.consumer;
+
+    if (typeof this._orderTemplate === 'undefined') {
+      this._orderTemplate = angular.copy(this.order);
     }
-    this._orderTemplate = angular.copy(this.order);
-    this.additional.visibleCount = this.order.operations_attributes.length;
+    this._initVisibleCount(this.order.operations_attributes.length);
   };
 
   /**
@@ -65,19 +74,25 @@
   /**
    * Загрузить данные указанного ордера
    */
-  Order.prototype.loadOrder = function(order_id) {
+  Order.prototype.loadOrder = function(order_id, onlyOrder = false) {
     var self = this;
 
     return this.Server.Warehouse.Order.edit(
       { id: order_id },
       function (data) {
-        self._processingData(data);
-        console.log(self.order);
+        self._processingData(data, onlyOrder);
       },
       function (response, status) {
         self.Error.response(response, status);
       }
     ).$promise;
+  };
+
+  /**
+   * Загрузить данные о текущем ордере заново
+   */
+  Order.prototype.reloadOrder = function() {
+    this.loadOrder(this.order.id, true);
   };
 
   /**
@@ -109,6 +124,7 @@
    */
   Order.prototype.reinit = function() {
     angular.extend(this.order, angular.copy(this._orderTemplate));
+    this._initVisibleCount();
   }
 
   // Order.prototype.loadUsers = function() {
@@ -189,7 +205,7 @@
 
     obj.operations_attributes.forEach(function(op) {
       delete(op.item);
-      delete(op.inv_item);
+      delete(op.inv_items);
       delete(op.formatted_date);
       delete(op.inv_item_to_operations);
 

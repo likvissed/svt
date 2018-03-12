@@ -79,12 +79,14 @@ Rails.application.routes.draw do
   # Склад
   namespace :warehouse do
     resources :items
-    resources :orders, only: [:index, :new, :edit, :update, :destroy] do
+    resources :orders, only: [:index, :new, :edit, :destroy] do
       post 'create_in', to: 'orders#create_in', on: :collection
       post 'create_out', to: 'orders#create_out', on: :collection
       post 'execute_in', to: 'orders#execute_in', on: :member
       post 'execute_out', to: 'orders#execute_out', on: :member
       post 'prepare_to_deliver', to: 'orders#prepare_to_deliver', on: :member
+      put 'update_in', to: 'orders#update_in', on: :member
+      put 'update_out', to: 'orders#update_out', on: :member
     end
   end
 

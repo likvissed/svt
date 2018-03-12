@@ -11,6 +11,7 @@ module Warehouse
       def run
         load_items
         init_order
+        load_orders
         limit_records
         prepare_to_render
 
@@ -47,6 +48,19 @@ module Warehouse
           data[:order] = new_order.data
         else
           raise 'Не удалось создать шаблон расходного ордера'
+        end
+      end
+
+      def load_orders
+        order = Orders::Index.new({ start: nil, length: nil }, { operation: :out, status: :processing })
+        if order.run
+          data[:orders] = order.data[:data]
+
+          data[:orders].each do |order|
+            order[:main_info] = "ID ордера: #{order['id']}; ID РМ: #{order['invent_workplace_id']}"
+          end
+        else
+          raise 'Не удалось загрузить список ордеров'
         end
       end
     end

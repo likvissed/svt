@@ -3,8 +3,8 @@ script type="text/ng-template" id="existingItem.slim"
     .pull-left
       h4 Новая позиция ордера
     .pull-right
-      .navbar-loading.animate-show ng-controller="AjaxLoadingCtrl as ajax" ng-show="ajax.requests.count != 0"
-        = fa_icon "spinner pulse 2x fw"
+      .icon-block
+        = render partial: 'templates/load_spinner'
   .modal-body
     .form-group
       = radio_button_tag :new_item, "with_invent_num", false, "ng-model": "select.warehouseType"
@@ -31,13 +31,12 @@ script type="text/ng-template" id="existingItem.slim"
               = fa_icon "search"
       .multiline-select.form-group ng-show="select.selectedType.type_id != 0 && select.items.length != 0"
         = label_tag "", "Выберите технику", class: "control-label"
-        .ui-select
-          ui-select ng-model="select.selectedItem" theme="bootstrap"
-            ui-select-match placeholder="Выберите технику"
-              | {{ $select.selected.main_info }}
-            ui-select-choices repeat="obj in select.items | filter: $select.search"
-              div ng-bind-html="obj.main_info | highlight: $select.search"
-              small ng-bind-html="obj.get_item_model | highlight: $select.search"
+        ui-select ng-model="select.selectedItem" theme="bootstrap"
+          ui-select-match placeholder="Выберите технику"
+            | {{ $select.selected.main_info }}
+          ui-select-choices repeat="obj in select.items | filter: $select.search"
+            div ng-bind-html="obj.main_info | highlight: $select.search"
+            small ng-bind-html="obj.get_item_model | highlight: $select.search"
     div ng-show="select.warehouseType == 'without_invent_num'"
       .form-group
         = label_tag "item_type", "Тип", class: "control-label"

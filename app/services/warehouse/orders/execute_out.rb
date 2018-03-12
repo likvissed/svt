@@ -10,6 +10,8 @@ module Warehouse
       end
 
       def run
+        raise 'Неверные данные' if order_in?
+
         find_order
         return false unless wrap_order
         broadcast_orders
@@ -70,7 +72,7 @@ module Warehouse
           op.item.count_reserved = op.item.count_reserved + op.shift.to_i
           op.inv_items.each { |inv_item| inv_item.status = nil }
           op.item_id
-        end
+        end.compact
 
         op_selected
       end

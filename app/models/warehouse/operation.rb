@@ -42,6 +42,38 @@ module Warehouse
       date.strftime("%d-%m-%Y") if date
     end
 
+    def build_inv_items(count, **params)
+      return if item.warehouse_type == 'without_invent_num'
+
+      count.times do
+        if item.inv_item
+          item.inv_item.workplace = params[:workplace]
+          item.inv_item.status = :waiting_take
+          inv_items << item.inv_item
+        else
+          new_inv_item = inv_items.build(
+            type: item.inv_type,
+            workplace: params[:workplace],
+            model: item.inv_model,
+            item_model: item.item_model,
+            status: :waiting_take
+          )
+          new_inv_item.build_property_values
+        end
+      end
+    end
+
+    def calculate_item_count_reserved
+      if new_record?
+        item.count_reserved += shift.abs
+      elsif marked_for_destruction?
+        item.count_reserved -= shift.abs
+      elsif shift_changed?
+        delta = shift_was - shift
+        item.count_reserved += delta
+      end
+    end
+
     protected
 
     def set_initial_status

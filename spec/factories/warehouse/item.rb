@@ -11,13 +11,18 @@ module Warehouse
         item.item_model = item.inv_model.item_model if item.inv_model
 
         # Если не задан тип и модель
-        if !item.item_type && !item.item_model
+        if !item.item_type && !item.item_model && item.warehouse_type.to_s != 'without_invent_num'
           item.inv_item ||= create(:item, :with_property_values, type_name: 'monitor')
         end
 
         if item.inv_item
           item.inv_type ||= item.inv_item.type
           item.inv_model ||= item.inv_item.model
+        end
+
+        if item.warehouse_type.to_s == 'without_invent_num' && !item.item_type && !item.item_model
+          item.item_type = 'CD'
+          item.item_model = 'ASUS'
         end
       end
     end

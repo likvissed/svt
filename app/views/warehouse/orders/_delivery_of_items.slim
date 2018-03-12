@@ -4,8 +4,8 @@ script type="text/ng-template" id="deliveryOfItems.slim"
       .pull-left
         h4 Выдача техники
       .pull-right
-        .navbar-loading.animate-show ng-controller="AjaxLoadingCtrl as ajax" ng-show="ajax.requests.count != 0"
-          = fa_icon "spinner pulse 2x fw"
+        .icon-block
+          = render partial: 'templates/load_spinner'
 
     .modal-body
       div ng-repeat="op in delivery.order.operations_attributes | filter:delivery.selectedOpFilter(delivery.order.selected_op)"

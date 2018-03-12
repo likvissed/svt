@@ -16,8 +16,9 @@ module Warehouse
               in_order
             when 'out'
               out_order
+              broadcast_items
             else
-              raise 'Неизвестная тип ордера'
+              raise 'Неизвестный тип ордера'
             end
 
             broadcast_orders

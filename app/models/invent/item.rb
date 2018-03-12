@@ -79,6 +79,24 @@ module Invent
       end
     end
 
+    def build_property_values
+      return unless type
+
+      self.property_values = type.properties.map do |prop|
+        prop_list = if model && %w[list list_plus].include?(prop.property_type)
+                      model.property_list_for(prop)
+                    else
+                      nil
+                    end
+
+        PropertyValue.new(
+          property: prop,
+          property_list: prop_list,
+          value: ''
+        )
+      end
+    end
+
     private
 
     # Проверка наличия модели.

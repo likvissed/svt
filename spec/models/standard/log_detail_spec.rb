@@ -1,4 +1,4 @@
-require 'rails_helper'
+require 'feature_helper'
 
 module Standard
   RSpec.describe LogDetail, type: :model do

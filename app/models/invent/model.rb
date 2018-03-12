@@ -8,5 +8,9 @@ module Invent
 
     belongs_to :vendor, optional: false
     belongs_to :type, optional: false
+
+    def property_list_for(prop)
+      model_property_lists.find_by(property: prop).try(:property_list)
+    end
   end
 end

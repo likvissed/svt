@@ -12,7 +12,7 @@ module Warehouse
       end
       let(:order_json) { order.as_json }
 
-      context 'when operations is not belong to item' do
+      context 'when operations without invent_num' do
         let(:first_item) { create(:used_item, count: 1, count_reserved: 1, item_model: 'Мышь', item_type: 'Logitech') }
         let(:sec_item) { create(:new_item, count: 3, count_reserved: 1, item_model: 'Клавиатура', item_type: 'OKLICK') }
         let(:first_op) { build(:order_operation, item: first_item, shift: -1) }
@@ -36,9 +36,21 @@ module Warehouse
           expect(sec_item.reload.count).to eq 2
           expect(sec_item.reload.count_reserved).to be_zero
         end
+
+        context 'and when :operation attribute changes to :in' do
+          before { order_params['operation'] = 'in' }
+
+          include_examples 'order error format'
+        end
+
+        context 'and when :shift attribute changes to positive value' do
+          before { order_params['operations_attributes'].first['shift'] = 4 }
+
+          include_examples 'order error format'
+        end
       end
 
-      context 'when operations belongs_to item' do
+      context 'when operations with invent_num' do
         context 'and when item has valid property_values' do
           let(:first_inv_item) { create(:item, :with_property_values, type_name: :pc, status: :waiting_take) }
           let(:sec_inv_item) { create(:item, :with_property_values, type_name: :monitor, status: :waiting_take) }

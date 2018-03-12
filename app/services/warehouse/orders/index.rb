@@ -2,10 +2,11 @@ module Warehouse
   module Orders
     # Загрузить список ордеров
     class Index < BaseService
-      def initialize(params)
+      def initialize(params, **order_conditions)
         @data = {}
         @start = params[:start]
         @length = params[:length]
+        @order_conditions = order_conditions
       end
 
       def run
@@ -25,7 +26,7 @@ module Warehouse
 
       def load_orders
         data[:recordsTotal] = Order.count
-        @orders = Order.all
+        @orders = Order.where(@order_conditions)
       end
 
       def limit_records

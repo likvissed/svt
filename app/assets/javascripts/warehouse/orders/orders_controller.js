@@ -62,24 +62,14 @@
    *
    * @param operation
    */
-  OrdersController.prototype._openEditModal = function(operation) {
-    if (operation == 'in') {
-      this.$uibModal.open({
-        templateUrl: 'inOrderModal.slim',
-        controller: 'EditInOrderController',
-        controllerAs: 'edit',
-        size: 'md',
-        backdrop: 'static'
-      });
-    } else if (operation == 'out') {
-      this.$uibModal.open({
-        templateUrl: 'outOrderModal.slim',
-        controller: 'EditOutOrderController',
-        controllerAs: 'edit',
-        size: 'md',
-        backdrop: 'static'
-      });
-    }
+  OrdersController.prototype._openEditModal = function() {
+    this.$uibModal.open({
+      templateUrl: 'inOrderModal.slim',
+      controller: 'EditInOrderController',
+      controllerAs: 'edit',
+      size: 'md',
+      backdrop: 'static'
+    });
   };
 
   /**
@@ -98,7 +88,7 @@
       operation = 'in'
 
     this.Order.init(operation).then(function() {
-      self._openEditModal(operation);
+      self._openEditModal();
     });
   };
 
@@ -111,7 +101,7 @@
     var self = this;
 
     this.Order.loadOrder(order.id).then(function() {
-      self._openEditModal(order.operation);
+      self._openEditModal();
     });
   };
 
@@ -176,6 +166,13 @@
   // Унаследовать методы класса FormValidationController
   EditInOrderController.prototype = Object.create(FormValidationController.prototype);
   EditInOrderController.prototype.constructor = EditInOrderController;
+
+  /**
+   * Обновить данные ордера
+   */
+  EditInOrderController.prototype.reloadOrder = function() {
+    this.Order.reloadOrder();
+  }
 
   /**
    * Открыть форму добавления техники в позицию ордера
@@ -249,13 +246,15 @@
   /**
    * Создать ордер
    */
-  EditInOrderController.prototype.ok = function() {
+  EditInOrderController.prototype.ok = function(done) {
     var
       self = this,
       sendData = this.Order.getObjectToSend();
 
+    done = done || false;
+
     if (this.order.id) {
-      this.Server.Warehouse.Order.update(
+      this.Server.Warehouse.Order.updateIn(
         { id: this.order.id },
         { order: sendData },
         function success(response) {
@@ -269,7 +268,10 @@
       )
     } else {
       this.Server.Warehouse.Order.saveIn(
-        { order: sendData },
+        {
+          order: sendData,
+          done: done
+        },
         function success(response) {
           self.Flash.notice(response.full_message);
           self.$uibModalInstance.close();
@@ -307,6 +309,14 @@
     this.order = this.Order.order;
     this.extra = this.Order.additional;
 
+    this._createShiftGetterSetter();
+  }
+
+  // Унаследовать методы класса FormValidationController
+  EditOutOrderController.prototype = Object.create(FormValidationController.prototype);
+  EditOutOrderController.prototype.constructor = EditInOrderController;
+
+  EditOutOrderController.prototype._createShiftGetterSetter = function() {
     this.order.createShiftGetterSetter = function(op) {
       op.shiftGetterSetter = function(newShift) {
         if (angular.isDefined(newShift)) {
@@ -318,11 +328,15 @@
 
       return op.shiftGetterSetter;
     }
-  }
+  };
 
-  // Унаследовать методы класса FormValidationController
-  EditOutOrderController.prototype = Object.create(FormValidationController.prototype);
-  EditOutOrderController.prototype.constructor = EditInOrderController;
+  /**
+   * Обновить данные ордера
+   */
+  EditOutOrderController.prototype.reloadOrder = function() {
+    this.Order.reloadOrder();
+    this._createShiftGetterSetter();
+  }
 
   /**
    * Убрать позицию
@@ -348,7 +362,7 @@
       sendData = this.Order.getObjectToSend();
 
     if (this.order.id) {
-      this.Server.Warehouse.Order.update(
+      this.Server.Warehouse.Order.updateOut(
         { id: this.order.id },
         { order: sendData },
         function success(response) {
@@ -481,8 +495,6 @@
       item_model: '',
       item_type: ''
     };
-    // Выбранная техника (Б/У)
-    this.selectedItem = {};
     // Инвентарный номер выбранного типа техники
     this.invent_num = '';
     this.items = [];
@@ -530,7 +542,7 @@
    * Очистить объект selectedItem
    */
   ItemsForOrderController.prototype.clearData = function() {
-    this.selectedItem = {};
+    delete(this.selectedItem);
     this.items = [];
   };
 

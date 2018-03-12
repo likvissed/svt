@@ -36,6 +36,78 @@ module Warehouse
       end
     end
 
+    describe '#build_inv_items' do
+      subject { create(:order_operation, item: item, shift: -2) }
+
+      context 'when :warehouse_type attribute of item has :without_invent_num value' do
+        let(:item) { create(:new_item, warehouse_type: :without_invent_num) }
+
+        it 'returns nil' do
+          expect(subject.build_inv_items(subject.shift.abs)).to be_nil
+        end
+      end
+
+      context 'when :warehouse_type attribute of item has :with_invent_num value' do
+        let(:workplace) { create(:workplace_pk, :add_items, items: [:pc, :monitor]) }
+        let(:item) { create(:new_item) }
+
+        it 'builds inv_items' do
+          subject.build_inv_items(subject.shift.abs, workplace: workplace)
+
+          expect(subject.inv_items.size).to eq subject.shift.abs
+          subject.inv_items.each do |inv_item|
+            expect(inv_item.type).to eq item.inv_type
+            expect(inv_item.property_values.size).to eq item.inv_type.properties.size
+          end
+        end
+      end
+    end
+
+    describe '#calculate_item_count_reserved (for :out operation)' do
+      let(:item) { create(:new_item, warehouse_type: :without_invent_num, count: 20) }
+
+      context 'when operation is a new record' do
+        subject { build(:order_operation, item: item, shift: -4) }
+
+        it 'increased :count_reserved attribute' do
+          subject.calculate_item_count_reserved
+          expect(item.count_reserved).to eq subject.shift.abs
+        end
+      end
+
+      context 'when operation already exists' do
+        let(:item) { create(:new_item, warehouse_type: :without_invent_num, count: 20, count_reserved: 15) }
+        subject { create(:order_operation, item: item, shift: -4) }
+
+        context 'and when operation marked for destruction' do
+          before { subject.mark_for_destruction }
+
+          it 'reduced :count_reserved attribute' do
+            subject.calculate_item_count_reserved
+            expect(item.count_reserved).to eq 11
+          end
+        end
+
+        context 'and when :shift attribute is increased' do
+          before { subject.shift = -3 }
+
+          it 'reduced :count_reserved attribute' do
+            subject.calculate_item_count_reserved
+            expect(item.count_reserved).to eq 14
+          end
+        end
+
+        context 'and when :shift attribute is reduced' do
+          before { subject.shift = -6 }
+
+          it 'increased :count_reserved attribute' do
+            subject.calculate_item_count_reserved
+            expect(item.count_reserved).to eq 17
+          end
+        end
+      end
+    end
+
     describe '#set_initial_status' do
       it 'sets :processing status after initialize object' do
         expect(subject.status).to eq 'processing'

@@ -1,4 +1,4 @@
-require 'rails_helper'
+require 'feature_helper'
 
 module Invent
   RSpec.describe Item, type: :model do
@@ -221,6 +221,56 @@ module Invent
         it 'returns array of values' do
           allow(subject.property_values).to receive_message_chain(:includes, :where, :find_each).and_yield(prop_val).and_yield(prop_val)
           expect(subject.get_value(property).size).to eq 2
+        end
+      end
+    end
+
+    describe '#build_property_values' do
+      context 'when type is not exist' do
+        subject { build(:item, type: nil) }
+
+        it 'returns nil' do
+          expect(subject.build_property_values).to be_nil
+        end
+      end
+
+      context 'when type exists' do
+        let(:printer_type) { Type.find_by(name: :printer) }
+
+        context 'and when model exists' do
+          subject { build(:item, type: printer_type) }
+          before { subject.build_property_values }
+
+          it 'creates one property_value for each property' do
+            expect(subject.property_values.size).to eq printer_type.properties.size
+          end
+
+          it 'sets default value for each property specified by selected model' do
+            subject.save(validate: false)
+            printer_type.properties.each do |prop|
+              if prop.property_type == 'string'
+                expect(subject.get_value(prop)).to be_empty
+              elsif %w[list list_plus].include?(prop.property_type)
+                expect(subject.get_value(prop)).to eq subject.model.property_list_for(prop).try(:short_description).to_s
+              end
+            end
+          end
+        end
+
+        context 'and when model is not exist' do
+          subject { build(:item, type: printer_type, model: nil) }
+          before { subject.build_property_values }
+
+          it 'creates one property_value for each property' do
+            expect(subject.property_values.size).to eq printer_type.properties.size
+          end
+
+          it 'sets empty values for each property with string :property_type' do
+            subject.property_values.each do |prop_val|
+              expect(prop_val.value).to be_empty
+              expect(prop_val.property_list).to be_nil
+            end
+          end
         end
       end
     end

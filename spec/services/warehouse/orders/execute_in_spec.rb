@@ -31,8 +31,19 @@ module Warehouse
             op['status'] = 'done' if index.zero?
           end
 
-          p order_json
           order_json
+        end
+
+        context 'and when :operation attribute changes to :out' do
+          before { order_params['operation'] = 'out' }
+
+          include_examples 'order error format'
+        end
+
+        context 'and when :shift attribute changes to negative value' do
+          before { order_params['operations_attributes'].first['shift'] = -4 }
+
+          include_examples 'order error format'
         end
 
         include_examples 'execute_in specs'

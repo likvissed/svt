@@ -1,4 +1,4 @@
-require 'rails_helper'
+require 'feature_helper'
 
 module Invent
   RSpec.describe Vendor, type: :model do

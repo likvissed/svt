@@ -73,7 +73,7 @@ module Warehouse
       end
     end
 
-    describe 'PUT #update' do
+    describe 'PUT #update_in' do
       let!(:order) { create(:order) }
       let(:params) do
         {
@@ -83,13 +83,33 @@ module Warehouse
       end
 
       it 'creates instance of the Orders::Update' do
-        put :update, params: params
-        expect(assigns(:update)).to be_instance_of Orders::Update
+        put :update_in, params: params
+        expect(assigns(:update_in)).to be_instance_of Orders::UpdateIn
       end
 
       it 'calls :run method' do
-        expect_any_instance_of(Orders::Update).to receive(:run)
-        put :update, params: params
+        expect_any_instance_of(Orders::UpdateIn).to receive(:run)
+        put :update_in, params: params
+      end
+    end
+
+    describe 'PUT #update_out' do
+      let!(:order) { create(:order) }
+      let(:params) do
+        {
+          id: order.id,
+          order: order.as_json
+        }
+      end
+
+      it 'creates instance of the Orders::UpdateOut' do
+        put :update_out, params: params
+        expect(assigns(:update_out)).to be_instance_of Orders::UpdateOut
+      end
+
+      it 'calls :run method' do
+        expect_any_instance_of(Orders::UpdateOut).to receive(:run)
+        put :update_out, params: params
       end
     end
 

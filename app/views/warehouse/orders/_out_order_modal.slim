@@ -1,7 +1,14 @@
 script type="text/ng-template" id="outOrderModal.slim"
   form role="form" name="edit.form" data-method="edit.method"
     .modal-header
-      h4 Расходный ордер
+      .pull-left
+        h4 Расходный ордер
+      .pull-right
+        .icon-block
+          = render partial: 'templates/load_spinner'
+        .icon-block
+          = fa_icon "refresh 2x fw", class: "pointer", "tooltip-placement": "top", "tooltip-append-to-body": true, "uib-tooltip": "Загрузать данные об ордере заново",
+            "ng-click": "edit.reloadOrder()"
     .modal-body
       .form-group ng-class="edit.errorClass('order[consumer]')"
         = label_tag "order[consumer]", "ФИО или таб. № получающего технику", class: "control-label"
@@ -27,15 +34,15 @@ script type="text/ng-template" id="outOrderModal.slim"
               th.col-fhd-3.col-xlg-3.col-lg-3.col-md-3.col-sm-3 Кол-во
               th.col-fhd-1
           tbody
-            tr.animate-repeat ng-repeat="op in edit.order.operations_attributes" ng-hide="op._destroy"
+            tr ng-repeat="op in edit.order.operations_attributes" ng-hide="op._destroy"
               td ng-bind="op.item_type"
               td ng-bind="op.inv_items | inventNumsToStr"
               td ng-bind="op.item_model"
               td
-                input type="text" ng-model="edit.order.createShiftGetterSetter(op)" ng-model-options="{ getterSetter: true }" class="form-control"
+                input type="text" ng-model="edit.order.createShiftGetterSetter(op)" ng-model-options="{ getterSetter: true }" class="form-control" ng-disabled="op.status == 'done'"
               td
                 = fa_icon "minus-circle lg", class: "pointer", "tooltip-placement": "left", "uib-tooltip": "Убрать позицию",
-                "ng-click": "edit.delPosition(op)"
+                "ng-click": "edit.delPosition(op)", "ng-if": "op.status != 'done'"
 
         .form-group
           = label_tag "order[comment]", "Комментарий", class: "control-label"

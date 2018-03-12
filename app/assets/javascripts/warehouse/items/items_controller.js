@@ -42,6 +42,7 @@
     this.Items.loadItems().then(
       function(response) {
         self.items = self.Items.items;
+        self.orders = response.orders || [];
 
         if (init) {
           self.Order.init('out', response.order);
@@ -68,7 +69,7 @@
     });
 
     modalInstance.result.then(function(result) {
-      self.Order.reinit();
+      self.closeOrder();
     });
   };
 
@@ -122,5 +123,50 @@
       function(response, status) {
         self.Error.response(response, status);
       });
-    };
+  };
+
+  /**
+   * Загрузить ордера для редактирования
+   *
+   * @param order
+   */
+  WarehouseItemsCtrl.prototype.loadOrder = function() {
+    var self = this;
+
+    this.Order.loadOrder(this.selectedOrder.id, true).then(function() {
+      self._openEditModal();
+      self.Items.findSelected();
+    });
+  }
+
+  /**
+   * Закрыть выбранный ордер
+   */
+  WarehouseItemsCtrl.prototype.closeOrder = function() {
+    this.Order.reinit();
+    delete(this.selectedOrder);
+    this.Items.findSelected();
+  };
+
+  /**
+   * Удалить ордер.
+   */
+  WarehouseItemsCtrl.prototype.destroyOrder = function() {
+    var
+      self = this,
+      confirm_str = "Вы действительно хотите удалить ордер \"" + this.selectedOrder.id + "\"?";
+
+    if (!confirm(confirm_str))
+      return false;
+
+    self.Server.Warehouse.Order.delete(
+      { id: this.selectedOrder.id },
+      function(response) {
+        self.Flash.notice(response.full_message);
+        self.closeOrder();
+      },
+      function(response, status) {
+        self.Error.response(response, status);
+      });
+  };
 })();

@@ -1,7 +1,7 @@
 module Warehouse
   module Orders
     # Изменение приходного ордера
-    class Update < BaseService
+    class UpdateIn < BaseService
       def initialize(current_user, order_id, order_params)
         @error = {}
         @current_user = current_user
@@ -10,7 +10,9 @@ module Warehouse
       end
 
       def run
-        @order = Order.includes(:inv_item_to_operations).find(@order_id)
+        raise 'Неверные данные' if order_out?
+
+        @order = Order.find(@order_id)
         return false unless wrap_order_with_transactions
         broadcast_orders
 
@@ -25,10 +27,10 @@ module Warehouse
       protected
 
       def wrap_order_with_transactions
+        assign_order_params
+
         Item.transaction do
           begin
-            assign_order_params
-
             find_or_create_warehouse_items
             Invent::Item.transaction(requires_new: true) do
               update_inv_items

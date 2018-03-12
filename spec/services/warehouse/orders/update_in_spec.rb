@@ -2,13 +2,31 @@ require 'feature_helper'
 
 module Warehouse
   module Orders
-    RSpec.describe Update, type: :model do
+    RSpec.describe UpdateIn, type: :model do
       let(:user) { create(:user) }
-      subject { Update.new(user, order.id, order_params) }
+      let(:new_user) { create(:***REMOVED***_user) }
+      subject { UpdateIn.new(new_user, order.id, order_params) }
 
       context 'when warehouse_type is :without_invent_num' do
         let!(:order) { create(:order) }
         let(:order_json) { order.as_json }
+
+        context 'and when :operation attribute changes to :out' do
+          let(:order_params) { order_json.tap { |o| o['operation'] = 'out' } }
+
+          include_examples 'order error format'
+        end
+
+        context 'and when :shift attribute changes to negative value' do
+          let(:order_params) do
+            order_json.tap do |o|
+              o['operations_attributes'] = order.operations.as_json
+              o['operations_attributes'].first['shift'] = -3
+            end
+          end
+
+          include_examples 'order error format'
+        end
 
         context 'and when added a new operations' do
           let(:new_operation) { attributes_for(:order_operation, item_type: 'Флэш-накопитель', item_model: 'Silicon Power') }
@@ -19,7 +37,7 @@ module Warehouse
             order_json
           end
 
-          its(:run) { is_expected.to be_truthy }
+          include_examples 'updating :in order'
 
           it 'creates added operations' do
             expect { subject.run }.to change(Operation, :count).by(1)
@@ -35,6 +53,8 @@ module Warehouse
 
             order_json
           end
+
+          include_examples 'updating :in order'
 
           it 'destroys removed operations' do
             expect { subject.run }.to change(Operation, :count).by(-1)
@@ -54,7 +74,7 @@ module Warehouse
             order_json
           end
 
-          include_examples 'failed updating on add'
+          include_examples 'failed updating :in on add'
         end
       end
 
@@ -99,7 +119,7 @@ module Warehouse
             order_json
           end
 
-          its(:run) { is_expected.to be_truthy }
+          include_examples 'updating :in order'
 
           it 'creates a new operation record' do
             expect { subject.run }.to change(Operation, :count).by(1)
@@ -139,7 +159,7 @@ module Warehouse
 
             context 'and when order was not saved' do
               before do
-                allow(Order).to receive_message_chain(:includes, :find).and_return(order)
+                allow(Order).to receive(:find).and_return(order)
                 allow(order).to receive(:save).and_return(false)
               end
 
@@ -160,31 +180,31 @@ module Warehouse
           context 'and when item did not pass validations' do
             before { allow(Item).to receive(:find_or_create_by!).and_raise(ActiveRecord::RecordInvalid) }
 
-            include_examples 'failed updating on add'
+            include_examples 'failed updating :in on add'
           end
 
           context 'and when item is not created' do
             before { allow(Item).to receive(:find_or_create_by!).and_raise(ActiveRecord::RecordNotSaved) }
 
-            include_examples 'failed updating on add'
+            include_examples 'failed updating :in on add'
           end
 
           context 'and when order is not updated' do
             before { allow_any_instance_of(Order).to receive(:save).and_return(false) }
 
-            include_examples 'failed updating on add'
+            include_examples 'failed updating :in on add'
           end
 
           context 'and when status of invent_item is not updated' do
             before { allow_any_instance_of(Invent::Item).to receive(:update!).and_raise(ActiveRecord::RecordNotSaved) }
 
-            include_examples 'failed updating on add'
+            include_examples 'failed updating :in on add'
           end
 
           context 'and when invent_item did not pass validations' do
             before { allow_any_instance_of(Invent::Item).to receive(:update!).and_raise(ActiveRecord::RecordInvalid) }
 
-            include_examples 'failed updating on add'
+            include_examples 'failed updating :in on add'
           end
         end
 
@@ -197,7 +217,7 @@ module Warehouse
             order_json
           end
 
-          include_examples 'failed updating models'
+          include_examples 'failed updating :in order'
         end
 
         context 'and when removed existing operation' do
@@ -210,7 +230,7 @@ module Warehouse
           end
           let(:removed_operation) { order_params['operations_attributes'].last }
 
-          its(:run) { is_expected.to be_truthy }
+          include_examples 'updating :in order'
 
           it 'destroys selected operation' do
             expect { subject.run }.to change(Operation, :count).by(-1)
@@ -232,7 +252,7 @@ module Warehouse
 
           context 'and when order is not updated' do
             before do
-              allow(Order).to receive_message_chain(:includes, :find).and_return(order)
+              allow(Order).to receive(:find).and_return(order)
               allow(order).to receive(:save).and_return(false)
             end
 
@@ -279,7 +299,7 @@ module Warehouse
           order_json
         end
 
-        include_examples 'failed updating models'
+        include_examples 'failed updating :in order'
       end
     end
   end

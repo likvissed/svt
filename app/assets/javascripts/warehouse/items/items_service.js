@@ -37,9 +37,16 @@
   WarehouseItems.prototype.findSelected = function() {
     var self = this;
 
+    if (self.Order.order.operations_attributes.length == 0) {
+      this.items.map(function(item) { item.added_to_order = false; })
+      return;
+    }
+
     this.items.forEach(function(item) {
       if (self.Order.order.operations_attributes.find((function (op) { return op.item_id == item.id }))) {
         item.added_to_order = true;
+      } else {
+        item.added_to_order = false;
       }
     });
   }

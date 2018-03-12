@@ -1,7 +1,14 @@
 script type="text/ng-template" id="inOrderModal.slim"
   form role="form" name="edit.form" data-method="edit.method"
     .modal-header
-      h4 Приходный ордер
+      .pull-left
+        h4 Приходный ордер
+      .pull-right
+        .icon-block
+          = render partial: 'templates/load_spinner'
+        .icon-block
+          = fa_icon "refresh 2x fw", class: "pointer", "tooltip-placement": "top", "tooltip-append-to-body": true, "uib-tooltip": "Загрузать данные об ордере заново",
+            "ng-click": "edit.reloadOrder()"
     .modal-body
       .form-group ng-class="edit.errorClass('order[consumer_dept]')"
         = label_tag "order[consumer_dept]", "Отдел", class: "control-label"
@@ -38,20 +45,20 @@ script type="text/ng-template" id="inOrderModal.slim"
               th.col-fhd-12.col-xlg-12.col-xlg-12.col-md-11.col-sm-11 Модель
               th.col-fhd-1
           tbody
-            tr.animate-show ng-repeat="op in edit.order.operations_attributes" ng-hide="op._destroy" ng-if="op.inv_item_ids"
+            tr.animate-show ng-repeat="op in edit.order.operations_attributes" ng-hide="op._destroy" ng-if="op.inv_item_ids.length"
               td ng-bind="op.inv_items[0].type.short_description"
               td ng-bind="op.inv_items[0].invent_num"
               td ng-bind="op.inv_items[0].get_item_model"
               td= fa_icon "minus-circle lg", class: "pointer", "tooltip-placement": "left", "uib-tooltip": "Убрать позицию",
                 "ng-click": "edit.delPosition(op)", "ng-if": "op.status != 'done'"
-            tr.animate-show ng-repeat="op in edit.order.operations_attributes" ng-hide="op._destroy" ng-if="!op.inv_item_ids"
+            tr.animate-show ng-repeat="op in edit.order.operations_attributes" ng-hide="op._destroy" ng-if="!op.inv_item_ids.length"
               td ng-bind="op.item_type"
               td
               td ng-bind="op.item_model"
               td= fa_icon "minus-circle lg", class: "pointer", "tooltip-placement": "left", "uib-tooltip": "Убрать позицию",
                 "ng-click": "edit.delPosition(op)", "ng-if": "op.status != 'done'"
     .modal-footer
-      = button_tag "Создать и исполнить", class: "btn-success btn-sm", "ng-click": "", "ng-if": "!edit.order.id"
+      = button_tag "Создать и исполнить", class: "btn-success btn-sm", "ng-click": "edit.ok(true)", "ng-if": "!edit.order.id"
       = button_tag class: "btn-success btn-sm", "ng-click": "edit.ok()", "ng-disabled": "edit.order.status == 'done'" do
         div ng-if="edit.order.id" Обновить
         div ng-if="!edit.order.id" Создать

@@ -10,6 +10,8 @@ module Warehouse
       end
 
       def run
+        raise 'Неверные данные' if order_out?
+
         find_order
         return false unless wrap_order
         broadcast_orders

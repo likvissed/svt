@@ -16,11 +16,11 @@ script type="text/ng-template" id="execOrder.slim"
               = text_field_tag "order[consumer_dept]", "", class: "form-control", "ng-model": "exec.order.consumer_dept",
                 disabled: true
           .col-lg-8
-            .form-group ng-class="exec.errorClass('order[workplace_id]')"
-              = label_tag "order[workplace_id]", "ID рабочего места", class: "control-label"
-              = text_field_tag "order[workplace_id]", "", class: "form-control", autocomplete: "off", "ng-model": "exec.order.workplace_id",
+            .form-group ng-class="exec.errorClass('order[invent_workplace_id]')"
+              = label_tag "order[invent_workplace_id]", "ID рабочего места", class: "control-label"
+              = text_field_tag "order[invent_workplace_id]", "", class: "form-control", autocomplete: "off", "ng-model": "exec.order.invent_workplace_id",
                 disabled: true
-              span.help-block ng-show="exec.form['order[workplace_id]'].$invalid" ng-bind="exec.errorMessage('order[workplace_id]')"
+              span.help-block ng-show="exec.form['order[invent_workplace_id]'].$invalid" ng-bind="exec.errorMessage('order[invent_workplace_id]')"
           .col-lg-8
             .form-group ng-class="exec.errorClass('order[consumer]')"
               = label_tag "order[consumer]", class: "control-label" do

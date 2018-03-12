@@ -14,6 +14,7 @@ module Warehouse
 
     it 'does not change status of Invent::Item model' do
       subject.run
+
       Invent::Item.where(item_id: invent_item_ids).each { |item| expect(item.status).to be_nil }
     end
   end
@@ -49,28 +50,15 @@ module Warehouse
 
   shared_examples 'specs for failed on create :out order' do
     context 'when invent_item was not updated' do
-      before { allow_any_instance_of(Invent::Item).to receive(:update!).and_raise(ActiveRecord::RecordNotSaved) }
-
-      include_examples 'failed creating :out models'
-    end
-
-    context 'and when invent_item did not pass validations' do
-      before { allow_any_instance_of(Invent::Item).to receive(:update!).and_raise(ActiveRecord::RecordInvalid) }
+      before { allow_any_instance_of(Invent::Item).to receive(:save).and_return(false) }
 
       include_examples 'failed creating :out models'
     end
 
     context 'when item did not save' do
-      # before { allow_any_instance_of(Item).to receive(:save!).and_raise(ActiveRecord::RecordNotSaved) }
-      before { allow_any_instance_of(Item).to receive(:save).and_return(false) }
+      before { allow_any_instance_of(Item).to receive(:save!).and_raise(ActiveRecord::RecordNotSaved) }
 
       include_examples 'failed creating :out models'
     end
-
-    # context 'when item did not pass validations' do
-    #   before { allow_any_instance_of(Item).to receive(:save!).and_raise(ActiveRecord::RecordInvalid) }
-
-    #   include_examples 'failed creating :out models'
-    # end
   end
 end

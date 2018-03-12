@@ -5,7 +5,7 @@ module Invent
       type { Type.find_by(name: type_name) }
       workplace nil
       location 'Location'
-      model { type.models.first }
+      model { type.try(:models).try(:first) }
       item_model ''
       sequence(:invent_num) { |i| 764_196 + i }
       sequence(:serial_num) { |i| 222_222 + i }

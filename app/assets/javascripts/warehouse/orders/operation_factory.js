@@ -10,7 +10,7 @@
       // Шаблон объекта Operation
       _templateOperation,
       // Поле operation объекта Order
-      _order_operation;
+      _orderOperation;
 
     function _getTemplate() {
       return angular.copy(_templateOperation);
@@ -22,8 +22,7 @@
        */
       setTemplate: function(obj, order_operation) {
         _templateOperation = obj;
-
-        _order_operation = order_operation;
+        _orderOperation = order_operation;
        },
       /**
        * Получить объект _templateOperation с заполненными данными
@@ -34,9 +33,9 @@
       generate: function(warehouseType, item) {
         var obj = _getTemplate();
 
-        if (_order_operation == 'in') {
+        if (_orderOperation == 'in') {
           if (warehouseType == 'with_invent_num') {
-            obj.inv_item = item;
+            obj.inv_items = [item];
             obj.inv_item_ids = [item.item_id];
             obj.item_type = item.type.short_description;
             obj.item_model = item.get_item_model;
@@ -44,8 +43,7 @@
             obj.item_type = item.item_type;
             obj.item_model = item.item_model;
           }
-        } else if (_order_operation == 'out') {
-          obj.inv_item = item.inv_item;
+        } else if (_orderOperation == 'out') {
           obj.item_id = item.id;
           obj.item_type = item.item_type;
           obj.item_model = item.item_model;
