@@ -15,21 +15,23 @@ script type="text/ng-template" id="existingItem.slim"
 
     div ng-show="select.warehouseType == 'with_invent_num'"
       .form-group
-        = label_tag "equipment_type", "Тип техники", class: "control-label"
-        = select_tag "equipment_type", "", class: "form-control", "ng-model": "select.selectedType",
-          "ng-options": "type as type.short_description disable when type.type_id == 0 for type in select.eqTypes track by type.type_id",
-          "ng-change": "select.clearData()"
-      .form-group
         = label_tag "invent_num", "Инвентарный номер", class: "control-label"
         .input-group
           = text_field_tag "invent_num", "", class: "form-control", autocomplete: "off", placeholder: "Инвентарный номер",
           "ng-model": "select.invent_num", "ng-change": "select.clearData()"
           span.input-group-btn
             = button_tag "", type: :button, class: "btn-primary", "ng-click": "select.loadItems()",
-              "ng-disabled": "!select.invent_num || select.selectedType.type_id == 0",
-              "uib-tooltip": "Нажмите для поиска", "tooltip-append-to-body": true do
+              "ng-disabled": "!select.invent_num", "uib-tooltip": "Нажмите для поиска",
+              "tooltip-append-to-body": true do
               = fa_icon "search"
-      .multiline-select.form-group ng-show="select.selectedType.type_id != 0 && select.items.length != 0"
+
+      .form-group
+        = label_tag "equipment_type", "Тип техники (необязательно)", class: "control-label"
+        = select_tag "equipment_type", "", class: "form-control", "ng-model": "select.selectedType",
+          "ng-options": "type as type.short_description disable when type.type_id == 0 for type in select.eqTypes track by type.type_id",
+          "ng-change": "select.clearData()"
+
+      .multiline-select.form-group ng-show="select.items.length != 0"
         = label_tag "", "Выберите технику", class: "control-label"
         ui-select ng-model="select.selectedItem" theme="bootstrap"
           ui-select-match placeholder="Выберите технику"
@@ -37,6 +39,7 @@ script type="text/ng-template" id="existingItem.slim"
           ui-select-choices repeat="obj in select.items | filter: $select.search"
             div ng-bind-html="obj.main_info | highlight: $select.search"
             small ng-bind-html="obj.get_item_model | highlight: $select.search"
+
     div ng-show="select.warehouseType == 'without_invent_num'"
       .form-group
         = label_tag "item_type", "Тип", class: "control-label"

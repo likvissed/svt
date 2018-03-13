@@ -15,7 +15,7 @@ script type="text/ng-template" id="inOrderModal.slim"
         = hidden_field_tag "order[consumer_dept]", "", "ng-model": "edit.order.consumer_dept"
         .ui-select
           ui-select ng-model="edit.order.consumer_dept" theme="bootstrap"
-            ui-select-match
+            ui-select-match placeholder="Выберите отдел"
               | {{ $select.selected }}
             ui-select-choices repeat="division in edit.extra.divisions | filter: $select.search"
               div ng-bind-html="division | highlight: $select.search"

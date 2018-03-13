@@ -1,10 +1,40 @@
 module Warehouse
   class OrdersController < ApplicationController
-    def index
+    def index_in
       respond_to do |format|
         format.html
         format.json do
-          @index = Orders::Index.new(params)
+          @index = Orders::Index.new(params, operation: :in, status: :processing)
+
+          if @index.run
+            render json: @index.data
+          else
+            render json: { full_message: I18n.t('controllers.app.unprocessable_entity') }, status: 422
+          end
+        end
+      end
+    end
+
+    def index_out
+      respond_to do |format|
+        format.html
+        format.json do
+          @index = Orders::Index.new(params, operation: :out, status: :processing)
+
+          if @index.run
+            render json: @index.data
+          else
+            render json: { full_message: I18n.t('controllers.app.unprocessable_entity') }, status: 422
+          end
+        end
+      end
+    end
+
+    def archive
+      respond_to do |format|
+        format.html
+        format.json do
+          @index = Orders::Index.new(params, status: :done)
 
           if @index.run
             render json: @index.data

@@ -44,7 +44,7 @@ module Invent
                   .by_invent_num(@invent_num)
                   .where('workplace_id IS NOT NULL')
                   .where('io_id IS NULL')
-                  .where(type_id: @type_id)
+                  .by_type_id(@type_id)
       end
 
       def prepare_params

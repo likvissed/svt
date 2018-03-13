@@ -139,9 +139,7 @@
     // По умолчанию фильтры всегда включены
     this.workplace.enabled_filters = true;
 
-    data.prop_data.iss_locations.forEach(function(value) {
-      value.iss_reference_buildings = [self.selectIssBuilding].concat(value.iss_reference_buildings);
-    });
+    data.prop_data.iss_locations.forEach(function(value) { value.iss_reference_buildings.unshift(self.selectIssBuilding); });
     this.Item.setTypes(data.prop_data.eq_types);
 
     // Типы РМ

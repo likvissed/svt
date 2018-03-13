@@ -50,14 +50,17 @@
 
   /**
    * Загрузить список ордеров
+   *
+   * @params operation
    */
-  Order.prototype.loadOrders = function() {
+  Order.prototype.loadOrders = function(operation) {
     var self = this;
 
     return this.Server.Warehouse.Order.query(
       {
         start: this.TablePaginator.startNum(),
-        length: this.Config.global.uibPaginationConfig.itemsPerPage
+        length: this.Config.global.uibPaginationConfig.itemsPerPage,
+        operation: operation
       },
       function(response) {
         // Список всех ордеров

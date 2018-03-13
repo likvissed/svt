@@ -190,7 +190,11 @@
           query: { method: 'GET', isArray: false }
         }),
         Order: $resource('/warehouse/orders/:id.json', {}, {
-          query: { method: 'GET', isArray: false },
+          query: {
+            method: 'GET',
+            url: '/warehouse/orders/:operation.json',
+            isArray: false
+          },
           newOrder: {
             method: 'GET',
             url: '/warehouse/orders/new',

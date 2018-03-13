@@ -3,16 +3,50 @@ require 'rails_helper'
 module Warehouse
   RSpec.describe OrdersController, type: :controller do
     sign_in_user
+    let(:params) { { start: 0, length: 25 } }
 
-    describe 'GET #index' do
+    describe 'GET #index_in' do
+      let(:index) { Orders::Index.new(params) }
+
       it 'creates instance of the Orders::Index' do
-        get :index, format: :json
+        get :index_in, format: :json
         expect(assigns(:index)).to be_instance_of Orders::Index
       end
 
       it 'calls :run method' do
-        expect_any_instance_of(Orders::Index).to receive(:run)
-        get :index, format: :json
+        expect(Orders::Index).to receive(:new).with(anything, operation: :in, status: :processing).and_return(index)
+        expect(index).to receive(:run)
+        get :index_in, format: :json
+      end
+    end
+
+    describe 'GET #index_out' do
+      let(:index) { Orders::Index.new(params) }
+
+      it 'creates instance of the Orders::Index' do
+        get :index_out, format: :json
+        expect(assigns(:index)).to be_instance_of Orders::Index
+      end
+
+      it 'calls :run method' do
+        expect(Orders::Index).to receive(:new).with(anything, operation: :out, status: :processing).and_return(index)
+        expect(index).to receive(:run)
+        get :index_out, format: :json
+      end
+    end
+
+    describe 'GET #archive' do
+      let(:index) { Orders::Index.new(params) }
+
+      it 'creates instance of the Orders::Index' do
+        get :archive, format: :json
+        expect(assigns(:index)).to be_instance_of Orders::Index
+      end
+
+      it 'calls :run method' do
+        expect(Orders::Index).to receive(:new).with(anything, status: :done).and_return(index)
+        expect(index).to receive(:run)
+        get :archive, format: :json
       end
     end
 

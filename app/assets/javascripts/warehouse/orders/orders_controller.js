@@ -9,7 +9,7 @@
     .controller('ItemsForOrderController', ItemsForOrderController)
     .controller('DeliveryItemsCtrl', DeliveryItemsCtrl);
 
-  OrdersController.$inject = ['$uibModal', 'ActionCableChannel', 'TablePaginator', 'Order', 'Flash', 'Error', 'Server'];
+  OrdersController.$inject = ['$uibModal', '$scope', 'ActionCableChannel', 'TablePaginator', 'Order', 'Flash', 'Error', 'Server'];
   EditInOrderController.$inject = ['$uibModal', '$uibModalInstance', 'Order', 'Flash', 'Error', 'Server'];
   EditOutOrderController.$inject = ['$uibModal', '$uibModalInstance', 'Order', 'WarehouseItems', 'Flash', 'Error', 'Server'];
   ExecOrderController.$inject = ['$uibModal', '$uibModalInstance', 'Order', 'Flash', 'Error', 'Server'];
@@ -18,7 +18,9 @@
 
 // =====================================================================================================================
 
-  function OrdersController($uibModal, ActionCableChannel, TablePaginator, Order, Flash, Error, Server) {
+  function OrdersController($uibModal, $scope, ActionCableChannel, TablePaginator, Order, Flash, Error, Server) {
+    var self = this;
+
     this.$uibModal = $uibModal;
     this.ActionCableChannel = ActionCableChannel;
     this.Order = Order;
@@ -27,8 +29,12 @@
     this.Server = Server;
     this.pagination = TablePaginator.config();
 
-    this._loadOrders();
-    this._initActionCable();
+    $scope.initOperation = function(operation) {
+      self.operation = operation;
+
+      self._loadOrders(self.operation);
+      self._initActionCable();
+    }
   }
 
   /**
@@ -40,7 +46,7 @@
       consumer = new this.ActionCableChannel('Warehouse::OrdersChannel');
 
     consumer.subscribe(function() {
-      self._loadOrders();
+      self._loadOrders(this.operation);
     });
   };
 
@@ -50,7 +56,7 @@
   OrdersController.prototype._loadOrders = function() {
     var self = this;
 
-    this.Order.loadOrders().then(
+    this.Order.loadOrders(this.operation).then(
       function() {
         self.orders = self.Order.orders;
       }
@@ -245,6 +251,8 @@
 
   /**
    * Создать ордер
+   *
+   * @param done - если true, ордер будет сразу же исполнен
    */
   EditInOrderController.prototype.ok = function(done) {
     var
@@ -252,6 +260,10 @@
       sendData = this.Order.getObjectToSend();
 
     done = done || false;
+
+    if (done && !confirm('Вы действительно хотите создать ордер и сразу же его исполнить? Удалить исполненый ордер или отменить его исполнение невозможно')) {
+      return false;
+    }
 
     if (this.order.id) {
       this.Server.Warehouse.Order.updateIn(
@@ -427,6 +439,10 @@
   ExecOrderController.prototype.deliveryItems = function() {
     var self = this;
 
+    if (!confirm('Вы действительно хотите исполнить выбранные позиции? Удалить исполненные позиции или отменить их исполнение невозмозно')) {
+      return false;
+    }
+
     this.Order.prepareToDeliver()
       .then(
         function(response) {
@@ -455,6 +471,10 @@
     var
       self = this,
       sendData = this.Order.getObjectToSend();
+
+    if (!confirm('Вы действительно хотите исполнить выбранные позиции? Удалить исполненные позиции или отменить их исполнение невозмозно')) {
+      return false;
+    }
 
     this.Server.Warehouse.Order.executeIn(
       { id: this.order.id },
@@ -499,7 +519,7 @@
     this.invent_num = '';
     this.items = [];
 
-    this.eqTypes = [this.selectedType].concat(this.eqTypes);
+    this.eqTypes.unshift(this.selectedType);
   }
 
   /**

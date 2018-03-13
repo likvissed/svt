@@ -3,9 +3,9 @@ script type="text/ng-template" id="execOrder.slim"
     .modal-header
       h4
         span ng-if="exec.order.status == 'done'"
-          | Ордер исполнен
+          | Ордер №{{exec.order.id}} исполнен
         span ng-if="exec.order.status == 'processing'"
-          | Исполнить ордер
+          | Исполнить ордер №{{exec.order.id}}
 
     .modal-body
       fieldset ng-disabled="exec.order.status == 'done'"
@@ -61,6 +61,6 @@ script type="text/ng-template" id="execOrder.slim"
           = text_area_tag "order[comment]", "", class: "form-control", rows: "3", "ng-model": "exec.order.comment"
 
     .modal-footer
-      = button_tag "Исполнить...", class: "btn-success btn-sm", "ng-click": "exec.deliveryItems()", "ng-disabled": "exec.order.status == 'done'", "ng-if": "exec.order.operation == 'out'"
-      = button_tag "Исполнить", class: "btn-success btn-sm", "ng-click": "exec.ok()", "ng-disabled": "exec.order.status == 'done'", "ng-if": "exec.order.operation == 'in'"
+      = button_tag "Исполнить...", class: "btn-success btn-sm", "ng-click": "exec.deliveryItems()", "ng-if": "exec.order.operation == 'out' && exec.order.status != 'done'"
+      = button_tag "Исполнить", class: "btn-success btn-sm", "ng-click": "exec.ok()", "ng-if": "exec.order.operation == 'in' && exec.order.status != 'done'"
       = button_tag "Закрыть", class: "btn-default btn-sm", "ng-click": "exec.cancel()"
