@@ -44,4 +44,39 @@
         self.Error.response(response, status);
       });
   };
+
+  /**
+   * Загрузить занятую Б/У технику указанного типа.
+   *
+   * @param type_id - тип загружаемой техники
+   * @param invent_num
+   */
+  InventItem.prototype.loadBusyItems = function(type_id, invent_num) {
+    var self = this;
+
+    return this.Server.Invent.Item.busy(
+      { type_id: type_id, invent_num: invent_num },
+      function(response) {},
+      function(response, status) {
+        self.Error.response(response, status);
+      }
+    ).$promise;
+  };
+
+  /**
+   * Загрузить доступную Б/У технику указанного типа.
+   *
+   * @param type_id - тип загружаемой техники
+   */
+  InventItem.prototype.loadAvaliableItems = function(type_id) {
+    var self = this;
+
+    return this.Server.Invent.Item.avaliable(
+      { type_id: type_id },
+      function(response) {},
+      function(response, status) {
+        self.Error.response(response, status);
+      }
+    ).$promise;
+  };
 })();

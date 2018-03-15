@@ -54,11 +54,5 @@ module Warehouse
 
       include_examples 'failed creating :out models'
     end
-
-    context 'when item did not save' do
-      before { allow_any_instance_of(Item).to receive(:save!).and_raise(ActiveRecord::RecordNotSaved) }
-
-      include_examples 'failed creating :out models'
-    end
   end
 end

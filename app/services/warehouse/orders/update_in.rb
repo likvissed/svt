@@ -14,7 +14,7 @@ module Warehouse
 
         @order = Order.find(@order_id)
         return false unless wrap_order_with_transactions
-        broadcast_orders
+        broadcast_in_orders
 
         true
       rescue RuntimeError => e
@@ -63,7 +63,7 @@ module Warehouse
 
       def find_or_create_warehouse_items
         @order.operations.each do |op|
-          next if op.id || op._destroy
+          next if op.id || op.marked_for_destruction?
 
           op.inv_items.each { |inv_item| warehouse_item_in(inv_item) }
         end

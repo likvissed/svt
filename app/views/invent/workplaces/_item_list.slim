@@ -9,11 +9,11 @@
 .row#wp_item_list ng-if="wp.workplace"
   .col-xlg-24
     uib-tabset active="wp.additional.activeTab"
-      uib-tab.animate-repeat index="$index" ng-repeat="item in wp.workplace.items_attributes" ng-hide="!item.status && !item.workplace_id"
-        uib-tab-heading ng-class="{'text-danger': item.status == 'waiting_bring', 'text-info': item.status == 'waiting_take'}"
+      uib-tab.animate-repeat index="$index" ng-repeat="item in wp.workplace.items_attributes"
+        uib-tab-heading ng-class="{'text-info': item.status == 'prepared_to_swap'}"
           span ng-bind="item.type.short_description"
           '
-          = fa_icon "times-circle lg", class: "destroy-item", "ng-click": "wp.delItem(item, $event)",
+          = fa_icon "times-circle lg", class: "destroy-item", "ng-click": "wp.delItem(item, $event)", "ng-if": "item.status == 'prepared_to_swap' || !item.id",
             "uib-tooltip": "Исключить {{ item.type.short_description | lowercase }} из состава РМ", "tooltip-append-to-body": true
         = render partial: 'active_item'
       uib-tab.manage ng-click="wp.showSelectItemType()" index="999999" uib-tooltip="Добавить оборудование"

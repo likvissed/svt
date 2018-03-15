@@ -83,9 +83,12 @@ ru:
         date: 'Дата исполнения позиции'
         stockman_fio: 'ФИО исполнителя позиции'
 
-      wareshouse/order/operations:
+      warehouse/order/operations:
         item_type: 'Тип техники (опред. авт.)'
         item_model: 'Модель (опред. авт.)'
+
+      warehouse/order/operations/item:
+        base: ''
 
       warehouse/order/operations/inv_item_to_operations:
         inv_item: ''
@@ -217,7 +220,7 @@ ru:
               cannot_destroy_done: 'Невозможно удалить исполненный ордер'
               cannot_destroy_with_done_operations: 'Невозможно удалить ордер с исполненными операциями'
               uniq_workplace: 'Ордер может содержать технику только одного рабочего места'
-              dept_does_not_match: 'Указанная техника не входит в состав рабочих мест выбранного отдела'
+              dept_does_not_match: 'Выбранная техника не входит в состав рабочих мест отдела %{dept}'
               at_least_one_operation: 'Необходимо добавить хотя бы одну позицию'
               at_least_one_operation_for_workplace: 'Необходимо добавить хотя бы одну позицию с рабочего места №%{workplace_id}'
               nested_arrs_not_equals: 'Массивы позиций и техники не совпадают (обратитесь к администратору, т.***REMOVED***).'

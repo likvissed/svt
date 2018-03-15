@@ -5,7 +5,7 @@ module Warehouse
     has_many :inv_item_to_operations, dependent: :destroy
     has_many :inv_items, through: :inv_item_to_operations, class_name: 'Invent::Item'
 
-    belongs_to :item, optional: true
+    belongs_to :item, optional: true, autosave: true
     belongs_to :location, optional: true
     belongs_to :stockman, class_name: 'UserIss', foreign_key: 'stockman_id_tn', optional: true
     belongs_to :operationable, polymorphic: true

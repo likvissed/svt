@@ -21,7 +21,7 @@ module Warehouse
     validate :validate_in_order, if: -> { operation == 'in' }
 
     after_initialize :set_initial_status, if: -> { new_record? }
-    before_validation :set_consumer, if: -> { consumer_tn.present? || consumer_fio.present? }
+    before_validation :set_consumer, if: -> { consumer_tn.present? || consumer_fio.present? || consumer }
     before_validation :set_closed_time, if: -> { done? && status_changed? }
     before_validation :set_workplace, if: -> { errors.empty? && any_inv_item_to_operation? && new_record? && operation == 'in' }
     before_validation :set_consumer_dept, if: -> { operation == 'out' }
@@ -108,6 +108,8 @@ module Warehouse
         else
           errors.add(:consumer, :user_by_tn_not_found)
         end
+      elsif consumer
+        self.consumer_fio = consumer.fio
       end
     end
 
@@ -150,10 +152,10 @@ module Warehouse
 
     # Сравнивает, чтобы вся техника была с одного отдела (указанного в поле consumer_dept)
     def compare_consumer_dept
-      division = operations.first.inv_items.first.try(:workplace).try(:workplace_count).try(:division)
+      division = operations.first.inv_items.first.try(:workplace).try(:division)
       return if !division || division == consumer_dept
 
-      errors.add(:base, :dept_does_not_match)
+      errors.add(:base, :dept_does_not_match, dept: consumer_dept)
     end
 
     # Для приходящего ордера shift должен быть равен 1

@@ -1,5 +1,5 @@
 class Invent::ApplicationService < ApplicationService
-  private
+  protected
 
   # Разослать сообщение о необходимости обновления списка рабочих мест.
   def broadcast_workplace_list

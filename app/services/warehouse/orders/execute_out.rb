@@ -14,7 +14,8 @@ module Warehouse
 
         find_order
         return false unless wrap_order
-        broadcast_orders
+        broadcast_out_orders
+        broadcast_archive_orders
         broadcast_items
 
         true

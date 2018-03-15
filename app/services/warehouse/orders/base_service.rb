@@ -1,8 +1,12 @@
 module Warehouse
   module Orders
     class BaseService < Warehouse::ApplicationService
-      def broadcast_orders
-        ActionCable.server.broadcast 'orders', nil
+      def broadcast_in_orders
+        ActionCable.server.broadcast 'in_orders', nil
+      end
+
+      def broadcast_out_orders
+        ActionCable.server.broadcast 'out_orders', nil
       end
 
       protected
@@ -64,8 +68,7 @@ module Warehouse
         error[:full_message] = if with_operations
                                  order_errors = order.errors.full_messages
                                  operation_errors = order.operations.map { |op| op.errors.full_messages }
-                                 item_errors = order.operations.map { |op| op.item.errors.full_messages }
-                                 [order_errors, operation_errors, item_errors].flatten.join('. ')
+                                 [order_errors, operation_errors].flatten.join('. ')
                                else
                                  order.errors.full_messages.join('. ')
                                end

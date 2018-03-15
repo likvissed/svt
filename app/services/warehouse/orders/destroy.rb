@@ -14,14 +14,14 @@ module Warehouse
             case @data.operation
             when 'in'
               in_order
+              broadcast_in_orders
             when 'out'
               out_order
               broadcast_items
+              broadcast_out_orders
             else
               raise 'Неизвестный тип ордера'
             end
-
-            broadcast_orders
 
             true
           rescue ActiveRecord::RecordNotSaved, ActiveRecord::RecordInvalid => e

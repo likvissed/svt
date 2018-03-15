@@ -66,9 +66,7 @@
       // Дефолтный статус РМ (2 - в ожидании проверки)
       status: 'pending_verification',
       // Состав РМ
-      items_attributes: [],
-      // Список ID техники, которая уже существует в БД
-      item_ids: []
+      items_attributes: []
     };
 
 // =====================================================================================================================
@@ -359,7 +357,6 @@
 
         self.Item.addProperties(response);
         self.Item.setItemAttributes(item, response, self.workplace.workplace_id);
-        self.workplace.item_ids.push(item.id);
 
         // Сделать созданный элемент активным в табах.
         self._setActiveTab(length);
@@ -375,22 +372,8 @@
    * @param item - удаляемый элемент
    */
   Workplace.prototype.delItem = function(item) {
-    if (item.status == 'waiting_bring') { return; }
-
-    // Если удаляется ПК и т.п., очистить параметры объекта additional
-    if (this.Item.isPc(item.type.name)) {
-      this.additional.invent_num = '';
-    }
-
-    if (item.id && !item.status) {
-      // Если техника находится на РМ
-      item.status = 'waiting_bring';
-    } else {
-      // В остальных случаях
-      this.setFirstActiveTab(item);
-      this.workplace.items_attributes.splice(this.workplace.items_attributes.indexOf(item), 1);
-      this.workplace.item_ids.splice(this.workplace.item_ids.indexOf(item.id), 1);
-    }
+    this.setFirstActiveTab(item);
+    this.workplace.items_attributes.splice(this.workplace.items_attributes.indexOf(item), 1);
   };
 
   /**
@@ -418,7 +401,7 @@
     var self = this;
 
     // Проверка, выбрал ли пользователь тип
-    if (type.type_id == -1) {
+    if (type.type_id == 0) {
       this.Flash.alert('Необходимо выбрать тип создаваемого устройства.');
 
       return false;
@@ -429,7 +412,7 @@
 
       // Считаем количество СБ/моноблоков/ноутбуков на текущем РМ.
       this.workplace.items_attributes.forEach(function(item) {
-        if (self.Item.isUniqType(item.type.name) && item.status != 'waiting_bring') {
+        if (self.Item.isUniqType(item.type.name)) {
           countPc ++;
         }
       });
@@ -442,22 +425,5 @@
     }
 
     return true;
-  };
-
-  /**
-   * Загрузить Б/У технику указанного типа.
-   *
-   * @param type_id - тип загружаемой техники
-   */
-  Workplace.prototype.loadAvaliableItems = function(type_id) {
-    var self = this;
-
-    return this.Server.Invent.Item.avaliable(
-      { type_id: type_id },
-      function(response) {},
-      function(response, status) {
-        self.Error.response(response, status);
-      }
-    ).$promise;
   };
 })();

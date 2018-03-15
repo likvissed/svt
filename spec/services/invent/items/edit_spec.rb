@@ -14,7 +14,7 @@ module Invent
 
       it 'change status of item' do
         subject.run
-        expect(subject.data['status']).to eq :waiting_take
+        expect(subject.data['status']).to eq :prepared_to_swap
       end
 
       it 'fills the item at least with %w[id property_values_attributes get_item_model invent_num] keys' do

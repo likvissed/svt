@@ -3,7 +3,7 @@ module Invent
     factory :workplace, class: Workplace do
       workplace_count { WorkplaceCount.find_by(division: dept) || create(:active_workplace_count, :default_user, division: dept) }
       workplace_specialization { WorkplaceSpecialization.last }
-      user_iss { UserIss.find_by(dept: workplace_count.division)  }
+      user_iss { UserIss.find_by(dept: workplace_count.division) }
       iss_reference_site { IssReferenceSite.first }
       iss_reference_building { iss_reference_site.iss_reference_buildings.first }
       iss_reference_room { iss_reference_building.iss_reference_rooms.first }

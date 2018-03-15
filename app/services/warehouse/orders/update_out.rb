@@ -16,7 +16,7 @@ module Warehouse
 
         @order = Order.includes(:inv_item_to_operations, :inv_items).find(@order_id)
         return false unless wrap_order_with_transactions
-        broadcast_orders
+        broadcast_out_orders
         broadcast_items
 
         true
@@ -39,20 +39,17 @@ module Warehouse
               @inv_items_for_destroy.each(&:destroy!)
               @inv_items_for_update.each { |inv_item| inv_item.update(workplace: nil, status: nil) }
 
-              update_items if @order.operations.any? { |op| op&.item&.changed? }
+              update_items
               save_order(@order)
             end
 
             true
           rescue ActiveRecord::RecordNotSaved, ActiveRecord::RecordInvalid => e
-            process_order_errors(@order, true)
             Rails.logger.error e.inspect.red
             Rails.logger.error e.backtrace[0..5].inspect
 
             raise ActiveRecord::Rollback
           rescue ActiveRecord::RecordNotDestroyed
-            process_order_errors(@order, true)
-
             raise ActiveRecord::Rollback
           rescue RuntimeError => e
             Rails.logger.error e.inspect.red
@@ -95,7 +92,7 @@ module Warehouse
       end
 
       def update_items
-        @order.operations.each { |op| op.item.save! }
+        @order.operations.each { |op| op.item.save! if op.marked_for_destruction? }
       end
 
       def process_changed_operation(op)

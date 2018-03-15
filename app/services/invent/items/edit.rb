@@ -11,7 +11,7 @@ module Invent
 
         if show.run
           @data = show.data
-          data['status'] = :waiting_take
+          data['status'] = :prepared_to_swap
 
           prepare_to_edit_item(data)
         else

@@ -12,7 +12,7 @@
   WorkplaceListCtrl.$inject = ['$scope', '$compile', '$controller', 'DTOptionsBuilder', 'DTColumnBuilder', 'ActionCableChannel', 'Server', 'Config', 'Flash', 'Error', 'Cookies'];
   WorkplaceEditCtrl.$inject = ['$timeout', '$uibModal', 'Flash', 'Config', 'Workplace', 'WorkplaceItem'];
   ManuallyPcDialogCtrl.$inject = ['$uibModalInstance', 'Flash', 'Workplace', 'WorkplaceItem', 'item'];
-  SelectItemTypeCtrl.$inject = ['$uibModalInstance', 'data', 'Workplace', 'Flash'];
+  SelectItemTypeCtrl.$inject = ['$scope', '$uibModalInstance', 'data', 'Workplace', 'InventItem', 'Flash'];
 
   /**
    * Управление общей таблицей рабочих мест.
@@ -733,12 +733,12 @@
 
     modalInstance.result.then(
       function(result) {
-        if (result.selectedItem) {
-          // Для б/у оборудования
-          self.Workplace.addExistingItem(result.selectedItem);
+        if (result.item_id) {
+          // Для б/у оборудования с другого РМ
+          self.Workplace.addExistingItem(result);
         } else {
           // Для нового оборудования
-          self.Workplace.createItem(result.selectedType);
+          self.Workplace.createItem(result);
         }
       },
       function() {
@@ -819,83 +819,51 @@
 
 // =====================================================================================================================
 
-  function SelectItemTypeCtrl($uibModalInstance, data, Workplace, Flash) {
+  function SelectItemTypeCtrl($scope, $uibModalInstance, data, Workplace, Item, Flash) {
+    var self = this;
+
     this.$uibModalInstance = $uibModalInstance;
     this.Flash = Flash;
     // Типы оборудования
-    this.eq_types = data.eq_types;
+    this.eqTypes = data.eq_types;
     // Выбранный тип устройства
-    this.selectedType = angular.copy(this.eq_types[0]);
-    // Выбранная техника (Б/У)
-    this.selectedItem = {};
+    this.selectedType = angular.copy(this.eqTypes[0]);
+    this.Item = Item;
     this.Workplace = Workplace;
     // Тип техники: новая или б/у
     this.itemType = '';
+
+    $scope.$on('removeDuplicateInvItems', function(event, data) {
+      self._removeDuplicateItems(data);
+    });
   }
 
   /**
    * Из массива self.items удалить технику, которая уже присутствует в составе текущего РМ.
+   *
+   * @param items
    */
-  SelectItemTypeCtrl.prototype._removeDuplicateItems = function() {
+  SelectItemTypeCtrl.prototype._removeDuplicateItems = function(items) {
     var
       self = this,
       index;
 
     self.Workplace.workplace.items_attributes.forEach(function(item) {
-      index = self.items.findIndex(function(el) { return el.item_id == item.id; });
+      index = items.findIndex(function(el) { return el.item_id == item.id; });
       if (index != -1) {
-        self.items.splice(index, 1);
+        items.splice(index, 1);
       }
     })
   };
 
-  /**
-   * Инициализировать выбранный тип техники (новая или б/у).
-   */
-  SelectItemTypeCtrl.prototype.setInitSelectedType = function() {
-    this.selectedType = angular.copy(this.eq_types[0]);
-  };
-
-  /**
-   * Проверка валидаций выбранного типа оборудования.
-   */
-  SelectItemTypeCtrl.prototype.validateSelectedType = function() {
-    if (this.Workplace.validateType(this.selectedType)) {
-      return true;
-    } else {
-      this.selectedType = angular.copy(this.eq_types[0]);
-      return false;
-    }
-  };
-
-  /**
-   * Загрузить всё Б/У оборудование со склада.
-   */
-  SelectItemTypeCtrl.prototype.loadItems = function() {
-    var self = this;
-
-    if (!this.validateSelectedType()) {
-      return false;
-    }
-
-    this.Workplace.loadAvaliableItems(this.selectedType.type_id)
-      .then(function(response) {
-        self.items = response;
-        self._removeDuplicateItems();
-      });
-  };
-
   SelectItemTypeCtrl.prototype.ok = function() {
-    var result = { selectedType: this.selectedType };
-
     if (this.itemType == 'new') {
       if (this.Workplace.validateType(this.selectedType)) {
-        this.$uibModalInstance.close(result);
+        this.$uibModalInstance.close(this.selectedType);
       }
     } else {
-      if (this.Workplace.validateType(this.selectedType) && this.selectedItem.item_id) {
-        result['selectedItem'] = this.selectedItem;
-        this.$uibModalInstance.close(result);
+      if (this.Item.selectedItem) {
+        this.$uibModalInstance.close(this.Item.selectedItem);
       } else {
         this.Flash.alert('Необходимо выбрать технику.');
       }

@@ -23,7 +23,7 @@ module Invent
         expect(subject.data.count).to eq 1
       end
 
-      it 'adds :main_info and :add_info field to the each item' do
+      it 'adds :main_info and :get_item_model field to the each item' do
         subject.run
         expect(subject.data.first).to include(:main_info, 'get_item_model')
       end

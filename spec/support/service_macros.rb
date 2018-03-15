@@ -65,7 +65,6 @@ module ServiceMacros
       prop_val['id'] = nil
       prop_val['item_id'] = nil
     end
-    new_mon['status'] = :waiting_take
 
     wp.data['items_attributes'] << new_mon
     wp.data

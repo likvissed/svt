@@ -13,7 +13,7 @@
   EditInOrderController.$inject = ['$uibModal', '$uibModalInstance', 'Order', 'Flash', 'Error', 'Server'];
   EditOutOrderController.$inject = ['$uibModal', '$uibModalInstance', 'Order', 'WarehouseItems', 'Flash', 'Error', 'Server'];
   ExecOrderController.$inject = ['$uibModal', '$uibModalInstance', 'Order', 'Flash', 'Error', 'Server'];
-  ItemsForOrderController.$inject = ['$uibModalInstance', 'eqTypes', 'Order', 'Flash'];
+  ItemsForOrderController.$inject = ['$scope', '$uibModalInstance', 'InventItem', 'Order', 'Flash'];
   DeliveryItemsCtrl.$inject = ['$uibModal', '$uibModalInstance', 'Order', 'Flash', 'Error', 'Server'];
 
 // =====================================================================================================================
@@ -32,7 +32,7 @@
     $scope.initOperation = function(operation) {
       self.operation = operation;
 
-      self._loadOrders(self.operation);
+      self._loadOrders();
       self._initActionCable();
     }
   }
@@ -43,10 +43,11 @@
   OrdersController.prototype._initActionCable = function() {
     var
       self = this,
-      consumer = new this.ActionCableChannel('Warehouse::OrdersChannel');
+      channelType = this.operation.charAt(0).toUpperCase() + this.operation.slice(1),
+      consumer = new this.ActionCableChannel('Warehouse::' + channelType + 'OrdersChannel');
 
     consumer.subscribe(function() {
-      self._loadOrders(this.operation);
+      self._loadOrders();
     });
   };
 
@@ -192,9 +193,6 @@
       controllerAs: 'select',
       size: 'md',
       backdrop: 'static',
-      resolve: {
-        eqTypes: function() { return self.extra.eqTypes; }
-      }
     });
 
     modalInstance.result.then(function(result) {
@@ -499,75 +497,48 @@
 
 // =====================================================================================================================
 
-  function ItemsForOrderController($uibModalInstance, eqTypes, Order, Flash) {
+  function ItemsForOrderController($scope, $uibModalInstance, InventItem, Order, Flash) {
+    var self = this;
+
     this.$uibModalInstance = $uibModalInstance;
-    this.eqTypes = eqTypes;
     this.Order = Order;
+    this.InventItem = InventItem;
     this.Flash = Flash;
 
+    this.eqTypes = Order.additional.eqTypes;
     this.warehouseType = '';
-    // Выбранный тип техники
-    this.selectedType = {
-      type_id: 0,
-      short_description: 'Выберите тип'
-    };
     this.manuallyItem = {
       item_model: '',
       item_type: ''
     };
     // Инвентарный номер выбранного типа техники
     this.invent_num = '';
-    this.items = [];
 
-    this.eqTypes.unshift(this.selectedType);
+    $scope.$on('removeDuplicateInvItems', function(event, data) {
+      self._removeDuplicateItems(data);
+    });
   }
 
   /**
    * Из массива self.items удалить технику, которая уже присутствует в составе текущего РМ.
+   *
+   * @param items
    */
-  ItemsForOrderController.prototype._removeDuplicateItems = function() {
+  ItemsForOrderController.prototype._removeDuplicateItems = function(items) {
     var
       self = this,
       index;
 
     this.Order.order.operations_attributes.forEach(function(attr) {
-      index = self.items.findIndex(function(el) { return attr.inv_item_ids.includes(el.item_id); });
+      index = items.findIndex(function(el) { return attr.inv_item_ids.includes(el.item_id); });
       if (index != -1) {
-        self.items.splice(index, 1);
+        items.splice(index, 1);
       }
     })
   };
 
-  /**
-   * Загрузить список техники указанного типа.
-   */
-  ItemsForOrderController.prototype.loadItems = function() {
-    var self = this;
-
-    this.Order.loadBusyItems(this.selectedType.type_id, this.invent_num)
-      .then(function(response) {
-        self.items = response;
-        self._removeDuplicateItems();
-
-        if (response.length == 0) {
-          self.Flash.alert('Техника не найдена. Проверьте корректность введенного инвентарного номера.');
-          return false;
-        } else if (self.items.length == 1) {
-          self.selectedItem = self.items[0];
-        }
-      });
-  };
-
-  /**
-   * Очистить объект selectedItem
-   */
-  ItemsForOrderController.prototype.clearData = function() {
-    delete(this.selectedItem);
-    this.items = [];
-  };
-
   ItemsForOrderController.prototype.ok = function() {
-    if (this.warehouseType == 'with_invent_num' && Object.keys(this.selectedItem).length == 0) {
+    if (this.warehouseType == 'with_invent_num' && Object.keys(this.InventItem.selectedItem).length == 0) {
       this.Flash.alert('Необходимо указать инвентарный номер и выбрать технику');
       return false;
     }
@@ -579,7 +550,7 @@
 
     var result = {
       warehouseType: this.warehouseType,
-      item: this.warehouseType == 'with_invent_num' ? this.selectedItem : this.manuallyItem
+      item: this.warehouseType == 'with_invent_num' ? this.InventItem.selectedItem : this.manuallyItem
     };
 
     this.$uibModalInstance.close(result);

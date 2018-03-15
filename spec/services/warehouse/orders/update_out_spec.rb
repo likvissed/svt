@@ -136,16 +136,6 @@ module Warehouse
 
             include_examples 'failed updating :out without_invent_num'
           end
-
-          context 'and when item is not updated' do
-            before { allow_any_instance_of(Item).to receive(:save!).and_raise(ActiveRecord::RecordNotSaved) }
-
-            include_examples 'failed updating :out without_invent_num'
-
-            it "does not create operation" do
-              expect { subject.run }.not_to change(Operation, :count)
-            end
-          end
         end
 
         context 'and when removed any operation' do
@@ -329,12 +319,6 @@ module Warehouse
 
           context 'and when Invent::Item is not saved' do
             before { allow_any_instance_of(Invent::Item).to receive(:save).and_return(false) }
-
-            include_examples 'failed updating :out on add'
-          end
-
-          context 'and when Item is not saved' do
-            before { allow_any_instance_of(Item).to receive(:save!).and_raise(ActiveRecord::RecordNotSaved) }
 
             include_examples 'failed updating :out on add'
           end

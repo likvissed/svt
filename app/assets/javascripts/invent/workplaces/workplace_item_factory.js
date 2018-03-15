@@ -10,7 +10,7 @@
       // Типы оборудования
       eqTypes,
       // Поле select, предлагающее выбрать тип оборудования
-      selectEqType = { type_id: -1, short_description: 'Выберите тип' },
+      selectEqType = { type_id: 0, short_description: 'Выберите тип' },
       // Шаблон экземпляра техники, добавляемого к РМ
       templateItem = {
         id: null,
@@ -27,7 +27,7 @@
         type: selectEqType,
         // Выбранная модель
         model: null,
-        status: 'waiting_take'
+        status: null
       },
       // Начальные данные для select тэга модели.
       templateSelectModel = [
@@ -222,10 +222,6 @@
           .getTemplateSelectProp(prop_value.short_description, PropertyValue.isPropListPlus(prop_value))
           .concat(filteredList);
 
-      console.log(item);
-      console.log(prop_index);
-      console.log('filteredList');
-      console.log(filteredList);
       PropertyValue.setPropertyValue(item, prop_index, 'filteredList', filteredList);
     }
 

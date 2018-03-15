@@ -208,28 +208,6 @@ module Warehouse
         end
       end
 
-      describe '#set_closed_time' do
-        context 'when status is :done' do
-          let(:date) { DateTime.now }
-          before { allow(DateTime).to receive(:new).and_return(date) }
-          subject { build(:order, status: :done) }
-
-          it 'sets current time to the :closed_time attribute' do
-            subject.save
-            expect(subject.closed_time.utc.to_s).to eq date.utc.to_s
-          end
-        end
-
-        context 'when status is :processing' do
-          subject { build(:order, status: :processing) }
-
-          it 'does not change :closed_time attribute' do
-            subject.save
-            expect(subject.closed_time).to be_nil
-          end
-        end
-      end
-
       context 'when exists consumer_fio' do
         let(:fio) { '***REMOVED***' }
         let(:user) { UserIss.find_by(fio: fio) }
@@ -259,6 +237,38 @@ module Warehouse
             subject.save
             expect(subject.errors.details[:consumer]).to include(error: :user_by_fio_not_found)
           end
+        end
+      end
+
+      context 'when exists consumer' do
+        let(:user_iss) { UserIss.find_by(tn: ***REMOVED***) }
+        subject { build(:order, consumer: user_iss) }
+
+        it 'sets consumer_fio' do
+          subject.save
+          expect(subject.consumer_fio).to eq user_iss.fio
+        end
+      end
+    end
+
+    describe '#set_closed_time' do
+      context 'when status is :done' do
+        let(:date) { DateTime.now }
+        before { allow(DateTime).to receive(:new).and_return(date) }
+        subject { build(:order, status: :done) }
+
+        it 'sets current time to the :closed_time attribute' do
+          subject.save
+          expect(subject.closed_time.utc.to_s).to eq date.utc.to_s
+        end
+      end
+
+      context 'when status is :processing' do
+        subject { build(:order, status: :processing) }
+
+        it 'does not change :closed_time attribute' do
+          subject.save
+          expect(subject.closed_time).to be_nil
         end
       end
     end

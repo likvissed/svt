@@ -13,7 +13,7 @@ module Warehouse
 
         init_order
         return false unless wrap_order
-        broadcast_orders
+        broadcast_out_orders
         broadcast_items
         broadcast_workplaces
 
@@ -37,10 +37,7 @@ module Warehouse
 
         Invent::Item.transaction do
           begin
-            Item.transaction(requires_new: true) do
-              save_order(@order)
-              update_items
-            end
+            save_order(@order)
 
             true
           rescue ActiveRecord::RecordNotSaved, ActiveRecord::RecordInvalid => e
@@ -63,10 +60,6 @@ module Warehouse
           op.build_inv_items(op.shift.abs, workplace: @order.inv_workplace)
           op.calculate_item_count_reserved
         end
-      end
-
-      def update_items
-        @order.operations.each { |op| op.item.save! }
       end
     end
   end

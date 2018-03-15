@@ -28,7 +28,7 @@
       // Заполнить список отделов
       this.additional.divisions = data.divisions;
       // Заполнить список типов оборудования
-      this.additional.eqTypes = data.eq_types;
+      this.additional.eqTypes = [{ type_id: 0, short_description: 'Выберите тип' }].concat(data.eq_types);
 
       this.Operation.setTemplate(data.operation, this.order.operation);
     }
@@ -180,24 +180,6 @@
     }
 
     this.additional.visibleCount --;
-  };
-
-  /**
-   * Загрузить Б/У технику указанного типа.
-   *
-   * @param type_id - тип загружаемой техники
-   * @param invent_num
-   */
-  Order.prototype.loadBusyItems = function(type_id, invent_num) {
-    var self = this;
-
-    return this.Server.Invent.Item.busy(
-      { type_id: type_id, invent_num: invent_num },
-      function(response) {},
-      function(response, status) {
-        self.Error.response(response, status);
-      }
-    ).$promise;
   };
 
   /**

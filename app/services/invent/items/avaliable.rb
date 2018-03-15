@@ -25,9 +25,8 @@ module Invent
       end
 
       def prepare_params
-        @data = @items.as_json(include: :model).each do |item|
+        @data = @items.as_json(include: :model, methods: :get_item_model).each do |item|
           item[:main_info] = item['invent_num'].blank? ? 'Инв. № отсутствует' : "Инв. №: #{item['invent_num']}"
-          item[:add_info] = get_model(item)
         end
       end
     end

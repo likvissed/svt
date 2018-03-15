@@ -94,6 +94,22 @@ module Invent
         @data[:filters] = {}
         @data[:filters][:divisions] = WorkplaceCount.select(:workplace_count_id, :division).order('CAST(division AS SIGNED)')
       end
+
+      # Получить модель в виде строки
+      def get_model(item)
+        if item['model']
+          "Модель: #{item['model']['item_model']}"
+        elsif !item['model'] && !item['item_model'].empty?
+          wrap_problem_string("Модель: #{item['item_model']}")
+        else
+          'Модель не указана'
+        end
+      end
+
+      # Обернуть строку в тег <span class='manually'>
+      def wrap_problem_string(string)
+        "<span class='manually-val'>#{string}</span>"
+      end
     end
   end
 end
