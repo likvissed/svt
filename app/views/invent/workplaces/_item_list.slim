@@ -10,7 +10,7 @@
   .col-xlg-24
     uib-tabset active="wp.additional.activeTab"
       uib-tab.animate-repeat index="$index" ng-repeat="item in wp.workplace.items_attributes"
-        uib-tab-heading ng-class="{'text-info': item.status == 'prepared_to_swap'}"
+        uib-tab-heading ng-class="{'text-danger': item.status == 'waiting_bring', 'text-info': item.status == 'prepared_to_swap' || item.status == 'waiting_take'}"
           span ng-bind="item.type.short_description"
           '
           = fa_icon "times-circle lg", class: "destroy-item", "ng-click": "wp.delItem(item, $event)", "ng-if": "item.status == 'prepared_to_swap' || !item.id",

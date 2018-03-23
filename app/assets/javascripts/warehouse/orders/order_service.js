@@ -1,11 +1,11 @@
 (function () {
   'use strict';
 
-  app.service('Order', Order);
+  app.service('WarehouseOrder', WarehouseOrder);
 
-  Order.$inject = ['WarehouseOperation', 'Server', 'TablePaginator', 'Config', 'Flash', 'Error'];
+  WarehouseOrder.$inject = ['WarehouseOperation', 'Server', 'TablePaginator', 'Config', 'Flash', 'Error'];
 
-  function Order(WarehouseOperation, Server, TablePaginator, Config, Flash, Error) {
+  function WarehouseOrder(WarehouseOperation, Server, TablePaginator, Config, Flash, Error) {
     this.Operation = WarehouseOperation;
     this.Server = Server;
     this.TablePaginator = TablePaginator;
@@ -17,11 +17,11 @@
     this.order = {};
   }
 
-  Order.prototype._initVisibleCount = function(count) {
+  WarehouseOrder.prototype._initVisibleCount = function(count) {
     this.additional.visibleCount = count || 0;
   }
 
-  Order.prototype._processingData = function(data, onlyOrder = false) {
+  WarehouseOrder.prototype._processingData = function(data, onlyOrder = false) {
     this._setOrder(data.order);
 
     if (!onlyOrder) {
@@ -37,7 +37,7 @@
   /**
    * Создать объект Order
    */
-  Order.prototype._setOrder = function(order) {
+  WarehouseOrder.prototype._setOrder = function(order) {
     angular.extend(this.order, order);
     this.order.operations_attributes = order.operations_attributes || [];
     this.order.consumer = order.consumer;
@@ -53,7 +53,7 @@
    *
    * @params operation
    */
-  Order.prototype.loadOrders = function(operation) {
+  WarehouseOrder.prototype.loadOrders = function(operation) {
     var self = this;
 
     return this.Server.Warehouse.Order.query(
@@ -77,7 +77,7 @@
   /**
    * Загрузить данные указанного ордера
    */
-  Order.prototype.loadOrder = function(order_id, onlyOrder = false) {
+  WarehouseOrder.prototype.loadOrder = function(order_id, onlyOrder = false) {
     var self = this;
 
     return this.Server.Warehouse.Order.edit(
@@ -94,7 +94,7 @@
   /**
    * Загрузить данные о текущем ордере заново
    */
-  Order.prototype.reloadOrder = function() {
+  WarehouseOrder.prototype.reloadOrder = function() {
     this.loadOrder(this.order.id, true);
   };
 
@@ -103,7 +103,7 @@
    *
    * @param type - тип ордера (на приход или расход)
    */
-  Order.prototype.init = function(type, data) {
+  WarehouseOrder.prototype.init = function(type, data) {
     var self = this;
 
     if (data) {
@@ -125,7 +125,7 @@
   /**
    * Заново заполнить объект order начальными данными.
    */
-  Order.prototype.reinit = function() {
+  WarehouseOrder.prototype.reinit = function() {
     angular.extend(this.order, angular.copy(this._orderTemplate));
     this._initVisibleCount();
   }
@@ -146,7 +146,7 @@
   /**
    * Добавить данные по ответственному к объекту order.
    */
-  Order.prototype.setConsumer = function(consumer) {
+  WarehouseOrder.prototype.setConsumer = function(consumer) {
     if (!consumer) {
       consumer = {};
     }
@@ -161,7 +161,7 @@
    * @param warehouseType
    * @param item
    */
-  Order.prototype.addPosition = function(warehouseType, item) {
+  WarehouseOrder.prototype.addPosition = function(warehouseType, item) {
     this.order.operations_attributes.push(this.Operation.generate(warehouseType, item));
     this.additional.visibleCount ++;
   };
@@ -171,7 +171,7 @@
    *
    * @param operation
    */
-  Order.prototype.delPosition = function(operation) {
+  WarehouseOrder.prototype.delPosition = function(operation) {
     if (operation.id) {
       operation._destroy = 1;
     } else {
@@ -185,7 +185,7 @@
   /**
    * Подготовить данные для отправки на сервер.
    */
-  Order.prototype.getObjectToSend = function() {
+  WarehouseOrder.prototype.getObjectToSend = function() {
     var obj = angular.copy(this.order);
 
     obj.operations_attributes.forEach(function(op) {
@@ -220,7 +220,7 @@
   /**
    * Проверить корректность данных ордера перед выдачей оборудования
    */
-  Order.prototype.prepareToDeliver = function() {
+  WarehouseOrder.prototype.prepareToDeliver = function() {
     var
       self = this,
       sendData = this.getObjectToSend();

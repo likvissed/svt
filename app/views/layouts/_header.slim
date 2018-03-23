@@ -89,3 +89,7 @@
             li= link_to "Приходные", in_warehouse_orders_path
             li= link_to "Расходные", out_warehouse_orders_path
             li= link_to "Архив", archive_warehouse_orders_path
+        li class="#{active_class('/warehouse/suppl')}"
+          = link_to warehouse_supplies_path do
+            = fa_icon "truck"
+            '  Поставки

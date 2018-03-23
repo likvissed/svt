@@ -55,7 +55,7 @@ script type="text/ng-template" id="inOrderModal.slim"
               td ng-bind="op.item_type"
               td
               td ng-bind="op.item_model"
-              td= fa_icon "minus-circle lg", class: "pointer", "tooltip-placement": "left", "uib-tooltip": "Убрать позицию",
+              td= fa_icon "minus-circle fw", class: "pointer", "tooltip-placement": "left", "uib-tooltip": "Убрать позицию",
                 "ng-click": "edit.delPosition(op)", "ng-if": "op.status != 'done'"
     .modal-footer
       = button_tag "Создать и исполнить", class: "btn-success btn-sm", "ng-click": "edit.ok(true)", "ng-if": "!edit.order.id"

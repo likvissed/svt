@@ -2,7 +2,12 @@ fieldset.ng-hide ng-show="item" ng-disabled="item.status == 'prepared_to_swap'"
   .col-lg-offset-3.col-xlg-offset-4.col-fhd-offset-5.col-md-24.col-lg-18.col-xlg-16.col-fhd-14 ng-if='item.status'
     .form-group
       p.info-block.bg-warning
-        | {{ item.type.short_description }} будет перемещен в текущее рабочее место
+        span ng-if="item.status == 'prepared_to_swap'"
+          | {{ item.type.short_description }} будет перемещен в текущее рабочее место
+        span ng-if="item.status == 'waiting_bring'"
+          | Данный {{ item.type.short_description | lowercase }} пользователь должен сдать в УИВТ
+        span ng-if="item.status == 'waiting_take'"
+          | Данный {{ item.type.short_description | lowercase }} пользователь должен получить в УИВТ
 
   .col-lg-offset-3.col-xlg-offset-4.col-fhd-offset-5.col-md-24.col-lg-18.col-xlg-16.col-fhd-14
     -# Постоянные параметры.

@@ -24,3 +24,7 @@ ru:
       executed: 'Исполнено'
     warehouse/item:
       destroyed: 'Указанная техника удалена со склада'
+    warehouse/supply:
+      created: 'Поставка создана'
+      updated: 'Поставка №%{supply_id} обновлена'
+      destroyed: 'Поставка удалена'

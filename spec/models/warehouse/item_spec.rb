@@ -102,6 +102,13 @@ module Warehouse
           end
         end
       end
+
+      context 'when changed only register' do
+        subject { create(:used_item, item_type: 'type_1', item_model: 'model_1', used: false) }
+        before { subject.item_model = 'Model_1' }
+
+        it { is_expected.to be_valid }
+      end
     end
 
     describe 'max_count' do

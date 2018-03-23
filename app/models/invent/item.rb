@@ -36,11 +36,6 @@ module Invent
       where(invent_num: invent_num)
     end
 
-    def self.by_type_id(type_id)
-      return all if type_id.to_i.zero?
-      where(type_id: type_id)
-    end
-
     def self.not_by_items(rejected)
       return where('item_id IS NOT NULL') if rejected.compact.empty?
       where('item_id NOT IN (?)', rejected)

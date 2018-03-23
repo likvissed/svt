@@ -40,14 +40,13 @@ module Warehouse
           order.inv_workplace ||= create(:workplace_pk, enabled_filters: false)
 
           if order.operations.empty? && !ev.without_operations
-            item_1 = create(:new_item, warehouse_type: :without_invent_num, item_type: 'Клавиатура', item_model: 'OKLICK', count: 20, count_reserved: 2)
-            item_2 = create(:new_item, warehouse_type: :without_invent_num, item_type: 'Мышь', item_model: 'Logitech', count: 20, count_reserved: 2)
+            item_1 = Item.find_by(item_type: 'Клавиатура', item_model: 'OKLICK') || create(:new_item, warehouse_type: :without_invent_num, item_type: 'Клавиатура', item_model: 'OKLICK', count: 20, count_reserved: 2)
+            item_2 = Item.find_by(item_type: 'Мышь', item_model: 'Logitech') || create(:new_item, warehouse_type: :without_invent_num, item_type: 'Мышь', item_model: 'Logitech', count: 20, count_reserved: 2)
 
             order.operations << build(:order_operation, item: item_1, item_type: 'Клавиатура', item_model: 'OKLICK', shift: -2)
             order.operations << build(:order_operation, item: item_2, item_type: 'Мышь', item_model: 'Logitech', shift: -2)
           end
         end
-
       end
     end
   end

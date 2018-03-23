@@ -3,10 +3,10 @@
 
   app.service('WarehouseItems', WarehouseItems);
 
-  WarehouseItems.$inject = ['Order', 'Server', 'TablePaginator', 'Config', 'Flash', 'Error'];
+  WarehouseItems.$inject = ['WarehouseOrder', 'Server', 'TablePaginator', 'Config', 'Flash', 'Error'];
 
-  function WarehouseItems(Order, Server, TablePaginator, Config, Flash, Error) {
-    this.Order = Order;
+  function WarehouseItems(WarehouseOrder, Server, TablePaginator, Config, Flash, Error) {
+    this.Order = WarehouseOrder;
     this.Server = Server;
     this.TablePaginator = TablePaginator;
     this.Config = Config;

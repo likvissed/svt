@@ -4,13 +4,13 @@
   app
     .controller('WarehouseItemsCtrl', WarehouseItemsCtrl);
 
-  WarehouseItemsCtrl.$inject = ['$uibModal', 'ActionCableChannel', 'TablePaginator', 'WarehouseItems', 'Order', 'Flash', 'Error', 'Server'];
+  WarehouseItemsCtrl.$inject = ['$uibModal', 'ActionCableChannel', 'TablePaginator', 'WarehouseItems', 'WarehouseOrder', 'Flash', 'Error', 'Server'];
 
-  function WarehouseItemsCtrl($uibModal, ActionCableChannel, TablePaginator, WarehouseItems, Order, Flash, Error, Server) {
+  function WarehouseItemsCtrl($uibModal, ActionCableChannel, TablePaginator, WarehouseItems, WarehouseOrder, Flash, Error, Server) {
     this.$uibModal = $uibModal;
     this.ActionCableChannel = ActionCableChannel;
     this.Items = WarehouseItems;
-    this.Order = Order;
+    this.Order = WarehouseOrder;
     this.Flash = Flash;
     this.Error = Error;
     this.Server = Server;

@@ -173,7 +173,8 @@
             url: '/invent/items/avaliable/:type_id',
             isArray: true
           }
-        })
+        }),
+        Model: $resource('/invent/models/:model_id.json', {})
       },
       /**
        * Ресурс модели работников отдела.
@@ -232,6 +233,19 @@
             method: 'POST',
             url: '/warehouse/orders/:id/execute_out'
           }
+        }),
+        Supply: $resource('/warehouse/supplies/:id.json', {}, {
+          query: { isArray: false },
+          newSupply: {
+            method: 'GET',
+            url: '/warehouse/supplies/new',
+            isArray: false
+          },
+          edit: {
+            method: 'GET',
+            url: '/warehouse/supplies/:id/edit.json'
+          },
+          update: { method: 'PUT' }
         })
       }
     }

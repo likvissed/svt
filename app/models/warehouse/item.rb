@@ -37,8 +37,8 @@ module Warehouse
     end
 
     def uniq_item_model
-      # Без первого условия спеки сервиса Warehouse::Orders::CreateOut не проходят (не понял, почему)
-      return if !item_type_changed? && !item_model_changed?
+      # return if !item_type_changed? && !item_model_changed?
+      return if item_type.to_s.casecmp(item_type_was.to_s).zero? && item_model.to_s.casecmp(item_model_was.to_s).zero?
       return unless self.class.exists?(item_type: item_type, item_model: item_model, used: used)
 
       errors.add(:item_model, :taken)

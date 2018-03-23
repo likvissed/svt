@@ -9,21 +9,21 @@
     .controller('ItemsForOrderController', ItemsForOrderController)
     .controller('DeliveryItemsCtrl', DeliveryItemsCtrl);
 
-  OrdersController.$inject = ['$uibModal', '$scope', 'ActionCableChannel', 'TablePaginator', 'Order', 'Flash', 'Error', 'Server'];
-  EditInOrderController.$inject = ['$uibModal', '$uibModalInstance', 'Order', 'Flash', 'Error', 'Server'];
-  EditOutOrderController.$inject = ['$uibModal', '$uibModalInstance', 'Order', 'WarehouseItems', 'Flash', 'Error', 'Server'];
-  ExecOrderController.$inject = ['$uibModal', '$uibModalInstance', 'Order', 'Flash', 'Error', 'Server'];
-  ItemsForOrderController.$inject = ['$scope', '$uibModalInstance', 'InventItem', 'Order', 'Flash'];
-  DeliveryItemsCtrl.$inject = ['$uibModal', '$uibModalInstance', 'Order', 'Flash', 'Error', 'Server'];
+  OrdersController.$inject = ['$uibModal', '$scope', 'ActionCableChannel', 'TablePaginator', 'WarehouseOrder', 'Flash', 'Error', 'Server'];
+  EditInOrderController.$inject = ['$uibModal', '$uibModalInstance', 'WarehouseOrder', 'Flash', 'Error', 'Server'];
+  EditOutOrderController.$inject = ['$uibModal', '$uibModalInstance', 'WarehouseOrder', 'WarehouseItems', 'Flash', 'Error', 'Server'];
+  ExecOrderController.$inject = ['$uibModal', '$uibModalInstance', 'WarehouseOrder', 'Flash', 'Error', 'Server'];
+  ItemsForOrderController.$inject = ['$scope', '$uibModalInstance', 'InventItem', 'WarehouseOrder', 'Flash'];
+  DeliveryItemsCtrl.$inject = ['$uibModal', '$uibModalInstance', 'WarehouseOrder', 'Flash', 'Error', 'Server'];
 
 // =====================================================================================================================
 
-  function OrdersController($uibModal, $scope, ActionCableChannel, TablePaginator, Order, Flash, Error, Server) {
+  function OrdersController($uibModal, $scope, ActionCableChannel, TablePaginator, WarehouseOrder, Flash, Error, Server) {
     var self = this;
 
     this.$uibModal = $uibModal;
     this.ActionCableChannel = ActionCableChannel;
-    this.Order = Order;
+    this.Order = WarehouseOrder;
     this.Flash = Flash;
     this.Error = Error;
     this.Server = Server;
@@ -154,12 +154,12 @@
 
 // =====================================================================================================================
 
-  function EditInOrderController($uibModal, $uibModalInstance, Order, Flash, Error, Server) {
+  function EditInOrderController($uibModal, $uibModalInstance, WarehouseOrder, Flash, Error, Server) {
     this.setFormName('order');
 
     this.$uibModal = $uibModal;
     this.$uibModalInstance = $uibModalInstance;
-    this.Order = Order;
+    this.Order = WarehouseOrder;
     this.Flash = Flash;
     this.Error = Error;
     this.Server = Server;
@@ -303,14 +303,14 @@
 
 // =====================================================================================================================
 
-  function EditOutOrderController($uibModal, $uibModalInstance, Order, WarehouseItems, Flash, Error, Server) {
+  function EditOutOrderController($uibModal, $uibModalInstance, WarehouseOrder, WarehouseItems, Flash, Error, Server) {
     var self = this;
 
     this.setFormName('order');
 
     this.$uibModal = $uibModal;
     this.$uibModalInstance = $uibModalInstance;
-    this.Order = Order;
+    this.Order = WarehouseOrder;
     this.Items = WarehouseItems;
     this.Flash = Flash;
     this.Error = Error;
@@ -401,12 +401,12 @@
 
 // =====================================================================================================================
 
-  function ExecOrderController($uibModal, $uibModalInstance, Order, Flash, Error, Server) {
+  function ExecOrderController($uibModal, $uibModalInstance, WarehouseOrder, Flash, Error, Server) {
     this.setFormName('order');
 
     this.$uibModal = $uibModal;
     this.$uibModalInstance = $uibModalInstance;
-    this.Order = Order;
+    this.Order = WarehouseOrder;
     this.Flash = Flash;
     this.Error = Error;
     this.Server = Server;
@@ -497,15 +497,15 @@
 
 // =====================================================================================================================
 
-  function ItemsForOrderController($scope, $uibModalInstance, InventItem, Order, Flash) {
+  function ItemsForOrderController($scope, $uibModalInstance, InventItem, WarehouseOrder, Flash) {
     var self = this;
 
     this.$uibModalInstance = $uibModalInstance;
-    this.Order = Order;
+    this.Order = WarehouseOrder;
     this.InventItem = InventItem;
     this.Flash = Flash;
 
-    this.eqTypes = Order.additional.eqTypes;
+    this.eqTypes = WarehouseOrder.additional.eqTypes;
     this.warehouseType = '';
     this.manuallyItem = {
       item_model: '',
@@ -562,12 +562,12 @@
 
   // =====================================================================================================================
 
-  function DeliveryItemsCtrl($uibModal, $uibModalInstance, Order, Flash, Error, Server) {
+  function DeliveryItemsCtrl($uibModal, $uibModalInstance, WarehouseOrder, Flash, Error, Server) {
     this.setFormName('order');
 
     this.$uibModal = $uibModal;
     this.$uibModalInstance = $uibModalInstance;
-    this.Order = Order;
+    this.Order = WarehouseOrder;
     this.Flash = Flash;
     this.Error = Error;
     this.Server = Server;

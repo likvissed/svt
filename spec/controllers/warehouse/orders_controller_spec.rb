@@ -116,7 +116,7 @@ module Warehouse
         }
       end
 
-      it 'creates instance of the Orders::Update' do
+      it 'creates instance of the Orders::UpdateIn' do
         put :update_in, params: params
         expect(assigns(:update_in)).to be_instance_of Orders::UpdateIn
       end

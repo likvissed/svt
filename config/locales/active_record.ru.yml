@@ -100,6 +100,24 @@ ru:
       warehouse/order/operations/inv_items/property_values:
         base: ''
 
+      warehouse/supply:
+        name: 'Наименование поставки'
+        supplyer: 'Поставщик'
+        date: 'Дата поставки'
+
+      warehouse/supply/operations:
+        item_type: 'Тип техники (опред. авт.)'
+        item_model: 'Модель (опред. авт.)'
+        shift: 'Количество'
+
+      warehouse/supply/operations/item:
+        base: ''
+        item_model: 'Модель (опред. авт.)'
+        item_type: 'Тип техники (опред. авт.)'
+        count: 'Количество на складе'
+        warehouse_type: 'Тип (с инв. номером или без)'
+        used: 'Тип (новая или б/у)'
+
       warehouse/item:
         inv_item: 'Техника'
         type: 'Тип техники (Системный блок и т.п.)'
@@ -241,6 +259,11 @@ ru:
               cannot_update: 'не может быть изменен'
             consumer_dept:
               cannot_update: 'не может быть изменен'
+
+        warehouse/supply:
+          attributes:
+            base:
+              operations_can_not_have_negative_value: 'Позиции не могут иметь отрицательное количество'
 
         warehouse/operation:
           attributes:

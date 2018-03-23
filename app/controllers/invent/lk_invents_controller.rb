@@ -1,5 +1,3 @@
-# require './app/services/invent/init_properties.rb'
-
 module Invent
   class LkInventsController < ApplicationController
     skip_before_action :authenticate_user!

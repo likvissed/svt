@@ -10,8 +10,8 @@ module Warehouse
 
       its(:run) { is_expected.to be_truthy }
 
-      it 'fills the @data with %i[order divisions eq_types order] keys' do
-        expect(subject.data).to include(:order, :divisions, :eq_types)
+      it 'fills the @data with %i[order operation divisions eq_types] keys' do
+        expect(subject.data).to include(:order, :operation, :divisions, :eq_types)
       end
 
       it 'adds item_to_orders_attributes to order' do

@@ -11,6 +11,7 @@ module Warehouse
     belongs_to :operationable, polymorphic: true
 
     validates :item_type, :item_model, :shift, :status, presence: true
+    validates :shift, numericality: { other_than: 0 }
     validates :stockman_fio, :date, presence: true, if: -> { done? }
     validate :uniq_item_by_processing_operation, if: -> { item.try(:used) && item_id_changed? }
 
@@ -71,6 +72,17 @@ module Warehouse
       elsif shift_changed?
         delta = shift_was - shift
         item.count_reserved += delta
+      end
+    end
+
+    def calculate_item_count
+      if new_record?
+        item.count += shift
+      elsif marked_for_destruction?
+        item.count -= shift
+      elsif shift_changed?
+        delta = shift - shift_was
+        item.count += delta
       end
     end
 

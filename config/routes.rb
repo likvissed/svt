@@ -69,6 +69,8 @@ Rails.application.routes.draw do
         get 'busy/:type_id', to: 'items#busy', constraints: { type_id: /\d+/ }
       end
     end
+
+    resources :models, only: [:index], param: :model_id
   end
 
   # Эталоны
@@ -91,6 +93,7 @@ Rails.application.routes.draw do
       put 'update_in', to: 'orders#update_in', on: :member
       put 'update_out', to: 'orders#update_out', on: :member
     end
+    resources :supplies
   end
 
   # Получить html-код кнопки "Добавить запись"

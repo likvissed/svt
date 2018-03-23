@@ -16,6 +16,15 @@ module Warehouse
     it { is_expected.not_to validate_presence_of(:date) }
     it { is_expected.to accept_nested_attributes_for(:inv_items).allow_destroy(false) }
 
+    context 'when :shift attribute is equal zero' do
+      subject { build(:supply_operation, shift: 0) }
+
+      it 'adds :other_than error' do
+        subject.valid?
+        expect(subject.errors.details[:shift]).to include(error: :other_than, value: 0, count: 0)
+      end
+    end
+
     context 'when status is done' do
       subject { build(:order_operation, status: :done) }
 
@@ -103,6 +112,50 @@ module Warehouse
           it 'increased :count_reserved attribute' do
             subject.calculate_item_count_reserved
             expect(item.count_reserved).to eq 17
+          end
+        end
+      end
+    end
+
+    describe '#calculate_item_count' do
+      let!(:item) { create(:new_item, warehouse_type: :without_invent_num, count: 20) }
+
+      context 'when operation is a new record' do
+        subject { build(:supply_operation, item: item, shift: 4) }
+
+        it 'increased :count_reserved attribute' do
+          subject.calculate_item_count
+          expect(item.count).to eq 24
+        end
+      end
+
+      context 'when operation already exists' do
+        subject { create(:supply_operation, item: item, shift: 4) }
+
+        context 'and when operation marked for destruction' do
+          before { subject.mark_for_destruction }
+
+          it 'reduced :count attribute' do
+            subject.calculate_item_count
+            expect(item.count).to eq 16
+          end
+        end
+
+        context 'and when :shift attribute is increased' do
+          before { subject.shift = 7 }
+
+          it 'reduced :count attribute' do
+            subject.calculate_item_count
+            expect(item.count).to eq 23
+          end
+        end
+
+        context 'and when :shift attribute is reduced' do
+          before { subject.shift = 2 }
+
+          it 'increased :count attribute' do
+            subject.calculate_item_count
+            expect(item.count).to eq 18
           end
         end
       end
