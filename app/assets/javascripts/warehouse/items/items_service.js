@@ -12,21 +12,49 @@
     this.Config = Config;
     this.Flash = Flash;
     this.Error = Error;
+
+    this.selectedTableFilters = {
+      showOnlyPresence: true,
+      used: 'all',
+      item_type: ''
+    };
+    this.filters = {};
+    this.filters.selUsedFilter = [
+      {
+        descr: 'Все состояния',
+        value: 'all'
+      },
+      {
+        descr: 'Б/У',
+        value: 'true'
+      },
+      {
+        descr: 'Новое',
+        value: 'false'
+      }
+    ];
   }
 
-  WarehouseItems.prototype.loadItems = function() {
+  WarehouseItems.prototype.loadItems = function(init) {
     var self = this;
 
     return this.Server.Warehouse.Item.query(
       {
         start: this.TablePaginator.startNum(),
-        length: this.Config.global.uibPaginationConfig.itemsPerPage
+        length: this.Config.global.uibPaginationConfig.itemsPerPage,
+        init_filters: init,
+        filters: this.selectedTableFilters
       },
       function(response) {
         // Список элементов склада
         self.items = response.data;
         // Данные для составления нумерации страниц
         self.TablePaginator.setData(response);
+
+        if (init) {
+          // Данные для фильтров
+          self.filters.selItemTypesFiler = response.filters.item_types;
+        }
       },
       function(response, status) {
         self.Error.response(response, status);

@@ -39,11 +39,6 @@ module Invent
 
       protected
 
-      def fill_swap_arr
-        @swap = []
-        @workplace_params['items_attributes'].delete_if { |i| @swap << i['id'] if i['status'] == 'prepared_to_swap' }.map { |i| i['id'] }
-      end
-
       def update_workplace
         if workplace.update_attributes(workplace_params)
           # Чтобы избежать N+1 запрос в методе 'transform_workplace' нужно создать объект ActiveRecord (например,
@@ -64,14 +59,6 @@ module Invent
           errors.add(:base, workplace.errors.full_messages.join('. '))
           raise 'Данные не обновлены'
         end
-      end
-
-      def swap_items
-        swap = Warehouse::Orders::Swap.new(@current_user, @workplace.workplace_id, @swap)
-        return true if swap.run
-
-        errors.add(:base, swap.error[:full_message])
-        raise 'Не удалось перенести технику'
       end
     end
   end

@@ -27,6 +27,7 @@ module Warehouse
       protected
 
       def init_items
+        @supply_params[:operations_attributes] ||= []
         @supply_params[:operations_attributes].each do |op|
           op[:item] = Item.find_by(item_type: op[:item][:item_type], item_model: op[:item][:item_model]) || Item.new(op[:item])
           op[:item].used = false

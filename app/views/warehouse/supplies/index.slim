@@ -2,43 +2,42 @@
 
 #index_item.container ng-controller="WarehouseSuppliesCtrl as table"
   .well
-    .row
-      .col-fhd-2.col-xlg-3.col-lg-4.col-md-4.col-sm-5
-        = button_tag "Новая поставка", type: :button, class: "btn-primary btn-sm btn-block", "ng-click": "table.newSupply()"
-
-    .row
-      .col-fhd-24
-        table.table.table-striped.table-condensed
-          thead
-            tr
-              th №
-              th Наименование
-              th Поставщик
-              th Дата поставки
-              th Кол-во позиций
-              th Кол-во техники
-              th
-          tbody
-            tr ng-repeat="supply in table.supplies"
-              td.col-fhd-1 ng-bind="supply.id"
-              td.col-fhd-7 ng-bind="supply.name"
-              td.col-fhd-6 ng-bind="supply.supplyer"
-              td.col-fhd-3 ng-bind="supply.date"
-              td.col-fhd-3 ng-bind="supply.operations.length"
-              td.col-fhd-3 ng-bind="supply.total_count"
-              td.col-fhd-1.text-center
-                = fa_icon "pencil-square-o fw", class: "pointer", "uib-tooltip": "Редактировать поставку",
-                  "ng-click": "table.editSupply(supply)", "tooltip-append-to-body": "true"
-                = fa_icon "trash-o fw", class: "pointer text-danger", "ng-click": "table.destroySupply(supply)",
-                  "uib-tooltip": "Удалить поставку", "tooltip-append-to-body": "true"
-            tr ng-if="table.supplies.length == 0"
-              td colspan=8 Данных нет
-
-    .row
-      .col-xs-12
-        .animate-show ng-table-info="" info-attrs="table.pagination" ng-if="table.supplies"
-      .col-xs-12
-        ul{ uib-pagination="true" total-items="table.pagination.filteredRecords" ng-model="table.pagination.currentPage"
-          max-size="table.pagination.maxSize" class="pagination-sm pull-right" ng-change="table.changePage()" }
+    .table-block
+      .row
+        .col-fhd-2.col-xlg-3.col-lg-4.col-md-4.col-sm-5
+          = button_tag "Новая поставка", type: :button, class: "btn-primary btn-sm btn-block", "ng-click": "table.newSupply()"
+      .row
+        .col-fhd-24
+          table.table.table-striped.table-condensed
+            thead
+              tr
+                th №
+                th Наименование
+                th Поставщик
+                th Дата поставки
+                th Кол-во позиций
+                th Кол-во техники
+                th
+            tbody
+              tr ng-repeat="supply in table.supplies"
+                td.col-fhd-1 ng-bind="supply.id"
+                td.col-fhd-7 ng-bind="supply.name"
+                td.col-fhd-6 ng-bind="supply.supplyer"
+                td.col-fhd-3 ng-bind="supply.date"
+                td.col-fhd-3 ng-bind="supply.operations.length"
+                td.col-fhd-3 ng-bind="supply.total_count"
+                td.col-fhd-1.text-center
+                  = fa_icon "pencil-square-o fw", class: "pointer", "uib-tooltip": "Редактировать поставку",
+                    "ng-click": "table.editSupply(supply)", "tooltip-append-to-body": "true"
+                  = fa_icon "trash-o fw", class: "pointer text-danger", "ng-click": "table.destroySupply(supply)",
+                    "uib-tooltip": "Удалить поставку", "tooltip-append-to-body": "true"
+              tr ng-if="table.supplies.length == 0"
+                td colspan=8 Данных нет
+      .row
+        .col-xs-12
+          .animate-show ng-table-info="" info-attrs="table.pagination" ng-if="table.supplies"
+        .col-xs-12
+          ul{ uib-pagination="true" total-items="table.pagination.filteredRecords" ng-model="table.pagination.currentPage"
+            max-size="table.pagination.maxSize" class="pagination-sm pull-right" ng-change="table.changePage()" }
 
 = render partial: 'edit'

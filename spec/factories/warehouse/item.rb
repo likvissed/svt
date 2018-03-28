@@ -31,13 +31,6 @@ module Warehouse
       warehouse_type :with_invent_num
       used false
       inv_item nil
-
-      after(:build) do |item, ev|
-        if item.warehouse_type.to_s == 'without_invent_num' && !item.item_type && !item.item_model
-          item.item_type = 'CD'
-          item.item_model = 'ASUS'
-        end
-      end
     end
   end
 end

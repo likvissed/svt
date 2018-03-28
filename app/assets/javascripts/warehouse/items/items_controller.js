@@ -15,6 +15,8 @@
     this.Error = Error;
     this.Server = Server;
     this.pagination = TablePaginator.config();
+    this.selectedFilters = this.Items.selectedTableFilters;
+    this.filters = this.Items.filters;
 
     this._loadItems(true);
     this._initActionCable();
@@ -39,7 +41,7 @@
   WarehouseItemsCtrl.prototype._loadItems = function(init) {
     var self = this;
 
-    this.Items.loadItems().then(
+    this.Items.loadItems(init).then(
       function(response) {
         self.items = self.Items.items;
         self.orders = response.orders || [];
@@ -76,8 +78,16 @@
   /**
    * События изменения страницы.
    */
-  WarehouseItemsCtrl.prototype.changePage = function() {
+  WarehouseItemsCtrl.prototype.reloadItems = function() {
     this._loadItems();
+  };
+
+  /**
+   * Показать/скрыть технику, у которой разница count-count_reserved=0
+   */
+  WarehouseItemsCtrl.prototype.showOnlyPresenceFilter = function() {
+    this.selectedFilters.showOnlyPresence = !this.selectedFilters.showOnlyPresence;
+    this.reloadItems();
   };
 
   /**
@@ -140,13 +150,21 @@
   }
 
   /**
-   * Закрыть выбранный ордер
+   * Очистить выбранный ордер
    */
   WarehouseItemsCtrl.prototype.closeOrder = function() {
     this.Order.reinit();
     delete(this.selectedOrder);
     this.Items.findSelected();
   };
+
+  /**
+   * Очистить фильтр по типу техники
+   */
+  WarehouseItemsCtrl.prototype.closeItemTypeFilter = function() {
+    delete(this.selectedFilters.item_type);
+    this.reloadItems();
+  }
 
   /**
    * Удалить ордер.

@@ -428,7 +428,7 @@ module Warehouse
 
         it 'adds :dept_does_not_match error' do
           subject.valid?
-          expect(subject.errors.details[:base]).to include(error: :dept_does_not_match)
+          expect(subject.errors.details[:base]).to include(error: :dept_does_not_match, dept: subject.consumer_dept)
         end
       end
 
@@ -439,7 +439,7 @@ module Warehouse
 
         it 'does not add :dept_does_not_match error' do
           subject.valid?
-          expect(subject.errors.details[:base]).not_to include(error: :dept_does_not_match)
+          expect(subject.errors.details[:base]).not_to include(error: :dept_does_not_match, dept: subject.consumer_dept)
         end
       end
     end

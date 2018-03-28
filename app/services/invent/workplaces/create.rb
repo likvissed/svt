@@ -37,11 +37,6 @@ module Invent
 
       protected
 
-      def fill_swap_arr
-        @swap = []
-        @workplace_params['items_attributes'].delete_if { |i| @swap << i['id'] if i['status'] == 'prepared_to_swap' }.map { |i| i['id'] }
-      end
-
       # Логирование полученных данных.
       def log_data
         Rails.logger.info "Workplace: #{workplace.inspect}".red
@@ -70,14 +65,6 @@ module Invent
           errors.add(:base, workplace.errors.full_messages.join('. '))
           raise 'Рабочее место не сохранено'
         end
-      end
-
-      def swap_items
-        swap = Warehouse::Orders::Swap.new(@current_user, @workplace.workplace_id, @swap)
-        return true if swap.run
-
-        errors.add(:base, swap.error[:full_message])
-        raise 'Не удалось перенести технику'
       end
     end
   end

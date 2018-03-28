@@ -6,11 +6,14 @@ module Warehouse
         @data = {}
         @start = params[:start]
         @length = params[:length]
+        @init = params[:init_filters] == 'true'
+        @conditions = JSON.parse(params[:filters]) if params[:filter]
       end
 
       def run
         load_items
         init_order
+        init_filters if @init
         load_orders
         limit_records
         prepare_to_render
@@ -28,6 +31,13 @@ module Warehouse
       def load_items
         data[:recordsTotal] = Item.count
         @items = Item.all
+        run_filters if @conditions
+      end
+
+      def run_filters
+        @items = @items.where('count > count_reserved') if @conditions['showOnlyPresence']
+        @items = @items.where('used = ?', @conditions['used'].to_s == 'true') if @conditions.has_key?('used') && @conditions['used'] != 'all'
+        @items = @items.where('item_type = ?', @conditions['item_type']) unless @conditions['item_type'].blank?
       end
 
       def limit_records
@@ -49,6 +59,11 @@ module Warehouse
         else
           raise 'Не удалось создать шаблон расходного ордера'
         end
+      end
+
+      def init_filters
+        data[:filters] = {}
+        data[:filters][:item_types] = Item.pluck(:item_type).uniq
       end
 
       def load_orders

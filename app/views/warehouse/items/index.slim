@@ -2,59 +2,76 @@
 
 #index_item.container ng-controller="WarehouseItemsCtrl as table"
   .well
-    .row
-      .col-fhd-4.col-xlg-5.col-lg-6.col-md-6.col-sm-7
-        = button_tag "Сформировать расходный ордер", type: :button, class: "btn-primary btn-sm btn-block", "ng-click": "table.newOrder()",
-          "ng-disabled": "table.extraOrder.visibleCount == 0"
-      .col-fhd-5.col-xlg-6.col-lg-7.col-md-7.col-sm-8
-        .input-group.input-group-sm.form-input-sm.multiline-select
-          ui-select ng-model="table.selectedOrder" on-select="table.loadOrder()" theme="bootstrap" allow-clear=true
-            ui-select-match placeholder="Выберите ордер для редактирования"
-              | {{ $select.selected.main_info }}
-            ui-select-choices repeat="obj in table.orders | filter: $select.search"
-              div ng-bind-html="obj.main_info | highlight: $select.search"
-              small ng-bind-html="obj.operations_to_string | highlight: $select.search"
-          span.input-group-btn
-            = button_tag type: :button, class: "btn-default", "ng-click": "table.closeOrder()", "uib-tooltip": "Закрыть ордер", "tooltip-append-to-body": true,
-              "ng-disabled": "!table.selectedOrder.id" do
-              = fa_icon "times"
-            = button_tag type: :button, class: "btn-default", "ng-click": "table.destroyOrder()", "uib-tooltip": "Удалить ордер", "tooltip-append-to-body": true,
-              "ng-disabled": "!table.selectedOrder.id" do
-              = fa_icon "trash", class: "text-danger"
-    .row
-      .col-fhd-24
-        table.table.table-striped.table-condensed
-          thead
-            tr
-              th
-              th Тип техники
-              th Модель
-              th Инв. №
-              th Состояние
-              th Доступно
-              th Зарезервировано
-              th
-          tbody
-            tr ng-repeat="item in table.items"
-              td
-                input type="checkbox" ng-model="item.added_to_order" ng-true-value="true" ng-false-value="false" ng-click="table.togglePosition(item)" ng-disabled="item.count == 0 || item.count <= item.count_reserved"
-              td.col-fhd-3 ng-bind="item.item_type"
-              td.col-fhd-13 ng-bind="item.item_model"
-              td.col-fhd-2 ng-bind="item.inv_item.invent_num"
-              td.col-fhd-2 ng-bind="item.translated_used"
-              td.col-fhd-2 ng-bind="item.count"
-              td.col-fhd-2 ng-bind="item.count_reserved"
-              td
-                = fa_icon "trash-o fw", class: "pointer text-danger", "ng-click": "table.destroyItem(item)",
-                  "uib-tooltip": "Удалить технику со склада", "tooltip-append-to-body": "true"
-            tr ng-if="table.items.length == 0"
-              td colspan=8 Данных нет
+    .table-block
+      .row
+        .col-fhd-4.col-xlg-5.col-lg-6.col-md-6.col-sm-7.multiline-buffer
+          = button_tag "Сформировать расходный ордер", type: :button, class: "btn-primary btn-sm btn-block", "ng-click": "table.newOrder()",
+            "ng-disabled": "table.extraOrder.visibleCount == 0"
+        .col-fhd-5.col-xlg-6.col-lg-7.col-md-8.col-sm-9.multiline-buffer
+          .input-group.input-group-sm.form-input-sm.multiline-select
+            ui-select ng-model="table.selectedOrder" on-select="table.loadOrder()" theme="bootstrap" allow-clear=true
+              ui-select-match placeholder="Выберите ордер для редактирования"
+                | {{ $select.selected.main_info }}
+              ui-select-choices repeat="obj in table.orders | filter: $select.search"
+                div ng-bind-html="obj.main_info | highlight: $select.search"
+                small ng-bind-html="obj.operations_to_string | highlight: $select.search"
+            span.input-group-btn
+              = button_tag type: :button, class: "btn-default", "ng-click": "table.closeOrder()", "uib-tooltip": "Очистить", "tooltip-append-to-body": true,
+                "ng-disabled": "!table.selectedOrder.id" do
+                = fa_icon "times"
+              = button_tag type: :button, class: "btn-default", "ng-click": "table.destroyOrder()", "uib-tooltip": "Удалить ордер", "tooltip-append-to-body": true,
+                "ng-disabled": "!table.selectedOrder.id" do
+                = fa_icon "trash", class: "text-danger"
+        .col-fhd-3.col-xlg-4.col-lg-4.col-md-5.col-sm-5.multiline-buffer
+          = button_tag "Показать отсутствующие", type: :button, class: "btn-default btn-sm btn-block", "ng-click": "table.showOnlyPresenceFilter()", "ng-class": "{active: !table.selectedFilters.showOnlyPresence}"
+        .col-fhd-2.col-xlg-3.col-lg-3.col-md-4.col-sm-5.multiline-buffer
+          = select_tag "", "", class: "form-control input-sm", "ng-model": "table.selectedFilters.used", "ng-change": "table.reloadItems()",
+            "ng-options": "used.value as used.descr for used in table.filters.selUsedFilter"
+        .col-fhd-3.col-xlg-3.col-lg-3.col-md-4.col-sm-5.multiline-buffer
+          .input-group.input-group-sm.form-input-sm.multiline-select
+            ui-select ng-model="table.selectedFilters.item_type" on-select="table.reloadItems()" theme="bootstrap"
+              ui-select-match placeholder="Тип техники"
+                | {{ $select.selected }}
+              ui-select-choices repeat="item_type in table.filters.selItemTypesFiler | filter: $select.search"
+                div ng-bind-html="item_type | highlight: $select.search"
+            span.input-group-btn
+              = button_tag type: :button, class: "btn-default", "ng-click": "table.closeItemTypeFilter()", "uib-tooltip": "Очистить", "tooltip-append-to-body": true,
+                "ng-disabled": "!table.selectedFilters.item_type" do
+                = fa_icon "times"
+      .row
+        .col-fhd-24
+          table.table.table-striped.table-condensed
+            thead
+              tr
+                th
+                th Тип техники
+                th Модель
+                th Инв. №
+                th Состояние
+                th Доступно
+                th Зарезервировано
+                th
+            tbody
+              tr ng-repeat="item in table.items"
+                td
+                  input type="checkbox" ng-model="item.added_to_order" ng-true-value="true" ng-false-value="false" ng-click="table.togglePosition(item)" ng-disabled="item.count == 0 || item.count <= item.count_reserved"
+                td.col-fhd-3 ng-bind="item.item_type"
+                td.col-fhd-13 ng-bind="item.item_model"
+                td.col-fhd-2 ng-bind="item.inv_item.invent_num"
+                td.col-fhd-2 ng-bind="item.translated_used"
+                td.col-fhd-2 ng-bind="item.count"
+                td.col-fhd-2 ng-bind="item.count_reserved"
+                td
+                  = fa_icon "trash-o fw", class: "pointer text-danger", "ng-click": "table.destroyItem(item)",
+                    "uib-tooltip": "Удалить технику со склада", "tooltip-append-to-body": "true"
+              tr ng-if="table.items.length == 0"
+                td colspan=8 Данных нет
 
-    .row
-      .col-xs-12
-        .animate-show ng-table-info="" info-attrs="table.pagination" ng-if="table.items"
-      .col-xs-12
-        ul{ uib-pagination="true" total-items="table.pagination.filteredRecords" ng-model="table.pagination.currentPage"
-          max-size="table.pagination.maxSize" class="pagination-sm pull-right" ng-change="table.changePage()" }
+      .row
+        .col-xs-12
+          .animate-show ng-table-info="" info-attrs="table.pagination" ng-if="table.items"
+        .col-xs-12
+          ul{ uib-pagination="true" total-items="table.pagination.filteredRecords" ng-model="table.pagination.currentPage"
+            max-size="table.pagination.maxSize" class="pagination-sm pull-right" ng-change="table.reloadItems()" }
 
 = render partial: '/warehouse/orders/out_order_modal'
