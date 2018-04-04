@@ -1,13 +1,22 @@
 .row
-  .col-xlg-24
+  .col-fhd-24
     h4 Состав рабочего места
 
-.row.ng-hide ng-show="wp.workplace.workplace_type"
-  .col-xlg-24
-    p.bg-info.context-info ng-bind="wp.workplace.workplace_type.full_description"
+.row
+  .col-fhd-24
+    uib-accordion
+      div uib-accordion-group="true" class="panel-default" is-open="status.open"
+        uib-accordion-heading
+          | Справка
+          i.pull-right
+            span ng-if="status.open"
+              = fa_icon "chevron-down"
+            span ng-if="!status.open"
+              = fa_icon "chevron-right"
+        = render partial: 'help'
 
 .row#wp_item_list ng-if="wp.workplace"
-  .col-xlg-24
+  .col-fhd-24
     uib-tabset active="wp.additional.activeTab"
       uib-tab.animate-repeat index="$index" ng-repeat="item in wp.workplace.items_attributes"
         uib-tab-heading ng-class="{'text-danger': item.status == 'waiting_bring', 'text-info': item.status == 'prepared_to_swap' || item.status == 'waiting_take'}"

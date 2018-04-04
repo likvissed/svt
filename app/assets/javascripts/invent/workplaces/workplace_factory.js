@@ -24,9 +24,9 @@
     // ====================================== Данные с сервера =============================================================
 
     // Поле select, предлагающее выбрать тип оборудования
-    this.selectWpType = { workplace_type_id: -1, long_description: 'Выберите тип' };
+    this.selectWpType = { workplace_type_id: 0, long_description: 'Выберите тип' };
     // Поле select, предлагающее выбрать вид деятельности
-    this.selectWpSpec = { workplace_specialization_id: -1, short_description: 'Выберите вид' };
+    this.selectWpSpec = { workplace_specialization_id: 0, short_description: 'Выберите вид' };
     // Список отделов
     this.divisions = [];
     // Поле select, предлагающее выбрать площадку

@@ -16,14 +16,14 @@
       = label_tag :workplace_workplace_type_id, "Тип рабочего места", class: "control-label"
       = select_tag "workplace[workplace_type_id]", "", class: "form-control",
         "ng-model": "wp.workplace.workplace_type", "ng-change": "wp.setWorkplaceType()",
-        "ng-options": "wp_type as wp_type.long_description disable when wp_type.workplace_type_id == -1 for wp_type in wp.wp_types track by wp_type.workplace_type_id"
+        "ng-options": "wp_type as wp_type.long_description disable when wp_type.workplace_type_id == 0 for wp_type in wp.wp_types track by wp_type.workplace_type_id"
 .row
   .col-xlg-24
     .form-group
       = label_tag :workplace_workplace_specialization_id, "Вид выполняемой работы", class: "control-label"
       = select_tag "workplace[workplace_specialization_id]", "", class: "form-control",
         "ng-model": "wp.workplace.workplace_specialization_id",
-        "ng-options": "spec.workplace_specialization_id as spec.short_description disable when spec.workplace_specialization_id == -1 for spec in wp.specs"
+        "ng-options": "spec.workplace_specialization_id as spec.short_description disable when spec.workplace_specialization_id == 0 for spec in wp.specs"
 .row
   .col-xlg-24
     .form-group
