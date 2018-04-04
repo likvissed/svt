@@ -51,6 +51,7 @@ module Warehouse
         @items = @items.where('count > count_reserved') if @conditions['showOnlyPresence']
         @items = @items.where('used = ?', @conditions['used'].to_s == 'true') if @conditions.has_key?('used') && @conditions['used'] != 'all'
         @items = @items.where('item_type = ?', @conditions['item_type']) unless @conditions['item_type'].blank?
+        @items = @items.where('barcode = ?', @conditions['barcode']) unless @conditions['barcode'].blank?
       end
 
       def limit_records

@@ -30,7 +30,7 @@ module Warehouse
 
       def limit_records
         data[:recordsFiltered] = @supplies.count
-        @supplies = @supplies.limit(@length).offset(@start)
+        @supplies = @supplies.order(id: :desc).limit(@length).offset(@start)
       end
 
       def prepare_to_render

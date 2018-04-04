@@ -67,7 +67,7 @@ module Invent
         @data[:recordsFiltered] = @workplaces.length
         @workplaces = @workplaces
                         .includes(%i[items iss_reference_site iss_reference_building iss_reference_room user_iss workplace_count])
-                        .limit(@length).offset(@start)
+                        .order(workplace_id: :desc).limit(@length).offset(@start)
       end
 
       def prepare_to_render

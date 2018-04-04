@@ -12,6 +12,7 @@
           table.table.table-striped.table-condensed
             thead
               tr
+                th
                 th №
                 th Отдел
                 th ID РМ
@@ -24,18 +25,18 @@
                 th
             tbody
               tr ng-repeat="order in table.orders"
+                td.col-fhd-1
+                  = button_tag "Исполнить", type: :button, class: "btn-default btn-xs", "ng-click": "table.execOrder(order)"
                 td.col-fhd-1 ng-bind="order.id"
                 td.col-fhd-1 ng-bind="order.consumer_dept"
                 td.col-fhd-1 ng-bind="order.invent_workplace_id"
                 td.col-fhd-2.col-xlg-2.col-lg-2.col-md-2.col-sm-2 ng-bind="order.operation_translated"
-                td.col-fhd-6.col-xlg-6.col-lg-6.col-md-5.col-sm-5 ng-bind="order.operations_to_string"
-                td.col-fhd-4.col-xlg-4.col-lg-3.col-md-4.col-sm-3 ng-bind="order.creator.fio || order.creator_fio"
-                td.col-fhd-4.col-xlg-3.col-lg-3.col-md-3.col-sm-3 ng-bind="order.validator.fio || order.validator_fio"
+                td.col-fhd-7.col-xlg-7.col-lg-6.col-md-6.col-sm-7 ng-bind="order.operations_to_string"
+                td.col-fhd-4.col-xlg-3.col-lg-3.col-md-3.col-sm-3 ng-bind="order.creator.fio || order.creator_fio"
+                td.col-fhd-3.col-xlg-3.col-lg-3.col-md-3.col-sm-3 ng-bind="order.validator.fio || order.validator_fio"
                 td.col-fhd-3.col-xlg-3.col-lg-3.col-md-3.col-sm-3 ng-bind="order.consumer.fio || order.consumer_fio"
                 td.col-fhd-1.col-xlg-2.col-lg-3.col-md-3.col-sm-3 ng-bind="order.status_translated"
-                td.text-center.col-fhd-1.col-sm-2
-                  = fa_icon "check-square-o fw", class: "pointer", "ng-click": "table.execOrder(order)",
-                    "uib-tooltip": "Исполнить ордер", "tooltip-append-to-body": "true"
+                td.text-center
                   = fa_icon "trash-o fw", class: "pointer text-danger", "ng-click": "table.destroyOrder(order)",
                     "uib-tooltip": "Удалить ордер", "tooltip-append-to-body": "true"
               tr ng-if="table.orders.length == 0"

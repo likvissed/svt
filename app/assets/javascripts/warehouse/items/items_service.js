@@ -16,7 +16,8 @@
     this.selectedTableFilters = {
       showOnlyPresence: true,
       used: 'all',
-      item_type: ''
+      item_type: '',
+      barcode: ''
     };
     this.filters = {};
     this.filters.selUsedFilter = [
@@ -44,7 +45,7 @@
         length: this.Config.global.uibPaginationConfig.itemsPerPage,
         init_filters: init,
         filters: this.selectedTableFilters,
-        selected_order_id: self.Order.order.id
+        selected_order_id: self.Order.order.id,
       },
       function(response) {
         // Список элементов склада

@@ -6,7 +6,8 @@ module Warehouse
       let(:params) { { start: '0', length: '25', filters: {}.to_json } }
       let!(:item_1) { create(:used_item, count: 0, count_reserved: 0) }
       let!(:items) { create_list(:used_item, 51) }
-      let!(:item_2) { create(:new_item, warehouse_type: :without_invent_num, count: 10) }
+      let(:barcode) { 'qwerty12345' }
+      let!(:item_2) { create(:new_item, warehouse_type: :without_invent_num, count: 10, barcode: barcode) }
       subject { Index.new(params) }
 
       it 'loads items specified into length param' do
@@ -94,6 +95,17 @@ module Warehouse
           subject.run
           subject.data[:data].each do |i|
             expect(i['item_type']).to eq item_2.item_type
+          end
+        end
+      end
+
+      context 'when :barcode filter is set' do
+        before { params[:filters] = { barcode: barcode }.to_json }
+
+        it 'loads only records with specified barcode' do
+          subject.run
+          subject.data[:data].each do |i|
+            expect(i['barcode']).to eq barcode
           end
         end
       end

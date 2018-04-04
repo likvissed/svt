@@ -69,7 +69,7 @@ module Invent
                      :model,
                      { property_values: %i[property property_list] },
                      workplace: :user_iss
-                   ).limit(@length).offset(@start)
+                   ).order(item_id: :desc).limit(@length).offset(@start)
       end
 
       def prepare_to_render

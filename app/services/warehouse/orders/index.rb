@@ -31,7 +31,7 @@ module Warehouse
 
       def limit_records
         data[:recordsFiltered] = @orders.count
-        @orders = @orders.includes(:operations, :creator, :consumer, :validator).limit(@length).offset(@start)
+        @orders = @orders.includes(:operations, :creator, :consumer, :validator).order(id: :desc).limit(@length).offset(@start)
       end
 
       def prepare_to_render

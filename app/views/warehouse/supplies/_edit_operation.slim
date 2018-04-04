@@ -42,7 +42,7 @@ script type="text/ng-template" id="editSupplyOperation.slim"
       = text_field_tag "shift", "", class: "form-control", "ng-model": "op.result.shiftGetterSetter",
         "ng-model-options": "{ getterSetter: true }"
     .form-group
-      = label_tag "barcode", "Штрих-код", class: "control-label"
+      = label_tag "barcode", "Штрих-код производителя", class: "control-label"
       = text_field_tag "barcode", "", class: "form-control", "ng-model": "op.result.barcode"
 
   .modal-footer
