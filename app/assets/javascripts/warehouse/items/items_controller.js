@@ -58,7 +58,7 @@
   };
 
   /**
-   * Открыть модальное окно
+   * Открыть модальное окно.
    */
   WarehouseItemsCtrl.prototype._openEditModal = function() {
     var self = this;
@@ -74,6 +74,27 @@
       self.closeOrder();
     });
   };
+
+  /**
+   * Проверить, в наличии ли техника на складе.
+   */
+  WarehouseItemsCtrl.prototype.isItemInStock = function(item) {
+    return item.count != 0 && item.count > item.count_reserved;
+  }
+
+  /**
+   * Проверить, принадлежит ли техника выбранному ордеру.
+   */
+  WarehouseItemsCtrl.prototype.isItemInOrder = function(item) {
+    if (!this.order) { return false; }
+    return this.Order.getOperation(item);
+  }
+
+  WarehouseItemsCtrl.prototype.isItemInDoneOp = function(item) {
+    var operation = this.isItemInOrder(item);
+    if (!operation) { return false; }
+    return operation.status == 'done'
+  }
 
   /**
    * События изменения страницы.
@@ -99,7 +120,7 @@
     if (item.added_to_order) {
       this.Order.addPosition(this.order.warehouse_type, angular.copy(item));
     } else {
-      var operation = this.order.operations_attributes.find(function(op) { return op.item_id == item.id; })
+      var operation = this.Order.getOperation(item);
 
       this.Order.delPosition(operation);
     }
@@ -146,6 +167,8 @@
     this.Order.loadOrder(this.selectedOrder.id, true).then(function() {
       self._openEditModal();
       self.Items.findSelected();
+
+      self.reloadItems();
     });
   }
 

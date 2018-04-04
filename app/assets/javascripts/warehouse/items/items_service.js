@@ -43,7 +43,8 @@
         start: this.TablePaginator.startNum(),
         length: this.Config.global.uibPaginationConfig.itemsPerPage,
         init_filters: init,
-        filters: this.selectedTableFilters
+        filters: this.selectedTableFilters,
+        selected_order_id: self.Order.order.id
       },
       function(response) {
         // Список элементов склада

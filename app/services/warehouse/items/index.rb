@@ -4,16 +4,20 @@ module Warehouse
     class Index < Warehouse::ApplicationService
       def initialize(params)
         @data = {}
-        @start = params[:start]
-        @length = params[:length]
+        @start = params[:start].to_i
+        @length = params[:length].to_i
         @init = params[:init_filters] == 'true'
-        @conditions = JSON.parse(params[:filters]) if params[:filter]
+        @conditions = JSON.parse(params[:filters]) if params[:filters]
+        @selected_order_id = params[:selected_order_id]
+
+        @current_page = @start / @length + 1
       end
 
       def run
-        load_items
-        init_order
+        load_order_items
+        load_other_items
         init_filters if @init
+        init_order unless @selected_order_id
         load_orders
         limit_records
         prepare_to_render
@@ -28,7 +32,16 @@ module Warehouse
 
       protected
 
-      def load_items
+      def load_order_items
+        # Список всех items, которые принадлежат ордеру
+        @order_items = @selected_order_id ? Order.find(@selected_order_id).items.includes(:inv_item) : []
+        # Список items ордера, который будет соответствовать текущей странице
+        @order_items_to_result = small_order? ? @order_items : @order_items.limit(@length).offset(@start)
+        # Список items ордера, который необходимо исключить из выборки items (которая будет далее)
+        @exclude_items = @order_items
+      end
+
+      def load_other_items
         data[:recordsTotal] = Item.count
         @items = Item.all
         run_filters if @conditions
@@ -42,12 +55,30 @@ module Warehouse
 
       def limit_records
         data[:recordsFiltered] = @items.count
-        @items = @items.includes(:inv_item).limit(@length).offset(@start)
+
+        if first_page_after_order_items?
+          limit = @length - @order_items_to_result.size
+          start = 0
+        elsif order_for_all_page?
+          limit = @length - @order_items_to_result.size
+          start = @start
+        else
+          limit = @length
+          start = @start - @order_items_to_result.size
+        end
+
+        @items = @items.includes(:inv_item).where.not(id: @exclude_items.map(&:id)).order(id: :desc).limit(limit).offset(start)
       end
 
       def prepare_to_render
-        data[:data] = @items.as_json(include: :inv_item).each do |item|
-          item['translated_used'] = item['used'] ? 'Б/У' : 'Новое'
+        result_arr = if first_page_after_order_items? || order_for_all_page?
+                       @order_items_to_result + @items
+                     else
+                       @items
+                     end
+
+        data[:data] = result_arr.as_json(include: :inv_item).each do |item|
+          item['translated_used'] = item['used'] ? '<span class="label label-warning">Б/У</span>' : '<span class="label label-success">Новое</span>'
         end
       end
 
@@ -77,6 +108,24 @@ module Warehouse
         else
           raise 'Не удалось загрузить список ордеров'
         end
+      end
+
+      # true - если размер ордера меньше, чем число items на странице
+      def small_order?
+        @order_items.size < @length
+      end
+
+      # Проверка, займут ли items ордера текущую страницу целиком (true - если займут)
+      def order_for_all_page?
+        # Если >= 0 - число items ордера займет целую страницу
+        # Если < 0 - число items ордера не займет целую страницу
+        !(@order_items.size - @start - @length).negative?
+      end
+
+      # Проверка, содержит ли выбранная страница технику, принадлежащую к ордеру
+      def first_page_after_order_items?
+        tmp = @order_items.size - @start
+        tmp < @length && tmp.positive?
       end
     end
   end

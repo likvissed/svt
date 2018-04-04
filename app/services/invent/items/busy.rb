@@ -3,13 +3,14 @@ module Invent
     # Показать список техники, используемой на РМ в данный момент. В выборку не попадает техника, с которой имеются
     # связанные не закрытые ордеры
     class Busy < Invent::ApplicationService
-      def initialize(type_id, invent_num)
+      def initialize(type_id, invent_num, item_id)
         @type_id = type_id
         @invent_num = invent_num
+        @item_id = item_id
       end
 
       def run
-        return false if @invent_num.blank?
+        return false if @invent_num.blank? && @item_id.blank?
         load_items
         prepare_params
 
@@ -42,6 +43,7 @@ module Invent
                       io.invent_item_id = invent_item.item_id'
                   )
                   .by_invent_num(@invent_num)
+                  .by_item_id(@item_id)
                   .where('workplace_id IS NOT NULL')
                   .where('io_id IS NULL')
                   .by_type_id(@type_id)

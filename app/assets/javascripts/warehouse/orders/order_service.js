@@ -48,6 +48,11 @@
     this._initVisibleCount(this.order.operations_attributes.length);
   };
 
+  WarehouseOrder.prototype.getOperation = function(item) {
+    if (!this.order) { return false; }
+    return this.order.operations_attributes.find(function(op) { return op.item_id == item.id; })
+  }
+
   /**
    * Загрузить список ордеров
    *

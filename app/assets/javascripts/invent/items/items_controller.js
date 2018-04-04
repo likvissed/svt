@@ -70,7 +70,11 @@
     this.Item = Item;
     this.Flash = Flash;
 
-    this.selectedType = $scope.$parent.select.eqTypes[0];
+    this._setDeafultAttrs();
+  }
+
+  FindExistingInventItemCtrl.prototype._setDeafultAttrs = function() {
+    this.selectedType = this.$scope.$parent.select.eqTypes[0];
     this.items = [];
   }
 
@@ -80,7 +84,7 @@
   FindExistingInventItemCtrl.prototype.loadItems = function() {
     var self = this;
 
-    this.Item.loadBusyItems(this.selectedType.type_id, this.invent_num)
+    this.Item.loadBusyItems(this.selectedType.type_id, this.invent_num, this.item_id)
       .then(function(response) {
         self.items = response;
         self.$scope.$emit('removeDuplicateInvItems', self.items);
@@ -97,8 +101,16 @@
   /**
    * Очистить объект selectedItem
    */
-  FindExistingInventItemCtrl.prototype.clearData = function() {
+  FindExistingInventItemCtrl.prototype.clearFindedData = function() {
     delete(this.selectedItem);
-    this.items = [];
+    this._setDeafultAttrs();
+  };
+
+    /**
+   * Очистить данные поиска
+   */
+  FindExistingInventItemCtrl.prototype.clearSearchData = function() {
+    this.item_id = null;
+    this.invent_num = null;
   };
 })();

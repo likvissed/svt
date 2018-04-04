@@ -8,13 +8,24 @@ module Invent
       let!(:items) { create_list(:item, 4, :with_property_values, type_name: 'monitor') }
       let(:type) { Type.find_by(name: :pc) }
       let(:item) { workplaces.first.items.first }
-      subject { Busy.new(type.type_id, item.invent_num) }
+      subject { Busy.new(type.type_id, item.invent_num, item.item_id) }
 
       context 'without invent_num' do
-        subject { Busy.new(type.type_id, '') }
+        context 'and with item_id' do
+          subject { Busy.new('', '', item.item_id) }
 
-        it 'returns false' do
-          expect(subject.run).to be_falsey
+          it 'loads items with specified type and item_id' do
+            subject.run
+            expect(subject.data.count).to eq 1
+          end
+        end
+
+        context 'and without item_id' do
+          subject { Busy.new(type.type_id, '', '') }
+
+          it 'returns false' do
+            expect(subject.run).to be_falsey
+          end
         end
       end
 

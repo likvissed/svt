@@ -6,7 +6,7 @@ script type="text/ng-template" id="outOrderModal.slim"
       .pull-right
         .icon-block
           = render partial: 'templates/load_spinner'
-        .icon-block
+        .icon-block ng-show="edit.order.id"
           = fa_icon "refresh 2x fw", class: "pointer", "tooltip-placement": "top", "tooltip-append-to-body": true, "uib-tooltip": "Загрузать данные об ордере заново",
             "ng-click": "edit.reloadOrder()"
     .modal-body

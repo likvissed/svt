@@ -36,6 +36,11 @@ module Invent
       where(invent_num: invent_num)
     end
 
+    def self.by_item_id(item_id)
+      return all if item_id.blank?
+      where(item_id: item_id)
+    end
+
     def self.not_by_items(rejected)
       return where('item_id IS NOT NULL') if rejected.compact.empty?
       where('item_id NOT IN (?)', rejected)

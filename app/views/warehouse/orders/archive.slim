@@ -29,7 +29,7 @@
               td.col-fhd-3.col-xlg-3.col-lg-3.col-md-3.col-sm-3 ng-bind="order.consumer.fio || order.consumer_fio"
               td.col-fhd-1.col-xlg-2.col-lg-3.col-md-3.col-sm-3 ng-bind="order.status_translated"
               td.text-center.col-fhd-1.col-sm-2
-                = fa_icon "check-square-o fw", class: "pointer", "ng-click": "table.execOrder(order)",
+                = fa_icon "eye fw", class: "pointer", "ng-click": "table.execOrder(order)",
                   "uib-tooltip": "Просмотреть ордер", "tooltip-append-to-body": "true"
             tr ng-if="table.orders.length == 0"
               td colspan=10 Данных нет

@@ -50,12 +50,13 @@
    *
    * @param type_id - тип загружаемой техники
    * @param invent_num
+   * @param id
    */
-  InventItem.prototype.loadBusyItems = function(type_id, invent_num) {
+  InventItem.prototype.loadBusyItems = function(type_id, invent_num, item_id) {
     var self = this;
 
     return this.Server.Invent.Item.busy(
-      { type_id: type_id, invent_num: invent_num },
+      { type_id: type_id, invent_num: invent_num, item_id: item_id },
       function(response) {},
       function(response, status) {
         self.Error.response(response, status);

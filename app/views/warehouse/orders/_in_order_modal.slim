@@ -6,8 +6,8 @@ script type="text/ng-template" id="inOrderModal.slim"
       .pull-right
         .icon-block
           = render partial: 'templates/load_spinner'
-        .icon-block
-          = fa_icon "refresh 2x fw", class: "pointer", "tooltip-placement": "top", "tooltip-append-to-body": true, "uib-tooltip": "Загрузать данные об ордере заново",
+        .icon-block ng-show="edit.order.id"
+          = fa_icon "refresh 2x fw", class: "pointer", "tooltip-placement": "top", "tooltip-append-to-body": true, "uib-tooltip": "Загрузить данные об ордере заново",
             "ng-click": "edit.reloadOrder()"
     .modal-body
       .form-group ng-class="edit.errorClass('order[consumer_dept]')"

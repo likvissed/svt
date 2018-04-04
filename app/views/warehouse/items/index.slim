@@ -48,22 +48,23 @@
                 th Модель
                 th Инв. №
                 th Состояние
-                th Доступно
+                th На складе
                 th Зарезервировано
                 th
             tbody
-              tr ng-repeat="item in table.items"
+              tr ng-repeat="item in table.items" ng-class="{'text-muted': (!table.isItemInStock(item) && !table.isItemInOrder(item)) || table.isItemInDoneOp(item)}"
                 td
-                  input type="checkbox" ng-model="item.added_to_order" ng-true-value="true" ng-false-value="false" ng-click="table.togglePosition(item)" ng-disabled="item.count == 0 || item.count <= item.count_reserved"
+                  input{ type="checkbox" ng-model="item.added_to_order" ng-true-value="true" ng-false-value="false" ng-click="table.togglePosition(item)"
+                    ng-disabled="(!table.isItemInStock(item) && !table.isItemInOrder(item)) || table.isItemInDoneOp(item)" }
                 td.col-fhd-3 ng-bind="item.item_type"
                 td.col-fhd-13 ng-bind="item.item_model"
                 td.col-fhd-2 ng-bind="item.inv_item.invent_num"
-                td.col-fhd-2 ng-bind="item.translated_used"
+                td.col-fhd-2 ng-bind-html="item.translated_used"
                 td.col-fhd-2 ng-bind="item.count"
                 td.col-fhd-2 ng-bind="item.count_reserved"
                 td
-                  = fa_icon "trash-o fw", class: "pointer text-danger", "ng-click": "table.destroyItem(item)",
-                    "uib-tooltip": "Удалить технику со склада", "tooltip-append-to-body": "true"
+                  = fa_icon "trash-o fw", class: "pointer text-danger", "ng-click": "table.destroyItem(item)", "uib-tooltip": "Удалить технику со склада",
+                     "tooltip-append-to-body": "true", "ng-hide": "table.isItemInOrder(item)"
               tr ng-if="table.items.length == 0"
                 td colspan=8 Данных нет
 
