@@ -76,7 +76,7 @@ module Warehouse
     end
 
     def edit
-      @edit = Orders::Edit.new(params[:id])
+      @edit = Orders::Edit.new(params[:id], params[:check_unreg])
 
       if @edit.run
         render json: @edit.data

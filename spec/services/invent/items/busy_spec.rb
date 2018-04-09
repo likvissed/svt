@@ -8,15 +8,17 @@ module Invent
       let!(:items) { create_list(:item, 4, :with_property_values, type_name: 'monitor') }
       let(:type) { Type.find_by(name: :pc) }
       let(:item) { workplaces.first.items.first }
-      subject { Busy.new(type.type_id, item.invent_num, item.item_id) }
+      let(:division) { item.workplace.division }
+      subject { Busy.new(type.type_id, item.invent_num, item.item_id, division) }
 
       context 'without invent_num' do
-        context 'and with item_id' do
+        context 'and with item_id and without division' do
           subject { Busy.new('', '', item.item_id) }
 
           it 'loads items with specified type and item_id' do
             subject.run
             expect(subject.data.count).to eq 1
+            expect(subject.data.first['item_id']).to eq item.item_id
           end
         end
 
@@ -29,9 +31,21 @@ module Invent
         end
       end
 
-      it 'loads items with specified type and invent_num' do
+      context 'with division' do
+        context 'and when item is not belong to division' do
+          subject { Busy.new(type.type_id, item.invent_num, item.item_id, 123) }
+
+          it 'does not show this item in result array' do
+            subject.run
+            expect(subject.data).to be_empty
+          end
+        end
+      end
+
+      it 'loads items with specified invent_num, type, invent_num and division' do
         subject.run
         expect(subject.data.count).to eq 1
+        expect(subject.data.first['item_id']).to eq item.item_id
       end
 
       it 'adds :main_info and :get_item_model field to the each item' do

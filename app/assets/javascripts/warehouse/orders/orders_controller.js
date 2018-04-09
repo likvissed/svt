@@ -116,9 +116,11 @@
    * Открыть модальное окно для исполнения ордера.
    */
   OrdersController.prototype.execOrder = function(order) {
-    var self = this;
+    var
+      self = this,
+      checkUnreg = order.operation == 'in';
 
-    this.Order.loadOrder(order.id).then(function() {
+    this.Order.loadOrder(order.id, false, checkUnreg).then(function() {
       self.$uibModal.open({
         templateUrl: 'execOrder.slim',
         controller: 'ExecOrderController',
@@ -412,6 +414,7 @@
     this.Server = Server;
 
     this.order = this.Order.order;
+    this.Order.prepareToExec();
     this.checkSelected();
   }
 
@@ -426,6 +429,13 @@
     var status = this.isAllOpSelected ? 'done' : 'processing';
     this.order.operations_attributes.forEach(function(op) { op.status = status; });
   };
+
+  /**
+   * Проверка, исполнена ли операция
+   */
+  ExecOrderController.prototype.isOperationDone = function(op) {
+    return op.status == 'done' && op.date;
+  }
 
   /**
    * Установить/снять флаг, показывающий, выбраны ли все пункты
@@ -513,6 +523,10 @@
     };
     // Инвентарный номер выбранного типа техники
     this.invent_num = '';
+    // Отдел необходим для ограничения выборки техники (в окне поиска техники)
+    $scope.division = this.Order.order.consumer_dept;
+    // Обязательно необходимо сбросить объект selectedItem
+    this.InventItem.selectedItem = null;
 
     $scope.$on('removeDuplicateInvItems', function(event, data) {
       self._removeDuplicateItems(data);
@@ -538,7 +552,7 @@
   };
 
   ItemsForOrderController.prototype.ok = function() {
-    if (this.warehouseType == 'with_invent_num' && Object.keys(this.InventItem.selectedItem).length == 0) {
+    if (this.warehouseType == 'with_invent_num' && !this.InventItem.selectedItem) {
       this.Flash.alert('Необходимо указать инвентарный номер и выбрать технику');
       return false;
     }

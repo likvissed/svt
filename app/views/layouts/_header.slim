@@ -44,10 +44,11 @@
         li.dropdown class="#{active_class('/invent/workplace')}"
           = link_to "", class: "dropdown-toggle", "data-toggle": "dropdown" do
             = fa_icon "clipboard"
-            '  Инвентаризация
+            '  Рабочие места
             b.caret
           ul.dropdown-menu
             li= link_to "Список РМ", root_path
+            li.divider role="separator"
             li= link_to "Настройки доступа", invent_workplace_counts_path
             li= link_to "Проверка конфигураций", list_wp_invent_workplaces_path
 
@@ -88,6 +89,7 @@
           ul.dropdown-menu
             li= link_to "Приходные", in_warehouse_orders_path
             li= link_to "Расходные", out_warehouse_orders_path
+            li.divider role="separator"
             li= link_to "Архив", archive_warehouse_orders_path
         li class="#{active_class('/warehouse/suppl')}"
           = link_to warehouse_supplies_path do

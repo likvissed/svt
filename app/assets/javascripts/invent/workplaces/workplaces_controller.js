@@ -591,6 +591,7 @@
       // Данные о рабочем месте
       self.workplace = self.Workplace.workplace;
 
+
       if (!id) { self.loadUsers(); }
     });
   };
@@ -644,23 +645,6 @@
   };
 
   /**
-   * Проверить, совпадает ли инвентарный номер с сохраненным (после потери фокуса поля "Инвентарный").
-   *
-   * @param item - объект item массива inv_atems_attributes.
-   */
-  WorkplaceEditCtrl.prototype.checkPcInvnum = function(item) {
-    if (
-      // Относится ли текущий тип оборудования к тем, что указаны в массиве pcTypes.
-      !this.additional.pcTypes.includes(item.type.name) ||
-      // Совпадает ли инв. номер с сохраненным
-      this.additional.invent_num == item.invent_num
-    ) { return false; }
-
-    // Очистить состав ПК
-    this.Item.clearPropertyValues(item);
-  };
-
-  /**
    * Отправить запрос в Аудит для получения конфигурации оборудования.
    *
    * @param item
@@ -678,21 +662,17 @@
    * Запустить диалоговое окно "Ввод данных вручную".
    */
   WorkplaceEditCtrl.prototype.runManuallyPcDialog = function(item) {
-    if (item.invent_num) {
-      this.$uibModal.open({
-        animation: this.Config.global.modalAnimation,
-        templateUrl: 'manuallyPcDialog.slim',
-        controller: 'ManuallyPcDialogCtrl',
-        controllerAs: 'manually',
-        size: 'md',
-        backdrop: 'static',
-        resolve: {
-          item: function() { return item; }
-        }
-      });
-    } else {
-      this.Flash.alert('Сначала необходимо ввести инвентарный номер');
-    }
+    this.$uibModal.open({
+      animation: this.Config.global.modalAnimation,
+      templateUrl: 'manuallyPcDialog.slim',
+      controller: 'ManuallyPcDialogCtrl',
+      controllerAs: 'manually',
+      size: 'md',
+      backdrop: 'static',
+      resolve: {
+        item: function() { return item; }
+      }
+    });
   };
 
   /**
@@ -810,7 +790,6 @@
           return false;
         }
 
-        self.Item.setAdditional('invent_num', angular.copy(self.item.invent_num));
         self.Flash.notice(response.full_message);
         self.$uibModalInstance.close();
       }
@@ -832,6 +811,8 @@
     this.Workplace = Workplace;
     // Тип техники: новая или б/у
     this.itemType = '';
+    // Отдел необходим для ограничения выборки техники (в окне поиска техники)
+    $scope.division = this.Workplace.workplace.division.division;
 
     $scope.$on('removeDuplicateInvItems', function(event, data) {
       self._removeDuplicateItems(data);

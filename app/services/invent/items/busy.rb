@@ -3,10 +3,11 @@ module Invent
     # Показать список техники, используемой на РМ в данный момент. В выборку не попадает техника, с которой имеются
     # связанные не закрытые ордеры
     class Busy < Invent::ApplicationService
-      def initialize(type_id, invent_num, item_id)
+      def initialize(type_id, invent_num, item_id, division = nil)
         @type_id = type_id
         @invent_num = invent_num
         @item_id = item_id
+        @division = division
       end
 
       def run
@@ -42,9 +43,11 @@ module Invent
                     ON
                       io.invent_item_id = invent_item.item_id'
                   )
+                  .joins(workplace: :workplace_count)
                   .by_invent_num(@invent_num)
                   .by_item_id(@item_id)
-                  .where('workplace_id IS NOT NULL')
+                  .by_division(@division)
+                  .where('invent_item.workplace_id IS NOT NULL')
                   .where('io_id IS NULL')
                   .by_type_id(@type_id)
       end

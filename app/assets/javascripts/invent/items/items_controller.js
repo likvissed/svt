@@ -84,7 +84,7 @@
   FindExistingInventItemCtrl.prototype.loadItems = function() {
     var self = this;
 
-    this.Item.loadBusyItems(this.selectedType.type_id, this.invent_num, this.item_id)
+    this.Item.loadBusyItems(this.selectedType.type_id, this.invent_num, this.item_id, this.$scope.$parent.division)
       .then(function(response) {
         self.items = response;
         self.$scope.$emit('removeDuplicateInvItems', self.items);

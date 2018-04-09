@@ -292,7 +292,10 @@
     var self = this;
 
     this.extra.eqModels = [];
-    this.result.model_id = 0;
+    this.result.model = {
+      model_id: 0,
+      item_model: ''
+    }
 
     this.Server.Invent.Model.query(
       { type_id: self.result.type.type_id },
@@ -305,13 +308,19 @@
     );
   }
 
+  /**
+   * Условия, при которых нельзя добавить позицию к поставке
+   */
   EditSupplyOperationCtrl.prototype.disableButton = function() {
     if (this.result.warehouseType == 'with_invent_num') {
-      return this.result.type.type_id == 0 || this.result.model.model_id == 0 || this.result.shift == 0;
+      return this.result.type.type_id == 0 || this.result.shift == 0 ||
+        // Случай, когда модель выбирают из списка
+        (this.result.type.type_id != 0 && this.extra.eqModels.length > 1 && this.result.model.model_id == 0) ||
+        // Случай, когда модель нужно ввести вручную
+        (this.result.type.type_id != 0 && this.extra.eqModels.length == 1 && !this.result.model.item_model);
     } else if (this.result.warehouseType == 'without_invent_num') {
       return this.result.type.short_descirption == '' || this.result.model.item_model == '' || this.result.shift == 0;
     } else { return true; }
-
   }
 
   EditSupplyOperationCtrl.prototype.ok = function() {

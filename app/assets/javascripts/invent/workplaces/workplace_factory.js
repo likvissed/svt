@@ -63,8 +63,8 @@
       location_building_id: this.selectIssBuilding.building_id,
       // Комната
       location_room_name: '',
-      // Дефолтный статус РМ (2 - в ожидании проверки)
-      status: 'pending_verification',
+      // Дефолтный статус РМ (0 - подтверждено)
+      status: 'confirmed',
       // Состав РМ
       items_attributes: []
     };

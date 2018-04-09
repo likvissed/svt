@@ -38,8 +38,6 @@
       additional = {
         // Активный таб
         activeTab: 0,
-        // Инвентарный номер, связанный с данными, полученными от аудита.
-        invent_num: '',
         // Типы ПК, для которых необходимы параметры pcAttrs.
         pcTypes: [],
         // Параметра СБ/моноблока/ноутбука, которые загружаются от Аудита или из файла конфигурации ПК.
@@ -332,11 +330,6 @@
         // жесткий диск.
         if (item.property_values_attributes.length != item.type.properties.length) {
           _cloneProperties(item);
-        }
-
-        // Для типов техники "Системный блок", "Моноблок" и "Ноутбук" запомнить инвентарный номер.
-        if (additional.pcTypes.includes(item.type.name)) {
-          additional.invent_num = item.invent_num;
         }
 
         _setModel(item);

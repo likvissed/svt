@@ -153,7 +153,7 @@ module Invent
           end
 
           it 'removes skips blank values' do
-            expect(subject.get_item_model).to be_empty
+            expect(subject.get_item_model).to eq 'Конфигурация отсутствует'
           end
         end
       end

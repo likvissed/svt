@@ -49,14 +49,20 @@
    * Загрузить занятую Б/У технику указанного типа.
    *
    * @param type_id - тип загружаемой техники
-   * @param invent_num
+   * @param invent_num - инвентарный номер
    * @param id
+   * @param division - отдел
    */
-  InventItem.prototype.loadBusyItems = function(type_id, invent_num, item_id) {
+  InventItem.prototype.loadBusyItems = function(type_id, invent_num, item_id, division) {
     var self = this;
 
     return this.Server.Invent.Item.busy(
-      { type_id: type_id, invent_num: invent_num, item_id: item_id },
+      {
+        type_id: type_id,
+        invent_num: invent_num,
+        item_id: item_id,
+        division: division
+      },
       function(response) {},
       function(response, status) {
         self.Error.response(response, status);

@@ -46,6 +46,11 @@ module Invent
       where('item_id NOT IN (?)', rejected)
     end
 
+    def self.by_division(division)
+      return all if division.blank?
+      where(workplace: { invent_workplace_count: { division: division } })
+    end
+
     def model_exists?
       model || !item_model.empty?
     end
@@ -54,6 +59,7 @@ module Invent
       if Type::TYPE_WITH_FILES.include?(type.name)
         props = Property.where(name: Property::FILE_DEPENDING)
         attrs = property_values.where(property: props).map { |prop_val| prop_val.value }.reject(&:blank?).join(' / ')
+        attrs = 'Конфигурация отсутствует' if attrs.blank?
         item_model.blank? ? attrs : "#{item_model}: #{attrs}"
       else
         model.try(:item_model) || item_model

@@ -82,11 +82,15 @@
   /**
    * Загрузить данные указанного ордера
    */
-  WarehouseOrder.prototype.loadOrder = function(order_id, onlyOrder = false) {
+  WarehouseOrder.prototype.loadOrder = function(order_id, onlyOrder, checkUnreg) {
     var self = this;
+    onlyOrder = onlyOrder || false;
 
     return this.Server.Warehouse.Order.edit(
-      { id: order_id },
+      {
+        id: order_id,
+        check_unreg: checkUnreg
+      },
       function (data) {
         self._processingData(data, onlyOrder);
       },
@@ -147,6 +151,10 @@
   //       self.Error.response(response, status);
   //     }).$promise;
   // };
+
+  WarehouseOrder.prototype.prepareToExec = function() {
+    this.order.operations_attributes.forEach(function(op) { op.status = 'done'; });
+  };
 
   /**
    * Добавить данные по ответственному к объекту order.

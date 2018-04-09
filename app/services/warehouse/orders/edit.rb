@@ -2,9 +2,10 @@ module Warehouse
   module Orders
     # Загрузить данные об ордере для редактирования
     class Edit < BaseService
-      def initialize(order_id)
+      def initialize(order_id, check_unreg)
         @data = {}
         @order_id = order_id
+        @check_unreg = check_unreg
       end
 
       def run
@@ -12,6 +13,7 @@ module Warehouse
         load_divisions
         load_types
         transform_to_json
+        check_hosts if @check_unreg.to_s == 'true'
 
         true
       rescue RuntimeError => e
@@ -63,6 +65,14 @@ module Warehouse
         end
 
         data[:order]['consumer'] = data[:order]['consumer_fio']
+      end
+
+      def check_hosts
+        data[:order]['operations_attributes'].each do |op|
+          invent_num = op['inv_items'].any? ? op['inv_items'].first['invent_num'] : nil
+          host_data = HostIss.by_invent_num(invent_num)
+          op['unreg'] = host_data ? host_data['class'].to_i == 4 : nil
+        end
       end
     end
   end

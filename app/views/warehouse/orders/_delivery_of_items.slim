@@ -2,10 +2,15 @@ script type="text/ng-template" id="deliveryOfItems.slim"
   form role="form" name="delivery.form"
     .modal-header
       .pull-left
-        h4 Выдача техники
+        h4
+          ' Выдача техники (ID РМ: {{delivery.order.invent_workplace_id}})
+
       .pull-right
         .icon-block
           = render partial: 'templates/load_spinner'
+        .icon-block
+          a.default-color ng-href="/invent/workplaces/{{delivery.order.invent_workplace_id}}/edit" target="blank"
+            = fa_icon "external-link 2x fw", class: "pointer", "uib-tooltip": "Перейти к рабочему месту", "tooltip-append-to-body": "true"
 
     .modal-body
       div ng-repeat="op in delivery.order.operations_attributes | filter:delivery.selectedOpFilter(delivery.order.selected_op)"

@@ -34,7 +34,7 @@ script type="text/ng-template" id="execOrder.slim"
 
         .form-group
           h4 Позиции
-          table.table.table-striped.table-condensed
+          table.table.table-condensed
             thead
               tr
                 th.col-fhd-1
@@ -45,10 +45,10 @@ script type="text/ng-template" id="execOrder.slim"
                 th.col-fhd-9 Модель
                 th.col-fhd-3 Исполнитель
                 th.col-fhd-3 Дата
-            tbody
-              tr ng-repeat="op in exec.order.operations_attributes" ng-hide="op._destroy"
+            tbody ng-repeat="op in exec.order.operations_attributes" ng-hide="op._destroy" ng-class="{ 'text-muted': exec.isOperationDone(op) }"
+              tr ng-exec-in-order-table=true
                 td
-                  input type="checkbox" ng-model="op.status" ng-true-value="'done'" ng-false-value="'processing'" ng-click="exec.checkSelected()"
+                  input type="checkbox" ng-model="op.status" ng-true-value="'done'" ng-false-value="'processing'" ng-click="exec.checkSelected()" ng-disabled="exec.isOperationDone(op)"
                 td ng-bind="op.inv_items[0].type.short_description || op.item.item_type || op.item_type"
                 td ng-bind="op.inv_items | inventNumsToStr"
                 td ng-bind="op.shift | positiveVal"

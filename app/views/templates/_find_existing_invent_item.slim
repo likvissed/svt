@@ -1,7 +1,7 @@
 div ng-controller="FindExistingInventItemCtrl as find"
   / .form-group
   uib-tabset type="pills" justified="true"
-    uib-tab heading="Поиск по штрих-коду" classes="btn-sm" select="find.clearFindedData(); find.clearSearchData()"
+    uib-tab heading="Поиск по штрих-коду (ID техники)" classes="btn-sm" select="find.clearFindedData(); find.clearSearchData()"
       .form-group
         = label_tag "item_id", "Штрих-код (ID техники)", class: "control-label"
         .input-group
