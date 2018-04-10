@@ -3,6 +3,8 @@ require 'feature_helper'
 module Warehouse
   RSpec.describe Item, type: :model do
     it { is_expected.to have_many(:operations).dependent(:nullify) }
+    it { is_expected.to have_many(:supplies).through(:operations).class_name('Warehouse::Supply').source(:operationable) }
+    it { is_expected.to have_many(:orders).through(:operations).class_name('Warehouse::Order').source(:operationable) }
     it { is_expected.to belong_to(:inv_item).class_name('Invent::Item').with_foreign_key('invent_item_id') }
     it { is_expected.to belong_to(:inv_type).class_name('Invent::Type').with_foreign_key('invent_type_id') }
     it { is_expected.to belong_to(:inv_model).class_name('Invent::Model').with_foreign_key('invent_model_id') }

@@ -6,9 +6,9 @@ script type="text/ng-template" id="editSupplyModal.slim"
       .pull-right
         .icon-block
           = render partial: 'templates/load_spinner'
-        / .icon-block
-          = fa_icon "refresh 2x fw", class: "pointer", "tooltip-placement": "top", "tooltip-append-to-body": true, "uib-tooltip": "Загрузить данные об ордере заново",
-            "ng-click": "edit.reloadOrder()"
+        .icon-block
+          = fa_icon "refresh 2x fw", class: "pointer", "tooltip-placement": "top", "tooltip-append-to-body": true, "uib-tooltip": "Загрузить данные о поставке заново",
+            "ng-click": "edit.reloadSupply()"
     .modal-body
       .row
         .col-lg-12

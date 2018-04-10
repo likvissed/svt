@@ -9,7 +9,7 @@ RSpec.describe UserIssesController, type: :controller do
 
     it 'creates instance of the WorkplaceCounts::Index class' do
       get :users_from_division, params: { division: workplace_count.division }, format: :json
-      expect(response.body).to eq UserIss.select(:id_tn, :fio).where(dept: workplace_count.division).to_json
+      expect(response.body).to eq UserIss.select(:id_tn, :fio).order(:fio).where(dept: workplace_count.division).to_json
     end
   end
 end

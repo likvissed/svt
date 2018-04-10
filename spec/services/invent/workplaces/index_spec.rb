@@ -143,7 +143,7 @@ module Invent
         end
 
         it 'must add "Ответственный не найден" to the responsible field' do
-          expect(subject.data[:data].first['responsible']).to match 'Ответственный не найден'
+          expect(subject.data[:data].last['responsible']).to match 'Ответственный не найден'
         end
       end
     end

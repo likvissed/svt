@@ -3,6 +3,8 @@ module Warehouse
     self.table_name = "#{table_name_prefix}items"
 
     has_many :operations, inverse_of: :item, dependent: :nullify
+    has_many :supplies, through: :operations, source: :operationable, source_type: 'Warehouse::Supply'
+    has_many :orders, through: :operations, source: :operationable, source_type: 'Warehouse::Order'
 
     belongs_to :inv_item, class_name: 'Invent::Item', foreign_key: 'invent_item_id', optional: true
     belongs_to :inv_type, class_name: 'Invent::Type', foreign_key: 'invent_type_id', optional: true

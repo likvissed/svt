@@ -48,6 +48,7 @@
             thead
               tr
                 th
+                th
                 th Тип техники
                 th Модель
                 th Инв. №
@@ -60,6 +61,8 @@
                 td
                   input{ type="checkbox" ng-model="item.added_to_order" ng-true-value="true" ng-false-value="false" ng-click="table.togglePosition(item)"
                     ng-disabled="(!table.isItemInStock(item) && !table.isItemInOrder(item)) || table.isItemInDoneOp(item)" }
+                td
+                  ng-warehouse-item-supply-popover
                 td.col-fhd-3 ng-bind="item.item_type"
                 td.col-fhd-13 ng-bind="item.item_model"
                 td.col-fhd-2 ng-bind="item.inv_item.invent_num"
@@ -80,3 +83,5 @@
             max-size="table.pagination.maxSize" class="pagination-sm pull-right" ng-change="table.reloadItems()" }
 
 = render partial: '/warehouse/orders/out_order_modal'
+= render partial: 'supply_template'
+= render partial: '/warehouse/supplies/show'

@@ -4,10 +4,12 @@
   app
     .controller('WarehouseSuppliesCtrl', WarehouseSuppliesCtrl)
     .controller('EditSupplyCtrl', EditSupplyCtrl)
+    .controller('ShowSupplyCtrl', ShowSupplyCtrl)
     .controller('EditSupplyOperationCtrl', EditSupplyOperationCtrl);
 
   WarehouseSuppliesCtrl.$inject = ['$uibModal', 'TablePaginator', 'ActionCableChannel', 'Config', 'WarehouseSupply', 'WarehouseOrder', 'Flash', 'Error', 'Server'];
   EditSupplyCtrl.$inject = ['$uibModal', '$uibModalInstance', 'WarehouseSupply', 'Flash', 'Error', 'Server'];
+  ShowSupplyCtrl.$inject = ['$uibModal', '$uibModalInstance', 'data', 'WarehouseSupply', 'Error', 'Server'];
   EditSupplyOperationCtrl.$inject = ['$uibModalInstance', 'operation', 'WarehouseSupply', 'WarehouseOperation', 'Error', 'Server'];
 
   function WarehouseSuppliesCtrl($uibModal, TablePaginator, ActionCableChannel, Config, WarehouseSupply, WarehouseOrder, Flash, Error, Server) {
@@ -150,9 +152,26 @@
     };
   }
 
-    // Унаследовать методы класса FormValidationController
-    EditSupplyCtrl.prototype = Object.create(FormValidationController.prototype);
-    EditSupplyCtrl.prototype.constructor = EditSupplyCtrl;
+  // Унаследовать методы класса FormValidationController
+  EditSupplyCtrl.prototype = Object.create(FormValidationController.prototype);
+  EditSupplyCtrl.prototype.constructor = EditSupplyCtrl;
+
+  /**
+   * Обновить данные поставки
+   */
+  EditSupplyCtrl.prototype.reloadSupply = function() {
+    var self = this;
+
+    this.Server.Warehouse.Supply.edit(
+      { id: this.supply.id },
+      function (data) {
+        self.Supply.init(data);
+      },
+      function (response, status) {
+        self.Error.response(response, status);
+      }
+    )
+  };
 
   /**
    * Показать календарь.
@@ -229,6 +248,50 @@
    * Закрыть модальное окно.
    */
   EditSupplyCtrl.prototype.cancel = function() {
+    this.$uibModalInstance.dismiss();
+  };
+
+// =====================================================================================================================
+
+  function ShowSupplyCtrl($uibModal, $uibModalInstance, data, WarehouseSupply, Error, Server) {
+    this.$uibModal = $uibModal;
+    this.$uibModalInstance = $uibModalInstance;
+    this.Supply = WarehouseSupply;
+    this.Server = Server;
+    this.Error = Error;
+    this.supply = this.Supply.supply;
+    this.extra = this.Supply.additional;
+    this.selectedItem = data.item;
+  }
+
+  /**
+   * Проверка, совпадает ли указанный item с выбранным (в переменной selectedItem)
+   */
+  ShowSupplyCtrl.prototype.isThisItem = function(item) {
+    return item.id == this.selectedItem.id;
+  };
+
+    /**
+   * Обновить данные поставки
+   */
+  ShowSupplyCtrl.prototype.reloadSupply = function() {
+    var self = this;
+
+    this.Server.Warehouse.Supply.edit(
+      { id: this.supply.id },
+      function (data) {
+        self.Supply.init(data);
+      },
+      function (response, status) {
+        self.Error.response(response, status);
+      }
+    )
+  };
+
+  /**
+   * Закрыть модальное окно.
+   */
+  ShowSupplyCtrl.prototype.cancel = function() {
     this.$uibModalInstance.dismiss();
   };
 

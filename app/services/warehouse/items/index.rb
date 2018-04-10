@@ -68,7 +68,7 @@ module Warehouse
           start = @start - @order_items_to_result.size
         end
 
-        @items = @items.includes(:inv_item).where.not(id: @exclude_items.map(&:id)).order(id: :desc).limit(limit).offset(start)
+        @items = @items.includes(:inv_item, :supplies).where.not(id: @exclude_items.map(&:id)).order(id: :desc).limit(limit).offset(start)
       end
 
       def prepare_to_render
@@ -78,8 +78,9 @@ module Warehouse
                        @items
                      end
 
-        data[:data] = result_arr.as_json(include: :inv_item).each do |item|
+        data[:data] = result_arr.as_json(include: [:inv_item, :supplies]).each do |item|
           item['translated_used'] = item['used'] ? '<span class="label label-warning">Б/У</span>' : '<span class="label label-success">Новое</span>'
+          item['supplies'].each { |supply| supply['date'] = supply['date'].strftime("%d-%m-%Y") }
         end
       end
 

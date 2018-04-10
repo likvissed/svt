@@ -2,7 +2,7 @@ module Warehouse
   module Orders
     # Загрузить данные об ордере для редактирования
     class Edit < BaseService
-      def initialize(order_id, check_unreg)
+      def initialize(order_id, check_unreg = false)
         @data = {}
         @order_id = order_id
         @check_unreg = check_unreg

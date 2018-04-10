@@ -4,13 +4,14 @@
   app
     .controller('WarehouseItemsCtrl', WarehouseItemsCtrl);
 
-  WarehouseItemsCtrl.$inject = ['$uibModal', 'ActionCableChannel', 'TablePaginator', 'WarehouseItems', 'WarehouseOrder', 'Flash', 'Error', 'Server'];
+  WarehouseItemsCtrl.$inject = ['$uibModal', 'ActionCableChannel', 'TablePaginator', 'WarehouseItems', 'WarehouseOrder', 'WarehouseSupply', 'Flash', 'Error', 'Server'];
 
-  function WarehouseItemsCtrl($uibModal, ActionCableChannel, TablePaginator, WarehouseItems, WarehouseOrder, Flash, Error, Server) {
+  function WarehouseItemsCtrl($uibModal, ActionCableChannel, TablePaginator, WarehouseItems, WarehouseOrder, WarehouseSupply, Flash, Error, Server) {
     this.$uibModal = $uibModal;
     this.ActionCableChannel = ActionCableChannel;
     this.Items = WarehouseItems;
     this.Order = WarehouseOrder;
+    this.Supply = WarehouseSupply;
     this.Flash = Flash;
     this.Error = Error;
     this.Server = Server;
@@ -58,7 +59,7 @@
   };
 
   /**
-   * Открыть модальное окно.
+   * Открыть модальное окно для редактирования состава ордера.
    */
   WarehouseItemsCtrl.prototype._openEditModal = function() {
     var self = this;
@@ -73,6 +74,45 @@
     modalInstance.result.then(function(result) {
       self.closeOrder();
     });
+  };
+
+  /**
+   * Открыть модальное окно для просмотра состава поставки.
+   *
+   * @param item
+   */
+  WarehouseItemsCtrl.prototype._openSupplyModal = function(item) {
+    this.$uibModal.open({
+      templateUrl: 'showSupplyModal.slim',
+      controller: 'ShowSupplyCtrl',
+      controllerAs: 'show',
+      size: 'md',
+      backdrop: 'static',
+      resolve: {
+        data: { item: item }
+      }
+    });
+  };
+
+  /**
+   * Показать данные о поставке.
+   *
+   * @param supply
+   * @param item
+   */
+  WarehouseItemsCtrl.prototype.showSupply = function(supply, item) {
+    var self = this;
+
+    this.Server.Warehouse.Supply.edit(
+      { id: supply.id },
+      function (data) {
+        self.Supply.init(data);
+        self._openSupplyModal(item);
+      },
+      function (response, status) {
+        self.Error.response(response, status);
+      }
+    )
   };
 
   /**

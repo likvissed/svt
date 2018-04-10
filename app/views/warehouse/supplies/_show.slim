@@ -1,0 +1,48 @@
+script type="text/ng-template" id="showSupplyModal.slim"
+  .modal-header
+    .pull-left
+      h4 Новая поставка
+    .pull-right
+      .icon-block
+        = render partial: 'templates/load_spinner'
+      .icon-block
+        = fa_icon "refresh 2x fw", class: "pointer", "tooltip-placement": "top", "tooltip-append-to-body": true, "uib-tooltip": "Загрузить данные о поставке заново",
+          "ng-click": "show.reloadSupply()"
+  .modal-body
+    .row
+      .col-lg-12
+        .form-group
+          = label_tag "supply[name]", "Наименование", class: "control-label"
+          = text_field_tag "supply[name]", "", class: "form-control", "ng-model": "show.supply.name"
+      .col-lg-12
+        .form-group
+          = label_tag "supply[date]", "Дата поставки", class: "control-label"
+          = text_field_tag "workplace_count[time_end]", "show.supply.date", class: "form-control",
+            "ng-model": "show.supply.date", "uib-datepicker-popup": "", "ng-model-options": "{ timezone: 'utc' }",
+            "ng-focus": "show.openDatePicker()", "is-open": "show.date.openDatePicker",
+            "popup-placement": "bottom-left", "show-button-bar": false
+    .form-group
+      = label_tag "supply[supplyer]", "Поставщик", class: "control-label"
+      = text_field_tag "supply[supplyer]", "", class: "form-control", "ng-model": "show.supply.supplyer"
+    .form-group
+      = label_tag "supply[comment]", "Комментарий", class: "control-label"
+      = text_area_tag "supply[comment]", "", class: "form-control", rows: "3", "ng-model": "show.supply.comment"
+
+    .form-group
+      h4
+        ' Позиции
+
+    table.table.table-striped.table-condensed ng-if="show.extra.visibleCount"
+      thead
+        tr
+          th.col-fhd-7.col-xlg-7.col-lg-7.col-md-8.col-sm-8 Тип
+          th.col-fhd-12.col-xlg-13.col-lg-10.col-md-10.col-sm-10 Модель
+          th.col-fhd-5.col-xlg-5.col-xlg-5.col-md-4.col-sm-4 Кол-во
+      tbody
+        tr.animate-show ng-repeat="op in show.supply.operations_attributes" ng-class="{ info: show.isThisItem(op.item) }"
+          td ng-bind="op.item.item_type"
+          td ng-bind="op.item.item_model"
+          td ng-bind="op.shift"
+
+  .modal-footer
+    = button_tag "Закрыть", class: "btn-default btn-sm", "ng-click": "show.cancel()"

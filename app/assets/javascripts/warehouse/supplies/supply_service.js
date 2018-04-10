@@ -13,14 +13,14 @@
     this.Error = Error;
 
     this.additional = {};
-    this.order = {};
+    this.supply = {};
   }
 
   WarehouseSupply.prototype._initSupply = function(supply) {
-    this.supply = supply;
+    angular.extend(this.supply, supply);
     this.supply.date = this.supply.date ? new Date(this.supply.date) : '';
     this.supply.operations_attributes = supply.operations_attributes || [];
-  }
+  };
 
   /**
    * Инициализация данных
@@ -33,7 +33,7 @@
 
     this.additional.eqTypes = [{ type_id: 0, short_description: 'Выберите тип' }].concat(data.eq_types);
     this.additional.visibleCount = this.supply.operations_attributes.length || 0;
-  }
+  };
 
   /**
    * Добавить позицию к поставке
@@ -43,7 +43,7 @@
   WarehouseSupply.prototype.addPosition = function(data) {
     this.supply.operations_attributes.push(this.Operation.generate(null, data));
     this.additional.visibleCount ++;
-  }
+  };
 
   /**
    * Изменить данные позиции
@@ -51,7 +51,7 @@
   WarehouseSupply.prototype.updatePosition = function(operation, data) {
     var index = this.supply.operations_attributes.indexOf(operation);
     this.Operation.update(this.supply.operations_attributes[index], data);
-  }
+  };
 
   /**
    * Удалить позицию
@@ -67,5 +67,5 @@
     }
 
     this.additional.visibleCount --;
-  }
+  };
 })();

@@ -20,6 +20,11 @@ module Warehouse
         expect(subject.data[:data].first).to include('translated_used')
       end
 
+      it 'includes :inv_item and :supplies fields' do
+        subject.run
+        expect(subject.data[:data].last).to include('inv_item', 'supplies')
+      end
+
       let(:operation) { build(:order_operation, item: items.first, shift: -1) }
       let!(:order) { create(:order, operation: :out, operations: [operation]) }
       it 'loads all :processing orders with :out operation' do
