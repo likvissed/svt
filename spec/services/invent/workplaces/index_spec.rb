@@ -21,13 +21,17 @@ module Invent
       subject { Index.new(params) }
       before { subject.run }
 
-      it 'fills the @data object with %i[data draw recordsTotal recordsFiltered] keys' do
-        expect(subject.data).to include(:data, :draw, :recordsTotal, :recordsFiltered)
+      it 'fills the @data object with %i[data recordsTotal recordsFiltered] keys' do
+        expect(subject.data).to include(:data, :recordsTotal, :recordsFiltered)
+      end
+
+      it 'adds %w[location responsible label_status] fields to the data' do
+        expect(subject.data[:data].first).to include('location', 'responsible', 'label_status')
       end
 
       context 'with init_filters' do
         subject do
-          params[:init_filters] = true
+          params[:init_filters] = 'true'
           Index.new(params)
         end
 
@@ -52,24 +56,13 @@ module Invent
 
       context 'with filters' do
         let(:filter) { {} }
-        let(:search) { {} }
         subject do
           params[:filters] = filter
-          params[:search] = search
           Index.new(params)
         end
 
-        context 'and with search filter' do
-          let(:search) { { value: workplace.user_iss.fio, regex: '' } }
-
-          it 'return filtered data' do
-            expect(subject.data[:data].count).to eq 1
-            expect(subject.data[:data].first['workplace_count_id']).to eq workplace.workplace_count_id
-          end
-        end
-
-        context 'and with invent_num filter' do
-          let(:filter) { { invent_num: workplace.items.first.invent_num } }
+        context 'and with :fullname filter' do
+          let(:filter) { { fullname: workplace.user_iss.fio }.to_json }
 
           it 'returns filtered data' do
             expect(subject.data[:data].count).to eq 1
@@ -77,8 +70,8 @@ module Invent
           end
         end
 
-        context 'and with id fitler' do
-          let(:filter) { { workplace_id: workplace.workplace_id } }
+        context 'and with :invent_num filter' do
+          let(:filter) { { invent_num: workplace.items.first.invent_num }.to_json }
 
           it 'returns filtered data' do
             expect(subject.data[:data].count).to eq 1
@@ -86,8 +79,8 @@ module Invent
           end
         end
 
-        context 'and with division filter' do
-          let(:filter) { { workplace_count_id: workplace_count.workplace_count_id } }
+        context 'and with :workplace_id fitler' do
+          let(:filter) { { workplace_id: workplace.workplace_id }.to_json }
 
           it 'returns filtered data' do
             expect(subject.data[:data].count).to eq 1
@@ -95,8 +88,17 @@ module Invent
           end
         end
 
-        context 'and with status filter' do
-          let(:filter) { { status: 'confirmed' } }
+        context 'and with :workplace_count_id filter' do
+          let(:filter) { { workplace_count_id: workplace_count.workplace_count_id }.to_json }
+
+          it 'returns filtered data' do
+            expect(subject.data[:data].count).to eq 1
+            expect(subject.data[:data].first['workplace_count_id']).to eq workplace.workplace_count_id
+          end
+        end
+
+        context 'and with :status filter' do
+          let(:filter) { { status: 'confirmed' }.to_json }
 
           it 'returns filtered data' do
             expect(subject.data[:data].count).to eq 1
@@ -104,8 +106,8 @@ module Invent
           end
         end
 
-        context 'and with type filter' do
-          let(:filter) { { workplace_type_id: workplace.workplace_type_id } }
+        context 'and with :workplace_type_id filter' do
+          let(:filter) { { workplace_type_id: workplace.workplace_type_id }.to_json }
 
           it 'returns filtered data' do
             expect(subject.data[:data].count).to eq 1

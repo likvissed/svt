@@ -4,17 +4,14 @@ module Invent
     class Index < BaseService
       def initialize(params)
         @data = {}
-        @draw = params[:draw]
         @start = params[:start]
         @length = params[:length]
-        @search = params[:search]
-        @init_filters = params[:init_filters]
-        @filters = params[:filters]
+        @init_filters = params[:init_filters] == 'true'
+        @conditions = JSON.parse(params[:filters]) if params[:filters]
       end
 
       def run
         load_workplace
-        run_filters if @filters
         limit_records
         prepare_to_render
         load_filters if @init_filters
@@ -34,32 +31,17 @@ module Invent
                         .left_outer_joins(:workplace_type)
                         .select('invent_workplace.*, invent_workplace_type.short_description as wp_type')
                         .group(:workplace_id)
+        run_filters if @conditions
       end
 
       # Отфильтровать полученные данные
       def run_filters
-        if @search[:value].present?
-          @workplaces = @workplaces.left_outer_joins(:user_iss).where('fio LIKE ?', "%#{@search[:value]}%")
-        end
-
-        if @filters[:invent_num].present?
-          @workplaces = @workplaces.left_outer_joins(:items).where('invent_num LIKE ?', "%#{@filters[:invent_num]}%")
-        end
-
-        unless @filters[:workplace_count_id].to_i.zero?
-          @workplaces = @workplaces.where(workplace_count_id: @filters[:workplace_count_id])
-        end
-
-        if @filters[:status] && @filters['status'] != 'all'
-          @workplaces = @workplaces.where(status: @filters[:status])
-        end
-
-        unless @filters[:workplace_type_id].to_i.zero?
-          @workplaces = @workplaces.where(workplace_type_id: @filters[:workplace_type_id])
-        end
-
-        return if @filters[:workplace_id].to_i.zero?
-        @workplaces = @workplaces.where(workplace_id: @filters[:workplace_id])
+        @workplaces = @workplaces.left_outer_joins(:user_iss).where('fio LIKE ?', "%#{@conditions['fullname']}%") if @conditions['fullname'].present?
+        @workplaces = @workplaces.left_outer_joins(:items).where('invent_num LIKE ?', "%#{@conditions['invent_num']}%") if @conditions['invent_num'].present?
+        @workplaces = @workplaces.where(workplace_count_id: @conditions['workplace_count_id']) unless @conditions['workplace_count_id'].to_i.zero?
+        @workplaces = @workplaces.where(status: @conditions['status']) if @conditions.has_key?('status') && @conditions['status'] != 'all'
+        @workplaces = @workplaces.where(workplace_type_id: @conditions['workplace_type_id']) unless @conditions['workplace_type_id'].to_i.zero?
+        @workplaces = @workplaces.where(workplace_id: @conditions['workplace_id']) unless @conditions['workplace_id'].to_i.zero?
       end
 
       # Ограничение выборки взависимости от выбранного пользователем номера страницы.
@@ -76,7 +58,8 @@ module Invent
         ).each do |wp|
           wp['location'] = wp_location_string(wp)
           wp['responsible'] = wp['user_iss'] ? wp['user_iss']['fio'] : 'Ответственный не найден'
-          wp['status'] = Workplace.translate_enum(:status, wp['status'])
+          wp['label_status'] = label_status(wp['status'])
+          # wp['status'] = Workplace.translate_enum(:status, wp['status'])
           wp['division'] = wp['workplace_count']['division']
           wp['count'] = wp['items'].count
 
@@ -88,7 +71,6 @@ module Invent
           wp.delete('user_iss')
         end
 
-        @data[:draw] = @draw
         @data[:recordsTotal] = Workplace.count
       end
 
@@ -98,6 +80,21 @@ module Invent
         @data[:filters][:divisions] = WorkplaceCount.select(:workplace_count_id, :division).order('CAST(division AS SIGNED)')
         @data[:filters][:statuses] = workplace_statuses
         @data[:filters][:types] = WorkplaceType.select(:workplace_type_id, :short_description)
+      end
+
+      def label_status(status)
+        case status
+        when 'confirmed'
+          labelClass = 'label-success';
+        when 'pending_verification'
+          labelClass = 'label-warning';
+        when 'disapproved'
+          labelClass = 'label-danger';
+        when 'freezed'
+          labelClass = 'label-primary';
+        end
+
+        "<span class='label #{labelClass}'>#{Workplace.translate_enum(:status, status)}</span>"
       end
     end
   end

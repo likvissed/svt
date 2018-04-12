@@ -126,6 +126,7 @@
          * Ресурс модели рабочих мест.
          */
         Workplace: $resource('/invent/workplaces/:workplace_id.json', {}, {
+          query: { method: 'GET', isArray: false },
           new: {
             method: 'GET',
             url: '/invent/workplaces/new.json'
