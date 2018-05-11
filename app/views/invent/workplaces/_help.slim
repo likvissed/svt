@@ -1,7 +1,7 @@
-.row
+.row.animate-show.ng-hide ng-show="wp.workplace.workplace_type.workplace_type_id != 0"
   .col-fhd-24
     u Варианты состава:
-    .row.ng-hide ng-show="wp.workplace.workplace_type.workplace_type_id != 0"
+    .row
       .col-fhd-24
         p.bg-info.context-info ng-bind="wp.workplace.workplace_type.full_description"
 

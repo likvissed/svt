@@ -126,7 +126,10 @@
          * Ресурс модели рабочих мест.
          */
         Workplace: $resource('/invent/workplaces/:workplace_id.json', {}, {
-          query: { method: 'GET', isArray: false },
+          query: {
+            method: 'GET',
+            isArray: false
+          },
           new: {
             method: 'GET',
             url: '/invent/workplaces/new.json'
@@ -159,7 +162,10 @@
          * Ресурс модели экземпляров техники.
          */
         Item: $resource('/invent/items/:item_id.json', {}, {
-          query: { method: 'GET', isArray: false },
+          query: {
+            method: 'GET',
+            isArray: false
+          },
           edit: {
             method: 'GET',
             url: '/invent/items/:item_id/edit.json'
@@ -175,7 +181,19 @@
             isArray: true
           }
         }),
-        Model: $resource('/invent/models/:model_id.json', {})
+        Vendor: $resource('/invent/vendors/:vendor_id.json', {}),
+        Model: $resource('/invent/models/:model_id.json', {}, {
+          query: { method: 'GET', isArray: false },
+          newModel: {
+            method: 'GET',
+            url: '/invent/models/new'
+          },
+          edit: {
+            method: 'GET',
+            url: '/invent/models/:model_id/edit'
+          },
+          update: { method: 'PUT' },
+        })
       },
       /**
        * Ресурс модели работников отдела.
@@ -189,7 +207,10 @@
       }),
       Warehouse: {
         Item: $resource('/warehouse/items/:id.json', {}, {
-          query: { method: 'GET', isArray: false }
+          query: {
+            method: 'GET',
+            isArray: false
+          }
         }),
         Order: $resource('/warehouse/orders/:id.json', {}, {
           query: {

@@ -58,7 +58,7 @@
       function(response, status) {
         self.Error.response(response, status);
       }
-    )
+    );
   }
 
   WarehouseSuppliesCtrl.prototype._openEditModal = function() {
@@ -85,7 +85,7 @@
       function(response, status) {
         self.Error.response(response, status);
       }
-    )
+    );
   };
 
   /**
@@ -105,7 +105,7 @@
       function (response, status) {
         self.Error.response(response, status);
       }
-    )
+    );
   };
 
   /**
@@ -228,7 +228,7 @@
           self.Error.response(response, status);
           self.errorResponse(response);
         }
-      )
+      );
     } else {
       this.Server.Warehouse.Supply.save(
         { supply: this.supply },
@@ -240,7 +240,7 @@
           self.Error.response(response, status);
           self.errorResponse(response);
         }
-      )
+      );
     }
   }
 

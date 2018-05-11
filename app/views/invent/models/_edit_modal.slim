@@ -1,0 +1,37 @@
+script type="text/ng-template" id="editModelModal.slim"
+  form role="form" name="edit.form" data-method="edit.method"
+    .modal-header
+      .pull-left
+        h4 ng-show="!edit.model.model_id" Новая модель
+        h4 ng-show="edit.model.model_id" Редактирование модели
+      .pull-right
+        .icon-block
+          = render partial: 'templates/load_spinner'
+    .modal-body
+      .form-group ng-class="edit.errorClass('model[type]')"
+        = label_tag "model[type]", "Тип", class: "control-label"
+        = select_tag "model[type]", "", class: "form-control", "ng-model": "edit.model.type", "ng-change": "edit.setModelPropertyList()",
+        "ng-options": "type as type.short_description disable when !type.type_id for type in edit.types track by type.type_id"
+        span.help-block ng-show="edit.form['model[type]'].$invalid" ng-bind="edit.errorMessage('model[type]')"
+      .form-group ng-class="edit.errorClass('model[vendor]')"
+        = label_tag "model[vendor]", "Вендор", class: "control-label"
+        = select_tag "model[vendor]", "", class: "form-control", "ng-model": "edit.model.vendor_id",
+        "ng-options": "vendor.vendor_id as vendor.vendor_name disable when !vendor.vendor_id for vendor in edit.vendors"
+        span.help-block ng-show="edit.form['model[vendor]'].$invalid" ng-bind="edit.errorMessage('model[vendor]')"
+      .form-group ng-class="edit.errorClass('model[item_model]')"
+        = label_tag "model[item_model]", "Модель", class: "control-label"
+        = text_field_tag "model[item_model]", "", class: "form-control", "ng-model": "edit.model.item_model"
+        span.help-block ng-show="edit.form['model[item_model]'].$invalid" ng-bind="edit.errorMessage('model[item_model]')"
+      h4 ng-show="edit.model.type_id"
+        | Аттрибуты модели
+      .form-group ng-repeat="prop in edit.model.type.properties"
+        label ng-bind="prop.short_description"
+        = select_tag "", "", class: "form-control", "ng-model": "edit.model.createModelPropertyListGetterSetter(prop)",
+          "ng-options": "prop_list.property_list_id as prop_list.short_description disable when !prop_list.property_list_id for prop_list in prop.property_lists",
+          "ng-model-options": "{ getterSetter: true }"
+
+    .modal-footer
+      = button_tag class: "btn-success btn-sm", "ng-click": "edit.ok()" do
+        div ng-if="edit.model.model_id" Обновить
+        div ng-if="!edit.model.model_id" Создать
+      = button_tag "Закрыть", class: "btn-default btn-sm", "ng-click": "edit.cancel()"

@@ -95,3 +95,13 @@
           = link_to warehouse_supplies_path do
             = fa_icon "truck"
             '  Поставки
+
+      ul.nav.navbar-nav.navbar-right
+        li.dropdown
+          = link_to "", class: "dropdown-toggle", "data-toggle": "dropdown" do
+            = fa_icon "cogs"
+            '  Администрирование
+            b.caret
+          ul.dropdown-menu
+            li= link_to "Пользователи", "#"
+            li= link_to "Модели техники", invent_vendors_path

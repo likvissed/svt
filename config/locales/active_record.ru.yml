@@ -60,6 +60,14 @@ ru:
         property_list: "Значение"
         value: "Значение"
 
+      invent/model:
+        base: ''
+        vendor: 'Вендор'
+        type: 'Тип'
+        item_model: 'Модель'
+        items: 'технике, расположенной на рабочих местах'
+        warehouse_items: 'технике, расположенной на складе'
+
       iss_reference_room:
         name: "Номер комнаты"
 
@@ -140,8 +148,8 @@ ru:
         less_than: "должен иметь значение меньшее чем %{count}"
         less_than_or_equal_to: "должен иметь значение меньшее или равное %{count}"
         restrict_dependent_destroy:
-         one: "Невозможно удалить, так как данная запись используется в другой модели"
-         many: "Невозможно удалить, так как данная запись используется в других моделях"
+         has_one: "Невозможно удалить, так как данная запись используется в другой модели"
+         has_many: "Невозможно удалить, так как данная запись используется в других моделях"
 
       models:
         # Отдел, содержащий рабочие места
@@ -231,6 +239,12 @@ ru:
           attributes:
             base:
               blank: 'Не заполнено поле "%{empty_prop}"'
+
+        invent/model:
+          attributes:
+            base:
+              restrict_dependent_destroy:
+                has_many: "Нельзя удалить, так как модель используется в %{record}"
 
         warehouse/order:
           attributes:

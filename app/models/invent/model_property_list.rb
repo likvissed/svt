@@ -6,5 +6,7 @@ module Invent
     belongs_to :model, optional: false
     belongs_to :property, optional: false
     belongs_to :property_list, optional: false
+
+    validates :model, :property, :property_list, presence: true
   end
 end

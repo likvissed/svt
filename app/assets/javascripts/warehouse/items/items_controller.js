@@ -23,7 +23,7 @@
     this._initActionCable();
   }
 
-    /**
+  /**
    * Инициировать подключение к каналу ItemsChannel
    */
   WarehouseItemsCtrl.prototype._initActionCable = function() {
@@ -183,8 +183,7 @@
       self = this,
       confirm_str = "Вы действительно хотите удалить \"" + item.item_type + "\" со склада?";
 
-    if (!confirm(confirm_str))
-      return false;
+    if (!confirm(confirm_str)) { return false; }
 
     self.Server.Warehouse.Item.delete(
       { id: item.id },
@@ -237,8 +236,7 @@
       self = this,
       confirm_str = "Вы действительно хотите удалить ордер \"" + this.selectedOrder.id + "\"?";
 
-    if (!confirm(confirm_str))
-      return false;
+    if (!confirm(confirm_str)) { return false; }
 
     self.Server.Warehouse.Order.delete(
       { id: this.selectedOrder.id },

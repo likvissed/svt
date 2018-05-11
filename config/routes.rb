@@ -70,7 +70,8 @@ Rails.application.routes.draw do
       end
     end
 
-    resources :models, only: [:index], param: :model_id
+    resources :vendors, only: [:index, :create, :destroy], param: :vendor_id
+    resources :models, param: :model_id
   end
 
   # Эталоны

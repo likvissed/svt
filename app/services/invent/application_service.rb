@@ -6,6 +6,14 @@ class Invent::ApplicationService < ApplicationService
     ActionCable.server.broadcast 'workplace_list', nil
   end
 
+  def broadcast_models
+    ActionCable.server.broadcast 'models', nil
+  end
+
+  def broadcast_vendors
+    ActionCable.server.broadcast 'vendors', nil
+  end
+
   # Возвращает массив статусов с переведенными на русскую локаль ключами.
   def workplace_statuses
     Invent::Workplace.statuses.map { |key, _val| [key, Invent::Workplace.translate_enum(:status, key)] }.to_h
@@ -69,6 +77,12 @@ class Invent::ApplicationService < ApplicationService
       "<span class='manually-val'>#{result}</span>"
     else
       result
+    end
+  end
+
+  def load_types
+    data[:types] = Invent::Type.all.includes(properties: :property_lists).as_json(include: { properties: { include: :property_lists } }).each do |type|
+      type['properties'].delete_if { |prop| prop['mandatory'] == false || %w[list list_plus].exclude?(prop['property_type']) }
     end
   end
 end
