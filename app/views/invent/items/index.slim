@@ -10,6 +10,7 @@
           table.table.table-striped.table-condensed
             thead
               tr
+                th
                 th ID
                 th Тип
                 th Модель
@@ -20,6 +21,9 @@
                 /th
             tbody
               tr ng-repeat="item in table.items"
+                td
+                  a ng-href="/invent/workplaces/{{item.workplace.workplace_id}}/edit" class="default-color" target="_blank" ng-show="item.workplace"
+                    = fa_icon "external-link fw", class: "pointer", "uib-tooltip": "Перейти к рабочему месту", "tooltip-append-to-body": "true"
                 td.col-lg-1.col-xlg-1.col-fhd-1 ng-bind="item.item_id"
                 td.col-lg-2.col-xlg-2.col-fhd-2 ng-bind="item.type.short_description"
                 td.col-lg-3.col-xlg-3.col-fhd-3 ng-bind="item.model"

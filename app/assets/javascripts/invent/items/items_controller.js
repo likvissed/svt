@@ -25,7 +25,7 @@
   InventItemsCtrl.prototype._loadItems = function(initFlag) {
     var self = this;
 
-    this.Item.init(initFlag).$promise.then(function() {
+    this.Item.init(initFlag).then(function() {
       self.items = self.Item.items;
     });
   };

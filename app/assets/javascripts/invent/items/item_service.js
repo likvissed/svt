@@ -42,7 +42,7 @@
       },
       function(response, status) {
         self.Error.response(response, status);
-      });
+      }).$promise;
   };
 
   /**
