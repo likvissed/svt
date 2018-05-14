@@ -2,7 +2,7 @@
   app.service('InventItemFiltersFactory', InventItemFiltersFactory);
 
   function InventItemFiltersFactory() {
-    var 
+    var
       _propertyTemplate = {
         property_id: 0,
         property_value: '',
@@ -29,16 +29,17 @@
         type_id: _filters.types[0].type_id,
         invent_num: '',
         responsible: '',
+        item_model: '',
         properties: []
       };
 
     function _addProperty() {
-      _selected.properties.push(_propertyTemplate);
+      _selected.properties.push(angular.copy(_propertyTemplate));
     }
 
     return {
       /**
-       * Получить объекты фильтров 
+       * Получить объекты фильтров
        */
       getFilters: function() {
         return _filters;
@@ -52,10 +53,10 @@
       setPossibleValues: function(data) {
         angular.forEach(_filters, function(arr, key) {
           if (!data.hasOwnProperty(key)) { return true; }
-          
+
           this[key] = this[key].concat(data[key]);
         }, _filters);
-        
+
         _addProperty();
       },
       /**
