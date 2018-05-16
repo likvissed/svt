@@ -10,7 +10,8 @@ class User < ApplicationRecord
   belongs_to :role
   belongs_to :user_iss, foreign_key: 'id_tn'
 
-  validates :tn, :id_tn, presence: true, uniqueness: true
+  validates :tn, presence: true, uniqueness: true
+  validates :role, presence: true
   # validates :id_tn, uniqueness: { message: :tn_already_exists }
 
   after_validation :replace_nil
@@ -28,6 +29,11 @@ class User < ApplicationRecord
     end
   end
 
+  # Время, в течении которого пользователь считается в состоянии online
+  def self.online_time
+    10.minutes.ago
+  end
+
   def truncate_phone
     self.phone = phone.slice(0, 10)
   end
@@ -36,6 +42,17 @@ class User < ApplicationRecord
   # role_sym - символ имени роли
   def has_role?(role_sym)
     role.name.to_sym == role_sym
+  end
+
+  def fill_data
+    self.user_iss = UserIss.find_by(tn: tn)
+    self.fullname = user_iss.try(:fio)
+    self.phone = user_iss.try(:tel)
+  end
+
+  # Проверяет, в системе ли пользователь
+  def online?
+    updated_at > self.class.online_time && sign_in_count.positive?
   end
 
   protected

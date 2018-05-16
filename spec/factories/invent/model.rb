@@ -3,7 +3,7 @@ module Invent
     factory :model, class: Model do
       vendor { Vendor.find_by(vendor_name: 'Acer') }
       type { Type.find_by(name: :printer) }
-      item_model 'New model'
+      item_model { "#{vendor.vendor_name} New model" }
     end
   end
 end

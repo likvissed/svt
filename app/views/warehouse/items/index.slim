@@ -20,7 +20,7 @@
                 th Зарезервировано
                 th
             tbody
-              tr ng-repeat="item in table.items" ng-class="{'text-muted': (!table.isItemInStock(item) && !table.isItemInOrder(item)) || table.isItemInDoneOp(item)}"
+              tr ng-repeat="item in table.items" ng-class="{ 'text-muted': (!table.isItemInStock(item) && !table.isItemInOrder(item)) || table.isItemInDoneOp(item) }"
                 td
                   input{ type="checkbox" ng-model="item.added_to_order" ng-true-value="true" ng-false-value="false" ng-click="table.togglePosition(item)"
                     ng-disabled="(!table.isItemInStock(item) && !table.isItemInOrder(item)) || table.isItemInDoneOp(item)" }

@@ -9,14 +9,11 @@ module Invent
       def run
         show = Show.new(@item_id)
 
-        if show.run
-          @data = show.data
-          data['status'] = :prepared_to_swap
+        raise 'Сервис Show не отработал' unless show.run
 
-          prepare_to_edit_item(data)
-        else
-          raise 'Сервис Show не отработал'
-        end
+        @data = show.data
+        data['status'] = :prepared_to_swap
+        prepare_to_edit_item(data)
 
         true
       rescue RuntimeError => e

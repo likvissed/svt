@@ -9,6 +9,8 @@ Rails.application.routes.draw do
     root 'devise/sessions#new'
   end
 
+  resources :users
+
   # Инвентаризация
   namespace :invent do
     # Отделы

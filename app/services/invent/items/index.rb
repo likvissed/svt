@@ -36,7 +36,7 @@ module Invent
         @items = @items.where(item_id: @filters['item_id']) unless @filters['item_id'].to_i.zero?
         @items = @items.where(type_id: @filters['type_id']) unless @filters['type_id'].to_i.zero?
         @items = @items.where('invent_num LIKE ?', "%#{@filters['invent_num']}%") if @filters['invent_num'].present?
-        @items = @items.left_outer_joins(:model).where('invent_model.item_model LIKE ? OR invent_item.item_model LIKE ?', "%#{@filters['item_model']}%", "%#{@filters['item_model']}%") if @filters['item_model'].present?
+        @items = @items.left_outer_joins(:model).where('invent_model.item_model LIKE :item_model OR invent_item.item_model LIKE :item_model', item_model: "%#{@filters['item_model']}%") if @filters['item_model'].present?
         @items = @items.left_outer_joins(workplace: :user_iss).where('fio LIKE ?', "%#{@filters['responsible']}%") if @filters['responsible'].present?
 
         return unless @filters['properties']&.any?

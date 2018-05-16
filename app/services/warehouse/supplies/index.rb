@@ -36,7 +36,7 @@ module Warehouse
       def prepare_to_render
         data[:data] = @supplies.as_json(include: :operations).each do |item|
           item['total_count'] = item['operations'].inject(0) { |sum, op| sum + op['shift'] }
-          item['date'] = item['date'].strftime("%d-%m-%Y") if item['date']
+          item['date'] = item['date'].strftime('%d-%m-%Y') if item['date']
         end
       end
     end

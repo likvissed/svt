@@ -8,6 +8,7 @@ class ApplicationController < ActionController::Base
   layout :layout
   protect_from_forgery with: :exception
   after_action :set_csrf_cookie_for_ng
+  after_action :user_activity
   before_action :authenticate_user!
   before_action :authorization, if: -> { current_user }
 
@@ -91,5 +92,9 @@ class ApplicationController < ActionController::Base
   # Проверка роли перед доступом к контроллерам
   def authorization
     authorize :application, :authorization?
+  end
+
+  def user_activity
+    current_user.try(:touch)
   end
 end

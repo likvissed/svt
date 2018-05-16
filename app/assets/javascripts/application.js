@@ -27,3 +27,4 @@
 //= require_tree ./app
 //= require_tree ./invent
 //= require_tree ./warehouse
+//= require_tree ./users

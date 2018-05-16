@@ -3,7 +3,7 @@
 
   app
     .controller('ModelsCtrl', ModelsCtrl)
-    .controller('EditModelCtrl',EditModelCtrl)
+    .controller('EditModelCtrl', EditModelCtrl);
 
   ModelsCtrl.$inject = ['$uibModal', '$rootScope', 'Model', 'ActionCableChannel', 'TablePaginator', 'Server', 'Config', 'Flash', 'Error'];
   EditModelCtrl.$inject = ['$uibModalInstance', 'Model', 'Vendors', 'Server', 'Flash', 'Error'];
@@ -165,7 +165,9 @@
   };
 
   /**
-   * Загрузить данные модели
+   * Загрузить данные модели.
+   *
+   * @param model
    */
   ModelsCtrl.prototype.editModel = function(model) {
     var self = this;
@@ -192,10 +194,9 @@
       self = this,
       confirm_str = "Вы действительно хотите удалить модель \"" + model.item_model + "\"?";
 
-    if (!confirm(confirm_str))
-      return false;
+    if (!confirm(confirm_str)) { return false; }
 
-    self.Server.Invent.Model.delete(
+    this.Server.Invent.Model.delete(
       { model_id: model.model_id },
       function(response) {
         self.Flash.notice(response.full_message);

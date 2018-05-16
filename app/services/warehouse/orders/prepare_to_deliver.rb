@@ -35,10 +35,10 @@ module Warehouse
         data[:selected_op] = @order.operations.select { |op| op.status_changed? && op.done? }
         data[:selected_op].each { |op| op.set_stockman(current_user) }
 
-        if data[:selected_op].empty?
-          error[:full_message] = I18n.t('activemodel.errors.models.warehouse/orders/execute.operation_not_selected')
-          raise 'Техника не выбрана'
-        end
+        return true unless data[:selected_op].empty?
+
+        error[:full_message] = I18n.t('activemodel.errors.models.warehouse/orders/execute.operation_not_selected')
+        raise 'Техника не выбрана'
       end
 
       def validate_order
@@ -55,12 +55,12 @@ module Warehouse
                                              inv_items: {
                                                include: {
                                                  property_values: {
-                                                   include: [:property, :property_list]
+                                                   include: %i[property property_list]
                                                  }
                                                },
                                                methods: :get_item_model
                                              }
-                                           },
+                                           }
                                          )
         data[:operations_attributes].each do |op|
           op['inv_items_attributes'] = op['inv_items']

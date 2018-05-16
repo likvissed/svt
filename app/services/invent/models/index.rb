@@ -40,11 +40,11 @@ module Invent
 
       def limit_records
         data[:recordsFiltered] = @models.count
-        @models = @models.by_type_id(@type_id).includes(:vendor, :type, model_property_lists: [:property, :property_list]).order(model_id: :desc).limit(@length).offset(@start)
+        @models = @models.by_type_id(@type_id).includes(:vendor, :type, model_property_lists: %i[property property_list]).order(model_id: :desc).limit(@length).offset(@start)
       end
 
       def prepare_to_render
-        data[:data] = @models.as_json(include: [:vendor, :type, model_property_lists: { include: [:property, :property_list] }]).each do |model|
+        data[:data] = @models.as_json(include: [:vendor, :type, model_property_lists: { include: %i[property property_list] }]).each do |model|
           model['all_properties'] = model['model_property_lists'].map do |prop_list|
             "#{prop_list['property']['short_description']}: #{prop_list['property_list']['short_description']}"
           end.join('; ')

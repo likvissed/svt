@@ -12,4 +12,12 @@ class ApplicationService
   def broadcast_archive_orders
     ActionCable.server.broadcast 'archive_orders', nil
   end
+
+  def broadcast_users
+    ActionCable.server.broadcast 'users', nil
+  end
+
+  def load_roles
+    data[:roles] = Role.all
+  end
 end

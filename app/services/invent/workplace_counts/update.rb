@@ -13,6 +13,7 @@ module Invent
       def run
         @data = WorkplaceCount.includes(:users).find(@workplace_count_id)
         update_workplace
+        broadcast_users
 
         true
       rescue ActiveRecord::RecordInvalid, RuntimeError => e

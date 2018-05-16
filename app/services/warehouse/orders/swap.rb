@@ -37,7 +37,7 @@ module Warehouse
           begin
             Order.transaction(requires_new: true) do
               Invent::Item.transaction(requires_new: true) do
-                @inv_items_obj.each { |wp_id, inv_items| create_in_order(wp_id, inv_items) }
+                @inv_items_obj.each_value { |inv_items| create_in_order(inv_items) }
               end
             end
 
@@ -56,7 +56,7 @@ module Warehouse
         end
       end
 
-      def create_in_order(wp_id, inv_items)
+      def create_in_order(inv_items)
         init_order(:in)
 
         inv_items.each do |inv_item|
@@ -81,7 +81,7 @@ module Warehouse
           begin
             Item.transaction(requires_new: true) do
               Invent::Item.transaction(requires_new: true) do
-                @inv_items_obj.each { |wp_id, inv_items| create_out_order(wp_id, inv_items) }
+                @inv_items_obj.each_value { |inv_items| create_out_order(inv_items) }
               end
             end
 
@@ -100,7 +100,7 @@ module Warehouse
         end
       end
 
-      def create_out_order(wp_id, inv_items)
+      def create_out_order(inv_items)
         init_order(:out)
 
         inv_items.each do |inv_item|

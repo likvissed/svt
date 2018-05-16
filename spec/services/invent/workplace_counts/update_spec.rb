@@ -4,7 +4,8 @@ module Invent
   module WorkplaceCounts
     RSpec.describe Update, type: :model do
       let(:user) { create(:user) }
-      let(:***REMOVED***_user) { attributes_for(:***REMOVED***_user).except(:id_tn, :division, :email, :login, :fullname) }
+      let(:role) { create(:***REMOVED***_user_role) }
+      let(:***REMOVED***_user) { attributes_for(:***REMOVED***_user, role_id: role.id).except(:id_tn, :division, :email, :login, :fullname) }
       let!(:workplace_count) { create(:active_workplace_count, users: [user]) }
       # Загружаем отдел c использованием сервиса WorkplaceCount::Show.
       let(:loaded_workplace_count) do
@@ -25,6 +26,11 @@ module Invent
 
       context 'with valid params' do
         its(:run) { is_expected.to be_truthy }
+
+        it 'broadcasts to users' do
+          expect(subject).to receive(:broadcast_users)
+          subject.run
+        end
       end
 
       context 'with invalid params' do

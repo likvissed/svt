@@ -8,6 +8,8 @@ module Invent
       subject { Index.new(params) }
       before { subject.run }
 
+      its(:run) { is_expected.to be_truthy }
+
       it 'loads models specified into length param' do
         expect(subject.data[:data].count).to eq params[:length]
       end

@@ -49,9 +49,9 @@ module Warehouse
 
       def run_filters
         @items = @items.where('count > count_reserved') if @conditions['showOnlyPresence']
-        @items = @items.where('used = ?', @conditions['used'].to_s == 'true') if @conditions.has_key?('used') && @conditions['used'] != 'all'
-        @items = @items.where('item_type = ?', @conditions['item_type']) unless @conditions['item_type'].blank?
-        @items = @items.where('barcode = ?', @conditions['barcode']) unless @conditions['barcode'].blank?
+        @items = @items.where('used = ?', @conditions['used'].to_s == 'true') if @conditions.key?('used') && @conditions['used'] != 'all'
+        @items = @items.where('item_type = ?', @conditions['item_type']) if @conditions['item_type'].present?
+        @items = @items.where('barcode = ?', @conditions['barcode']) if @conditions['barcode'].present?
       end
 
       def limit_records
@@ -78,20 +78,18 @@ module Warehouse
                        @items
                      end
 
-        data[:data] = result_arr.as_json(include: [:inv_item, :supplies]).each do |item|
+        data[:data] = result_arr.as_json(include: %i[inv_item supplies]).each do |item|
           item['translated_used'] = item['used'] ? '<span class="label label-warning">Б/У</span>' : '<span class="label label-success">Новое</span>'
-          item['supplies'].each { |supply| supply['date'] = supply['date'].strftime("%d-%m-%Y") }
+          item['supplies'].each { |supply| supply['date'] = supply['date'].strftime('%d-%m-%Y') }
         end
       end
 
       def init_order
         new_order = Orders::NewOrder.new(:out)
 
-        if new_order.run
-          data[:order] = new_order.data
-        else
-          raise 'Не удалось создать шаблон расходного ордера'
-        end
+        raise 'Не удалось создать шаблон расходного ордера' unless new_order.run
+
+        data[:order] = new_order.data
       end
 
       def init_filters
@@ -100,16 +98,12 @@ module Warehouse
       end
 
       def load_orders
-        order = Orders::Index.new({ start: nil, length: nil }, { operation: :out, status: :processing })
-        if order.run
-          data[:orders] = order.data[:data]
+        order = Orders::Index.new({ start: nil, length: nil }, operation: :out, status: :processing)
 
-          data[:orders].each do |order|
-            order[:main_info] = "ID ордера: #{order['id']}; ID РМ: #{order['invent_workplace_id']}"
-          end
-        else
-          raise 'Не удалось загрузить список ордеров'
-        end
+        raise 'Не удалось загрузить список ордеров' unless order.run
+
+        data[:orders] = order.data[:data]
+        data[:orders].each { |o| o[:main_info] = "ID ордера: #{o['id']}; ID РМ: #{o['invent_workplace_id']}" }
       end
 
       # true - если размер ордера меньше, чем число items на странице

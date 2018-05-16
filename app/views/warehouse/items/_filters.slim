@@ -19,7 +19,7 @@
 .col-fhd-4
 .col-fhd-3.col-xlg-4.col-lg-4.col-md-5.col-sm-6.multiline-buffer
   = button_tag "Показать отсутствующие", type: :button, class: "btn-default btn-sm btn-block", "ng-click": "table.showOnlyPresenceFilter()",
-    "ng-class": "{active: !table.selectedFilters.showOnlyPresence}"
+    "ng-class": "{ active: !table.selectedFilters.showOnlyPresence }"
 .col-fhd-2.col-xlg-3.col-lg-3.col-md-5.col-sm-5.multiline-buffer
   = select_tag "", "", class: "form-control input-sm", "ng-model": "table.selectedFilters.used", "ng-change": "table.reloadItems()",
     "ng-options": "used.value as used.descr for used in table.filters.selUsedFilter"

@@ -31,7 +31,7 @@ module Invent
           prop_list['id'] = prop_list['model_property_list_id']
           prop_list.delete('model_property_list_id')
         end
-        new_model['item_model'] = 'Updated model'
+        new_model['item_model'] = 'Acer Updated model'
 
         new_model.delete('model_property_lists')
         new_model

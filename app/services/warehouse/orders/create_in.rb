@@ -45,7 +45,7 @@ module Warehouse
           order = @order_params.deep_dup
           # Выбор операций для текущего РМ из полученного массива операций
           order['operations_attributes'] = order['operations_attributes'].select do |op_attr|
-            next if !op_attr['inv_item_ids']
+            next unless op_attr['inv_item_ids']
             items.select { |i| i['workplace_id'] == item.workplace_id }.map(&:item_id).include?(op_attr['inv_item_ids'].first)
           end
           order
@@ -100,11 +100,11 @@ module Warehouse
         @order = Order.new(param)
         @order.set_creator(current_user)
 
-        if @done_flag
-          @order.operations.each do |op|
-            op.set_stockman(current_user)
-            op.status = :done
-          end
+        return true unless @done_flag
+
+        @order.operations.each do |op|
+          op.set_stockman(current_user)
+          op.status = :done
         end
       end
 

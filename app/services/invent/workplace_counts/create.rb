@@ -11,6 +11,7 @@ module Invent
       def run
         @data = WorkplaceCount.new(@wpc_params)
         save_workplace
+        broadcast_users
 
         true
       rescue RuntimeError => e

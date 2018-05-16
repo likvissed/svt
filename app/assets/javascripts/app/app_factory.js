@@ -192,7 +192,7 @@
             method: 'GET',
             url: '/invent/models/:model_id/edit'
           },
-          update: { method: 'PUT' },
+          update: { method: 'PUT' }
         })
       },
       /**
@@ -204,6 +204,24 @@
           url: ' /user_isses/users_from_division/:division',
           isArray: true
         }
+      }),
+      /**
+       * Ресурс модели списка пользователей
+       */
+      User: $resource('/users/:id.json', {}, {
+        query: {
+          method: 'GET',
+          isArray: false
+        },
+        newUser: {
+          method: 'GET',
+          url: '/users/new'
+        },
+        edit: {
+          method: 'GET',
+          url: '/users/:id/edit'
+        },
+        update: { method: 'PUT' }
       }),
       Warehouse: {
         Item: $resource('/warehouse/items/:id.json', {}, {

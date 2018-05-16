@@ -140,6 +140,10 @@ ru:
           without_invent_num: 'Без инв. №'
           with_invent_num: 'С инв. №'
 
+      user:
+        tn: Табельный номер
+        role: Роль
+
     errors:
       messages:
         taken: "'%{value}' уже существует"

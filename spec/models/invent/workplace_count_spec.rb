@@ -108,8 +108,9 @@ module Invent
       end
 
       context 'when adds a few same users several times' do
+        let(:role) { create(:***REMOVED***_user_role) }
         # Удаляем лишние поля (чтобы было идентично данным, отправляемым клиентом)
-        let(:***REMOVED***_user) { attributes_for(:***REMOVED***_user).except(:id_tn, :division, :email, :login, :fullname) }
+        let(:***REMOVED***_user) { attributes_for(:***REMOVED***_user, role_id: role.id).except(:id_tn, :division, :email, :login, :fullname) }
         # Добавляем двух одинаковых пользователей
         let(:new_workplace_count) do
           2.times { loaded_workplace_count['users_attributes'] << ***REMOVED***_user }
@@ -145,8 +146,9 @@ module Invent
         end
 
         context 'and when this user is not exist in the local table of users' do
+          let(:role) { create(:***REMOVED***_user_role) }
           let(:new_user) do
-            attributes_for(:***REMOVED***_user, phone: '12-34').except(:id_tn, :division, :email, :login, :fullname)
+            attributes_for(:***REMOVED***_user, role_id: role.id, phone: '12-34').except(:id_tn, :division, :email, :login, :fullname)
           end
           let(:new_workplace_count) do
             loaded_workplace_count['users_attributes'] << new_user

@@ -4,7 +4,7 @@ module Warehouse
       def initialize(supply_id)
         @supply_id = supply_id
       end
-``
+
       def run
         find_supply
         return false unless wrap_with_transaction

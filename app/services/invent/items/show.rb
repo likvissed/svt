@@ -7,11 +7,11 @@ module Invent
       end
 
       def run
-        @data = Item.includes(property_values: [:property, :property_list]).find(@item_id)
+        @data = Item.includes(property_values: %i[property property_list]).find(@item_id)
                   .as_json(
                     include: {
                       property_values: {
-                        include: [:property, :property_list]
+                        include: %i[property property_list]
                       }
                     },
                     methods: :get_item_model
