@@ -1,7 +1,8 @@
 module Warehouse
   module Supplies
     class NewSupply < BaseService
-      def initialize
+      def initialize(current_user)
+        @current_user = current_user
         @data = {}
       end
 
@@ -22,6 +23,7 @@ module Warehouse
 
       def init_supply
         data[:supply] = Supply.new
+        authorize data[:supply], :new?
       end
 
       def init_operation

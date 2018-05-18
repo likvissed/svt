@@ -28,13 +28,14 @@ module Invent
         false
       end
 
-      private
+      protected
 
       # Проверяем, действительно ли авторизован пользователь в ЛК.
       def check_timeout
         @session_data = PHP.unserialize(user_session.data)
 
-        unless session_data['authed'] && Time.zone.now < (Time.zone.at(user_session.last_access) + user_session.timeout)
+        unless session_data['authed'] && Time.zone.now < (Time.zone.at(user_session.last_access) + UserSession.time_out)
+          # user_session.timeout
           raise 'Время сессии истекло'
         end
       end

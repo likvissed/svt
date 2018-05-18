@@ -16,4 +16,10 @@ FactoryBot.define do
     short_description 'Менеджер'
     long_description 'Пользователь с расширенными правами'
   end
+
+  factory :read_only_role, class: Role do
+    name 'read_only'
+    short_description 'Гость'
+    long_description 'Доступ только на чтение'
+  end
 end

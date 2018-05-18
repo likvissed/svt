@@ -3,10 +3,6 @@ module Warehouse
     class BaseService < Warehouse::ApplicationService
       protected
 
-      def find_supply
-        @supply = Supply.includes(operations: :item).find(@supply_id)
-      end
-
       def save_supply
         return true if @supply.save
 

@@ -16,7 +16,7 @@ module Warehouse
     end
 
     def new
-      @new_supply = Supplies::NewSupply.new
+      @new_supply = Supplies::NewSupply.new(current_user)
 
       if @new_supply.run
         render json: @new_supply.data
@@ -36,7 +36,7 @@ module Warehouse
     end
 
     def edit
-      @edit = Supplies::Edit.new(params[:id])
+      @edit = Supplies::Edit.new(current_user, params[:id])
 
       if @edit.run
         render json: @edit.data
@@ -56,7 +56,7 @@ module Warehouse
     end
 
     def destroy
-      @destroy = Supplies::Destroy.new(params[:id])
+      @destroy = Supplies::Destroy.new(current_user, params[:id])
 
       if @destroy.run
         render json: { full_message: I18n.t('controllers.warehouse/supply.destroyed') }

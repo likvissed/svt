@@ -2,6 +2,7 @@ module Warehouse
   module Supplies
     class Update < BaseService
       def initialize(current_user, supply_id, supply_params)
+        @current_user = current_user
         @error = {}
         @supply_id = supply_id
         @supply_params = supply_params
@@ -25,6 +26,11 @@ module Warehouse
       end
 
       protected
+
+      def find_supply
+        @supply = Supply.includes(operations: :item).find(@supply_id)
+        authorize @supply, :update?
+      end
 
       def init_items
         return unless @supply_params['operations_attributes']

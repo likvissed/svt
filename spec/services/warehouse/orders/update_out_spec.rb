@@ -4,7 +4,7 @@ module Warehouse
   module Orders
     RSpec.describe UpdateOut, type: :model do
       let(:user) { create(:user) }
-      let(:new_user) { create(:***REMOVED***_user) }
+      let(:new_user) { create(:***REMOVED***_user, role: Role.find_by(name: :admin)) }
       let(:pc_type) { Invent::Type.find_by(name: :pc) }
       let!(:pc_items) { create(:new_item, inv_type: pc_type, item_model: 'Unit', count: 20) }
       let(:mon_type) { Invent::Type.find_by(name: :monitor) }

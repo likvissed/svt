@@ -1,5 +1,17 @@
 module Invent
   class WorkplacePolicy < ApplicationPolicy
+    def new?
+      return true if admin?
+
+      if user.has_role? :***REMOVED***_user
+        division_access? && allowed_time?
+      elsif user.has_role? :manager
+        true
+      else
+        false
+      end
+    end
+
     # Есть ли у пользователя доступ на создание РМ указанного отдела.
     def create?
       return true if admin?
@@ -20,7 +32,7 @@ module Invent
 
       if user.has_role? :***REMOVED***_user
         division_access? && allowed_time?
-      elsif user.has_role? :manager
+      elsif user.has_one_of_roles? :manager, :read_only
         true
       else
         false

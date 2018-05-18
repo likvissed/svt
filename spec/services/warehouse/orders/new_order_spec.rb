@@ -3,13 +3,13 @@ require 'feature_helper'
 module Warehouse
   module Orders
     RSpec.describe NewOrder, type: :model do
-      let(:user) { create(:user) }
+      let!(:user) { create(:user) }
       let(:workplace_count) { create(:active_workplace_count, users: [user]) }
-      subject { NewOrder.new(:in) }
+      subject { NewOrder.new(user, :in) }
       before { subject.run }
 
       context 'when order has :out type' do
-        subject { NewOrder.new('out') }
+        subject { NewOrder.new(user, 'out') }
 
         it 'does not fill the @data with :eq_types key' do
           expect(subject.data).not_to include(:eq_types)
@@ -21,7 +21,7 @@ module Warehouse
       end
 
       context 'when order has :in type' do
-        subject { NewOrder.new('in') }
+        subject { NewOrder.new(user, 'in') }
 
         it 'fills the @data with :eq_types key' do
           expect(subject.data).to include(:order, :eq_types, :divisions, :operation)
@@ -50,7 +50,7 @@ module Warehouse
 
       Order.operations.each_key do |operation|
         context "when operation is #{operation}" do
-          subject { NewOrder.new(operation) }
+          subject { NewOrder.new(user, operation) }
 
           it 'creates Order with specified status' do
             expect(subject.data[:order].operation).to eq operation

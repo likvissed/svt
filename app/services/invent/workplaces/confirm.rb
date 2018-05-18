@@ -4,7 +4,8 @@ module Invent
     class Confirm < BaseService
       # type - вид действия: confirm - подтвердить, disapprove - отклонить
       # ids - массив, содержащий workplace_id рабочих мест
-      def initialize(type, ids)
+      def initialize(current_user, type, ids)
+        @current_user = current_user
         @type = type
         @ids = ids
       end
@@ -27,6 +28,7 @@ module Invent
 
       def load_workplaces
         @workplaces = Workplace.where(workplace_id: @ids)
+        authorize @workplaces.first, :update? if @workplaces.length.positive?
       end
 
       def update_workplaces

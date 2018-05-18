@@ -1,11 +1,13 @@
 module Invent
   module Workplaces
     class NewWp < BaseService
-      def initialize
+      def initialize(current_user)
+        @current_user = current_user
         @data = {}
       end
 
       def run
+        init_workplace
         load_properties
         load_divisions
 
@@ -15,6 +17,13 @@ module Invent
         Rails.logger.error e.backtrace[0..5].inspect
 
         false
+      end
+
+      protected
+
+      def init_workplace
+        wp = Workplace.new
+        authorize wp, :new?
       end
 
       def load_properties

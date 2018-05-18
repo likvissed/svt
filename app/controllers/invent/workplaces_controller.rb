@@ -17,9 +17,12 @@ module Invent
 
     def new
       respond_to do |format|
-        format.html { session[:workplace_prev_url] = request.referrer }
+        format.html do
+          authorize Workplace.new
+          session[:workplace_prev_url] = request.referrer
+        end
         format.json do
-          @new_wp = Workplaces::NewWp.new
+          @new_wp = Workplaces::NewWp.new(current_user)
 
           if @new_wp.run
             render json: @new_wp.data
@@ -117,7 +120,7 @@ module Invent
     end
 
     def confirm
-      @confirm = Workplaces::Confirm.new(params[:type], params[:ids])
+      @confirm = Workplaces::Confirm.new(current_user, params[:type], params[:ids])
 
       if @confirm.run
         render json: { full_message: @confirm.data }

@@ -29,6 +29,7 @@ module Warehouse
 
       def init_order
         @order = Order.new(@order_params)
+        authorize @order, :create?
         @order.set_creator(current_user)
       end
 

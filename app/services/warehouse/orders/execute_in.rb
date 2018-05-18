@@ -31,6 +31,7 @@ module Warehouse
 
       def find_order
         @order = Order.find(@order_id)
+        authorize @order, :execute_in?
       end
 
       def wrap_order

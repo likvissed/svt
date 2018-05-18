@@ -7,7 +7,7 @@ module Invent
       let(:workplace_count) { create(:active_workplace_count, users: [user]) }
       let!(:workplace) { create(:workplace_pk, :add_items, items: %i[pc monitor], workplace_count: workplace_count) }
       let(:type) { 'confirm' }
-      subject { Confirm.new(type, [workplace.workplace_id]) }
+      subject { Confirm.new(user, type, [workplace.workplace_id]) }
 
       context 'with valid type' do
         context 'with "confirm" type' do

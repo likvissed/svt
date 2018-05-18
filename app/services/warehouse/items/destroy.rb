@@ -2,7 +2,8 @@ module Warehouse
   module Items
     # Удалить технику со склада
     class Destroy < Warehouse::ApplicationService
-      def initialize(item_id)
+      def initialize(current_user, item_id)
+        @current_user = current_user
         @item_id = item_id
       end
 
@@ -22,6 +23,7 @@ module Warehouse
 
       def destroy_item
         @data = Item.find(@item_id)
+        authorize @data, :destroy?
         return if @data.destroy
 
         @data = data.errors.full_messages.join('. ')

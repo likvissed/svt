@@ -28,6 +28,7 @@ module Warehouse
 
       def find_order
         @order = Order.find(@order_id)
+        authorize @order, :prepare_to_deliver?
         @order.assign_attributes(@order_params)
       end
 

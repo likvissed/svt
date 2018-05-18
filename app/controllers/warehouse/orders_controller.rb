@@ -46,7 +46,7 @@ module Warehouse
     end
 
     def new
-      @new_order = Orders::NewOrder.new(params[:operation])
+      @new_order = Orders::NewOrder.new(current_user, params[:operation])
 
       if @new_order.run
         render json: @new_order.data
@@ -126,7 +126,7 @@ module Warehouse
     end
 
     def destroy
-      @destroy = Orders::Destroy.new(params[:id])
+      @destroy = Orders::Destroy.new(current_user, params[:id])
 
       if @destroy.run
         render json: { full_message: I18n.t('controllers.warehouse/order.destroyed') }

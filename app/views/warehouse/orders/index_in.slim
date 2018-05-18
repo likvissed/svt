@@ -18,7 +18,7 @@
                 th Тип
                 th Позиции ордера
                 th Кем создан
-                th Кем утвержден
+                / th Кем утвержден
                 th Кто получил/принес
                 th Статус
                 th
@@ -30,10 +30,10 @@
                 td.col-fhd-1 ng-bind="order.consumer_dept"
                 td.col-fhd-1 ng-bind="order.invent_workplace_id"
                 td.col-fhd-2.col-xlg-2.col-lg-2.col-md-2.col-sm-2 ng-bind="order.operation_translated"
-                td.col-fhd-6.col-xlg-6.col-lg-6.col-md-6.col-sm-6 ng-bind="order.operations_to_string"
+                td.col-fhd-8.col-xlg-8.col-lg-8.col-md-8.col-sm-8 ng-bind="order.operations_to_string"
                 td.col-fhd-4.col-xlg-4.col-lg-3.col-md-3.col-sm-3 ng-bind="order.creator.fio || order.creator_fio"
-                td.col-fhd-3.col-xlg-3.col-lg-3.col-md-3.col-sm-3 ng-bind="order.validator.fio || order.validator_fio"
-                td.col-fhd-3.col-xlg-3.col-lg-3.col-md-3.col-sm-2 ng-bind="order.consumer.fio || order.consumer_fio"
+                / td.col-fhd-3.col-xlg-3.col-lg-3.col-md-3.col-sm-3 ng-bind="order.validator.fio || order.validator_fio"
+                td.col-fhd-4.col-xlg-4.col-lg-4.col-md-4.col-sm-3 ng-bind="order.consumer.fio || order.consumer_fio"
                 td.col-fhd-1.col-xlg-1.col-lg-2.col-md-2.col-sm-2 ng-bind="order.status_translated"
                 td.text-center.col-fhd-2.col-xlg-1.col-lg-1.col-md-1.col-sm-1
                   = fa_icon "pencil-square-o fw", class: "pointer",

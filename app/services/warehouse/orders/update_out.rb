@@ -15,6 +15,7 @@ module Warehouse
         raise 'Неверные данные' if order_in?
 
         @order = Order.includes(:inv_item_to_operations, :inv_items).find(@order_id)
+        authorize @order, :update?
         return false unless wrap_order_with_transactions
         broadcast_out_orders
         broadcast_items

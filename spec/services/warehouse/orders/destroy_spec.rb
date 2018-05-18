@@ -3,7 +3,8 @@ require 'feature_helper'
 module Warehouse
   module Orders
     RSpec.describe Destroy, type: :model do
-      subject { Destroy.new(order.id) }
+      let!(:user) { create(:user) }
+      subject { Destroy.new(user, order.id) }
 
       context 'when operation is :in' do
         let(:item_1) { create(:item, :with_property_values, type_name: :pc, status: :waiting_bring) }

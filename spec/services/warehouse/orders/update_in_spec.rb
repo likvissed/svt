@@ -3,11 +3,11 @@ require 'feature_helper'
 module Warehouse
   module Orders
     RSpec.describe UpdateIn, type: :model do
-      let(:user) { create(:user) }
-      let(:new_user) { create(:***REMOVED***_user) }
+      let!(:user) { create(:user) }
+      let(:new_user) { create(:***REMOVED***_user, role: Role.find_by(name: :admin)) }
       subject { UpdateIn.new(new_user, order.id, order_params) }
 
-      context 'when warehouse_type is :without_invent_num' do
+      context 'when warehouse_type is s:without_invent_num' do
         let!(:order) { create(:order) }
         let(:order_json) { order.as_json }
 

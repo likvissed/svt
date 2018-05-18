@@ -3,8 +3,9 @@ require 'feature_helper'
 module Warehouse
   module Supplies
     RSpec.describe Edit, type: :model do
+      let(:user) { create(:user) }
       let(:supply) { create(:supply) }
-      subject { Edit.new(supply.id) }
+      subject { Edit.new(user, supply.id) }
 
       before { subject.run }
 

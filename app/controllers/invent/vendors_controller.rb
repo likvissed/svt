@@ -1,5 +1,7 @@
 module Invent
   class VendorsController < ApplicationController
+    before_action :check_access
+
     def index
       respond_to do |format|
         format.html
@@ -35,6 +37,10 @@ module Invent
 
     def vendor_params
       params.require(:vendor).permit(:vendor_name)
+    end
+
+    def check_access
+      authorize [:invent, :vendor], :index?
     end
   end
 end

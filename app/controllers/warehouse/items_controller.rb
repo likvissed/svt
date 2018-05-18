@@ -16,7 +16,7 @@ module Warehouse
     end
 
     def destroy
-      @destroy = Items::Destroy.new(params[:id])
+      @destroy = Items::Destroy.new(current_user, params[:id])
 
       if @destroy.run
         render json: { full_message: I18n.t('controllers.warehouse/item.destroyed') }

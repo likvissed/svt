@@ -2,7 +2,8 @@ module Warehouse
   module Orders
     # Удалить ордер
     class Destroy < BaseService
-      def initialize(order_id)
+      def initialize(current_user, order_id)
+        @current_user = current_user
         @order_id = order_id
       end
 
@@ -10,6 +11,7 @@ module Warehouse
         Invent::Item.transaction do
           begin
             @data = Order.find(@order_id)
+            authorize @data, :destroy?
 
             case @data.operation
             when 'in'

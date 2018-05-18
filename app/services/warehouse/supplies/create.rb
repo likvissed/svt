@@ -36,6 +36,8 @@ module Warehouse
 
       def init_supply
         @supply = Supply.new(@supply_params)
+        authorize @supply, :create?
+
         @supply.operations.each do |op|
           op.item_type = op.item.item_type
           op.item_model = op.item.item_model

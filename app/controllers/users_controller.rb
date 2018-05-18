@@ -1,4 +1,6 @@
 class UsersController < ApplicationController
+  before_action :check_access
+
   def index
     respond_to do |format|
       format.html
@@ -68,5 +70,9 @@ class UsersController < ApplicationController
 
   def user_params
     params.require(:user).permit(:id, :tn, :role_id)
+  end
+
+  def check_access
+    authorize :user, :index?
   end
 end

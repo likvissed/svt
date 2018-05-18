@@ -13,6 +13,7 @@ module Warehouse
         raise 'Неверные данные' if order_out?
 
         @order = Order.find(@order_id)
+        authorize @order, :update?
         return false unless wrap_order_with_transactions
         broadcast_in_orders
 

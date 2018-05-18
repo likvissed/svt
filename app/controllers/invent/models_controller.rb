@@ -1,17 +1,14 @@
 module Invent
   class ModelsController < ApplicationController
-    def index
-      respond_to do |format|
-        format.html
-        format.json do
-          @index = Models::Index.new(params)
+    before_action :check_access
 
-          if @index.run
-            render json: @index.data
-          else
-            render json: { full_message: I18n.t('controllers.app.unprocessable_entity') }, status: 422
-          end
-        end
+    def index
+      @index = Models::Index.new(params)
+
+      if @index.run
+        render json: @index.data
+      else
+        render json: { full_message: I18n.t('controllers.app.unprocessable_entity') }, status: 422
       end
     end
 
@@ -81,6 +78,10 @@ module Invent
           :_destroy
         ]
       )
+    end
+
+    def check_access
+      authorize [:invent, :model], :index?
     end
   end
 end

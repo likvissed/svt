@@ -1,7 +1,8 @@
 module Warehouse
   module Supplies
     class Destroy < BaseService
-      def initialize(supply_id)
+      def initialize(current_user, supply_id)
+        @current_user = current_user
         @supply_id = supply_id
       end
 
@@ -21,6 +22,11 @@ module Warehouse
       end
 
       protected
+
+      def find_supply
+        @supply = Supply.includes(operations: :item).find(@supply_id)
+        authorize @supply, :destroy?
+      end
 
       def wrap_with_transaction
         Item.transaction do

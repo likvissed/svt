@@ -16,7 +16,7 @@ module Warehouse
         let(:operation_2) { attributes_for(:supply_operation, item: item_2_attr, shift: 10) }
         let(:allowed_item_keys) { %i[invent_type_id invent_model_id warehouse_type item_type item_model barcode] }
         let(:supply_params) do
-          edit = Edit.new(supply.id)
+          edit = Edit.new(user, supply.id)
           edit.run
           # Оставляем в item только параметры, разрешенные в strong_params
           [operation_1, operation_2].each do |op|
@@ -73,7 +73,7 @@ module Warehouse
 
       context 'when remove existing operation' do
         let(:supply_params) do
-          edit = Edit.new(supply.id)
+          edit = Edit.new(user, supply.id)
           edit.run
           edit.data[:supply]['operations_attributes'].first['_destroy'] = 1
           edit.data[:supply].as_json
@@ -133,7 +133,7 @@ module Warehouse
 
       context 'when increase :shift attribute of existing operation' do
         let(:supply_params) do
-          edit = Edit.new(supply.id)
+          edit = Edit.new(user, supply.id)
           edit.run
           edit.data[:supply]['operations_attributes'].first['shift'] += 5
           edit.data[:supply].as_json
@@ -150,7 +150,7 @@ module Warehouse
 
       context 'when reduce :shift attribute of existing operation' do
         let(:supply_params) do
-          edit = Edit.new(supply.id)
+          edit = Edit.new(user, supply.id)
           edit.run
           edit.data[:supply]['operations_attributes'].first['shift'] -= 5
           edit.data[:supply].as_json

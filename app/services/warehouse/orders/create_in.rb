@@ -98,6 +98,7 @@ module Warehouse
 
       def init_order(param)
         @order = Order.new(param)
+        authorize @order, :create?
         @order.set_creator(current_user)
 
         return true unless @done_flag

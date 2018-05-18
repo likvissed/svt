@@ -3,9 +3,10 @@ require 'feature_helper'
 module Warehouse
   module Supplies
     RSpec.describe Destroy, type: :model do
+      let(:user) { create(:user) }
       let!(:supply) { create(:supply) }
       let!(:counts) { Item.pluck(:count) }
-      subject { Destroy.new(supply.id) }
+      subject { Destroy.new(user, supply.id) }
 
       its(:run) { is_expected.to be_truthy }
 

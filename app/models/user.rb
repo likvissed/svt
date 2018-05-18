@@ -44,6 +44,11 @@ class User < ApplicationRecord
     role.name.to_sym == role_sym
   end
 
+  # Проверка наличия роли из указанного массива
+  def has_one_of_roles?(*roles)
+    roles.include?(role.name.to_sym)
+  end
+
   def fill_data
     self.user_iss = UserIss.find_by(tn: tn)
     self.fullname = user_iss.try(:fio)

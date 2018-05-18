@@ -2,7 +2,8 @@ module Warehouse
   module Supplies
     # Загрузить список склада
     class Edit < BaseService
-      def initialize(supply_id)
+      def initialize(current_user, supply_id)
+        @current_user = current_user
         @data = {}
         @supply_id = supply_id
       end
@@ -24,6 +25,7 @@ module Warehouse
 
       def load_supply
         data[:supply] = Supply.includes(operations: :item).find(@supply_id)
+        authorize data[:supply], :edit?
         data[:operation] = Operation.new(operationable: data[:supply], shift: 0)
       end
 

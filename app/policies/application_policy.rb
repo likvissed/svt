@@ -6,7 +6,7 @@ class ApplicationPolicy
     @record = record
   end
 
-  # Есть ли доступ к контроллерам (за исключение :***REMOVED***_invents)
+  # Пользователям с ролью ***REMOVED***_user доступ запрещен
   def authorization?
     !user.has_role? :***REMOVED***_user
   end
@@ -26,5 +26,13 @@ class ApplicationPolicy
     def resolve
       scope
     end
+  end
+
+  protected
+
+  def only_for_manager
+    return true if admin?
+
+    user.has_role? :manager
   end
 end

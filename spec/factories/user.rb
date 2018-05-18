@@ -40,11 +40,26 @@ FactoryBot.define do
     email 'v***REMOVED***@***REMOVED***.ru'
     login '***REMOVED***'
     fullname '***REMOVED***'
-    association :role, factory: :manager_role
 
     after(:build) do |user, ev|
       unless ev.role
         user.role = Role.find_by(name: :manager) || create(:manager_role)
+      end
+    end
+  end
+
+  factory :tyulyakova_user, class: User do
+    id_tn ***REMOVED***
+    tn ***REMOVED***
+    phone '59-57'
+    division ***REMOVED***
+    email '***REMOVED***@***REMOVED***.ru'
+    login '***REMOVED***'
+    fullname '***REMOVED***'
+
+    after(:build) do |user, ev|
+      unless ev.role
+        user.role = Role.find_by(name: :read_only_role) || create(:read_only_role)
       end
     end
   end

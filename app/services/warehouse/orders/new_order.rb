@@ -2,7 +2,8 @@ module Warehouse
   module Orders
     # Инициализация объекта Order
     class NewOrder < BaseService
-      def initialize(operation)
+      def initialize(current_user, operation)
+        @current_user = current_user
         @data = {}
         @operation = operation.to_sym
       end
@@ -24,6 +25,7 @@ module Warehouse
 
       def init_order
         data[:order] = Order.new(operation: @operation)
+        authorize data[:order], :new? if current_user
 
         shift = @operation == :in ? 1 : -1
         data[:operation] = data[:order].operations.build(shift: shift)

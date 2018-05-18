@@ -85,7 +85,7 @@ module Warehouse
       end
 
       def init_order
-        new_order = Orders::NewOrder.new(:out)
+        new_order = Orders::NewOrder.new(nil, :out)
 
         raise 'Не удалось создать шаблон расходного ордера' unless new_order.run
 
