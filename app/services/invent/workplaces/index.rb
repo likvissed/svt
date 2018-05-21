@@ -85,16 +85,16 @@ module Invent
       def label_status(status)
         case status
         when 'confirmed'
-          labelClass = 'label-success';
+          label_class = 'label-success'
         when 'pending_verification'
-          labelClass = 'label-warning';
+          label_class = 'label-warning'
         when 'disapproved'
-          labelClass = 'label-danger';
+          label_class = 'label-danger'
         when 'freezed'
-          labelClass = 'label-primary';
+          label_class = 'label-primary'
         end
 
-        "<span class='label #{labelClass}'>#{Workplace.translate_enum(:status, status)}</span>"
+        "<span class='label #{label_class}'>#{Workplace.translate_enum(:status, status)}</span>"
       end
     end
   end

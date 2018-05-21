@@ -1,7 +1,7 @@
 require 'feature_helper'
 
 RSpec.describe User, type: :model do
-  it { is_expected.to have_many(:workplace_responsibles).class_name('Invent::WorkplaceResponsible') }
+  it { is_expected.to have_many(:workplace_responsibles).class_name('Invent::WorkplaceResponsible').dependent(:destroy) }
   it { is_expected.to have_many(:workplace_counts).through(:workplace_responsibles).class_name('Invent::WorkplaceCount') }
   it { is_expected.to belong_to(:role) }
   it { is_expected.to belong_to(:user_iss).with_foreign_key('id_tn') }

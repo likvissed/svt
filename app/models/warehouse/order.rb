@@ -128,10 +128,10 @@ module Warehouse
     end
 
     def check_operation_list
-      if inv_workplace
-        errors.add(:base, :cannot_have_operations_without_invent_num) if operations.any? { |op| op.inv_items.none? }
-      else
-        errors.add(:base, :cannot_have_operations_with_invent_num) if any_inv_item_to_operation?
+      if inv_workplace && operations.any? { |op| op.inv_items.none? }
+        errors.add(:base, :cannot_have_operations_without_invent_num)
+      elsif !inv_workplace && any_inv_item_to_operation?
+        errors.add(:base, :cannot_have_operations_with_invent_num)
       end
     end
 

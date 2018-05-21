@@ -15,7 +15,7 @@ module Warehouse
     def positive_operations_shift
       return if operations.none? { |op| op.shift.negative? }
 
-      self.errors.add(:base, :operations_can_not_have_negative_value)
+      errors.add(:base, :operations_can_not_have_negative_value)
     end
   end
 end

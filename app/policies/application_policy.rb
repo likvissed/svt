@@ -8,11 +8,11 @@ class ApplicationPolicy
 
   # Пользователям с ролью ***REMOVED***_user доступ запрещен
   def authorization?
-    !user.has_role? :***REMOVED***_user
+    !user.role? :***REMOVED***_user
   end
 
   def admin?
-    user.has_role? :admin
+    user.role? :admin
   end
 
   class Scope
@@ -33,6 +33,6 @@ class ApplicationPolicy
   def only_for_manager
     return true if admin?
 
-    user.has_role? :manager
+    user.role? :manager
   end
 end

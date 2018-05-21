@@ -5,9 +5,9 @@ module Invent
     def generate_pdf?
       return true if admin?
 
-      if @user.has_role? :***REMOVED***_user
+      if @user.role? :***REMOVED***_user
         division_access?
-      elsif @user.has_role? :manager
+      elsif @user.role? :manager
         true
       else
         false

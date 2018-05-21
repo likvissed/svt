@@ -40,7 +40,7 @@ module Warehouse
     end
 
     def formatted_date
-      date.strftime("%d-%m-%Y") if date
+      date.strftime('%d-%m-%Y') if date
     end
 
     def build_inv_items(count, **params)

@@ -4,7 +4,7 @@ class User < ApplicationRecord
   devise :database_authenticatable, :trackable, :timeoutable, :omniauthable,
          omniauth_providers: %i[open_id_***REMOVED*** check_***REMOVED***_auth], authentication_keys: [:login]
 
-  has_many :workplace_responsibles, class_name: 'Invent::WorkplaceResponsible', inverse_of: :user
+  has_many :workplace_responsibles, class_name: 'Invent::WorkplaceResponsible', inverse_of: :user, dependent: :destroy
   has_many :workplace_counts, through: :workplace_responsibles, class_name: 'Invent::WorkplaceCount'
 
   belongs_to :role
@@ -40,12 +40,12 @@ class User < ApplicationRecord
 
   # Проверка наличия указанной роли у пользователя
   # role_sym - символ имени роли
-  def has_role?(role_sym)
+  def role?(role_sym)
     role.name.to_sym == role_sym
   end
 
   # Проверка наличия роли из указанного массива
-  def has_one_of_roles?(*roles)
+  def one_of_roles?(*roles)
     roles.include?(role.name.to_sym)
   end
 

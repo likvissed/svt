@@ -3,9 +3,9 @@ module Invent
     def new?
       return true if admin?
 
-      if user.has_role? :***REMOVED***_user
+      if user.role? :***REMOVED***_user
         division_access? && allowed_time?
-      elsif user.has_role? :manager
+      elsif user.role? :manager
         true
       else
         false
@@ -16,9 +16,9 @@ module Invent
     def create?
       return true if admin?
 
-      if user.has_role? :***REMOVED***_user
+      if user.role? :***REMOVED***_user
         division_access? && allowed_time?
-      elsif user.has_role? :manager
+      elsif user.role? :manager
         true
       else
         false
@@ -30,9 +30,9 @@ module Invent
     def edit?
       return true if admin?
 
-      if user.has_role? :***REMOVED***_user
+      if user.role? :***REMOVED***_user
         division_access? && allowed_time?
-      elsif user.has_one_of_roles? :manager, :read_only
+      elsif user.one_of_roles? :manager, :read_only
         true
       else
         false
@@ -44,9 +44,9 @@ module Invent
     def update?
       return true if admin?
 
-      if user.has_role? :***REMOVED***_user
+      if user.role? :***REMOVED***_user
         division_access? && allowed_time?
-      elsif user.has_role? :manager
+      elsif user.role? :manager
         true
       else
         false
@@ -58,9 +58,9 @@ module Invent
     def destroy?
       return true if admin?
 
-      if user.has_role? :***REMOVED***_user
+      if user.role? :***REMOVED***_user
         division_access? && allowed_time? && !confirmed?
-      elsif user.has_role? :manager
+      elsif user.role? :manager
         true
       else
         false
@@ -69,7 +69,7 @@ module Invent
 
     class Scope < Scope
       def resolve
-        if user.has_role? :***REMOVED***_user
+        if user.role? :***REMOVED***_user
           divisions = user.workplace_counts.pluck(:division)
           scope.where("invent_workplace_count.division IN (#{divisions.empty? ? 'NULL' : divisions.join(', ')})")
         else

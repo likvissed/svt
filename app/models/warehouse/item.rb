@@ -63,7 +63,7 @@ module Warehouse
       if op
         errors.add(:base, :cannot_destroy_with_processing_operation, order_id: op.operationable.id)
         throw(:abort)
-      elsif count_reserved > 0
+      elsif count_reserved.positive?
         errors.add(:base, :cannot_destroy_with_count_reserved)
         throw(:abort)
       end
