@@ -1,10 +1,10 @@
-require 'rails_helper'
+require 'spec_helper'
 
 module Invent
   module Items
     RSpec.describe ExistingItem, type: :model do
       let(:item) { create(:item, :with_property_values, item_model: 'model', type_name: 'printer') }
-      subject { ExistingItem.new(InvType::ALL_PRINT_TYPES,item.invent_num) }
+      subject { ExistingItem.new(Type::ALL_PRINT_TYPES, item.invent_num) }
 
       context 'when item exists' do
         before { subject.run }
@@ -18,17 +18,17 @@ module Invent
         end
 
         it 'sets short_description to the :type key' do
-          expect(subject.data[:type]).to eq item.inv_type.short_description
+          expect(subject.data[:type]).to eq item.type.short_description
         end
 
         it 'sets item_model to the :model key' do
-          expect(subject.data[:model]).to eq item.item_model
+          expect(subject.data[:model]).to eq item.get_item_model
         end
       end
 
       context 'when item does not exist' do
         before do
-          allow(InvItem).to receive_message_chain(:left_outer_joins, :where, :find_by).and_return(nil)
+          allow(Item).to receive_message_chain(:left_outer_joins, :where, :find_by).and_return(nil)
           subject.run
         end
 

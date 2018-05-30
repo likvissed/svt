@@ -19,13 +19,15 @@ module Invent
         false
       end
 
+      protected
+
       def find_item
-        item = InvItem.left_outer_joins(:inv_type).where(invent_type: { name: @type }).find_by(invent_num: @invent_num)
+        item = Item.left_outer_joins(:type).where(invent_type: { name: @type }).find_by(invent_num: @invent_num)
 
         if item
           data[:exists] = true
-          data[:type] = item.inv_type.short_description
-          data[:model] = item.inv_model.try(:item_model) || item.item_model
+          data[:type] = item.type.short_description
+          data[:model] = item.get_item_model
 
           load_connection_type(item)
         else
@@ -34,8 +36,8 @@ module Invent
       end
 
       def load_connection_type(item)
-        prop = item.inv_properties.find_by(name: :connection_type)
-        data[:connection_type] = item.inv_property_values.find_by(inv_property: prop).try(:inv_property_list).try(:short_description) || 'Не определен'
+        prop = item.properties.find_by(name: :connection_type)
+        data[:connection_type] = item.property_values.find_by(property: prop).try(:property_list).try(:short_description) || 'Не определен'
       end
     end
   end
