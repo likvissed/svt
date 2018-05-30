@@ -21,8 +21,9 @@
     this.additional.visibleCount = count || 0;
   }
 
-  WarehouseOrder.prototype._processingData = function(data, onlyOrder = false) {
+  WarehouseOrder.prototype._processingData = function(data, onlyOrder) {
     this._setOrder(data.order);
+    onlyOrder = onlyOrder || false;
 
     if (!onlyOrder) {
       // Заполнить список отделов
