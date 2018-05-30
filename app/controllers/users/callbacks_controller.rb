@@ -6,7 +6,7 @@ class Users::CallbacksController < Devise::OmniauthCallbacksController
 
     @user = User.find_by(tn: user_params.tn)
     if @user.nil?
-      flash[:alert] = 'Доступ запрещен'
+      flash[:alert] = I18n.t('controllers.app.access_denied')
       redirect_to new_user_session_path
     else
       if user_params.fullname.to_s.empty?
@@ -18,12 +18,13 @@ class Users::CallbacksController < Devise::OmniauthCallbacksController
       session[:user_fullname] = "#{fio_arr[0]} #{fio_arr[1][0]}. #{fio_arr[2][0]}."
 
       sign_in_and_redirect @user, event: :authentication
+      ActionCable.server.broadcast 'users', nil
       set_flash_message(:notice, :success)
     end
   end
 
   def failure
-    flash[:alert] = 'Ошибка авторизации. Обратитесь к администратору по тел. ***REMOVED***'
+    flash[:alert] = I18n.t('controllers.app.unprocessable_entity')
     redirect_to new_user_session_path
   end
 end

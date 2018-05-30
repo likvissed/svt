@@ -1,13 +1,13 @@
 require 'feature_helper'
 
-feature 'User sign in', %q(
+feature 'User sign in', '
   In order to use application
   as an user
   I want to be able to sign in
-) do
+' do
 
-  given(:user) { create :user }
-  given(:unregistered_user) { attributes_for :user }
+  given(:user) { create(:user) }
+  given(:unregistered_user) { attributes_for(:user) }
 
   scenario 'Registered user tries to sign in' do
     sign_in user

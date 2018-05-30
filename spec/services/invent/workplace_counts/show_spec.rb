@@ -1,10 +1,10 @@
-require 'spec_helper'
+require 'feature_helper'
 
 module Invent
   module WorkplaceCounts
     RSpec.describe Show, type: :model do
-      let(:***REMOVED***_user) { create :***REMOVED***_user }
-      let!(:workplace_count) { create :active_workplace_count, users: [***REMOVED***_user] }
+      let(:***REMOVED***_user) { create(:***REMOVED***_user) }
+      let!(:workplace_count) { create(:active_workplace_count, users: [***REMOVED***_user]) }
       subject { Show.new(workplace_count.workplace_count_id) }
 
       include_examples 'run methods', 'load_workplace_count'

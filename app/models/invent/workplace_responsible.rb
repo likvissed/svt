@@ -3,8 +3,8 @@ module Invent
     self.table_name = "#{Rails.configuration.database_configuration["#{Rails.env}_invent"]['database']}.#{table_name_prefix}workplace_responsible"
     self.primary_key = :workplace_responsible_id
 
-    belongs_to :workplace_count, inverse_of: :workplace_responsibles
-    belongs_to :user, inverse_of: :workplace_responsibles
+    belongs_to :workplace_count
+    belongs_to :user
 
     validate :uniq_user_per_workplace_count
 

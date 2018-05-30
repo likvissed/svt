@@ -1,0 +1,68 @@
+script type="text/ng-template" id="inOrderModal.slim"
+  form role="form" name="edit.form" data-method="edit.method"
+    .modal-header
+      .pull-left
+        h4 Приходный ордер
+      .pull-right
+        .icon-block
+          = render partial: 'templates/load_spinner'
+        .icon-block ng-show="edit.order.id"
+          = fa_icon "refresh 2x fw", class: "pointer", "tooltip-placement": "top", "tooltip-append-to-body": true, "uib-tooltip": "Загрузить данные об ордере заново",
+            "ng-click": "edit.reloadOrder()"
+    .modal-body
+      .form-group ng-class="edit.errorClass('order[consumer_dept]')"
+        = label_tag "order[consumer_dept]", "Отдел", class: "control-label"
+        = hidden_field_tag "order[consumer_dept]", "", "ng-model": "edit.order.consumer_dept"
+        .ui-select
+          ui-select ng-model="edit.order.consumer_dept" theme="bootstrap"
+            ui-select-match placeholder="Выберите отдел"
+              | {{ $select.selected }}
+            ui-select-choices repeat="division in edit.extra.divisions | filter: $select.search"
+              div ng-bind-html="division | highlight: $select.search"
+        span.help-block ng-show="edit.form['order[consumer_dept]'].$invalid" ng-bind="edit.errorMessage('order[consumer_dept]')"
+
+      .form-group ng-class="edit.errorClass('order[consumer]')"
+        = label_tag "order[consumer]", "ФИО или таб. № сдающего технику", class: "control-label"
+        = text_field_tag "order[consumer]", "", class: "form-control", autocomplete: "off", "ng-model": "edit.order.consumer"
+        /= text_field_tag "order[consumer]", "", class: "form-control", autocomplete: "off",
+          placeholder: "Введите ФИО", "ng-model": "edit.selectedConsumer", "typeahead-on-select": "edit.changeConsumer()",
+          "uib-typeahead": "user as user.fio for user in edit.extra.users | filter:$viewValue", "typeahead-show-hint": true,
+          "typeahead-min-length": 0, "typeahead-input-formatter": "edit.formatLabel($model)"
+        span.help-block ng-show="edit.form['order[consumer]'].$invalid" ng-bind="edit.errorMessage('order[consumer]')"
+
+      .form-group
+        h4
+          ' Позиции
+          span ng-if="!edit.extra.visibleCount"
+            ' отсутствуют
+          = fa_icon "plus-circle", class: "pointer", "tooltip-placement": "top", "uib-tooltip": "Добавить позицию", "ng-click": "edit.addPosition()",
+            "ng-if": "edit.order.status != 'done'"
+        table.table.table-striped.table-condensed ng-if="edit.extra.visibleCount"
+          thead
+            tr
+              th.col-sm-1
+              th.col-sm-5 Тип
+              th.col-sm-5 Инв. №
+              th.col-sm-13 Модель
+          tbody
+            tr.animate-show ng-repeat="op in edit.order.operations_attributes" ng-hide="op._destroy" ng-if="op.inv_item_ids.length"
+              td= fa_icon "times-circle lg", class: "pointer", "tooltip-placement": "left", "uib-tooltip": "Убрать позицию",
+                "ng-click": "edit.delPosition(op)", "ng-if": "op.status != 'done'"
+              td ng-bind="op.inv_items[0].type.short_description"
+              td ng-bind="op.inv_items[0].invent_num"
+              td ng-bind="op.inv_items[0].get_item_model"
+            tr.animate-show ng-repeat="op in edit.order.operations_attributes" ng-hide="op._destroy" ng-if="!op.inv_item_ids.length"
+              td= fa_icon "times-circle lg", class: "pointer", "tooltip-placement": "left", "uib-tooltip": "Убрать позицию",
+                "ng-click": "edit.delPosition(op)", "ng-if": "op.status != 'done'"
+              td ng-bind="op.item_type"
+              td
+              td ng-bind="op.item_model"
+
+    .modal-footer
+      = button_tag "Создать и исполнить", class: "btn-success btn-sm", "ng-click": "edit.ok(true)", "ng-if": "!edit.order.id"
+      = button_tag class: "btn-success btn-sm", "ng-click": "edit.ok()", "ng-disabled": "edit.order.status == 'done'" do
+        div ng-if="edit.order.id" Обновить
+        div ng-if="!edit.order.id" Создать
+      = button_tag "Закрыть", class: "btn-default btn-sm", "ng-click": "edit.cancel()"
+
+  = render partial: 'existing_item'

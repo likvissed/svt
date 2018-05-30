@@ -1,0 +1,27 @@
+.col-fhd-4.col-xlg-4.col-lg-5.col-sm-6.multiline-buffer
+  = button_tag "Новая модель", type: :button, class: "btn-primary btn-sm btn-block", "ng-click": "m_table.newModel()"
+.col-fhd-4.col-fhd-offset-8.col-xlg-4.col-xlg-offset-8.col-lg-6.col-lg-offset-1.col-sm-6.multiline-buffer
+  .input-group.input-group-sm.form-input-sm.multiline-select
+    ui-select ng-model="m_table.selectedTableFilters.vendor" on-select="m_table.reloadModels()" theme="bootstrap"
+      ui-select-match placeholder="Вендор"
+        | {{ $select.selected.vendor_name }}
+      ui-select-choices repeat="obj in m_table.filters.vendors | filter: $select.search"
+        div ng-bind-html="obj.vendor_name | highlight: $select.search"
+    span.input-group-btn
+      = button_tag type: :button, class: "btn-default", "ng-click": "m_table.clearFilter('vendor'); m_table.reloadModels()",
+        "uib-tooltip": "Очистить", "tooltip-append-to-body": true, "ng-disabled": "!m_table.selectedTableFilters.vendor" do
+        = fa_icon "times"
+.col-fhd-4.col-xlg-4.col-lg-6.col-sm-6.multiline-buffer
+  .input-group.input-group-sm.form-input-sm.multiline-select
+    ui-select ng-model="m_table.selectedTableFilters.type" on-select="m_table.reloadModels()" theme="bootstrap"
+      ui-select-match placeholder="Тип"
+        | {{ $select.selected.short_description }}
+      ui-select-choices repeat="obj in m_table.filters.types | filter: $select.search"
+        div ng-bind-html="obj.short_description | highlight: $select.search"
+    span.input-group-btn
+      = button_tag type: :button, class: "btn-default", "ng-click": "m_table.clearFilter('type'); m_table.reloadModels()",
+        "uib-tooltip": "Очистить", "tooltip-append-to-body": true, "ng-disabled": "!m_table.selectedTableFilters.type" do
+        = fa_icon "times"
+.col-fhd-4.col-xlg-4.col-lg-6.col-sm-6.multiline-buffer
+  = text_field_tag "", "", class: "form-control input-sm", placeholder: "Модель", "ng-model-options": "{ debounce: 300 }",
+  "ng-model": "m_table.selectedTableFilters.item_model", "ng-change": "m_table.reloadModels()"

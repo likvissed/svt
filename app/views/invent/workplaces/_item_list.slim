@@ -1,20 +1,29 @@
 .row
-  .col-xlg-24
+  .col-sm-24
     h4 Состав рабочего места
 
-.row.ng-hide ng-show="wp.workplace.workplace_type"
-  .col-xlg-24
-    p.bg-info.context-info ng-bind="wp.workplace.workplace_type.full_description"
+.row
+  .col-sm-24
+    uib-accordion
+      div uib-accordion-group="true" class="panel-default" is-open="status.open"
+        uib-accordion-heading
+          | Справка
+          i.pull-right
+            span ng-if="status.open"
+              = fa_icon "chevron-down"
+            span ng-if="!status.open"
+              = fa_icon "chevron-right"
+        = render partial: 'help'
 
 .row#wp_item_list ng-if="wp.workplace"
-  .col-xlg-24
+  .col-sm-24
     uib-tabset active="wp.additional.activeTab"
-      uib-tab.animate-repeat index="$index" ng-repeat="item in wp.workplace.inv_items_attributes" ng-hide="item._destroy"
-        uib-tab-heading
+      uib-tab.animate-repeat index="$index" ng-repeat="item in wp.workplace.items_attributes"
+        uib-tab-heading ng-class="{'text-danger': item.status == 'waiting_bring', 'text-info': item.status == 'prepared_to_swap' || item.status == 'waiting_take'}"
           span ng-bind="item.type.short_description"
           '
-          = fa_icon "times-circle lg", class: "destroy-item", "ng-click": "wp.delItem(item, $event)",
-            "uib-tooltip": "Удалить {{ item.type.short_description | lowercase }}", "tooltip-append-to-body": true
+          = fa_icon "times-circle lg", class: "destroy-item", "ng-click": "wp.delItem(item, $event)", "ng-if": "item.status == 'prepared_to_swap' || !item.id",
+            "uib-tooltip": "Исключить {{ item.type.short_description | lowercase }} из состава РМ", "tooltip-append-to-body": true
         = render partial: 'active_item'
       uib-tab.manage ng-click="wp.showSelectItemType()" index="999999" uib-tooltip="Добавить оборудование"
         uib-tab-heading

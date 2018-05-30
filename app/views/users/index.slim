@@ -1,0 +1,44 @@
+= title "Пользователи"
+
+.container ng-controller="UsersCtrl as u_table"
+  .well
+    .table-block
+      .row
+        = render partial: 'filters'
+      .row
+        .col-sm-24
+          table.table.table-striped.table-condensed
+            thead
+              tr
+                th
+                th Таб. №
+                th ФИО
+                th Телефон
+                th Роль
+                th Штамп последнего входа
+                th Штамп предыдущего входа
+                th
+            tbody
+              tr ng-repeat="user in u_table.users"
+                td.text-center
+                  = fa_icon "dot-circle-o", class: "text-success", "ng-show": "user['online?']", "uib-tooltip": "online"
+                  = fa_icon "dot-circle-o", class: "text-danger", "ng-show": "!user['online?']", "uib-tooltip": "offline"
+                td.col-sm-2 ng-bind="user.tn"
+                td.col-sm-6 ng-bind="user.fullname"
+                td.col-sm-2 ng-bind="user.phone"
+                td.col-sm-3 ng-bind="user.role.short_description"
+                td.col-sm-5 ng-bind="user.current_sign_in_data"
+                td.col-sm-5 ng-bind="user.last_sign_in_data"
+                td.col-sm-1.text-center
+                  = fa_icon "pencil-square-o fw", class: "pointer", "uib-tooltip": "Редактировать пользователя",
+                    "ng-click": "u_table.editUser(user)", "tooltip-append-to-body": "true"
+                  = fa_icon "trash-o fw", class: "text-danger pointer", "uib-tooltip": "Удалить пользователя",
+                    "tooltip-append-to-body": true, "ng-click": "u_table.destroyUser(user)"
+      .row
+        .col-sm-12
+          .animate-show ng-table-info="" info-attrs="u_table.pagination" ng-if="u_table.models"
+        .col-sm-12
+          ul{ uib-pagination="true" total-items="u_table.pagination.filteredRecords" ng-model="u_table.pagination.currentPage"
+            max-size="u_table.pagination.maxSize" class="pagination-sm pull-right" ng-change="u_table.reloadUsers()" }
+
+= render partial: 'edit_modal'

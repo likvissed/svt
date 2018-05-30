@@ -1,4 +1,4 @@
-(function () {
+(function() {
   'use strict';
 
   app
@@ -6,7 +6,7 @@
     .directive('datatableWrapper', datatableWrapper)
     .directive('newRecord', newRecord)
     .directive('typeaheadOpenOnFocus', typeaheadOpenOnFocus)
-    .directive('ngTableInfo', ngTableInfo);
+    .directive('ngTableInfo', ngTableInfo)
 
   disableLink.$inject = [];
   datatableWrapper.$inject = ['$timeout', '$compile'];
@@ -20,10 +20,10 @@
   function disableLink() {
     return {
       restrict: 'A',
-      link: function (scope, element, attrs) {
-        var checkLink = function (data) {
+      link: function(scope, element, attrs) {
+        var checkLink = function(data) {
           if (data)
-            element.on('click', function (event) {
+            element.on('click', function(event) {
               event.preventDefault();
             });
           else
@@ -32,7 +32,7 @@
             })
         };
 
-        scope.$watch(attrs.disableLink, function (newValue, oldValue) {
+        scope.$watch(attrs.disableLink, function(newValue, oldValue) {
           checkLink(newValue);
         });
       }
@@ -46,16 +46,10 @@
       restrict: 'E',
       transclude: true,
       template: '<ng-transclude></ng-transclude>',
-      link: function (scope, element, attrs) {
+      link: function(scope, element, attrs) {
         function compileElements() {
-          $timeout(function () {
+          $timeout(function() {
             $compile(element.find('.new-record'))(scope);
-
-            $compile(element.find('.workplaces-id-filter'))(scope);
-            $compile(element.find('.workplaces-invent-num-filter'))(scope);
-            $compile(element.find('.workplaces-division-filter'))(scope);
-            $compile(element.find('.workplaces-status-filter'))(scope);
-            $compile(element.find('.workplaces-type-filter'))(scope);
 
             $compile(element.find('.create-workplace-count-list'))(scope);
 
@@ -67,32 +61,17 @@
         compileElements();
 
         scope.$watch(
-          function (scope) {
-            // Для таблицы РМ
-            if (scope.wpIndex) {
-              return [
-                scope.wpIndex.selectedIdFilter,
-                scope.wpIndex.selectedInventNumFilter,
-                scope.wpIndex.selectedDivisionFilter,
-                scope.wpIndex.selectedStatusFilter,
-                scope.wpIndex.selectedTypeFilter
-              ];
-            }
-
+          function(scope) {
             if (scope.wpCount) {
-              return [
-                scope.wpCount.createWorkplaceCountList
-              ];
+              return [scope.wpCount.createWorkplaceCountList];
             }
 
             // Для списка РМ
             if (scope.wpList) {
-              return [
-                scope.wpList.selectedDivisionFilter
-              ];
+              return [scope.wpList.selectedDivisionFilter];
             }
           },
-          function () {
+          function() {
             compileElements();
           },
           true
@@ -108,7 +87,7 @@
       restrict: 'C',
       //template: '<button class="btn-sm btn btn-primary btn-block"
       // ng-click="contactPage.showContactModal()">Добавить</button>'
-      templateUrl: function (element, attrs) {
+      templateUrl: function(element, attrs) {
         return '/link/new_record.json?ctrl_name=' + attrs.id;
       }
     }
@@ -119,7 +98,7 @@
     return {
       require: 'ngModel',
       link: function(scope, element, attrs) {
-        element.on('click', function (event) {
+        element.on('click', function(event) {
           var
             ctrl = element.controller('ngModel'),
             prev = ctrl.$modelValue || '';
@@ -143,7 +122,7 @@
       scope: {
         infoAttrs: "="
       },
-      link: function (scope, element, attrs) {
+      link: function(scope, element, attrs) {
         var
           // Индекс начальной записи
           startRecord,
@@ -174,13 +153,13 @@
           element.text(result);
         }
 
-        $timeout(function () {
+        $timeout(function() {
           setEl();
         }, 0);
 
         scope.$watch(
-          function () { return scope.infoAttrs; },
-          function () { setEl(); },
+          function() { return scope.infoAttrs; },
+          function() { setEl(); },
           true
         );
       }

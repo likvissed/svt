@@ -22,7 +22,10 @@ module Invent
 
         true
       end
-    rescue RuntimeError
+    rescue RuntimeError => e
+      Rails.logger.error e.inspect.red
+      Rails.logger.error e.backtrace[0..5].inspect
+
       false
     end
 
@@ -36,7 +39,7 @@ module Invent
     def building_exist?
       return if IssReferenceBuilding.where(building_id: @building_id).exists?
 
-      raise 'abort'
+      raise "Площадка с ID #{@building_id} не найдена"
     end
 
     # Определяем, существует ли комната.

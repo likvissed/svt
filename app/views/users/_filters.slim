@@ -1,0 +1,25 @@
+.col-sm-5.col-md-4.col-xlg-3.multiline-buffer
+  = button_tag "Новый пользователь", type: :button, class: "btn-primary btn-sm btn-block", "ng-click": "u_table.newUser()"
+.col-sm-5.col-sm-offset-4.col-md-4.col-md-offset-8.col-xlg-4.col-xlg-offset-9.col-fhd-3.col-fhd-offset-12.multiline-buffer
+  = button_tag type: :button, class: "btn-default btn-block btn-sm",
+    "ng-click": "u_table.selectedTableFilters.online = !u_table.selectedTableFilters.online; u_table.reloadUsers()" do
+    div ng-if="u_table.selectedTableFilters.online"
+      = fa_icon "toggle-on lg", class: "text-success"
+      |  Только online
+    div ng-if="!u_table.selectedTableFilters.online"
+      = fa_icon "toggle-off lg", class: "text-danger"
+      |  Все пользователи
+.col-sm-5.col-md-4.col-xlg-4.col-fhd-3.multiline-buffer
+  .input-group.input-group-sm.form-input-sm.multiline-select
+    ui-select ng-model="u_table.selectedTableFilters.role" on-select="u_table.reloadUsers()" theme="bootstrap"
+      ui-select-match placeholder="Роль"
+        | {{ $select.selected.short_description }}
+      ui-select-choices repeat="obj in u_table.filters.roles | filter: $select.search"
+        div ng-bind-html="obj.short_description | highlight: $select.search"
+    span.input-group-btn
+      = button_tag type: :button, class: "btn-default", "ng-click": "u_table.selectedTableFilters.role = null; u_table.reloadUsers()",
+        "uib-tooltip": "Очистить", "tooltip-append-to-body": true, "ng-disabled": "!u_table.selectedTableFilters.role" do
+        = fa_icon "times"
+.col-sm-5.col-md-4.col-xlg-4.col-fhd-3.multiline-buffer
+  = text_field_tag "", "", class: "form-control input-sm", placeholder: "ФИО", "ng-model-options": "{ debounce: 300 }",
+    "ng-model": "u_table.selectedTableFilters.fullname", "ng-change": "u_table.reloadUsers()"

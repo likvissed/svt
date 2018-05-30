@@ -1,6 +1,22 @@
-.ng-hide ng-show="item"
-  .col-lg-offset-3.col-xlg-offset-4.col-fhd-offset-5.col-md-24.col-lg-18.col-xlg-16.col-fhd-14
+fieldset.ng-hide ng-show="item" ng-disabled="item.status == 'prepared_to_swap'"
+  .col-sm-24.col-lg-18.col-lg-offset-3.col-xlg-16.col-xlg-offset-4.col-fhd-12.col-fhd-offset-6 ng-if='item.status'
+    .form-group
+      p.info-block.bg-warning
+        span ng-if="item.status == 'prepared_to_swap'"
+          | {{ item.type.short_description }} будет перемещен в текущее рабочее место
+        span ng-if="item.status == 'waiting_bring'"
+          | Данный {{ item.type.short_description | lowercase }} пользователь должен сдать в УИВТ
+        span ng-if="item.status == 'waiting_take'"
+          | Данный {{ item.type.short_description | lowercase }} пользователь должен получить в УИВТ
+
+  .col-sm-24.col-lg-18.col-lg-offset-3.col-xlg-16.col-xlg-offset-4.col-fhd-12.col-fhd-offset-6
     -# Постоянные параметры.
+    .col-md-9.col-lg-10.col-xlg-9
+      .form-group
+        = label_tag :workplace_items__id, "ID", class: "control-label"
+    .col-md-15.col-lg-14.col-xlg-15
+      .form-group
+        div.form-control ng-bind="item.id" disabled=true
     .col-md-9.col-lg-10.col-xlg-9
       .form-group
         = label_tag :workplace_items__invent_num, "Инвентарный номер", class: "control-label"
@@ -8,11 +24,9 @@
       div ng-if="wp.additional.pcTypes | contains:item.type.name"
         .form-group
           .input-group
-            = text_field_tag "workplace[items][][invent_num]", "", class: "form-control", "ng-model": "item.invent_num",
-              "ng-blur": "wp.checkPcInvnum(item)"
+            = text_field_tag "workplace[items][][invent_num]", "", class: "form-control", "ng-model": "item.invent_num"
             .input-group-btn
-              = button_tag type: :button, class: "btn-default", "data-toggle": "dropdown",
-                "ng-disabled": "wp.additional.auditData" do
+              = button_tag type: :button, class: "btn-default", "data-toggle": "dropdown" do
                 ' Данные
                 span.caret
               ul.dropdown-menu.dropdown-menu-right
@@ -20,10 +34,6 @@
                   "disable-link": true
                 li= link_to "Внести вручную", "", "ng-click": "wp.runManuallyPcDialog(item)",
                   "disable-link": true
-              = button_tag type: :button, class: "btn-danger", "ng-click": "wp.changeAuditData(item)",
-                "ng-disabled": "!wp.additional.auditData", "tooltip-append-to-body": true,
-                "uib-tooltip": "Очистить данные об оборудовании полученные автоматически/вручную" do
-                = fa_icon "ban lg"
 
       div ng-if="!(wp.additional.pcTypes | contains:item.type.name)"
         .form-group
@@ -42,17 +52,17 @@
         = label_tag :workplace_items__item_model, "Модель", class: "control-label"
     .col-md-15.col-lg-14.col-xlg-15
       -# Если модель необходимо ввести вручную (так как нет вариантов для данного аида техники).
-      div ng-if="!item.type.inv_models.length"
+      div ng-if="!item.type.models.length"
         .form-group
           = text_field_tag "workplace[items][][item_model]", "", class: "form-control",
             "ng-model": "item.item_model"
 
         -# Если модель необходимо выбрать или ввести вручную, так как варианты из списка не подходят.
-      div ng-if="item.type.inv_models.length"
+      div ng-if="item.type.models.length"
         .form-group
           = select_tag "workplace[items][][model_id]", "", class: "form-control",
             "ng-change": "wp.changeItemModel(item)", "ng-model": "item.model",
-            "ng-options": "model as model.item_model disable when model.model_id == -1 for model in item.type.inv_models track by model.model_id"
+            "ng-options": "model as model.item_model disable when model.model_id == -1 for model in item.type.models track by model.model_id"
 
         div ng-if="!item.model_id"
           .form-group
@@ -60,8 +70,8 @@
             = text_field_tag "workplace[items][][item_model]", "", class: "form-control", "ng-model": "item.item_model"
 
     -# Переменные параметры.
-    div{ ng-repeat="prop in item.type.inv_properties track by $index"
-    ng-if="item.model_id != -1 || item.type.inv_models.length == 0" ng-hide="prop._destroy || prop.name == 'config_file'" }
+    div{ ng-repeat="prop in item.type.properties track by $index"
+    ng-if="item.model_id != -1 || item.type.models.length == 0" ng-hide="prop._destroy" }
       .col-md-9.col-lg-10.col-xlg-9
         .form-group
           label ng-bind="prop.short_description"
@@ -71,23 +81,26 @@
             div ng-switch-when="string"
               = text_field_tag "", "", class: "form-control",
                 "ng-disabled": "wp.additional.pcTypes | contains:item.type.name",
-                "ng-model": "item.inv_property_values_attributes[$index].value"
+                "ng-model": "item.property_values_attributes[$index].value"
 
             div ng-switch-when="list"
               = select_tag "", "", class: "form-control",
-                "ng-disabled": "item.inv_property_values_attributes[$index].filteredList.length == 1",
-                "ng-model": "item.inv_property_values_attributes[$index].property_list_id",
-                "ng-options": "prop_list.property_list_id as prop_list.short_description disable when prop_list.property_list_id == -1 for prop_list in item.inv_property_values_attributes[$index].filteredList"
+                "ng-disabled": "item.property_values_attributes[$index].filteredList.length == 1",
+                "ng-model": "item.property_values_attributes[$index].property_list_id",
+                "ng-options": "prop_list.property_list_id as prop_list.short_description disable when prop_list.property_list_id == -1 for prop_list in item.property_values_attributes[$index].filteredList"
 
             div ng-switch-when="list_plus"
               .form-group
                 = select_tag "", "", class: "form-control",
-                  "ng-disabled": "item.inv_property_values_attributes[$index].filteredList.length == 1",
-                  "ng-model": "item.inv_property_values_attributes[$index].property_list_id",
-                  "ng-options": "prop_list.property_list_id as prop_list.short_description disable when prop_list.property_list_id == -1 for prop_list in item.inv_property_values_attributes[$index].filteredList"
+                  "ng-disabled": "item.property_values_attributes[$index].filteredList.length == 1",
+                  "ng-model": "item.property_values_attributes[$index].property_list_id",
+                  "ng-options": "prop_list.property_list_id as prop_list.short_description disable when prop_list.property_list_id == -1 for prop_list in item.property_values_attributes[$index].filteredList"
 
-              div ng-if="!item.model_id && !item.inv_property_values_attributes[$index].property_list_id"
+              div ng-if="!item.model_id && !item.property_values_attributes[$index].property_list_id"
                 .form-group
                   label Введите {{prop.short_description | lowercase }}
                   = text_field_tag "workplace[items][][property_values][value]", "", class: "form-control",
-                    "ng-model": "item.inv_property_values_attributes[$index].value"
+                    "ng-model": "item.property_values_attributes[$index].value"
+
+    .col-md-10.col-md-offset-7 ng-if="!item.status"
+      = button_tag "Удалить технику, как дубликат", class: "btn-danger btn-block", "ng-click": "wp.destroyItem(item)"

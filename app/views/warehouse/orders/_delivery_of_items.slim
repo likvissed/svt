@@ -1,0 +1,73 @@
+script type="text/ng-template" id="deliveryOfItems.slim"
+  form role="form" name="delivery.form"
+    .modal-header
+      .pull-left
+        h4
+          ' Выдача техники (ID РМ: {{delivery.order.invent_workplace_id}})
+
+      .pull-right
+        .icon-block
+          = render partial: 'templates/load_spinner'
+        .icon-block
+          / a.default-color ng-href="/warehouse/orders/{{delivery.order.id}}/print"
+          = fa_icon "print 2x fw", class: "pointer", "uib-tooltip": "Распечатать ордер", "tooltip-append-to-body": "true", "ng-click": "delivery.printOrder()"
+        .icon-block
+          a.default-color ng-href="/invent/workplaces/{{delivery.order.invent_workplace_id}}/edit" target="blank"
+            = fa_icon "external-link 2x fw", class: "pointer", "uib-tooltip": "Перейти к рабочему месту", "tooltip-append-to-body": "true"
+
+    .modal-body
+      div ng-repeat="op in delivery.order.operations_attributes | filter:delivery.selectedOpFilter(delivery.order.selected_op)"
+        div ng-if="op.item.warehouse_type == 'without_invent_num'"
+          p.bg-active.context-info
+            strong
+              span ng-bind="$index + 1"
+              ' .
+              span ng-bind="op.item.item_type"
+
+          div style="padding: 0 45px 15px 45px;"
+            table.table.table-condensed
+              tr
+                td.col-sm-5
+                  strong Модель
+                td.col-sm-19 ng-bind="op.item.item_model"
+
+        div ng-if="op.item.warehouse_type == 'with_invent_num'"
+          div ng-repeat="inv_item in op.inv_items_attributes"
+            p.bg-active.context-info
+              strong
+                span ng-bind="$parent.$index + 1"
+                | .
+                span ng-bind="$index + 1"
+                ' .
+                span ng-bind="op.item.item_type"
+              span.pull-right
+                = fa_icon "refresh lg", class: "pointer", "tooltip-placement": "left", "uib-tooltip": "Обновить данные",
+                  "ng-click": "delivery.refreshInvItemData(inv_item)"
+
+            div style="padding: 0 45px 15px 45px;"
+              .row
+                .col-sm-12
+                  .form-group
+                    = label_tag "", "Серийный номер", class: "control-label"
+                    = text_field_tag "order[operations.inv_items.serial_num]", "", class: "form-control", autocomplete: "off",
+                      "ng-model": "inv_item.serial_num"
+                .col-sm-12
+                  .form-group ng-class="delivery.errorClass('order[operations.inv_items.invent_num]')"
+                    = label_tag "", "Инвентарный номер", class: "control-label"
+                    = text_field_tag "order[operations.inv_items.invent_num]", "", class: "form-control", autocomplete: "off",
+                      "ng-model": "inv_item.invent_num"
+                    span.help-block ng-show="delivery.form['order[operations.inv_items.invent_num]'].$invalid" ng-bind="delivery.errorMessage('order[operations.inv_items.invent_num]')"
+
+              table.table.table-condensed
+                tr
+                  td.col-sm-8
+                    strong Модель
+                  td.col-sm-16 ng-bind="inv_item.get_item_model || op.item.item_model"
+                tr ng-repeat="prop_val in inv_item.property_values"
+                  td.col-sm-8
+                    strong ng-bind="prop_val.property.short_description"
+                  td.col-sm-16 ng-bind="prop_val.value || prop_val.property_list.short_description"
+
+    .modal-footer
+      = button_tag "Выдать", class: "btn-success btn-sm", "ng-click": "delivery.ok()"
+      = button_tag "Закрыть", class: "btn-default btn-sm", "ng-click": "delivery.cancel()"

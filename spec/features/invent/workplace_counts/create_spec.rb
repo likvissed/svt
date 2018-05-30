@@ -2,12 +2,12 @@ require 'feature_helper'
 
 module Invent
   module WorkplaceCounts
-    feature 'Create a workplace_count', %q{
+    feature 'Create a workplace_count', '
       In order to allow responsible users to enter inventory data
       As an authenticated user
       I want to be able to create a workplace_count
-    } do
-      given(:user) { create :user }
+    ' do
+      given(:user) { create(:user) }
 
       scenario 'Unauthenticated user tries to create a workplace_count', js: true do
         visit invent_workplace_counts_path
@@ -32,7 +32,7 @@ module Invent
 
               fill_in 'Отдел', with: '***REMOVED***'
               fill_in 'Дата начала ввода данных', with: '31-мая-2017'
-              fill_in 'Дата окончания ввода данных', with: '10-июня-2017'
+              fill_in 'Дата окончания ввода данных', with: '10-июня-2028'
             end
           end
 
@@ -102,7 +102,7 @@ module Invent
           end
 
           context 'when workplace_count exists' do
-            let!(:workplace_count) { create :active_workplace_count, users: [user] }
+            let!(:workplace_count) { create(:active_workplace_count, users: [user]) }
 
             scenario 'tries to create the same workplace_count', js: true do
               within '.modal-content' do
@@ -116,7 +116,7 @@ module Invent
                 click_button 'Готово'
               end
 
-              expect(page).to have_content %q(Отдел '***REMOVED***' уже существует)
+              expect(page).to have_content "Отдел '***REMOVED***' уже существует"
             end
           end
         end

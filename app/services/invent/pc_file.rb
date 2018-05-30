@@ -29,8 +29,12 @@ module Invent
       Rails.logger.info "Удаление директории: #{@path_to_file_dir}".red
 
       FileUtils.rm_r(@path_to_file_dir) if File.exist?(@path_to_file_dir)
+      
       true
-    rescue
+    rescue RuntimeError => e
+      Rails.logger.error e.inspect.red
+      Rails.logger.error e.backtrace[0..5].inspect
+
       false
     end
 

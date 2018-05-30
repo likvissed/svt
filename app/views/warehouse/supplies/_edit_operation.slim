@@ -1,0 +1,54 @@
+script type="text/ng-template" id="editSupplyOperation.slim"
+  .modal-header.test
+    .pull-left
+      h4 Новая позиция
+    .pull-right
+      .icon-block
+        = render partial: 'templates/load_spinner'
+  .modal-body
+    .form-group
+      = radio_button_tag :new_item, "with_invent_num", false, "ng-model": "op.result.warehouseType", "ng-change": "op.clearResult()"
+      = label_tag :new_item_with_invent_num, "Основные средства", class: "control-label"
+      br
+      = radio_button_tag :new_item, "without_invent_num", false, "ng-model": "op.result.warehouseType", "ng-change": "op.clearResult()"
+      = label_tag :new_item_without_invent_num, "Расходка", class: "control-label"
+
+    div ng-if="op.result.warehouseType == 'with_invent_num'"
+      .form-group
+        = label_tag "type", "Тип", class: "control-label"
+        = select_tag "type", "", class: "form-control", "ng-model": "op.result.type",
+          "ng-options": "type as type.short_description disable when type.type_id == 0 for type in op.extra.eqTypes track by type.type_id",
+          "ng-change": "op.loadModels()"
+      div ng-if="op.extra.eqModels.length != 1"
+        .form-group
+          = label_tag "model", "Модель", class: "control-label"
+          = select_tag "model", "", class: "form-control", "ng-model": "op.result.model", "ng-disabled": "!op.result.type.type_id",
+            "ng-options": "model as model.item_model disable when model.model_id == 0 for model in op.extra.eqModels track by model.model_id"
+      div ng-if="op.extra.eqModels.length == 1"
+        .form-group
+          = label_tag "model", "Модель", class: "control-label"
+          = text_field_tag "model", "", class: "form-control", "ng-model": "op.result.model.item_model"
+
+    div ng-if="op.result.warehouseType == 'without_invent_num'"
+      .form-group
+        = label_tag "type", "Тип", class: "control-label"
+        = text_field_tag "type", "", class: "form-control", "ng-model": "op.result.type.short_description"
+      .form-group
+        = label_tag "model", "Модель", class: "control-label"
+        = text_field_tag "model", "", class: "form-control", "ng-model": "op.result.model.item_model"
+
+    .form-group
+      = label_tag "shift", "Количество", class: "control-label"
+      = text_field_tag "shift", "", class: "form-control", "ng-model": "op.result.shiftGetterSetter",
+        "ng-model-options": "{ getterSetter: true }"
+    .form-group
+      = label_tag "barcode", "Штрих-код производителя", class: "control-label"
+      = text_field_tag "barcode", "", class: "form-control", "ng-model": "op.result.barcode"
+
+  .modal-footer
+    = button_tag class: "btn-success", "ng-click": "op.ok()", "ng-disabled": "op.disableButton()" do
+      span ng-show="!op.extra.update"
+        | Добавить
+      span ng-show="op.extra.update"
+        | Обновить
+    = button_tag "Отмена", class: "btn-default", "ng-click": "op.cancel()"

@@ -13,7 +13,7 @@ module Invent
 
       def run
         load_divisions if @current_user
-        load_inv_types
+        load_types
         load_workplace_types
         load_workplace_specializations
         load_locations
@@ -25,9 +25,9 @@ module Invent
         true
       rescue Pundit::NotAuthorizedError
         false
-      rescue StandardError => e
+      rescue RuntimeError => e
         Rails.logger.error e.inspect.red
-        Rails.logger.error e.backtrace.inspect
+        Rails.logger.error e.backtrace[0..5].inspect
 
         false
       end
@@ -54,9 +54,9 @@ module Invent
       end
 
       # Получить список типов оборудования с их свойствами и возможными значениями.
-      def load_inv_types
-        data[:eq_types] = InvType
-                            .includes(:inv_models, inv_properties: { inv_property_lists: :inv_model_property_lists })
+      def load_types
+        data[:eq_types] = Type
+                            .includes(:models, properties: { property_lists: :model_property_lists })
                             .where('name != "unknown"')
       end
 
@@ -87,25 +87,25 @@ module Invent
 
       # Получить список возможных статусов РМ.
       def load_statuses
-        data[:statuses] = statuses
+        data[:statuses] = workplace_statuses
       end
 
       # Получить различные константы, необходимые для работы
       def load_constants
-        data[:file_depending] = InvProperty::FILE_DEPENDING
-        data[:single_pc_items] = InvType::SINGLE_PC_ITEMS
-        data[:type_with_files] = InvType::TYPE_WITH_FILES
+        data[:file_depending] = Property::FILE_DEPENDING
+        data[:single_pc_items] = Type::SINGLE_PC_ITEMS
+        data[:type_with_files] = Type::TYPE_WITH_FILES
       end
 
       # Преобразовать в json формат с необходимыми полями.
       def prepare_eq_types_to_render
         data[:eq_types] = data[:eq_types].as_json(
           include: [
-            :inv_models,
-            inv_properties: {
+            :models,
+            properties: {
               include: {
-                inv_property_lists: {
-                  include: :inv_model_property_lists
+                property_lists: {
+                  include: :model_property_lists
                 }
               }
             }

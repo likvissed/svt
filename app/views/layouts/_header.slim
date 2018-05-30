@@ -16,13 +16,12 @@
             span data-role="user-name"
               = current_user.fullname
 
-        .navbar-loading.animate-show ng-controller="AjaxLoadingCtrl as ajax" ng-show="ajax.requests.count != 0"
-          = fa_icon "spinner pulse 2x fw"
+        = render partial: 'templates/load_spinner'
 
       .navbar-header-menu
         .navbar-collapse
           ul.nav.navbar-nav.navbar-right
-            li
+            / li
               = link_to "" do
                 = fa_icon "bell-o"
                 | Уведомления
@@ -42,20 +41,72 @@
 
     .collapse.navbar-collapse.navbar-collapse-main
       ul.nav.navbar-nav
-        li.dropdown class="#{active_class('/invent/workplace')}"
+        li class="#{active_class('/invent/workplaces')}"
+          = link_to invent_workplaces_path do
+            = fa_icon "clipboard"
+            '  Рабочие места
+        / li.dropdown class="#{active_class('/invent/workplace')}"
           = link_to "", class: "dropdown-toggle", "data-toggle": "dropdown" do
             = fa_icon "clipboard"
-            '  Инвентаризация
+            '  Рабочие места
+            b.caret
+          ul.dropdown-menu
+            li= link_to "Список РМ", root_path
+            li.divider role="separator"
+            li= link_to "Настройки доступа", invent_workplace_counts_path
+            li= link_to "Проверка конфигураций", list_wp_invent_workplaces_path
+
+        / li.caret-before
+          = link_to "someuser", "#", class: ""
+        / li.dropdown.caret-after
+          = link_to "", class: "dropdown-toggle" do
             b.caret
           ul.dropdown-menu
             li= link_to "Список РМ", root_path
             li= link_to "Настройки доступа", invent_workplace_counts_path
             li= link_to "Проверка конфигураций", list_wp_invent_workplaces_path
-        li.dropdown
-          = link_to "", class: "dropdown-toggle", "data-toggle": "dropdown" do
+
+        / li.caret-dropdown
+        /   = link_to "", class: "dropdown-toggle" do
+        /     = fa_icon "clipboard"
+        /     '  Инвентаризация
+        /     b.caret.trigger
+        /     ul.dropdown-menu
+        /       li= link_to "Список РМ", root_path
+        /       li= link_to "Настройки доступа", invent_workplace_counts_path
+        /       li= link_to "Проверка конфигураций", list_wp_invent_workplaces_path
+
+
+        li class="#{active_class('/invent/item')}"
+          = link_to invent_items_path do
             = fa_icon "desktop"
             '  Техника
+        li class="#{active_class('/warehouse/item')}"
+          = link_to warehouse_items_path do
+            = fa_icon "cubes"
+            '  Склад
+        li.dropdown class="#{active_class('/warehouse/order')}"
+          = link_to "", class: "dropdown-toggle", "data-toggle": "dropdown" do
+            = fa_icon "folder-open-o"
+            '  Ордеры
             b.caret
           ul.dropdown-menu
-            li= link_to "В работе", invent_items_path
-            /li= link_to "На складе", ""
+            li= link_to "Приходные", in_warehouse_orders_path
+            li= link_to "Расходные", out_warehouse_orders_path
+            li.divider role="separator"
+            li= link_to "Архив", archive_warehouse_orders_path
+        li class="#{active_class('/warehouse/suppl')}"
+          = link_to warehouse_supplies_path do
+            = fa_icon "truck"
+            '  Поставки
+
+      ul.nav.navbar-nav.navbar-right
+        li.dropdown
+          = link_to "", class: "dropdown-toggle", "data-toggle": "dropdown" do
+            = fa_icon "cogs"
+            '  Администрирование
+            b.caret
+          ul.dropdown-menu
+            li= link_to "Пользователи", users_path
+            li= link_to "Ответственные за ВТ", invent_workplace_counts_path
+            li= link_to "Модели техники", invent_vendors_path

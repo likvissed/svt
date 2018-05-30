@@ -1,14 +1,20 @@
 module Invent
-  FactoryGirl.define do
+  FactoryBot.define do
     factory :workplace, class: Workplace do
+      workplace_count { WorkplaceCount.find_by(division: dept) || create(:active_workplace_count, :default_user, division: dept) }
       workplace_specialization { WorkplaceSpecialization.last }
-      id_tn { UserIss.where(dept: workplace_count.division).first.id_tn }
+      user_iss { UserIss.find_by(dept: workplace_count.division) }
       iss_reference_site { IssReferenceSite.first }
       iss_reference_building { iss_reference_site.iss_reference_buildings.first }
       iss_reference_room { iss_reference_building.iss_reference_rooms.first }
       comment ''
-      status { Workplace.statuses['pending_verification'] }
+      status :pending_verification
       enabled_filters true
+
+      transient do
+        # Отдел по умолчанию
+        dept ***REMOVED***
+      end
 
       trait :rm_pk do
         workplace_type { WorkplaceType.find_by(name: 'rm_pk') }
@@ -34,7 +40,7 @@ module Invent
           # Если Hash:
           #   - ключ: имя типа создаваемого оборудования в соответствии с полем name таблицы invent_type
           #   - значение: массив, содержащий объекты Hash, у которых ключ - это имя свойства создаваемого типа
-          #       оборудования, а значение - значение свойства (могут быть: 1. Объекты модели InvPropertyList.
+          #       оборудования, а значение - значение свойства (могут быть: 1. Объекты модели PropertyList.
           #       2. Строковые значения).
           #
           # item.keys[0] - ключ хэша
@@ -46,11 +52,11 @@ module Invent
           evaluator.items.each do |item|
             case item
             when Hash
-              workplace.inv_items << build(
-                :item_with_item_model, :with_property_values, type_name: item.keys[0], property_values: item[item.keys[0]]
+              workplace.items << build(
+                :item, :with_property_values, model: nil, item_model: 'my model', type_name: item.keys[0], property_values: item[item.keys[0]]
               )
             when Symbol || String
-              workplace.inv_items << build(:item_with_item_model, :with_property_values, type_name: item)
+              workplace.items << build(:item, :with_property_values, model: nil, item_model: 'my model', type_name: item)
             end
           end
         end

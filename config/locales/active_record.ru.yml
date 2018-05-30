@@ -4,7 +4,7 @@ ru:
       invent/workplace_count: 'отделы'
       invent/workplace_responsible: 'ответственные'
       invent/workplace: 'рабочее место'
-      invent/inv_item: 'оборудование'
+      invent/item: 'оборудование'
 
     attributes:
       invent/workplace_count:
@@ -23,44 +23,134 @@ ru:
 
       invent/workplace:
         id_tn: "ФИО ответственного"
-        workplace_count_id: "Отдел, к которому привязано рабочее место,"
-        workplace_type_id: "Тип рабочего места"
-        workplace_specialization_id: "Направление деятельности"
-        location_site_id: "Площадка"
-        location_building_id: "Корпус"
-        location_room_id: "Комната"
+        workplace_count: "Отдел, к которому привязано рабочее место,"
+        workplace_type: "Тип рабочего места"
+        workplace_specialization: "Вид выполняемой работы"
+        iss_reference_site: "Площадка"
+        iss_reference_building: "Корпус"
+        iss_reference_room: "Комната"
         statuses:
           confirmed: "Подтверждено"
           pending_verification: "В ожидании проверки"
           disapproved: "Отклонено"
           freezed: "Заморожено"
 
-      invent/workplace/inv_items:
+      invent/workplace/items:
         base: ""
-        type_id: "Тип оборудования"
+        type: "Тип оборудования"
         invent_num: "Инвентарный номер"
-        model_id: "Модель"
+        model: "Модель"
         item_model: "Наименование модели"
 
-      invent/workplace/inv_items/inv_property_values:
+      invent/workplace/items/property_values:
         base: ""
-        property_id: "Свойство"
-        property_list_id: "Значение"
+        property: "Свойство"
+        property_list: "Значение"
         value: "Значение"
 
-      invent/inv_item:
-        type_id: "Тип оборудования"
+      invent/item:
+        type: "Тип оборудования"
         invent_num: "Инвентарный номер"
-        model_id: "Модель"
-        item_model: "Модель"
+        model: "Модель"
+        item_model: "Наименование модели"
+        statuses:
+          waiting_take: 'Должен получить'
+          waiting_bring: 'Должен сдать'
+          prepared_to_swap: ''
 
-      invent/inv_item/inv_property_values:
-        property_id: "Свойство"
-        property_list_id: "Значение"
+      invent/item/property_values:
+        base: ''
+        property: "Свойство"
+        property_list: "Значение"
         value: "Значение"
+
+      invent/model:
+        base: ''
+        vendor: 'Вендор'
+        type: 'Тип'
+        item_model: 'Модель'
+        items: 'технике, расположенной на рабочих местах'
+        warehouse_items: 'технике, расположенной на складе'
 
       iss_reference_room:
         name: "Номер комнаты"
+
+      warehouse/order:
+        inv_workplace: 'Рабочее место'
+        invent_workplace_id: 'ID рабочего места'
+        consumer: 'ФИО (или таб. №) работника'
+        consumer_dept: 'Отдел'
+        operation: 'Тип ордера'
+        status: 'Статус ордера'
+        closed_time: 'Дата исполнения'
+        operations:
+          out: 'Расходный'
+          in: 'Приходный'
+        statuses:
+          processing: 'В работе'
+          done: 'Исполнен'
+        consumer_fio: 'ФИО работника'
+        validator_fio: ''
+
+      operations:
+        base: ''
+        date: 'Дата исполнения позиции'
+        stockman_fio: 'ФИО исполнителя позиции'
+
+      warehouse/order/operations:
+        item_type: 'Тип техники (опред. авт.)'
+        item_model: 'Модель (опред. авт.)'
+
+      warehouse/order/operations/item:
+        base: ''
+        count: 'Доступное количество техники на складе'
+        count_reserved: 'Зарезервированное количество техники на складе'
+
+      warehouse/order/operations/inv_item_to_operations:
+        inv_item: ''
+
+      warehouse/order/operations/inv_items:
+        base: ''
+        invent_num: 'Инвентарный номер'
+
+      warehouse/order/operations/inv_items/property_values:
+        base: ''
+
+      warehouse/supply:
+        name: 'Наименование поставки'
+        supplyer: 'Поставщик'
+        date: 'Дата поставки'
+
+      warehouse/supply/operations:
+        item_type: 'Тип техники (опред. авт.)'
+        item_model: 'Модель (опред. авт.)'
+        shift: 'Количество'
+
+      warehouse/supply/operations/item:
+        base: ''
+        item_model: 'Модель (опред. авт.)'
+        item_type: 'Тип техники (опред. авт.)'
+        count: 'Количество на складе'
+        warehouse_type: 'Тип (с инв. номером или без)'
+        used: 'Тип (новая или б/у)'
+
+      warehouse/item:
+        inv_item: 'Техника'
+        type: 'Тип техники (Системный блок и т.п.)'
+        model: 'Модель'
+        warehouse_type: 'Тип (с инв. номером или без)'
+        item_type: 'Тип техники (опред. авт.)'
+        item_model: 'Модель (опред. авт.)'
+        used: 'Тип (новая или б/у)'
+        count: 'Количество на складе'
+        count_reserved: 'Зарезервированное количество'
+        warehouse_types:
+          without_invent_num: 'Без инв. №'
+          with_invent_num: 'С инв. №'
+
+      user:
+        tn: Табельный номер
+        role: Роль
 
     errors:
       messages:
@@ -70,8 +160,8 @@ ru:
         less_than: "должен иметь значение меньшее чем %{count}"
         less_than_or_equal_to: "должен иметь значение меньшее или равное %{count}"
         restrict_dependent_destroy:
-         one: "Невозможно удалить, так как данная запись используется в другой модели"
-         many: "Невозможно удалить, так как данная запись используется в других моделях"
+         has_one: "Невозможно удалить, так как данная запись используется в другой модели"
+         has_many: "Невозможно удалить, так как данная запись используется в других моделях"
 
       models:
         # Отдел, содержащий рабочие места
@@ -94,7 +184,9 @@ ru:
         invent/workplace:
           attributes:
             base:
-              cant_destroy_items: 'Не удалось удалить запись (обратитесь к администратору, т. ***REMOVED***)'
+              cannot_destroy_items: 'Не удалось удалить запись (обратитесь к администратору, т. ***REMOVED***)'
+              cannot_destroy_workplace_belongs_to_processing_order: 'Невозможно удалить РМ, так как имеется связанный с РМ незакрытый ордер'
+              cannot_destroy_workplace_with_items: 'Невозможно удалить РМ, содержащее технику'
               wrong_rm_pk_composition: 'Неправильный состав стационарного рабочего места'
               wrong_rm_mob_composition: 'Неправильный состав мобильного рабочего места'
               wrong_rm_net_print_composition: 'Неправильный состав рабочего места печати'
@@ -103,15 +195,15 @@ ru:
               # Стационарное РМ
               rm_pk_only_one_pc_or_allin1: 'На одном стационарном рабочем месте может находиться только один системный
                блок или моноблок'
-              rm_pk_at_least_one_pc_or_allin1: 'Необходимо создать хотя бы один системный блок или моноблок'
-              rm_pk_forbid_notebook_and_tablet: 'На стационарном рабочем месте запрещено создавать ноутбук или планшет
-               (их можно создать только на мобильном рабочем месте)'
-              rm_pk_at_least_one_monitor: 'Для системного блока необходимо создать хотя бы один монитор'
-              rm_pk_forbid_net_printer: 'Для стационарного рабочего места запрещено создавать печатающие устройства с
+              rm_pk_at_least_one_pc_or_allin1: 'Необходимо добавить хотя бы один системный блок или моноблок'
+              rm_pk_forbid_notebook_and_tablet: 'Для стационарного рабочего места запрещено добавлять ноутбук или планшет
+               (их можно добавлять только на мобильные рабочие места)'
+              rm_pk_at_least_one_monitor: 'Для системного блока необходимо добавить хотя бы один монитор'
+              rm_pk_forbid_net_printer: 'Для стационарного рабочего места запрещено добавлять печатающие устройства с
                сетевым типом подключения, измените тип подключения или тип рабочего места на "Рабочее место печати"'
 
               # Мобильное РМ
-              at_least_one_notebook_or_tablet: 'Необходимо создать хотя бы один ноутбук или планшет'
+              at_least_one_notebook_or_tablet: 'Необходимо добавить хотя бы один ноутбук или планшет'
               only_one_notebook_or_tablet: 'На одном мобильном рабочем месте может находиться только один ноутбук или
                планшет'
               only_notebook_or_tablet: 'Мобильное рабочее место может включать только ноутбук или планшет'
@@ -119,10 +211,10 @@ ru:
               # РМ печати
               only_one_net_print: 'На одном рабочем месте печати может находиться только одно печатающее устройство,
                подключенное к локальной сети'
-              net_print_without_any_devices: 'Совместно с печатающим устройством, подключенным к локальной сети,
-               нельзя создавать какое-либо устройство'
+              net_print_without_any_devices: 'К печатающему устройству, подключенному к локальной сети,
+               нельзя добавлять какое-либо устройство'
               only_one_3d_printer: 'На одном рабочем месте печати может находиться только один 3D-принтер'
-              _3d_printer_without_any_devices: 'Совместно с 3D-принтером нельзя создать какое-либо устройство'
+              _3d_printer_without_any_devices: 'К 3D-принтеру нельзя добавлять какое-либо устройство'
               only_one_print_server: 'На одном рабочем месте печати может находиться только один принт-сервер'
               only_local_print_with_print_server: 'Совместно с принт-сервером на рабочем месте печати может
               находиться только печатающие устройства с локальным подключением'
@@ -144,54 +236,92 @@ ru:
               not_a_number: 'введено с ошибкой, проверьте корректность введенного ФИО'
               user_iss_by_id_tn: 'не найдено в базе данных отдела кадров (обратитесь к администратору, т. ***REMOVED***)'
 
-            workplace_count_id:
-              blank: 'не указан'
-              greater_than: 'не указан'
-              not_an_integer: 'не указан'
-              not_a_number: 'не указан'
-
-            workplace_type_id:
-              blank: 'не выбран'
-              greater_than: 'не выбран'
-              not_an_integer: 'не выбран'
-              not_a_number: 'не выбран'
-
-            workplace_specialization_id:
-              blank: 'не выбрано'
-              greater_than: 'не выбрано'
-              not_an_integer: 'не выбрано'
-              not_a_number: 'не выбрано'
-
-            location_site_id:
-              blank: 'не выбрана'
-              greater_than: 'не выбрана'
-              not_an_integer: 'не выбрана'
-              not_a_number: 'не выбрана'
-
-            location_building_id:
-              blank: 'не выбран'
-              greater_than: 'не выбран'
-              not_an_integer: 'не выбран'
-              not_a_number: 'не выбран'
-
-            location_room_id:
-              blank: 'не указана'
-              greater_than: 'не указана'
-              not_an_integer: 'не указана'
-              not_a_number: 'не указана'
-
         # Техника
-        invent/inv_item:
+        invent/item:
           attributes:
             base:
               pc_data_not_received: 'Сначала необходимо нажать кнопку "Получить данные автоматически" или "Ввод данных
                вручную"'
               field_is_empty: 'Не заполнено поле "%{empty_field}"'
               property_not_filled: 'Не указано свойство "%{empty_prop}"'
+              cannot_destroy_with_processing_operation: 'Невозможно удалить технику, т.к. она используется в незакрытых позициях ордера №%{order_id}'
             type_id:
              blank: 'не выбран'
             model_id:
              blank: 'не указана'
+
+        invent/property_value:
+          attributes:
+            base:
+              blank: 'Не заполнено поле "%{empty_prop}"'
+
+        invent/model:
+          attributes:
+            base:
+              restrict_dependent_destroy:
+                has_many: "Нельзя удалить, так как модель используется в %{record}"
+
+        warehouse/order:
+          attributes:
+            base:
+              cannot_destroy_done: 'Невозможно удалить исполненный ордер'
+              cannot_destroy_with_done_operations: 'Невозможно удалить ордер с исполненными операциями'
+              uniq_workplace: 'Ордер может содержать технику только одного рабочего места'
+              dept_does_not_match: 'Выбранная техника не входит в состав рабочих мест отдела %{dept}'
+              at_least_one_operation: 'Необходимо добавить хотя бы одну позицию'
+              at_least_one_operation_for_workplace: 'Необходимо добавить хотя бы одну позицию с рабочего места №%{workplace_id}'
+              nested_arrs_not_equals: 'Массивы позиций и техники не совпадают (обратитесь к администратору, т.***REMOVED***).'
+              cannot_update_done_order: 'Невозможно обновить, т.к. ордер уже исполнен'
+              cannot_have_operations_with_invent_num: 'Текущий ордер не может содержать позиции с инвентарным номером'
+              cannot_have_operations_without_invent_num: 'Текущий ордер не может содержать позиции без инвентарного номера'
+              cannot_have_operations_with_different_workplace: 'Текущий ордер не может содержать позиции из разных рабочих
+               мест. Убедитесь, что выбранная техника принадлежит одному рабочему месту'
+              shift_must_be_equal_1: 'Каждая позиция приходного ордера должно иметь "Количество" равное единице'
+            consumer:
+              user_by_tn_not_found: 'с указанным табельным номером не найден. Проверьте корректность
+              введенных данных'
+              user_by_fio_not_found: 'с указанным ФИО не найден. Проверьте корректность введенных данных'
+            workplace:
+              cannot_update: 'не может быть изменено'
+              blank: 'отсутствует'
+            operation:
+              cannot_update: 'не может быть изменен'
+            consumer_dept:
+              cannot_update: 'не может быть изменен'
+            validator_fio:
+              empty: 'Ордер не утвержден'
+
+        warehouse/supply:
+          attributes:
+            base:
+              operations_can_not_have_negative_value: 'Позиции не могут иметь отрицательное количество'
+
+        warehouse/operation:
+          attributes:
+            base:
+              cannot_cancel_done_operation: 'Невозможно отменить исполненную операцию'
+              cannot_destroy_done_operation: 'Невозможно удалить исполненную операцию'
+              operation_with_invent_num_already_exists: '%{type} (инв. №%{invent_num}) уже задан в незакрытых позициях ордера №%{order_id}'
+              operation_without_invent_num_already_exists: '%{type} (модель "%{model}") уже задан в незакрытых позициях ордера №%{order_id}'
+              cannot_update_done_operation: 'Невозможно обновить, т.к. позиция уже исполнена'
+
+        warehouse/item:
+          attributes:
+            base:
+              out_of_stock: '%{type}: запрашиваемое количество отсутствует на складе'
+              cannot_destroy_with_count_reserved: 'Невозможно удалить зарезервированную технику'
+              cannot_destroy_with_processing_operation: 'Невозможно удалить технику, т.к. она используется в незакрытых позициях ордера №%{order_id}'
+            inv_item:
+              taken: 'уже существует на складе'
+            item_model:
+              taken: 'уже существует на складе'
+            count:
+              max_count_exceeded: 'не может быть больше 1'
+
+        warehouse/item_to_order:
+          attributes:
+            inv_item:
+              uniq_by_processing_order: '%{type} (инв. №%{invent_num}) уже записан в ордер №%{order_id}'
 
         user:
           attributes:

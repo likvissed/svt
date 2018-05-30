@@ -1,14 +1,14 @@
 ru:
   activemodel:
     attributes:
-      invent/***REMOVED***_invents/pc_config_from_audit:
+      invent/workplaces/pc_config_from_audit:
         base: ''
         inv_num: 'Инвентарный номер'
         host: 'ПК'
 
     errors:
       models:
-        invent/***REMOVED***_invents/pc_config_from_audit:
+        invent/workplaces/pc_config_from_audit:
           not_found: 'с указанным инвентарным номером не найден. Проверьте корректность введенного инвентарного номера,
            либо, если номер введен верно, нажмите "Ввод данных вручную"'
           not_responded: 'Получить данные автоматически не удалось, вам необходимо ввести их вручную. Для этого нажмите
@@ -18,5 +18,15 @@ ru:
           not_relevant: 'Полученные данные не действительны, вам необходимо ввести данные вручную. Для этого нажмите
            кнопку "Ввод данных вручную"'
 
+        invent/workplaces/confirm:
+          unknown_action: 'Неизвестное действие. Обратитесь к администратору (т. ***REMOVED***)'
+          error_update_status: 'Не удалось обновить статус для следующих рабочих мест: %{workplaces}. Обратитесь к администратору (т. ***REMOVED***)'
+
         invent/***REMOVED***_invents/***REMOVED***_authorization:
           access_denied: 'Доступ запрещен'
+
+        warehouse/orders/create:
+          error_create_warehouse_item: 'Не удалось добавить %{type} (Инв. №: %{invent_num}). Обратитесь к администратору, т. ***REMOVED***'
+
+        warehouse/orders/execute:
+          operation_not_selected: 'Необходимо выбрать хотя бы одну позицию'

@@ -54,8 +54,8 @@ module Invent
     end
 
     describe 'GET #show' do
-      let(:user) { create :***REMOVED***_user }
-      let(:workplace_count) { create :active_workplace_count, users: [user] }
+      let(:user) { create(:***REMOVED***_user) }
+      let(:workplace_count) { create(:active_workplace_count, users: [user]) }
 
       it 'creates instance of the WorkplaceCounts::Show' do
         get :show, params: { workplace_count_id: workplace_count.workplace_count_id }
@@ -69,8 +69,8 @@ module Invent
     end
 
     describe 'PUT #update' do
-      let(:user) { create :***REMOVED***_user }
-      let(:workplace_count) { create :active_workplace_count, users: [user] }
+      let(:user) { create(:***REMOVED***_user) }
+      let(:workplace_count) { create(:active_workplace_count, users: [user]) }
 
       it 'creates instance of the WorkplaceCounts::Update' do
         put :update, params: { workplace_count_id: workplace_count.workplace_count_id, workplace_count: { division: ***REMOVED*** } }
@@ -84,8 +84,8 @@ module Invent
     end
 
     describe 'DELETE #destroy' do
-      let(:user) { create :***REMOVED***_user }
-      let!(:workplace_count) { create :active_workplace_count, users: [user] }
+      let(:user) { create(:***REMOVED***_user) }
+      let!(:workplace_count) { create(:active_workplace_count, users: [user]) }
 
       it 'creates instance of the WorkplaceCount' do
         delete :destroy, params: { workplace_count_id: workplace_count.workplace_count_id }

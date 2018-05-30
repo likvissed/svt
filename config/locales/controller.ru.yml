@@ -1,0 +1,44 @@
+ru:
+  controllers:
+    app:
+      access_denied: 'Доступ запрещен'
+      unprocessable_entity: 'Ошибка. Обратитесь к администратору, т.***REMOVED***'
+    ***REMOVED***_invents:
+      unprocessable_entity: 'Обратитесь к администратору, т.***REMOVED***'
+      file_added: 'Файл добавлен'
+    invent/workplace:
+      created: 'Рабочее место создано'
+      updated: 'Данные о рабочем месте обновлены'
+      destroyed: 'Рабочее место удалено'
+      pc_config_processed: 'Данные загружены'
+    invent/workplace_count:
+      created: 'Отдел %{dept} добавлен'
+      list_created: 'Список отделов и ответственных обновлен'
+      updated: 'Данные одела %{dept} обновлены'
+      destroyed: 'Отдел удален'
+    invent/item:
+      destroyed: 'Техника удалена'
+    invent/model:
+      created: 'Модель создана'
+      updated: 'Модель обновлена'
+      destroyed: 'Модель удалена'
+    invent/vendor:
+      created: 'Вендор создан'
+      destroyed: 'Вендор удален'
+    warehouse/order:
+      created_in: 'Готово. Количество созданных ордеров: %{count}'
+      created_out: 'Ордер создан'
+      updated: 'Ордер №%{order_id} обновлен'
+      confirmed: 'Ордер №%{order_id} подтвержден'
+      destroyed: 'Ордер удален'
+      executed: 'Исполнено'
+    warehouse/item:
+      destroyed: 'Указанная техника удалена со склада'
+    warehouse/supply:
+      created: 'Поставка создана'
+      updated: 'Поставка №%{supply_id} обновлена'
+      destroyed: 'Поставка удалена'
+    user:
+      created: 'Пользователь создан'
+      updated: 'Пользователь обновлен'
+      destroyed: 'Пользователь удален'

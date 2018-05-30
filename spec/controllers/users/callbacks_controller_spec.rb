@@ -24,7 +24,7 @@ module Users
       end
 
       context 'when attributes is invalid' do
-        sign_in_user({ fullname: '' })
+        sign_in_user(fullname: '')
 
         before { get :open_id_***REMOVED*** }
 
@@ -34,7 +34,7 @@ module Users
               expect(response).to redirect_to new_user_session_path
             end
 
-            it { should set_flash[:alert].to 'Ошибка авторизации. Обратитесь к администратору по тел. ***REMOVED***' }
+            it { should set_flash[:alert].to 'Ошибка. Обратитесь к администратору, т.***REMOVED***' }
           end
         end
 

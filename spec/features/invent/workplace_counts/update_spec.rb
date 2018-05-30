@@ -2,14 +2,14 @@ require 'feature_helper'
 
 module Invent
   module WorkplaceCounts
-    feature 'Update a workplace_count', %q{
+    feature 'Update a workplace_count', '
       In order to allow responsible users to enter inventory data
       As an authenticated user
       I want to be able to update a workplace_count
-    } do
-      given(:user) { create :user }
-      given(:***REMOVED***_user) { create :***REMOVED***_user }
-      given!(:workplace_count) { create :active_workplace_count, users: [***REMOVED***_user] }
+    ' do
+      given(:user) { create(:user) }
+      given(:***REMOVED***_user) { create(:***REMOVED***_user) }
+      given!(:workplace_count) { create(:active_workplace_count, users: [***REMOVED***_user]) }
 
       background do
         sign_in user

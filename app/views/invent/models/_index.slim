@@ -1,0 +1,31 @@
+.row
+  = render partial: 'invent/models/table_filters'
+.row
+  .col-sm-24
+    table.table.table-condensed.table-striped
+      thead
+        tr
+          th Вендор
+          th Тип
+          th Модель
+          th Аттрибуты
+          th
+      tbody
+        tr ng-repeat="model in m_table.models"
+          td.col-sm-3 ng-bind="model.vendor.vendor_name"
+          td.col-sm-3 ng-bind="model.type.short_description"
+          td.col-sm-5 ng-bind="model.item_model"
+          td.col-sm-12 ng-bind="model.all_properties"
+          td.col-sm-1.text-center
+            = fa_icon "pencil-square-o fw", class: "pointer", "uib-tooltip": "Редактировать модель",
+              "ng-click": "m_table.editModel(model)", "tooltip-append-to-body": "true"
+            = fa_icon "trash-o fw", class: "text-danger pointer", "uib-tooltip": "Удалить модель",
+              "tooltip-append-to-body": true, "ng-click": "m_table.destroyModel(model)"
+.row
+  .col-sm-12
+    .animate-show ng-table-info="" info-attrs="m_table.pagination" ng-if="m_table.models"
+  .col-sm-12
+    ul{ uib-pagination="true" total-items="m_table.pagination.filteredRecords" ng-model="m_table.pagination.currentPage"
+      max-size="m_table.pagination.maxSize" class="pagination-sm pull-right" ng-change="m_table.reloadModels()" }
+
+= render partial: 'invent/models/edit_modal'

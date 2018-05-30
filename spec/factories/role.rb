@@ -1,4 +1,4 @@
-FactoryGirl.define do
+FactoryBot.define do
   factory :admin_role, class: Role do
     name 'admin'
     short_description 'Администратор'
@@ -15,5 +15,17 @@ FactoryGirl.define do
     name 'manager'
     short_description 'Менеджер'
     long_description 'Пользователь с расширенными правами'
+  end
+
+  factory :read_only_role, class: Role do
+    name 'read_only'
+    short_description 'Гость'
+    long_description 'Доступ только на чтение'
+  end
+
+  factory :worker_role, class: Role do
+    name 'worker'
+    short_description 'Работник'
+    long_description 'Доступ на основные действия с моделями'
   end
 end

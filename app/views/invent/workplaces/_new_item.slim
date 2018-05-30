@@ -1,10 +1,21 @@
 script type="text/ng-template" id="newItem.slim"
   .modal-header
-    h4 Выбор типа создаваемого устройства
-    .modal-body
-      .form-group
-        = select_tag "", "", class: "form-control", "ng-change": "select.validateSelectedType()", "ng-model": "select.selected",
-          "ng-options": "type as type.short_description disable when type.type_id == -1 for type in select.eq_types track by type.type_id"
-    .modal-footer
-      = button_tag "Добавить", type: :button, class: "btn-success", "ng-click": "select.ok()"
-      = button_tag "Отмена", type: :button, class: "btn-default", "ng-click": "select.cancel()"
+    h4 Добавить технику
+  .modal-body
+    .form-group
+      = radio_button_tag :new_item, "new", false, "ng-model": "select.itemType"
+      = label_tag :new_item_new, "Новая техника", class: "control-label"
+      br
+      = radio_button_tag :new_item, "exist", false, "ng-model": "select.itemType"
+      = label_tag :new_item_exist, "Техника с существующего РМ", class: "control-label"
+
+    .form-group ng-show="select.itemType == 'new'"
+      = select_tag "", "", class: "form-control", "ng-model": "select.selectedType",
+        "ng-options": "type as type.short_description disable when type.type_id == 0 for type in select.eqTypes track by type.type_id"
+
+    div ng-show="select.itemType == 'exist'"
+      = render partial: 'templates/find_existing_invent_item'
+
+  .modal-footer
+    = button_tag "Готово", type: :button, class: "btn-success", "ng-click": "select.ok()"
+    = button_tag "Отмена", type: :button, class: "btn-default", "ng-click": "select.cancel()"

@@ -1,12 +1,12 @@
-require 'rails_helper'
+require 'feature_helper'
 
 module Invent
   module Workplaces
     RSpec.describe Edit, type: :model do
-      let(:user) { create :user }
-      let(:workplace_count) { create :active_workplace_count, users: [user] }
+      let(:user) { create(:user) }
+      let(:workplace_count) { create(:active_workplace_count, users: [user]) }
       let!(:workplace) do
-        create :workplace_pk, :add_items, items: %i[pc monitor], workplace_count: workplace_count
+        create(:workplace_pk, :add_items, items: %i[pc monitor], workplace_count: workplace_count)
       end
       subject { Edit.new(user, workplace.workplace_id) }
 
@@ -16,14 +16,14 @@ module Invent
             subject.run :html
             expect(subject.data).to eq workplace
           end
-          it { expect(subject.run :html).to be_truthy }
+          it { expect(subject.run(:html)).to be_truthy }
         end
 
         context 'when workplace is not found' do
           subject { Edit.new(user, 0) }
 
           it 'raises RecordNotFound error' do
-            expect { subject.run :html }.to raise_error ActiveRecord::RecordNotFound
+            expect { subject.run :html }.to raise_error(ActiveRecord::RecordNotFound)
           end
         end
       end
@@ -36,7 +36,7 @@ module Invent
       end
 
       describe 'another format' do
-        it { expect(subject.run :xml).to be_falsey }
+        it { expect(subject.run(:xml)).to be_falsey }
       end
     end
   end

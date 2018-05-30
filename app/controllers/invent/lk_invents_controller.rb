@@ -1,5 +1,3 @@
-# require './app/services/invent/init_properties.rb'
-
 module Invent
   class LkInventsController < ApplicationController
     skip_before_action :authenticate_user!
@@ -16,7 +14,7 @@ module Invent
       if @svt_access.run
         render json: @svt_access.data
       else
-        render json: { full_message: 'Обратитесь к администратору, т.***REMOVED***' }, status: 422
+        render json: { full_message: I18n.t('controllers.***REMOVED***_invents.unprocessable_entity') }, status: 422
       end
     end
 
@@ -28,7 +26,7 @@ module Invent
       elsif @properties.data[:divisions].nil?
         raise Pundit::NotAuthorizedError, 'Access denied'
       else
-        render json: { full_message: 'Обратитесь к администратору, т.***REMOVED***' }, status: 422
+        render json: { full_message: I18n.t('controllers.***REMOVED***_invents.unprocessable_entity') }, status: 422
       end
     end
 
@@ -38,12 +36,12 @@ module Invent
       if @division.run
         render json: @division.data
       else
-        render json: { full_message: 'Обратитесь к администратору, т.***REMOVED***' }, status: 422
+        render json: { full_message: I18n.t('controllers.***REMOVED***_invents.unprocessable_entity') }, status: 422
       end
     end
 
     def pc_config_from_audit
-      @pc_config = LkInvents::PcConfigFromAudit.new(params[:invent_num])
+      @pc_config = Workplaces::PcConfigFromAudit.new(params[:invent_num])
 
       if @pc_config.run
         render json: @pc_config.data
@@ -53,20 +51,20 @@ module Invent
     end
 
     def pc_config_from_user
-      @pc_file = LkInvents::PcConfigFromUser.new(params[:pc_file])
+      @pc_file = Workplaces::PcConfigFromUser.new(params[:pc_file])
 
       if @pc_file.run
-        render json: { data: @pc_file.data, full_message: 'Файл добавлен' }
+        render json: { data: @pc_file.data, full_message: I18n.t('controllers.***REMOVED***_invents.file_added') }
       else
         render json: { full_message: @pc_file.errors.full_messages.join('. ') }, status: 422
       end
     end
 
     def create_workplace
-      @workplace = LkInvents::CreateWorkplace.new(current_user, workplace_params, params[:pc_file])
+      @workplace = Workplaces::Create.new(current_user, workplace_params)
 
       if @workplace.run
-        render json: { workplace: @workplace.data, full_message: 'Рабочее место создано' }
+        render json: { workplace: @workplace.data, full_message: I18n.t('controllers.invent/workplace.created') }
       else
         render json: { full_message: @workplace.errors.full_messages.join('. ') }, status: 422
       end
@@ -83,12 +81,10 @@ module Invent
     end
 
     def update_workplace
-      @workplace = LkInvents::UpdateWorkplace.new(
-        current_user, params[:workplace_id], workplace_params, params[:pc_file]
-      )
+      @workplace = Workplaces::Update.new(current_user, params[:workplace_id], workplace_params)
 
       if @workplace.run
-        render json: { workplace: @workplace.data, full_message: 'Данные о рабочем месте обновлены' }
+        render json: { workplace: @workplace.data, full_message: I18n.t('controllers.invent/workplace.updated') }
       else
         render json: { full_message: @workplace.errors.full_messages.join('. ') }, status: 422
       end
@@ -98,7 +94,7 @@ module Invent
       @workplace = LkInvents::DestroyWorkplace.new(current_user, params[:workplace_id])
 
       if @workplace.run
-        render json: { full_message: 'Рабочее место удалено' }
+        render json: { full_message: I18n.t('controllers.invent/workplace.destroyed') }
       else
         render json: { full_message: @workplace.errors.full_messages.join('. ') }, status: 422
       end
@@ -121,7 +117,7 @@ module Invent
                   type: "application/rtf",
                   disposition: "attachment"
       else
-        render json: { full_message: 'Обратитесь к администратору, т.***REMOVED***' }, status: 422
+        render json: { full_message: I18n.t('controllers.***REMOVED***_invents.unprocessable_entity') }, status: 422
       end
     end
 
@@ -153,7 +149,6 @@ module Invent
     end
 
     def workplace_params
-      params[:workplace] = JSON.parse(params[:workplace])
       params.require(:workplace).permit(
         :workplace_count_id,
         :workplace_type_id,
@@ -165,7 +160,7 @@ module Invent
         :location_room_id,
         :comment,
         :status,
-        inv_items_attributes: [
+        items_attributes: [
           :id,
           :parent_id,
           :type_id,
@@ -175,7 +170,7 @@ module Invent
           :location,
           :invent_num,
           :_destroy,
-          inv_property_values_attributes: %i[id property_id item_id property_list_id value _destroy]
+          property_values_attributes: %i[id property_id item_id property_list_id value _destroy]
         ]
       )
     end

@@ -10,7 +10,7 @@ module Invent
       end
 
       def run
-        @data = Workplace.includes(inv_items: { inv_property_values: :inv_property }).find(@workplace_id)
+        @data = Workplace.includes(items: { property_values: :property }).find(@workplace_id)
         authorize @data, :destroy?
 
         destroy_workplace
@@ -18,7 +18,10 @@ module Invent
         broadcast_workplace_list
 
         true
-      rescue RuntimeError
+      rescue RuntimeError => e
+        Rails.logger.error e.inspect.red
+        Rails.logger.error e.backtrace[0..5].inspect
+
         false
       end
 

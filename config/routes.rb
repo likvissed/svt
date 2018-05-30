@@ -9,6 +9,8 @@ Rails.application.routes.draw do
     root 'devise/sessions#new'
   end
 
+  resources :users
+
   # Инвентаризация
   namespace :invent do
     # Отделы
@@ -19,7 +21,7 @@ Rails.application.routes.draw do
     resources :workplaces, param: :workplace_id do
       collection do
         # Вывести все РМ списком
-        get 'list_wp', to: 'workplaces#list_wp'
+        # get 'list_wp', to: 'workplaces#list_wp'
         # Подтвердить/отклонить конфигурацию РМ
         put 'confirm', to: 'workplaces#confirm'
         # Получить данные о системном блоке из аудита
@@ -29,6 +31,8 @@ Rails.application.routes.draw do
         # Скачать скрипт для генерации файла конфигурации ПК
         get 'pc_script', to: 'workplaces#send_pc_script'
       end
+
+      delete 'hard_destroy', to: 'workplaces#hard_destroy', on: :member
     end
 
     # Запросы с ЛК
@@ -55,9 +59,7 @@ Rails.application.routes.draw do
           to: '***REMOVED***_invents#update_workplace',
           constraints: { workplace_id: /\d+/ }
     # Удалить РМ
-    delete '***REMOVED***_invents/destroy_workplace/:workplace_id',
-           to: '***REMOVED***_invents#destroy_workplace',
-           constraints: { workplace_id: /\d+/ }
+    delete '***REMOVED***_invents/destroy_workplace/:workplace_id', to: '***REMOVED***_invents#destroy_workplace', constraints: { workplace_id: /\d+/ }
     # Создать PDF файл со списком РМ для отдела
     get '***REMOVED***_invents/generate_pdf/:division', to: '***REMOVED***_invents#generate_pdf', constraints: { division: /\d+/ }
     # Скачать скрипт для генерации файла конфигурации ПК
@@ -65,12 +67,40 @@ Rails.application.routes.draw do
     # Проверить, существует ли техника с указанным инвентарным номером
     get '***REMOVED***_invents/existing_item', to: '***REMOVED***_invents#existing_item'
 
-    resources :items, only: [:index, :show], param: :item_id
+    resources :items, only: [:index, :show, :edit, :destroy], param: :item_id do
+      collection do
+        get 'avaliable/:type_id', to: 'items#avaliable', constraints: { type_id: /\d+/ }
+        get 'busy/:type_id', to: 'items#busy', constraints: { type_id: /\d+/ }
+      end
+    end
+
+    resources :vendors, only: [:index, :create, :destroy], param: :vendor_id
+    resources :models, param: :model_id
   end
 
   # Эталоны
   namespace :standard do
 
+  end
+
+  # Склад
+  namespace :warehouse do
+    resources :items
+    resources :orders, only: [:new, :edit, :destroy] do
+      get 'in', to: 'orders#index_in', on: :collection
+      get 'out', to: 'orders#index_out', on: :collection
+      get 'archive', to: 'orders#archive', on: :collection
+      get 'print', to: 'print', on: :member
+      post 'create_in', to: 'orders#create_in', on: :collection
+      post 'create_out', to: 'orders#create_out', on: :collection
+      post 'execute_in', to: 'orders#execute_in', on: :member
+      post 'execute_out', to: 'orders#execute_out', on: :member
+      post 'prepare_to_deliver', to: 'orders#prepare_to_deliver', on: :member
+      put 'update_in', to: 'orders#update_in', on: :member
+      put 'update_out', to: 'orders#update_out', on: :member
+      put 'confirm_out', to: 'orders#confirm_out', on: :member
+    end
+    resources :supplies
   end
 
   # Получить html-код кнопки "Добавить запись"

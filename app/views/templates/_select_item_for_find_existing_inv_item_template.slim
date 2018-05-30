@@ -1,0 +1,8 @@
+.multiline-select.form-group ng-show="find.items.length != 0"
+  = label_tag "", "Выберите технику", class: "control-label"
+  ui-select ng-model="find.Item.selectedItem" theme="bootstrap"
+    ui-select-match placeholder="Выберите технику"
+      | {{ $select.selected.main_info }}
+    ui-select-choices repeat="obj in find.items | filter: $select.search"
+      div ng-bind-html="obj.main_info | highlight: $select.search"
+      small ng-bind-html="obj.get_item_model | highlight: $select.search"

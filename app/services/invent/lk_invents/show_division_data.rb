@@ -13,7 +13,12 @@ module Invent
       def run
         load_workplace
         load_users
-      rescue RuntimeError
+
+        true
+      rescue RuntimeError => e
+        Rails.logger.error e.inspect.red
+        Rails.logger.error e.backtrace[0..5].inspect
+
         false
       end
 

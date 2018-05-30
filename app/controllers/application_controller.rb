@@ -8,6 +8,7 @@ class ApplicationController < ActionController::Base
   layout :layout
   protect_from_forgery with: :exception
   after_action :set_csrf_cookie_for_ng
+  after_action :user_activity
   before_action :authenticate_user!
   before_action :authorization, if: -> { current_user }
 
@@ -15,7 +16,7 @@ class ApplicationController < ActionController::Base
   rescue_from Pundit::NotAuthorizedError do |exception|
     respond_to do |format|
       format.html { render_403 }
-      format.json { render json: { full_message: 'Доступ запрещен' }, status: 403 }
+      format.json { render json: { full_message: I18n.t('controllers.app.access_denied') }, status: 403 }
     end
   end
 
@@ -91,5 +92,9 @@ class ApplicationController < ActionController::Base
   # Проверка роли перед доступом к контроллерам
   def authorization
     authorize :application, :authorization?
+  end
+
+  def user_activity
+    current_user.try(:touch)
   end
 end

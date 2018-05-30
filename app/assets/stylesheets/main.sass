@@ -29,6 +29,9 @@ textarea
 .bg-content
   margin-bottom: $line-height-computed
 
+.info-block
+  padding: 15px
+
 // Позиционирование уведомлений
 .alert
   position: absolute
@@ -78,6 +81,10 @@ a.default-color
 
   .dropdown-menu
     min-width: 130px
+
+.modal-footer button
+  @extend .btn-sm
+
 
 /* ================================================ Страницы входа на сайт ========================================== */
 
@@ -151,7 +158,6 @@ datatable-wrapper
   border: 1px solid $table-border-color
   background-color: $bgDefault
 
-
 /* ================================================ Стиль для компонентов таблицы DataTables ======================== */
 
 .dataTables_wrapper
@@ -165,11 +171,21 @@ datatable-wrapper
 
 /* ================================================ Стили для табов ================================================= */
 
+uib-tab-heading
+  color: $main-font-color
+
 ul.nav-tabs
   li.uib-tab.manage > a
-    color: $gray-base
     border: 1px solid $nav-tabs-border-color
 
   li.uib-tab i.destroy-item:hover
     color: $btn-danger-bg
     cursor: pointer
+
+/* ================================================ Стили модальных окон ================================================= */
+
+.modal-header .icon-block
+  margin:
+    top: 5px
+    left: 5px
+  float: left

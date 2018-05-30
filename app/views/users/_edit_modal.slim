@@ -1,0 +1,31 @@
+script type="text/ng-template" id="editUserModal.slim"
+  form role="form" name="edit.form" data-method="edit.method"
+    .modal-header
+      .pull-left
+        h4 ng-show="!edit.user.id" Новый пользователь
+        h4 ng-show="edit.user.id" Редактирование пользователя
+      .pull-right
+        .icon-block
+          = render partial: 'templates/load_spinner'
+    .modal-body
+      .form-group ng-class="edit.errorClass('user[tn]')"
+        = label_tag "user[tn]", "Табельный номер", class: "control-label"
+        = text_field_tag "user[tn]", "", class: "form-control", "ng-model": "edit.user.tn"
+        span.help-block ng-show="edit.form['user[tn]'].$invalid" ng-bind="edit.errorMessage('user[tn]')"
+      .form-group ng-class="edit.errorClass('user[role]')"
+        = label_tag "user[role]", "Роль", class: "control-label"
+        = hidden_field_tag "user[role]", "", "ng-model": "edit.user.role"
+        .ui-select
+          ui-select ng-model="edit.user.role" on-select="edit.setRole()" theme="bootstrap"
+            ui-select-match
+              | {{ $select.selected.short_description }}
+            ui-select-choices repeat="obj in edit.roles | filter: $select.search"
+              div ng-bind-html="obj.short_description | highlight: $select.search"
+              small.add-data ng-bind-html="obj.long_description | highlight: $select.search"
+        span.help-block ng-show="edit.form['user[role]'].$invalid" ng-bind="edit.errorMessage('user[role]')"
+
+    .modal-footer
+      = button_tag class: "btn-success btn-sm", "ng-click": "edit.ok()" do
+        div ng-if="edit.user.id" Обновить
+        div ng-if="!edit.user.id" Создать
+      = button_tag "Закрыть", class: "btn-default btn-sm", "ng-click": "edit.cancel()"

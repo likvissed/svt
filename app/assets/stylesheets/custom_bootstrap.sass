@@ -20,6 +20,8 @@
 .alert
   @include border-radius(0)
   margin-bottom: 0 !important
+  position: fixed
+  top: 0
 
 .dropdown-menu
   max-height: 300px
@@ -42,7 +44,27 @@
     min-width: 100px
     font-size: 12px
 
+// ui-select для multiline строк
+// div.multiline-select .ui-select-bootstrap .ui-select-choices-row > span,
+.ui-select-bootstrap .ui-select-choices-row > span
+  white-space: normal
+
 .pagination
   margin:
     top: 10px !important
     bottom: 10px !important
+
+.bg-active
+  @extend .bg-info
+  background-color: $active-color
+
+.popover
+  max-width: 700px
+  max-height: 498px
+
+.popover-content
+  max-height: 464px
+  overflow: auto
+
+.popover
+  z-index: 100 !important

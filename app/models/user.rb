@@ -4,14 +4,15 @@ class User < ApplicationRecord
   devise :database_authenticatable, :trackable, :timeoutable, :omniauthable,
          omniauth_providers: %i[open_id_***REMOVED*** check_***REMOVED***_auth], authentication_keys: [:login]
 
-  has_many :workplace_responsibles, class_name: 'Invent::WorkplaceResponsible', inverse_of: :user
+  has_many :workplace_responsibles, class_name: 'Invent::WorkplaceResponsible', inverse_of: :user, dependent: :destroy
   has_many :workplace_counts, through: :workplace_responsibles, class_name: 'Invent::WorkplaceCount'
 
   belongs_to :role
   belongs_to :user_iss, foreign_key: 'id_tn'
 
   validates :tn, presence: true, uniqueness: true
-  validates :id_tn, uniqueness: { message: :tn_already_exists }
+  validates :role, presence: true
+  # validates :id_tn, uniqueness: { message: :tn_already_exists }
 
   after_validation :replace_nil
   before_save :truncate_phone
@@ -28,14 +29,35 @@ class User < ApplicationRecord
     end
   end
 
+  # Время, в течении которого пользователь считается в состоянии online
+  def self.online_time
+    10.minutes.ago
+  end
+
   def truncate_phone
     self.phone = phone.slice(0, 10)
   end
 
   # Проверка наличия указанной роли у пользователя
   # role_sym - символ имени роли
-  def has_role?(role_sym)
+  def role?(role_sym)
     role.name.to_sym == role_sym
+  end
+
+  # Проверка наличия роли из указанного массива
+  def one_of_roles?(*roles)
+    roles.include?(role.name.to_sym)
+  end
+
+  def fill_data
+    self.user_iss = UserIss.find_by(tn: tn)
+    self.fullname = user_iss.try(:fio)
+    self.phone = user_iss.try(:tel)
+  end
+
+  # Проверяет, в системе ли пользователь
+  def online?
+    updated_at > self.class.online_time && sign_in_count.positive?
   end
 
   protected

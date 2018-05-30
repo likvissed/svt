@@ -1,0 +1,22 @@
+.row.animate-show.ng-hide ng-show="wp.workplace.workplace_type.workplace_type_id != 0"
+  .col-sm-24
+    u Варианты состава:
+    .row
+      .col-sm-24
+        p.bg-info.context-info ng-bind="wp.workplace.workplace_type.full_description"
+
+.row
+  .col-sm-24
+    u Описание цветовой схемы списка техники:
+    .row
+      .col-sm-24
+        ul.list-unstyled
+          li
+            = fa_icon "circle", class: "text-danger"
+            '  - Указанную технику пользователь должен сдать в УИВТ
+          li
+            = fa_icon "circle", class: "text-info"
+            '  - Указанную технику пользователь должен получить в УИВТ
+          li
+            = fa_icon "circle"
+            '  - Указанная техника находится на рабочем месте пользователя

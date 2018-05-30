@@ -12,7 +12,13 @@ module Invent
 
       def run
         check_access
+
         true
+      rescue RuntimeError => e
+        Rails.logger.error e.inspect.red
+        Rails.logger.error e.backtrace[0..5].inspect
+
+        false
       end
 
       private

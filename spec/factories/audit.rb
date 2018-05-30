@@ -1,4 +1,4 @@
-FactoryGirl.define do
+FactoryBot.define do
   factory :audit, class: Hash do
     cpu ['intel(r) core(tm) i3-2100 cpu @ 3.10ghz']
     ram [3.5]

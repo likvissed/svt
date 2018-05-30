@@ -1,13 +1,13 @@
-(function () {
+(function() {
   'use strict';
 
   app
   /**
-   * Фильтр, выбирающий нужные значения inv_property_list, взависимости от model_id и property_id.
+   * Фильтр, выбирающий нужные значения property_list, взависимости от model_id и property_id.
    */
-    .filter('inventPropList', function () {
+    .filter('inventPropList', function() {
       // Фильтровать по указанному model_id.
-      return function (inputArray, model_id) {
+      return function(inputArray, model_id) {
         // Если model_id не задан, вернуть целиком массив
         // -1 - выберите ...
         // null или 0 - ввести ... вручную
@@ -15,13 +15,13 @@
           return inputArray;
 
         var
-          // Флаг, определяющий, были ли найдены совпадения в массиве inv_model_property_lists. true - если были найдены.
+          // Флаг, определяющий, были ли найдены совпадения в массиве model_property_lists. true - если были найдены.
           flag    = false,
           result  = [];
 
         // Проверяем каждое возможное значение свойства
-        $.each(inputArray, function (list_index, list_value) {
-          $.each(list_value.inv_model_property_lists, function (model_index, model_value) {
+        inputArray.forEach(function(list_value) {
+          list_value.model_property_lists.forEach(function(model_value) {
             // Если model_id и property_id совпадает, значит фильтрация пройдена
             if (model_value.model_id == model_id && model_value.property_id == list_value.property_id) {
               result.push(list_value);
@@ -40,10 +40,25 @@
     /**
      * Фильтр, определяющий, входит ли заданное значение search в inputArray.
      */
-    .filter('contains', function () {
+    .filter('contains', function() {
       // Поиск значения search в массиве inputArray.
-      return function (inputArray, search) {
+      return function(inputArray, search) {
         return inputArray.indexOf(search) >= 0;
       }
+    })
+    /**
+     * Возвращает фамилию и инициалы
+     */
+    .filter('fioInitials', function() {
+      return function(fullName) {
+        if (!fullName) { return ''; }
+
+        var arr = fullName.split(' ');
+
+        return arr.shift() + ' ' + arr.map(function(el) { return el[0].toUpperCase() + '.' }).join(' ');
+      }
+    })
+    .filter('positiveVal', function() {
+      return function(val) { return Math.abs(val); }
     });
 })();

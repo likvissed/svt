@@ -1,0 +1,50 @@
+= title "Склад"
+
+#index_item.container ng-controller="WarehouseItemsCtrl as table"
+  .well
+    .table-block
+      .row
+        = render partial: 'filters'
+      .row
+        .col-sm-24
+          table.table.table-striped.table-condensed
+            thead
+              tr
+                th
+                th
+                th Тип техники
+                th Модель
+                th Инв. №
+                th Состояние
+                th На складе
+                th Зарезервировано
+                th
+            tbody
+              tr ng-repeat="item in table.items" ng-class="{ 'text-muted': (!table.isItemInStock(item) && !table.isItemInOrder(item)) || table.isItemInDoneOp(item) }"
+                td
+                  input{ type="checkbox" ng-model="item.added_to_order" ng-true-value="true" ng-false-value="false" ng-click="table.togglePosition(item)"
+                    ng-disabled="(!table.isItemInStock(item) && !table.isItemInOrder(item)) || table.isItemInDoneOp(item)" }
+                td
+                  ng-warehouse-item-supply-popover
+                td.col-sm-3 ng-bind="item.item_type"
+                td.col-sm-13 ng-bind="item.item_model"
+                td.col-sm-2 ng-bind="item.inv_item.invent_num"
+                td.col-sm-2 ng-bind-html="item.translated_used"
+                td.col-sm-2 ng-bind="item.count"
+                td.col-sm-2 ng-bind="item.count_reserved"
+                td
+                  = fa_icon "trash-o fw", class: "pointer text-danger", "ng-click": "table.destroyItem(item)", "uib-tooltip": "Удалить технику со склада",
+                     "tooltip-append-to-body": "true", "ng-hide": "table.isItemInOrder(item)"
+              tr ng-if="table.items.length == 0"
+                td colspan=8 Данных нет
+
+      .row
+        .col-sm-12
+          .animate-show ng-table-info="" info-attrs="table.pagination" ng-if="table.items"
+        .col-sm-12
+          ul{ uib-pagination="true" total-items="table.pagination.filteredRecords" ng-model="table.pagination.currentPage"
+            max-size="table.pagination.maxSize" class="pagination-sm pull-right" ng-change="table.reloadItems()" }
+
+= render partial: '/warehouse/orders/out_order_modal'
+= render partial: 'supply_template'
+= render partial: '/warehouse/supplies/show'

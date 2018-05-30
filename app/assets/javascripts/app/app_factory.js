@@ -1,4 +1,4 @@
-(function () {
+(function() {
   'use strict';
 
   app
@@ -6,13 +6,15 @@
     .factory('Error', Error) // Сервис обработки ошибок.
     .factory('Server', Server) // Фабрика для работы с CRUD экшнами.
     .factory('myHttpInterceptor', myHttpInterceptor) // Фабрика для настройки параметрв для индикатора выполнения
-    .factory('Cookies', Cookies);
+    .factory('Cookies', Cookies)
+    .factory('TablePaginator', TablePaginator)
 
   Flash.$inject = ['$timeout'];
   Error.$inject = ['Flash'];
   Server.$inject = ['$resource'];
   myHttpInterceptor.$inject = ['$q'];
   Cookies.$inject = ['$cookies'];
+  TablePaginator.$inject = ['Config'];
 
 // =====================================================================================================================
 
@@ -35,13 +37,13 @@
    *
    * @param message - сообщение, которое необходимо вывести.
    */
-  Flash.prototype.notice = function (message) {
+  Flash.prototype.notice = function(message) {
     var self = this;
 
     this.flash.alert = null;
     this.flash.notice = message;
 
-    this.$timeout(function () {
+    this.$timeout(function() {
       self.flash.notice = null;
     }, 2000);
   };
@@ -51,7 +53,7 @@
    *
    * @param message - сообщение, которое необходимо вывести.
    */
-  Flash.prototype.alert = function (message) {
+  Flash.prototype.alert = function(message) {
     this.flash.notice = null;
     this.flash.alert = message;
   };
@@ -72,7 +74,7 @@
        * @param status - статус ответа (необязательный параметр, используется, если не удается найти статус в
        * параметре "response")
        */
-      response: function (response, status) {
+      response: function(response, status) {
         var
           // Код ответа
           code,
@@ -124,6 +126,10 @@
          * Ресурс модели рабочих мест.
          */
         Workplace: $resource('/invent/workplaces/:workplace_id.json', {}, {
+          query: {
+            method: 'GET',
+            isArray: false
+          },
           new: {
             method: 'GET',
             url: '/invent/workplaces/new.json'
@@ -132,27 +138,24 @@
             method: 'GET',
             url: '/invent/workplaces/:id/edit.json'
           },
+          update: { method: 'PUT' },
           pcConfigFromAudit: {
             method: 'GET',
             url: '/invent/workplaces/pc_config_from_audit/:invent_num'
           },
-          save: {
-            method: 'POST',
-            headers: { 'Content-Type': undefined },
-            transformRequest: angular.identity
-          },
           pcConfigFromUser: {
             method: 'POST',
-            url: '/invent/workplaces/pc_config_from_user'
-          },
-          update: {
-            method: 'PUT',
+            url: '/invent/workplaces/pc_config_from_user.json',
             headers: { 'Content-Type': undefined },
             transformRequest: angular.identity
           },
           confirm: {
             method: 'PUT',
             url: '/invent/workplaces/confirm'
+          },
+          hardDelete: {
+            method: 'DELETE',
+            url: '/invent/workplaces/:workplace_id/hard_destroy'
           }
         }),
         /**
@@ -162,7 +165,39 @@
         /**
          * Ресурс модели экземпляров техники.
          */
-        Item: $resource('/invent/items/:item_id.json', {}, { query: { method: 'GET', isArray: false } })
+        Item: $resource('/invent/items/:item_id.json', {}, {
+          query: {
+            method: 'GET',
+            isArray: false
+          },
+          edit: {
+            method: 'GET',
+            url: '/invent/items/:item_id/edit.json'
+          },
+          busy: {
+            method: 'GET',
+            url: '/invent/items/busy/:type_id',
+            isArray: true
+          },
+          avaliable: {
+            method: 'GET',
+            url: '/invent/items/avaliable/:type_id',
+            isArray: true
+          }
+        }),
+        Vendor: $resource('/invent/vendors/:vendor_id.json', {}),
+        Model: $resource('/invent/models/:model_id.json', {}, {
+          query: { method: 'GET', isArray: false },
+          newModel: {
+            method: 'GET',
+            url: '/invent/models/new'
+          },
+          edit: {
+            method: 'GET',
+            url: '/invent/models/:model_id/edit'
+          },
+          update: { method: 'PUT' }
+        })
       },
       /**
        * Ресурс модели работников отдела.
@@ -173,7 +208,98 @@
           url: ' /user_isses/users_from_division/:division',
           isArray: true
         }
-      })
+      }),
+      /**
+       * Ресурс модели списка пользователей
+       */
+      User: $resource('/users/:id.json', {}, {
+        query: {
+          method: 'GET',
+          isArray: false
+        },
+        newUser: {
+          method: 'GET',
+          url: '/users/new'
+        },
+        edit: {
+          method: 'GET',
+          url: '/users/:id/edit'
+        },
+        update: { method: 'PUT' }
+      }),
+      Warehouse: {
+        Item: $resource('/warehouse/items/:id.json', {}, {
+          query: {
+            method: 'GET',
+            isArray: false
+          }
+        }),
+        Order: $resource('/warehouse/orders/:id.json', {}, {
+          query: {
+            method: 'GET',
+            url: '/warehouse/orders/:operation.json',
+            isArray: false
+          },
+          newOrder: {
+            method: 'GET',
+            url: '/warehouse/orders/new',
+            isArray: false
+          },
+          edit: {
+            method: 'GET',
+            url: '/warehouse/orders/:id/edit.json'
+          },
+          print: {
+            method: 'GET',
+            url: '/warehouse/orders/:id/print'
+          },
+          prepareToDeliver: {
+            method: 'POST',
+            url: '/warehouse/orders/:id/prepare_to_deliver.json'
+          },
+          saveIn: {
+            method: 'POST',
+            url: '/warehouse/orders/create_in'
+          },
+          saveOut: {
+            method: 'POST',
+            url: '/warehouse/orders/create_out'
+          },
+          updateIn: {
+            method: 'PUT',
+            url: '/warehouse/orders/:id/update_in'
+          },
+          updateOut: {
+            method: 'PUT',
+            url: '/warehouse/orders/:id/update_out'
+          },
+          confirmOut: {
+            method: 'PUT',
+            url: '/warehouse/orders/:id/confirm_out'
+          },
+          executeIn: {
+            method: 'POST',
+            url: '/warehouse/orders/:id/execute_in'
+          },
+          executeOut: {
+            method: 'POST',
+            url: '/warehouse/orders/:id/execute_out'
+          }
+        }),
+        Supply: $resource('/warehouse/supplies/:id.json', {}, {
+          query: { isArray: false },
+          newSupply: {
+            method: 'GET',
+            url: '/warehouse/supplies/new',
+            isArray: false
+          },
+          edit: {
+            method: 'GET',
+            url: '/warehouse/supplies/:id/edit.json'
+          },
+          update: { method: 'PUT' }
+        })
+      }
     }
   }
 
@@ -207,10 +333,10 @@
 
     return {
       getRequestsCount: self.requests,
-      incCount: function () {
+      incCount: function() {
         incCount();
       },
-      decCount: function () {
+      decCount: function() {
         decCount();
       },
       request: function(config) {
@@ -272,7 +398,7 @@
         $cookies.putObject(name, obj);
       } else {
         // Проверяем, существуют ли в cookies все ключи объекта obj
-        angular.forEach(obj, function (value, key) {
+        angular.forEach(obj, function(value, key) {
           if (angular.isUndefined($cookies.getObject(name)[key])) {
             setCookie(name, key, value);
           }
@@ -314,15 +440,53 @@
        * Страница /workplaces.
        */
       Workplace: {
-        init: function () {
+        init: function() {
           init('workplace');
         },
-        get: function (key) {
+        get: function(key) {
           return getCookie('workplace', key);
         },
-        set: function (key, value) {
+        set: function(key, value) {
           setCookie('workplace', key, value);
         }
+      }
+    }
+  }
+
+// =====================================================================================================================
+
+  /**
+   * Фабрика для работы с нумерацией страниц на таблицах
+   */
+  function TablePaginator(Config) {
+    var _pagination = {
+      filteredRecords: 0,
+      totalRecords: 0,
+      currentPage: 1,
+      maxSize: 5
+    };
+
+    return {
+      /**
+       * Получить конфиг пагинатора
+       */
+      config: function() {
+        return _pagination;
+      },
+      /**
+       * Получить индекс записи, с которой необходимо показать данные.
+       */
+      startNum: function() {
+        return (_pagination.currentPage - 1) * Config.global.uibPaginationConfig.itemsPerPage;
+      },
+      /**
+       * Установить данные пагинатора
+       *
+       * @param data { recordsFiltered: int, recordsTotal: int }
+       */
+      setData: function(data) {
+        _pagination.filteredRecords = data.recordsFiltered;
+        _pagination.totalRecords = data.recordsTotal;
       }
     }
   }

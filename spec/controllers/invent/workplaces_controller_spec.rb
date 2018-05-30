@@ -48,59 +48,49 @@ module Invent
     end
 
     describe 'POST #create' do
-      let(:workplace) do
-        build :workplace_pk, :add_items, items: %i[pc monitor], workplace_count: workplace_count
-      end
-      let(:file) do
-        Rack::Test::UploadedFile.new(Rails.root.join('spec', 'files', 'old_pc_config.txt'), 'text/plain')
-      end
-      let(:wp_params) do
-        {
-          workplace: workplace.to_json,
-          pc_file: file
-        }
-      end
+      let(:workplace) { build(:workplace_pk, :add_items, items: %i[pc monitor], workplace_count: workplace_count) }
+      let(:wp_params) { { workplace: workplace.as_json } }
 
       it 'creates instance of the LkInvents::CreateWorkplace' do
         post :create, params: wp_params
-        expect(assigns(:create)).to be_instance_of LkInvents::CreateWorkplace
+        expect(assigns(:create)).to be_instance_of Workplaces::Create
       end
 
       it 'calls :run method' do
-        expect_any_instance_of(LkInvents::CreateWorkplace).to receive(:run)
+        expect_any_instance_of(Workplaces::Create).to receive(:run)
         post :create, params: wp_params
       end
     end
 
-    describe 'GET #list_wp' do
-      context 'when html request' do
-        it 'renders list_wp view' do
-          get :list_wp
-          expect(response).to render_template :list_wp
-        end
-      end
+    # describe 'GET #list_wp' do
+    #   context 'when html request' do
+    #     it 'renders list_wp view' do
+    #       get :list_wp
+    #       expect(response).to render_template :list_wp
+    #     end
+    #   end
 
-      context 'when json request' do
-        it 'creates instance of the Workplaces::Index' do
-          get :list_wp, format: :json, params: { init_filters: false, filters: false }
-          expect(assigns(:list_wp)).to be_instance_of Workplaces::ListWp
-        end
+    #   context 'when json request' do
+    #     it 'creates instance of the Workplaces::Index' do
+    #       get :list_wp, format: :json, params: { init_filters: false, filters: false }
+    #       expect(assigns(:list_wp)).to be_instance_of Workplaces::ListWp
+    #     end
 
-        it 'calls :run method' do
-          expect_any_instance_of(Workplaces::ListWp).to receive(:run)
-          get :list_wp, format: :json, params: { init_filters: false, filters: false }
-        end
-      end
-    end
+    #     it 'calls :run method' do
+    #       expect_any_instance_of(Workplaces::ListWp).to receive(:run)
+    #       get :list_wp, format: :json, params: { init_filters: false, filters: false }
+    #     end
+    #   end
+    # end
 
     describe 'GET #pc_config_from_audit' do
       it 'creates instance of the LkInvents::PcConfigFromAudit' do
         get :pc_config_from_audit, params: { invent_num: 111_222 }
-        expect(assigns(:pc_config)).to be_instance_of LkInvents::PcConfigFromAudit
+        expect(assigns(:pc_config)).to be_instance_of Workplaces::PcConfigFromAudit
       end
 
       it 'calls :run method' do
-        expect_any_instance_of(LkInvents::PcConfigFromAudit).to receive(:run)
+        expect_any_instance_of(Workplaces::PcConfigFromAudit).to receive(:run)
         get :pc_config_from_audit, params: { invent_num: 111_222 }
       end
     end
@@ -116,7 +106,7 @@ module Invent
       # end
 
       it 'calls :run method' do
-        expect_any_instance_of(LkInvents::PcConfigFromUser).to receive(:run)
+        expect_any_instance_of(Workplaces::PcConfigFromUser).to receive(:run)
         post :pc_config_from_user, params: { pc_file: file }
       end
     end
@@ -156,42 +146,62 @@ module Invent
 
     describe 'PUT #update' do
       let!(:workplace) do
-        create :workplace_pk, :add_items, items: %i[pc monitor], workplace_count: workplace_count
-      end
-      let(:file) do
-        Rack::Test::UploadedFile.new(Rails.root.join('spec', 'files', 'old_pc_config.txt'), 'text/plain')
+        create(:workplace_pk, :add_items, items: %i[pc monitor], workplace_count: workplace_count)
       end
       let(:wp_params) do
         {
           workplace_id: workplace.workplace_id,
-          workplace: workplace.to_json,
-          pc_file: file
+          workplace: workplace.as_json
         }
       end
 
       it 'creates instance of the LkInvents::UpdateWorkplace' do
         put :update, params: wp_params
-        expect(assigns(:update)).to be_instance_of LkInvents::UpdateWorkplace
+        expect(assigns(:update)).to be_instance_of Workplaces::Update
       end
 
       it 'calls :run method' do
-        expect_any_instance_of(LkInvents::UpdateWorkplace).to receive(:run)
+        expect_any_instance_of(Workplaces::Update).to receive(:run)
         put :update, params: wp_params
       end
     end
 
     describe 'DELETE #destroy' do
-      let!(:workplace) do
-        create :workplace_pk, :add_items, items: %i[pc monitor], workplace_count: workplace_count
-      end
+      let!(:workplace) { create(:workplace_pk, :add_items, items: %i[pc monitor], workplace_count: workplace_count) }
+      let(:params) { { workplace_id: workplace.workplace_id } }
       subject { delete :destroy, params: { workplace_id: workplace.workplace_id } }
 
-      it 'destroys the selected workplace' do
-        expect { subject }.to change(Workplace, :count).by(-1)
+      it 'creates instance of the Workplaces::Destroy' do
+        delete :destroy, params: params
+        expect(assigns(:destroy)).to be_instance_of Workplaces::Destroy
       end
 
-      it 'does not destroy items of the selected workplace' do
-        expect { subject }.not_to change(InvItem, :count)
+      it 'calls :run method' do
+        expect_any_instance_of(Workplaces::Destroy).to receive(:run)
+        delete :destroy, params: params
+      end
+    end
+
+    describe 'DELETE #hard_destroy' do
+      let!(:workplace) { create(:workplace_pk, :add_items, items: %i[pc monitor], workplace_count: workplace_count) }
+      let(:params) { { workplace_id: workplace.workplace_id } }
+      let(:address) { 'prev_address' }
+      let(:session_obj) { { workplace_prev_url: address } }
+      let(:response_obj) { { location: address } }
+
+      it 'creates instance of the Workplaces::HardDestroy' do
+        delete :hard_destroy, params: params
+        expect(assigns(:hard_destroy)).to be_instance_of Workplaces::HardDestroy
+      end
+
+      it 'calls :run method' do
+        expect_any_instance_of(Workplaces::HardDestroy).to receive(:run)
+        delete :hard_destroy, params: params
+      end
+
+      it 'responces with :location variable' do
+        delete :hard_destroy, params: params, session: session_obj
+        expect(response.body).to eq response_obj.to_json
       end
     end
 
@@ -206,15 +216,5 @@ module Invent
         put :confirm
       end
     end
-
-    # describe 'GET #send_pc_script' do
-    #   let(:path) { Rails.root.join('public', 'downloads', 'SysInfo.exe') }
-    #   let(:options) { { disposition: 'attachment' } }
-    #
-    #   it 'calls :send_file' do
-    #     expect(controller).to receive(:send_file).with(path, options).and_return(controller.render head: :ok)
-    #     get :send_pc_script
-    #   end
-    # end
   end
 end

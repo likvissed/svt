@@ -1,13 +1,14 @@
 module Invent
   module Workplaces
     # Получить данные о РМ.
-    class Edit < ApplicationService
+    class Edit < BaseService
       # current_uer - текущий пользовтаель
       # workplace_id - workplace_id рабочего места
       def initialize(current_user, workplace_id)
-        @data = {}
         @current_user = current_user
         @workplace_id = workplace_id
+
+        super
       end
 
       # format - тип запроса (html или json)
@@ -18,15 +19,18 @@ module Invent
         when :json
           load_workplace_json
         else
-          raise 'abort'
+          raise 'Неизвестный формат данных. Ожидается html или json запрос'
         end
 
         true
-      rescue RuntimeError
+      rescue RuntimeError => e
+        Rails.logger.error e.inspect.red
+        Rails.logger.error e.backtrace[0..5].inspect
+
         false
       end
 
-      private
+      protected
 
       # Загрузить объект РМ.
       def load_workplace_html
@@ -44,17 +48,17 @@ module Invent
       def load_workplace
         @edit_workplace = LkInvents::EditWorkplace.new(@current_user, @workplace_id)
         return data[:wp_data] = @edit_workplace.data if @edit_workplace.run
-        raise 'abort'
+        raise 'LkInvents::EditWorkplace не отработал'
       end
 
       def load_properties
         properties = LkInvents::InitProperties.new(nil, @edit_workplace.workplace.division)
         return data[:prop_data] = properties.data if properties.run
-        raise 'abort'
+        raise 'LkInvents::InitProperties не отработал'
       end
 
       def load_divisions
-        data[:divisions] = WorkplaceCount.select(:workplace_count_id, :division)
+        data[:divisions] = WorkplaceCount.select(:workplace_count_id, :division).sort_by { |obj| obj.division.to_i }
       end
     end
   end

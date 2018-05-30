@@ -1,4 +1,4 @@
-(function () {
+(function() {
   'use strict';
 
   app
@@ -30,7 +30,7 @@
     /**
      * Убрать alert уведомление.
      */
-    $scope.disableAlert = function () {
+    $scope.disableAlert = function() {
       Flash.alert(null);
     };
   }
@@ -80,10 +80,10 @@
 
     // Настройка ajax запросов, посланных с помощью jQuery (например, в datatables).
     $.ajaxSetup({
-      beforeSend: function () {
+      beforeSend: function() {
         myHttpInterceptor.incCount();
       },
-      complete: function () {
+      complete: function() {
         myHttpInterceptor.decCount();
 
         self.requests = myHttpInterceptor.getRequestsCount;
@@ -113,11 +113,11 @@ function FormValidationController() {
  * @param array - объект, содержащий ошибки
  * @param flag - флаг, устанавливаемый в объект form (false - валидация не пройдена, true - пройдена)
  */
-FormValidationController.prototype._setValidations = function (array, flag) {
+FormValidationController.prototype._setValidations = function(array, flag) {
   var self = this;
 
-  $.each(array, function (key, value) {
-    $.each(value, function (index, message) {
+  angular.forEach(array, function(value, key) {
+    value.forEach(function(message) {
       if (self.form[self._formName + '[' + key + ']'])
         self.form[self._formName + '[' + key + ']'].$setValidity(message, flag);
     });
@@ -129,7 +129,7 @@ FormValidationController.prototype._setValidations = function (array, flag) {
  *
  * @param name - имя формы
  */
-FormValidationController.prototype.setFormName = function (name) {
+FormValidationController.prototype.setFormName = function(name) {
   this._formName = name;
 };
 
@@ -138,7 +138,8 @@ FormValidationController.prototype.setFormName = function (name) {
  *
  * @param response - ответ с сервера
  */
-FormValidationController.prototype.errorResponse = function (response) {
+FormValidationController.prototype.errorResponse = function(response) {
+  this.clearErrors();
   this._errors = response.data.object;
   this._setValidations(this._errors, false);
 };
@@ -146,7 +147,7 @@ FormValidationController.prototype.errorResponse = function (response) {
 /**
  * Очистить форму от ошибок.
  */
-FormValidationController.prototype.clearErrors = function () {
+FormValidationController.prototype.clearErrors = function() {
   if (this._errors) {
     this._setValidations(this._errors, true);
     this._errors = null;
@@ -158,7 +159,7 @@ FormValidationController.prototype.clearErrors = function () {
  *
  * @param name - имя поля в DOM.
  */
-FormValidationController.prototype.errorClass = function (name) {
+FormValidationController.prototype.errorClass = function(name) {
   return (this.form[name].$invalid) ? 'has-error': ''
 };
 
@@ -167,12 +168,12 @@ FormValidationController.prototype.errorClass = function (name) {
  *
  * @param name - имя поля в DOM.
  */
-FormValidationController.prototype.errorMessage = function (name) {
+FormValidationController.prototype.errorMessage = function(name) {
   var message = [];
 
-  $.each(this.form[name].$error, function (key, value) {
-    message.push(key);
-  });
+  angular.forEach(this.form[name].$error, function(value, key) {
+    this.push(key);
+  }, message);
 
   return message.join(', ');
 };

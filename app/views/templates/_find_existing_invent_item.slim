@@ -1,0 +1,32 @@
+div ng-controller="FindExistingInventItemCtrl as find"
+  / .form-group
+  uib-tabset type="pills" justified="true"
+    uib-tab heading="Поиск по штрих-коду (ID техники)" classes="btn-sm" select="find.clearFindedData(); find.clearSearchData()"
+      .form-group
+        = label_tag "item_id", "Штрих-код (ID техники)", class: "control-label"
+        .input-group
+          = text_field_tag "item_id", "", class: "form-control", autocomplete: "off", placeholder: "Штрих-код",
+            "ng-model": "find.item_id", "ng-change": "find.clearFindedData()"
+          span.input-group-btn
+            = button_tag "", type: :button, class: "btn-primary", "ng-click": "find.loadItems()",
+              "ng-disabled": "!find.item_id", "uib-tooltip": "Нажмите для поиска",
+              "tooltip-append-to-body": true do
+              = fa_icon "search"
+      = render partial: 'templates/select_item_for_find_existing_inv_item_template'
+    uib-tab heading="Поиск по инвентарному номеру" classes="btn-sm" select="find.clearFindedData(); find.clearSearchData()"
+      .form-group
+        = label_tag "invent_num", "Инвентарный номер", class: "control-label"
+        .input-group
+          = text_field_tag "invent_num", "", class: "form-control", autocomplete: "off", placeholder: "Инвентарный номер",
+            "ng-model": "find.invent_num", "ng-change": "find.clearFindedData()"
+          span.input-group-btn
+            = button_tag "", type: :button, class: "btn-primary", "ng-click": "find.loadItems()",
+              "ng-disabled": "!find.invent_num", "uib-tooltip": "Нажмите для поиска",
+              "tooltip-append-to-body": true do
+              = fa_icon "search"
+      .form-group
+        = label_tag "equipment_type", "Тип техники (необязательно)", class: "control-label"
+        = select_tag "equipment_type", "", class: "form-control", "ng-model": "find.selectedType",
+          "ng-options": "type as type.short_description disable when type.type_id == 0 for type in select.eqTypes track by type.type_id",
+          "ng-change": "select.clearFindedData()"
+      = render partial: 'templates/select_item_for_find_existing_inv_item_template'

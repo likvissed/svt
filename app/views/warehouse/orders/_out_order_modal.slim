@@ -1,0 +1,58 @@
+script type="text/ng-template" id="outOrderModal.slim"
+  form role="form" name="edit.form" data-method="edit.method"
+    .modal-header
+      .pull-left
+        h4 Расходный ордер
+      .pull-right
+        .icon-block
+          = render partial: 'templates/load_spinner'
+        .icon-block ng-show="edit.order.id"
+          = fa_icon "refresh 2x fw", class: "pointer", "tooltip-placement": "top", "tooltip-append-to-body": true, "uib-tooltip": "Загрузать данные об ордере заново",
+            "ng-click": "edit.reloadOrder()"
+    .modal-body
+      / .form-group ng-class="edit.errorClass('order[consumer]')"
+        = label_tag "order[consumer]", "ФИО или таб. № получающего технику", class: "control-label"
+        = text_field_tag "order[consumer]", "", class: "form-control", autocomplete: "off", "ng-model": "edit.order.consumer"
+        span.help-block ng-show="edit.form['order[consumer]'].$invalid" ng-bind="edit.errorMessage('order[consumer]')"
+
+      .form-group ng-class="edit.errorClass('order[invent_workplace_id]')"
+        = label_tag "order[invent_workplace_id]", "ID рабочего места", class: "control-label"
+        = text_field_tag "order[invent_workplace_id]", "", class: "form-control", autocomplete: "off", "ng-model": "edit.order.invent_workplace_id"
+        span.help-block ng-show="edit.form['order[invent_workplace_id]'].$invalid" ng-bind="edit.errorMessage('order[invent_workplace_id]')"
+
+      .form-group
+        = label_tag "order[request_num]", "№ заявки в личном кабинете", class: "control-label"
+        = text_field_tag "order[request_num]", "", class: "form-control", autocomplete: "off", "ng-model": "edit.order.request_num"
+
+      .form-group
+        h4
+          ' Позиции
+          span ng-if="!edit.extra.visibleCount"
+            ' отсутствуют
+        table.table.table-striped.table-condensed ng-if="edit.extra.visibleCount"
+          thead
+            tr
+              th.col-sm-1
+              th.col-sm-5 Тип
+              th.col-sm-4.col-fhd-3 Инв. №
+              th.col-sm-11.col-fhd-12 Модель
+              th.col-sm-3 Кол-во
+          tbody
+            tr ng-repeat="op in edit.order.operations_attributes" ng-hide="op._destroy"
+              td= fa_icon "times-circle lg", class: "pointer", "tooltip-placement": "left", "uib-tooltip": "Убрать позицию",
+                "ng-click": "edit.delPosition(op)", "ng-if": "op.status != 'done'"
+              td ng-bind="op.item_type"
+              td ng-bind="op.inv_items | inventNumsToStr"
+              td ng-bind="op.item_model"
+              td
+                input type="text" ng-model="edit.order.createShiftGetterSetter(op)" ng-model-options="{ getterSetter: true }" class="form-control" ng-disabled="op.status == 'done'"
+
+        .form-group
+          = label_tag "order[comment]", "Комментарий", class: "control-label"
+          = text_area_tag "order[comment]", "", class: "form-control", rows: "3", "ng-model": "edit.order.comment"
+
+    .modal-footer
+      = button_tag "Вернуться к списку", class: "btn-default btn-sm", "ng-click": "edit.cancel()"
+      = button_tag class: "btn-success btn-sm", "ng-click": "edit.ok()" do
+        div ng-if="edit.order.id" Обновить
+        div ng-if="!edit.order.id" Создать

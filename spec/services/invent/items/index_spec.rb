@@ -1,33 +1,33 @@
-require 'spec_helper'
+require 'feature_helper'
 
 module Invent
   module Items
     RSpec.describe Index, type: :model do
-      let(:user) { create :user }
-      let(:workplace_count) { create :active_workplace_count, users: [user] }
-      let!(:workplace) { create :workplace_pk, :add_items, items: %i[pc monitor], workplace_count: workplace_count }
-      let!(:sec_workplace) { create :workplace_pk, :add_items, items: %i[pc monitor], workplace_count: workplace_count, id_tn: 12880 }
-      let(:item) { workplace.inv_items.first }
+      let(:user) { create(:user) }
+      let(:workplace_count) { create(:active_workplace_count, users: [user]) }
+      let!(:workplace) { create(:workplace_pk, :add_items, items: %i[pc monitor], workplace_count: workplace_count) }
+      let!(:sec_workplace) { create(:workplace_pk, :add_items, items: %i[pc monitor], workplace_count: workplace_count, id_tn: ***REMOVED***) }
+      let(:item) { workplace.items.first }
       let(:data_keys) { %i[recordsTotal recordsFiltered data] }
       let(:params) { { start: 0, length: 25 } }
       subject { Index.new(params) }
 
       it 'fills the @data hash with %i[totalRecords data] keys' do
         subject.run
-        expect(subject.data.keys).to include *data_keys
+        expect(subject.data.keys).to include(*data_keys)
       end
 
-      it 'adds :model and :description field to each item' do
+      it 'adds %w[model description translated_status label_status] field to each item' do
         subject.run
-        expect(subject.data[:data].first).to include('model', 'description')
+        expect(subject.data[:data].first).to include('model', 'description', 'translated_status', 'label_status')
       end
 
       context 'with init_filters' do
         before { params[:init_filters] = 'true' }
 
-        it 'assigns %i[inv_types] to the :filters key' do
+        it 'assigns %i[types] to the :filters key' do
           subject.run
-          expect(subject.data[:filters]).to include(:inv_types)
+          expect(subject.data[:filters]).to include(:types)
         end
 
         its(:run) { is_expected.to be_truthy }
@@ -38,9 +38,9 @@ module Invent
           expect(subject.data[:filters]).to be_nil
         end
 
-        it 'loads all inv_items' do
+        it 'loads all items' do
           subject.run
-          expect(subject.data[:data].count).to eq InvItem.count
+          expect(subject.data[:data].count).to eq Item.count
         end
 
         its(:run) { is_expected.to be_truthy }
@@ -92,18 +92,22 @@ module Invent
         end
 
         context 'and with property_value filter' do
-          let(:prop) { InvProperty.find_by(name: :hdd) }
+          let(:prop) { Property.find_by(name: :hdd) }
           let(:filters) do
             {
-              properties: [prop.property_id],
-              prop_values: ['String value'],
-              exact_prop_values: [false]
+              properties: [
+                {
+                  property_id: prop.property_id,
+                  property_value: 'String value',
+                  exact: true
+                }
+              ]
             }
           end
 
           it 'returns filtered data' do
             subject.data[:data].each do |el|
-              expect(el['description']).to match /#{prop.short_description}: #{filters[:prop_values][0]}/
+              expect(el['description']).to match(/#{prop.short_description}: #{filters[:properties].first[:property_value]}/)
             end
           end
         end
