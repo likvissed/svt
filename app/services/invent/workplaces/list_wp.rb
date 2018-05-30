@@ -5,9 +5,10 @@ module Invent
       # init_filters- флаг, определяющий, нужно ли загрузить данные для фильтров.
       # filters - объект, содержащий выбранные фильтры.
       def initialize(init_filters = false, filters = false)
-        @data = {}
         @init_filters = init_filters
         @filters = filters
+
+        super
       end
 
       def run
@@ -24,7 +25,7 @@ module Invent
         false
       end
 
-      private
+      protected
 
       def load_workplace
         @workplaces = Workplace.includes(
@@ -46,7 +47,7 @@ module Invent
       end
 
       def prepare_to_render
-        @data[:workplaces] = @workplaces.as_json(
+        data[:workplaces] = @workplaces.as_json(
           include: [
             :user_iss,
             :workplace_type,
@@ -91,8 +92,8 @@ module Invent
 
       # Загрузить данные для фильтров
       def load_filters
-        @data[:filters] = {}
-        @data[:filters][:divisions] = WorkplaceCount.select(:workplace_count_id, :division).order('CAST(division AS SIGNED)')
+        data[:filters] = {}
+        data[:filters][:divisions] = WorkplaceCount.select(:workplace_count_id, :division).order('CAST(division AS SIGNED)')
       end
 
       # Получить модель в виде строки

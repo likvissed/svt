@@ -4,7 +4,7 @@ module Warehouse
   module Orders
     RSpec.describe UpdateOut, type: :model do
       let(:user) { create(:user) }
-      let(:new_user) { create(:***REMOVED***_user, role: Role.find_by(name: :admin)) }
+      let(:new_user) { create(:***REMOVED***_user, role: create(:manager_role)) }
       let(:pc_type) { Invent::Type.find_by(name: :pc) }
       let!(:pc_items) { create(:new_item, inv_type: pc_type, item_model: 'Unit', count: 20) }
       let(:mon_type) { Invent::Type.find_by(name: :monitor) }
@@ -15,7 +15,7 @@ module Warehouse
       subject { UpdateOut.new(new_user, order.id, order_params) }
 
       context 'when warehouse_type is :without_invent_num' do
-        let!(:order) { create(:order, creator_id_tn: user.id_tn, operation: :out) }
+        let!(:order) { create(:order, creator_id_tn: user.id_tn, operation: :out, validator_id_tn: user.id_tn) }
         let(:order_json) { order.as_json }
 
         context 'and when :operation attribute changes to :in' do
@@ -197,6 +197,7 @@ module Warehouse
             op.delete('formatted_date')
           end
 
+          edit.data[:order].delete('consumer_obj')
           edit.data[:order]
         end
 
@@ -217,6 +218,14 @@ module Warehouse
           end
 
           include_examples 'updating order'
+
+          its(:run) { is_expected.to be_truthy }
+
+          # it 'sets a new validator data' do
+          #   subject.run
+          #   expect(order.reload.validator_id_tn).to eq new_user.id_tn
+          #   expect(order.reload.validator_fio).to eq new_user.fullname
+          # end
 
           it 'sets a new shift value' do
             expect { subject.run }.to change { changed_op.reload.shift }.by(1)

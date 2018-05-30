@@ -1,5 +1,5 @@
-require 'feature_helper'
 
+require 'feature_helper'
 module Warehouse
   module Supplies
     RSpec.describe Update, type: :model do

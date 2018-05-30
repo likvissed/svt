@@ -40,7 +40,7 @@ module Invent
         flash[:notice] = I18n.t('controllers.invent/workplace.created')
         render json: { location: session[:workplace_prev_url] }
       else
-        render json: { full_message: @create.errors.full_messages.join('. ') }, status: 422
+        render json: { full_message: @create.error[:full_message] }, status: 422
       end
     end
 
@@ -75,7 +75,7 @@ module Invent
       if @pc_file.run
         render json: { data: @pc_file.data, full_message: I18n.t('controllers.invent/workplace.pc_config_processed') }
       else
-        render json: { full_message: @pc_file.errors.full_messages.join('. ') }, status: 422
+        render json: { full_message: @pc_file.error[:full_message] }, status: 422
       end
     end
 
@@ -104,18 +104,28 @@ module Invent
         flash[:notice] = I18n.t('controllers.invent/workplace.updated')
         render json: { location: session[:workplace_prev_url] }
       else
-        render json: { full_message: @update.errors.full_messages.join('. ') }, status: 422
+        render json: { full_message: @update.error[:full_message] }, status: 422
       end
     end
 
     def destroy
-      @workplace = Workplace.find(params[:workplace_id])
-      authorize @workplace, :destroy?
+      @destroy = Workplaces::Destroy.new(current_user, params[:workplace_id])
 
-      if @workplace.destroy
+      if @destroy.run
         render json: { full_message: I18n.t('controllers.invent/workplace.destroyed') }
       else
-        render json: { full_message: @workplace.errors.full_messages.join('. ') }, status: 422
+        render json: { full_message: @destroy.error[:full_message] }, status: 422
+      end
+    end
+
+    def hard_destroy
+      @hard_destroy = Workplaces::HardDestroy.new(current_user, params[:workplace_id])
+
+      if @hard_destroy.run
+        flash[:notice] = I18n.t('controllers.invent/workplace.destroyed')
+        render json: { location: session[:workplace_prev_url] }
+      else
+        render json: { full_message: @hard_destroy.error[:full_message] }, status: 422
       end
     end
 

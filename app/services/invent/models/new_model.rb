@@ -2,7 +2,7 @@ module Invent
   module Models
     class NewModel < Invent::ApplicationService
       def initialize
-        @data = {}
+        super
       end
 
       def run

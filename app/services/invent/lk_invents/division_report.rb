@@ -11,7 +11,7 @@ module Invent
 
       def run
         prepare_tmp_params
-        @data = IO.popen("php #{Rails.root}/lib/generate_division_report.php #{@division}")
+        @data = IO.popen("php #{Rails.root}/lib/generate_division_report.php #{Rails.env} #{@division}")
 
         true
       rescue RuntimeError => e

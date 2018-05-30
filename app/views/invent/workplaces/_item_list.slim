@@ -1,9 +1,9 @@
 .row
-  .col-fhd-24
+  .col-sm-24
     h4 Состав рабочего места
 
 .row
-  .col-fhd-24
+  .col-sm-24
     uib-accordion
       div uib-accordion-group="true" class="panel-default" is-open="status.open"
         uib-accordion-heading
@@ -16,7 +16,7 @@
         = render partial: 'help'
 
 .row#wp_item_list ng-if="wp.workplace"
-  .col-fhd-24
+  .col-sm-24
     uib-tabset active="wp.additional.activeTab"
       uib-tab.animate-repeat index="$index" ng-repeat="item in wp.workplace.items_attributes"
         uib-tab-heading ng-class="{'text-danger': item.status == 'waiting_bring', 'text-info': item.status == 'prepared_to_swap' || item.status == 'waiting_take'}"

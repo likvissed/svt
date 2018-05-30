@@ -3,11 +3,12 @@ module Invent
     # Загрузить все рабочие места.
     class Index < BaseService
       def initialize(params)
-        @data = {}
         @start = params[:start]
         @length = params[:length]
         @init_filters = params[:init_filters] == 'true'
         @conditions = JSON.parse(params[:filters]) if params[:filters]
+
+        super
       end
 
       def run
@@ -24,7 +25,7 @@ module Invent
         false
       end
 
-      private
+      protected
 
       def load_workplace
         @workplaces = Workplace
@@ -46,14 +47,14 @@ module Invent
 
       # Ограничение выборки взависимости от выбранного пользователем номера страницы.
       def limit_records
-        @data[:recordsFiltered] = @workplaces.length
+        data[:recordsFiltered] = @workplaces.length
         @workplaces = @workplaces
                         .includes(%i[items iss_reference_site iss_reference_building iss_reference_room user_iss workplace_count])
                         .order(workplace_id: :desc).limit(@length).offset(@start)
       end
 
       def prepare_to_render
-        @data[:data] = @workplaces.as_json(
+        data[:data] = @workplaces.as_json(
           include: %i[items iss_reference_site iss_reference_building iss_reference_room user_iss workplace_count]
         ).each do |wp|
           wp['location'] = wp_location_string(wp)
@@ -76,10 +77,10 @@ module Invent
 
       # Загрузить данные для фильтров
       def load_filters
-        @data[:filters] = {}
-        @data[:filters][:divisions] = WorkplaceCount.select(:workplace_count_id, :division).order('CAST(division AS SIGNED)')
-        @data[:filters][:statuses] = workplace_statuses
-        @data[:filters][:types] = WorkplaceType.select(:workplace_type_id, :short_description)
+        data[:filters] = {}
+        data[:filters][:divisions] = WorkplaceCount.select(:workplace_count_id, :division).order('CAST(division AS SIGNED)')
+        data[:filters][:statuses] = workplace_statuses
+        data[:filters][:types] = WorkplaceType.select(:workplace_type_id, :short_description)
       end
 
       def label_status(status)

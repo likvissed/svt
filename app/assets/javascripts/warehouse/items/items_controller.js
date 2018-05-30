@@ -31,7 +31,8 @@
       self = this,
       consumer = new this.ActionCableChannel('Warehouse::ItemsChannel');
 
-    consumer.subscribe(function() {
+    consumer.subscribe(function(data) {
+      self.closeOrder();
       self._loadItems();
     });
   };

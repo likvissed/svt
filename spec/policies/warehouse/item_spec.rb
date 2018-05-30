@@ -3,16 +3,15 @@ require 'spec_helper'
 module Warehouse
   RSpec.describe ItemPolicy do
     let(:manager) { create(:***REMOVED***_user) }
+    let(:worker) { create(:shatunova_user) }
+    let(:read_only) { create(:tyulyakova_user) }
+    before { create(:used_item) }
     subject { ItemPolicy }
 
     permissions :destroy? do
-      context 'with :manager role' do
-        let!(:item) { create(:used_item) }
+      let(:model) { Item.first }
 
-        it 'grants access to the item' do
-          expect(subject).to permit(manager, Item.first)
-        end
-      end
+      include_examples 'policy for worker'
     end
   end
 end

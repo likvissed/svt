@@ -18,6 +18,7 @@ class Users::CallbacksController < Devise::OmniauthCallbacksController
       session[:user_fullname] = "#{fio_arr[0]} #{fio_arr[1][0]}. #{fio_arr[2][0]}."
 
       sign_in_and_redirect @user, event: :authentication
+      ActionCable.server.broadcast 'users', nil
       set_flash_message(:notice, :success)
     end
   end

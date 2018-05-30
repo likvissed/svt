@@ -3,9 +3,10 @@ module Warehouse
     # Загрузить данные об ордере для редактирования
     class Edit < BaseService
       def initialize(order_id, check_unreg = false)
-        @data = {}
         @order_id = order_id
         @check_unreg = check_unreg
+
+        super
       end
 
       def run
@@ -41,7 +42,8 @@ module Warehouse
 
       def transform_to_json
         data[:order] = data[:order].as_json(
-          include: {
+          include: [
+            :consumer,
             operations: {
               methods: :formatted_date,
               include: [
@@ -52,7 +54,7 @@ module Warehouse
                 }
               ]
             }
-          }
+          ]
         )
 
         data[:order]['operations_attributes'] = data[:order]['operations']
@@ -64,6 +66,7 @@ module Warehouse
           op['inv_item_ids'] = op['inv_items'].map { |io| io['item_id'] }
         end
 
+        data[:order]['consumer_obj'] = data[:order]['consumer']
         data[:order]['consumer'] = data[:order]['consumer_fio']
       end
 

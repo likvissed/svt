@@ -30,9 +30,15 @@ class ApplicationPolicy
 
   protected
 
-  def only_for_manager
+  def for_manager
     return true if admin?
 
     user.role? :manager
+  end
+
+  def for_worker
+    return true if admin?
+
+    user.one_of_roles? :manager, :worker
   end
 end

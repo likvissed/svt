@@ -3,9 +3,10 @@ module Warehouse
     # Создание расходного ордера
     class CreateOut < BaseService
       def initialize(current_user, order_params)
-        @error = {}
         @current_user = current_user
         @order_params = order_params
+
+        super
       end
 
       def run
@@ -29,7 +30,8 @@ module Warehouse
 
       def init_order
         @order = Order.new(@order_params)
-        authorize @order, :create?
+        authorize @order, :create_out?
+        @order.skip_validator = true
         @order.set_creator(current_user)
       end
 

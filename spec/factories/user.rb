@@ -27,7 +27,7 @@ FactoryBot.define do
 
     after(:build) do |user, ev|
       unless ev.role
-        user.role = Role.find_by(name: :***REMOVED***_user) || create(:***REMOVED***_user_role)
+        user.role ||= Role.find_by(name: :***REMOVED***_user) || create(:***REMOVED***_user_role)
       end
     end
   end
@@ -60,6 +60,22 @@ FactoryBot.define do
     after(:build) do |user, ev|
       unless ev.role
         user.role = Role.find_by(name: :read_only_role) || create(:read_only_role)
+      end
+    end
+  end
+
+  factory :shatunova_user, class: User do
+    id_tn ***REMOVED***
+    tn ***REMOVED***
+    phone '48-70'
+    division ***REMOVED***
+    email '***REMOVED***@***REMOVED***.ru'
+    login '***REMOVED***'
+    fullname '***REMOVED***'
+
+    after(:build) do |user, ev|
+      unless ev.role
+        user.role = Role.find_by(name: :worker) || create(:worker_role)
       end
     end
   end

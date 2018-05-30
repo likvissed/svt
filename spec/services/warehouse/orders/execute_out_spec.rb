@@ -18,7 +18,7 @@ module Warehouse
         let(:first_op) { build(:order_operation, item: first_item, shift: -1) }
         let(:sec_op) { build(:order_operation, item: sec_item, shift: -1) }
         let(:operations) { [first_op, sec_op] }
-        let!(:order) { create(:order, inv_workplace: workplace, operation: :out, operations: operations) }
+        let!(:order) { create(:order, inv_workplace: workplace, operation: :out, operations: operations, validator_id_tn: current_user.id_tn) }
         let(:order_params) do
           order_json['consumer_tn'] = ***REMOVED***
           order_json['operations_attributes'] = operations.as_json
@@ -68,7 +68,7 @@ module Warehouse
             ]
           end
           let(:inv_items) { [first_inv_item, sec_inv_item] }
-          let!(:order) { create(:order, inv_workplace: workplace, operation: :out, operations: operations) }
+          let!(:order) { create(:order, inv_workplace: workplace, operation: :out, operations: operations, validator_id_tn: current_user.id_tn) }
           let(:order_params) do
             order_json['consumer_tn'] = ***REMOVED***
             order_json['operations_attributes'] = operations.as_json
@@ -142,7 +142,7 @@ module Warehouse
             ]
           end
           let(:inv_items) { [first_inv_item, sec_inv_item] }
-          let!(:order) { create(:order, inv_workplace: workplace, operation: :out, operations: operations) }
+          let!(:order) { create(:order, inv_workplace: workplace, operation: :out, operations: operations, validator_id_tn: current_user.id_tn) }
           let(:order_params) do
             order_json['consumer_tn'] = ***REMOVED***
             order_json['operations_attributes'] = operations.as_json
@@ -191,7 +191,7 @@ module Warehouse
           end
           let(:inv_items) { [first_inv_item, sec_inv_item] }
           let!(:order) do
-            o = build(:order, inv_workplace: workplace, operation: :out, operations: operations)
+            o = build(:order, inv_workplace: workplace, operation: :out, operations: operations, validator_id_tn: current_user.id_tn)
             o.save(validate: false)
             o
           end
@@ -226,7 +226,7 @@ module Warehouse
           let(:inv_item) { create(:item, :with_property_values, workplace: workplace, type_name: :pc, status: :waiting_take, disable_filters: true) }
           let(:item) { create(:used_item, count_reserved: 1, inv_item: inv_item) }
           let(:operation) { build(:order_operation, item: item, inv_item_ids: [item.invent_item_id], shift: -1) }
-          let!(:order) { create(:order, inv_workplace: workplace, operation: :out, operations: [operation]) }
+          let!(:order) { create(:order, inv_workplace: workplace, operation: :out, validator_id_tn: current_user.id_tn, operations: [operation]) }
           let(:order_params) do
             order_json['consumer_tn'] = ***REMOVED***
             order_json['operations_attributes'] = [operation].as_json

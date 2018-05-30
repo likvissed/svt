@@ -5,9 +5,10 @@ module Invent
       # current_uer - текущий пользовтаель
       # workplace_id - workplace_id рабочего места
       def initialize(current_user, workplace_id)
-        @data = {}
         @current_user = current_user
         @workplace_id = workplace_id
+
+        super
       end
 
       # format - тип запроса (html или json)
@@ -29,7 +30,7 @@ module Invent
         false
       end
 
-      private
+      protected
 
       # Загрузить объект РМ.
       def load_workplace_html
@@ -47,13 +48,13 @@ module Invent
       def load_workplace
         @edit_workplace = LkInvents::EditWorkplace.new(@current_user, @workplace_id)
         return data[:wp_data] = @edit_workplace.data if @edit_workplace.run
-        raise 'abort'
+        raise 'LkInvents::EditWorkplace не отработал'
       end
 
       def load_properties
         properties = LkInvents::InitProperties.new(nil, @edit_workplace.workplace.division)
         return data[:prop_data] = properties.data if properties.run
-        raise 'abort'
+        raise 'LkInvents::InitProperties не отработал'
       end
 
       def load_divisions

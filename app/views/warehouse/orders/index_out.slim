@@ -8,7 +8,7 @@
           = fa_icon "exclamation-triangle"
           '  Для изменения ордера перейдите в раздел "Склад"
       .row
-        .col-fhd-24
+        .col-sm-24
           table.table.table-striped.table-condensed
             thead
               tr
@@ -16,26 +16,26 @@
                 th №
                 th Отдел
                 th ID РМ
-                th Тип
+                / th Тип
                 th Позиции ордера
                 th Кем создан
                 th Кем утвержден
-                th Кто получил/принес
+                th Кто получил
                 th Статус
                 th
             tbody
               tr ng-repeat="order in table.orders"
-                td.col-fhd-1
-                  = button_tag "Исполнить", type: :button, class: "btn-default btn-xs", "ng-click": "table.execOrder(order)"
-                td.col-fhd-1 ng-bind="order.id"
-                td.col-fhd-1 ng-bind="order.consumer_dept"
-                td.col-fhd-1 ng-bind="order.invent_workplace_id"
-                td.col-fhd-2.col-xlg-2.col-lg-2.col-md-2.col-sm-2 ng-bind="order.operation_translated"
-                td.col-fhd-7.col-xlg-7.col-lg-6.col-md-6.col-sm-7 ng-bind="order.operations_to_string"
-                td.col-fhd-4.col-xlg-3.col-lg-3.col-md-3.col-sm-3 ng-bind="order.creator.fio || order.creator_fio"
-                td.col-fhd-3.col-xlg-3.col-lg-3.col-md-3.col-sm-3 ng-bind="order.validator.fio || order.validator_fio"
-                td.col-fhd-3.col-xlg-3.col-lg-3.col-md-3.col-sm-3 ng-bind="order.consumer.fio || order.consumer_fio"
-                td.col-fhd-1.col-xlg-2.col-lg-3.col-md-3.col-sm-3 ng-bind="order.status_translated"
+                td.col-sm-1
+                  = button_tag "Открыть", type: :button, class: "btn-default btn-xs", "ng-click": "table.execOrder(order)"
+                td.col-sm-1 ng-bind="order.id"
+                td.col-sm-1 ng-bind="order.consumer_dept"
+                td.col-sm-1 ng-bind="order.invent_workplace_id"
+                / td.col-sm-2 ng-bind="order.operation_translated"
+                td.col-sm-8.col-md-9.col-fhd-10 ng-bind="order.operations_to_string"
+                td.col-sm-3 ng-bind="order.creator.fio || order.creator_fio"
+                td.col-sm-3 ng-bind="order.validator.fio || order.validator_fio"
+                td.col-sm-3 ng-bind="order.consumer.fio || order.consumer_fio"
+                td.col-sm-3.col-md-2.col-fhd-1 ng-bind="order.status_translated"
                 td.text-center
                   = fa_icon "trash-o fw", class: "pointer text-danger", "ng-click": "table.destroyOrder(order)",
                     "uib-tooltip": "Удалить ордер", "tooltip-append-to-body": "true"
@@ -43,9 +43,9 @@
                 td colspan=10 Данных нет
 
       .row
-        .col-xs-12
+        .col-sm-12
           .animate-show ng-table-info="" info-attrs="table.pagination" ng-if="table.orders"
-        .col-xs-12
+        .col-sm-12
           ul{ uib-pagination="true" total-items="table.pagination.filteredRecords" ng-model="table.pagination.currentPage"
             max-size="table.pagination.maxSize" class="pagination-sm pull-right" ng-change="table.changePage()" }
 

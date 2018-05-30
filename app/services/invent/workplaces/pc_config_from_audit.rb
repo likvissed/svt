@@ -14,6 +14,8 @@ module Invent
       # Инвентарный номер ПК
       def initialize(inv_num)
         @inv_num = inv_num
+
+        super
       end
 
       def run
@@ -31,7 +33,7 @@ module Invent
         false
       end
 
-      private
+      protected
 
       def run_validations
         raise 'Ошибка валидации' unless valid?

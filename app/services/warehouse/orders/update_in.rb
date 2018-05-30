@@ -3,18 +3,20 @@ module Warehouse
     # Изменение приходного ордера
     class UpdateIn < BaseService
       def initialize(current_user, order_id, order_params)
-        @error = {}
         @current_user = current_user
         @order_id = order_id
         @order_params = order_params.to_h
+
+        super
       end
 
       def run
         raise 'Неверные данные' if order_out?
 
         @order = Order.find(@order_id)
-        authorize @order, :update?
+        authorize @order, :update_in?
         return false unless wrap_order_with_transactions
+        broadcast_items
         broadcast_in_orders
 
         true

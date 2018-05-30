@@ -3,10 +3,11 @@ module Warehouse
     # Исполнить выбранные позиции указанного ордера
     class ExecuteOut < BaseService
       def initialize(current_user, order_id, order_params)
-        @error = {}
         @current_user = current_user
         @order_id = order_id
         @order_params = order_params
+
+        super
       end
 
       def run

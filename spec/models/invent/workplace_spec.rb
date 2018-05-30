@@ -28,15 +28,22 @@ module Invent
       end
     end
 
-    describe '#destroy' do
-      subject { create(:workplace_pk, :add_items, items: %i[pc monitor monitor]) }
+    describe '#check_processing_orders' do
+      let!(:wp) { create(:workplace_pk, :add_items, items: %i[pc monitor monitor]) }
+      subject { wp }
+      before { wp.hard_destroy = true }
 
       context 'when workplace belongs to processing order' do
         let(:operation) { build(:order_operation, inv_items: [subject.items.first]) }
         let!(:order) { create(:order, inv_workplace: subject, operations: [operation]) }
 
-        it 'raise error' do
-          expect { subject.destroy }.to raise_error(RuntimeError, 'cannot_destroy_workplace_belongs_to_processing_order')
+        it 'adds :cannot_destroy_workplace_belongs_to_processing_order error' do
+          subject.destroy
+          expect(subject.errors.details[:base]).to include(error: :cannot_destroy_workplace_belongs_to_processing_order)
+        end
+
+        it 'does not destroy Workplace' do
+          expect { subject.destroy }.not_to change(Workplace, :count)
         end
       end
 
@@ -50,6 +57,39 @@ module Invent
 
       context 'when workplace is not belong to any order' do
         its(:destroy) { is_expected.to be_truthy }
+      end
+    end
+
+    describe '#check_items' do
+      context 'when workplace includes any item' do
+        let!(:wp) { create(:workplace_pk, :add_items, items: %i[pc monitor monitor]) }
+        subject { wp }
+
+        it 'adds :cannot_destroy_workplace_with_items error' do
+          subject.destroy
+          expect(subject.errors.details[:base]).to include(error: :cannot_destroy_workplace_with_items)
+        end
+
+        it 'does not destroy Workplace' do
+          expect { subject.destroy }.not_to change(Workplace, :count)
+        end
+      end
+
+      context 'when workplace is empty' do
+        subject do
+          wp = build(:workplace_pk)
+          wp.save(validate: false)
+          wp
+        end
+
+        its(:destroy) { is_expected.to be_truthy }
+      end
+
+      context 'when runned :hard_destroy method' do
+        it 'does not run validation' do
+          expect(subject).not_to receive(:check_items)
+          subject.hard_destroy
+        end
       end
     end
 

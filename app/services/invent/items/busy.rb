@@ -8,6 +8,8 @@ module Invent
         @invent_num = invent_num
         @item_id = item_id
         @division = division
+
+        super
       end
 
       def run

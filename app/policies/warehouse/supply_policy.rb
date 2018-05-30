@@ -1,23 +1,23 @@
 module Warehouse
   class SupplyPolicy < ApplicationPolicy
     def new?
-      only_for_manager
+      for_worker
     end
 
     def create?
-      only_for_manager
+      for_worker
     end
 
     def edit?
-      only_for_manager
+      for_worker
     end
 
     def update?
-      only_for_manager
+      for_worker
     end
 
     def destroy?
-      only_for_manager
+      for_worker
     end
   end
 end

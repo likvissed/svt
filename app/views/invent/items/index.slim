@@ -17,22 +17,25 @@
                 th Инв. №
                 th ID РМ
                 th Ответственный
+                th Статус
                 th Описание
-                /th
+                th
             tbody
               tr ng-repeat="item in table.items"
                 td
                   a ng-href="/invent/workplaces/{{item.workplace.workplace_id}}/edit" class="default-color" target="_blank" ng-show="item.workplace"
                     = fa_icon "external-link fw", class: "pointer", "uib-tooltip": "Перейти к рабочему месту", "tooltip-append-to-body": "true"
-                td.col-lg-1.col-xlg-1.col-fhd-1 ng-bind="item.item_id"
-                td.col-lg-2.col-xlg-2.col-fhd-2 ng-bind="item.type.short_description"
-                td.col-lg-3.col-xlg-3.col-fhd-3 ng-bind="item.model"
-                td.col-lg-1.col-xlg-1.col-fhd-1 ng-bind="item.invent_num"
-                td.col-lg-1.col-xlg-1.col-fhd-1 ng-bind="item.workplace.workplace_id"
-                td.col-lg-4.col-xlg-4.col-fhd-4 ng-bind="item.workplace.user_iss.fio"
-                td.col-lg-12.col-xlg-12.col-fhd-12 ng-bind-html="item.description"
-                /td.col-lg-1.col-xlg-1.col-fhd-1
-                  = button_tag "Действия", type: :button, class: "btn-default btn-sm"
+                td.col-sm-1 ng-bind="item.item_id"
+                td.col-sm-2 ng-bind="item.type.short_description"
+                td.col-sm-3 ng-bind="item.model"
+                td.col-sm-1 ng-bind="item.invent_num"
+                td.col-sm-1 ng-bind="item.workplace.workplace_id"
+                td.col-sm-4 ng-bind="item.workplace.user_iss.fio"
+                td.col-sm-2 ng-bind-html="item.label_status"
+                td.col-sm-10 ng-bind-html="item.description"
+                td.text-center
+                  = fa_icon "trash-o fw", class: "text-danger pointer", "uib-tooltip": "Удалить технику",
+                    "tooltip-append-to-body": true, "ng-click": "table.destroyItem(item)"
       .row
         .col-xs-12
           div.animate-show ng-table-info="" info-attrs="table.pagination" ng-if="table.items"

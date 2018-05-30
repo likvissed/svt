@@ -4,8 +4,9 @@ module Warehouse
     class NewOrder < BaseService
       def initialize(current_user, operation)
         @current_user = current_user
-        @data = {}
         @operation = operation.to_sym
+
+        super
       end
 
       def run
@@ -21,7 +22,7 @@ module Warehouse
         false
       end
 
-      private
+      protected
 
       def init_order
         data[:order] = Order.new(operation: @operation)

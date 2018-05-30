@@ -348,7 +348,7 @@
   EditOutOrderController.prototype.reloadOrder = function() {
     this.Order.reloadOrder();
     this._createShiftGetterSetter();
-  }
+  };
 
   /**
    * Убрать позицию
@@ -366,7 +366,7 @@
   };
 
   /**
-   * Создать ордер
+   * Создать ордер.
    */
   EditOutOrderController.prototype.ok = function() {
     var
@@ -430,19 +430,27 @@
     this.order.operations_attributes.forEach(function(op) { op.status = status; });
   };
 
+  // /**
+  //  * Обновить данные ордера.
+  //  */
+  // ExecOrderController.prototype.reloadOrder = function() {
+  //   this.Order.reloadOrder();
+  //   this.Order.prepareToExec();
+  // };
+
   /**
-   * Проверка, исполнена ли операция
+   * Проверка, исполнена ли операция.
    */
   ExecOrderController.prototype.isOperationDone = function(op) {
     return op.status == 'done' && op.date;
-  }
+  };
 
   /**
-   * Установить/снять флаг, показывающий, выбраны ли все пункты
+   * Установить/снять флаг, показывающий, выбраны ли все пункты.
    */
   ExecOrderController.prototype.checkSelected = function() {
     this.isAllOpSelected = this.order.operations_attributes.every(function(op) { return op.status == 'done' });
-  }
+  };
 
   ExecOrderController.prototype.deliveryItems = function() {
     var self = this;
@@ -470,7 +478,29 @@
         function(response) {
           self.errorResponse(response);
         })
-  }
+  };
+
+  /**
+   * Утвердить/отклонить ордер.
+   */
+  ExecOrderController.prototype.confirmOrder = function() {
+    if (this.order.operation != 'out') { return false; }
+
+    var self = this;
+
+    this.Server.Warehouse.Order.confirmOut(
+      { id: this.order.id },
+      {},
+      function (response) {
+        self.Flash.notice(response.full_message);
+        self.$uibModalInstance.close();
+      },
+      function (response, status) {
+        self.Error.response(response, status);
+        self.errorResponse(response);
+      }
+    );
+  };
 
   /**
    * Исполнить выбранные поля ордера.
@@ -594,7 +624,7 @@
   DeliveryItemsCtrl.prototype.constructor = ExecOrderController;
 
   /**
-   * Обновить данные техники указанной оперции
+   * Обновить данные техники указанной оперции.
    *
    * @param inv_item
    */
@@ -615,7 +645,18 @@
   };
 
   /**
-   * Выдать технику
+   * Распечатать ордер.
+   */
+  DeliveryItemsCtrl.prototype.printOrder = function() {
+    var
+      self = this,
+      sendData = this.Order.getObjectToSend();
+
+    window.open('/warehouse/orders/' + this.order.id + '/print?order=' + JSON.stringify(sendData), '_blank');
+  };
+
+  /**
+   * Выдать технику.
    */
   DeliveryItemsCtrl.prototype.ok = function() {
     var
@@ -633,18 +674,18 @@
         self.Error.response(response, status);
         self.errorResponse(response);
       }
-    )
+    );
   };
 
   /**
-   * Закрыть окно
+   * Закрыть окно.
    */
   DeliveryItemsCtrl.prototype.cancel = function() {
     this.$uibModalInstance.dismiss();
   };
 
   /**
-   * Фильтр, определяющий, какие операции только что были выбраны пользователем для исполнения
+   * Фильтр, определяющий, какие операции только что были выбраны пользователем для исполнения.
    */
   DeliveryItemsCtrl.prototype.selectedOpFilter = function(selectedOp) {
     return function(op) {

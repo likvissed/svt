@@ -5,28 +5,46 @@
     .controller('InventItemsCtrl', InventItemsCtrl)
     .controller('FindExistingInventItemCtrl', FindExistingInventItemCtrl);
 
-  InventItemsCtrl.$inject = ['TablePaginator', 'InventItem', 'InventItemFiltersFactory'];
+  InventItemsCtrl.$inject = ['TablePaginator', 'ActionCableChannel', 'InventItem', 'InventItemFiltersFactory', 'Server', 'Flash', 'Error'];
   FindExistingInventItemCtrl.$inject = ['$scope', 'InventItem', 'Flash'];
 
-  function InventItemsCtrl(TablePaginator, InventItem, InventItemFiltersFactory) {
+  function InventItemsCtrl(TablePaginator, ActionCableChannel, InventItem, InventItemFiltersFactory, Server, Flash, Error) {
+    this.ActionCableChannel = ActionCableChannel
     this.Item = InventItem;
     this.Filters = InventItemFiltersFactory;
+    this.Server = Server;
+    this.Flash = Flash;
+    this.Error = Error;
 
     this.pagination = TablePaginator.config();
     this.filters = this.Filters.getFilters();
     this.selected= this.Filters.getSelected();
 
     this._loadItems(true);
+    this._initActionCable();
   }
 
   /**
-   * Загрузить логи с сервера.
+   * Загрузить данные с сервера.
    */
   InventItemsCtrl.prototype._loadItems = function(initFlag) {
     var self = this;
 
     this.Item.init(initFlag).then(function() {
       self.items = self.Item.items;
+    });
+  };
+
+  /**
+   * Инициировать подключение к каналу WorkplacesChannel.
+   */
+  InventItemsCtrl.prototype._initActionCable = function() {
+    var
+      self = this,
+      consumer = new this.ActionCableChannel('Invent::ItemsChannel');
+
+    consumer.subscribe(function() {
+      self._loadItems();
     });
   };
 
@@ -52,7 +70,7 @@
   };
 
   /**
-   * Удалить выбранный фильтр по составу техники
+   * Удалить выбранный фильтр по составу техники.
    *
    * @param index - индекс удаляемого элемента.
    */
@@ -61,6 +79,29 @@
       this.Filters.delProperty(index);
       this._loadItems(false);
     }
+  };
+
+  /**
+   * Удалить технику.
+   *
+   * @param item
+   */
+  InventItemsCtrl.prototype.destroyItem = function(item) {
+    var
+      self = this,
+      confirm_str = "Вы действительно хотите удалить " + item.type.short_description + " \"" + item.model + "\"?";
+
+    if (!confirm(confirm_str)) { return false; }
+
+    this.Server.Invent.Item.delete(
+      { item_id: item.item_id },
+      function(response) {
+        self.Flash.notice(response.full_message);
+        self._loadItems(false);
+      },
+      function(response, status) {
+        self.Error.response(response, status);
+      });
   };
 
 // =====================================================================================================================
@@ -80,17 +121,22 @@
 
   /**
    * Загрузить список техники указанного типа.
+   *
+   * @param searchType
    */
-  FindExistingInventItemCtrl.prototype.loadItems = function() {
-    var self = this;
+  FindExistingInventItemCtrl.prototype.loadItems = function(searchType) {
+    var
+      self = this,
+      message = 'Техника не найдена. ';
 
+    message += searchType == 'invent_num' ? 'Проверьте корректность введенного инвентарного номера.' : 'Проверьте корректность введенного ID.'
     this.Item.loadBusyItems(this.selectedType.type_id, this.invent_num, this.item_id, this.$scope.$parent.division)
       .then(function(response) {
         self.items = response;
         self.$scope.$emit('removeDuplicateInvItems', self.items);
 
         if (response.length == 0) {
-          self.Flash.alert('Техника не найдена. Проверьте корректность введенного инвентарного номера.');
+          self.Flash.alert(message);
           return false;
         } else if (self.items.length == 1) {
           self.Item.selectedItem = self.items[0];

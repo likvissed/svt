@@ -4,6 +4,8 @@ module Invent
     class PcConfigFromUser < BaseService
       def initialize(file)
         @file = file
+
+        super
       end
 
       def run
@@ -17,7 +19,7 @@ module Invent
         false
       end
 
-      private
+      protected
 
       def match_data
         chr_code_arr = @file.read.chars.map { |chr| chr.ord ^ ENV['PC_CONFIG_KEY'].to_i }

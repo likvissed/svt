@@ -4,6 +4,8 @@ module Warehouse
       def initialize(current_user, supply_id)
         @current_user = current_user
         @supply_id = supply_id
+
+        super
       end
 
       def run
@@ -37,6 +39,8 @@ module Warehouse
             Rails.logger.error e.inspect.red
             Rails.logger.error e.backtrace[0..5].inspect
 
+            process_supply_errors
+
             raise ActiveRecord::Rollback
           rescue RuntimeError => e
             Rails.logger.error e.inspect.red
@@ -58,7 +62,7 @@ module Warehouse
       def destroy_order
         return true if @supply.destroy
 
-        @data = @supply.errors.full_messages.join('. ')
+        error[:full_message] = @supply.errors.full_messages.join('. ')
         raise 'Поставка не удалена'
       end
     end

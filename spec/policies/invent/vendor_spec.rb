@@ -3,16 +3,15 @@ require 'spec_helper'
 module Invent
   RSpec.describe VendorPolicy do
     let(:manager) { create(:***REMOVED***_user) }
+    let(:worker) { create(:shatunova_user) }
+    let(:read_only) { create(:tyulyakova_user) }
+    before { create(:vendor) }
     subject { VendorPolicy }
 
     permissions :index? do
-      context 'with :manager role' do
-        let!(:vendor) { create(:vendor) }
+      let(:model) { Vendor.first }
 
-        it 'grants access to the model' do
-          expect(subject).to permit(manager, Model.first)
-        end
-      end
+      include_examples 'policy for worker'
     end
   end
 end

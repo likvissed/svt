@@ -73,5 +73,20 @@ module Invent
         get :avaliable, params: params, format: :json
       end
     end
+
+    describe 'DELETE #destroy' do
+      let!(:item) { create(:item, :with_property_values, type_name: :monitor) }
+      let(:params) { { item_id: item.item_id } }
+
+      it 'creates instance of the Items::Destroy' do
+        delete :destroy, params: params
+        expect(assigns(:destroy)).to be_instance_of Items::Destroy
+      end
+
+      it 'calls :run method' do
+        expect_any_instance_of(Items::Destroy).to receive(:run)
+        delete :destroy, params: params
+      end
+    end
   end
 end

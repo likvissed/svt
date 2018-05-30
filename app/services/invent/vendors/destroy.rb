@@ -3,6 +3,8 @@ module Invent
     class Destroy < Invent::ApplicationService
       def initialize(vendor_id)
         @id = vendor_id
+
+        super
       end
 
       def run
@@ -29,7 +31,7 @@ module Invent
 
         vendor_errors = @vendor.errors.full_messages
         model_errors = @vendor.models.map { |m| m.errors.full_messages }
-        @error = [vendor_errors, model_errors].flatten.join('. ')
+        error[:full_message] = [vendor_errors, model_errors].flatten.join('. ')
 
         raise 'Вендор не удален'
       end

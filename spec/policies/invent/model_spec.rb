@@ -3,16 +3,15 @@ require 'spec_helper'
 module Invent
   RSpec.describe ModelPolicy do
     let(:manager) { create(:***REMOVED***_user) }
+    let(:worker) { create(:shatunova_user) }
+    let(:read_only) { create(:tyulyakova_user) }
+    before { create(:model) }
     subject { ModelPolicy }
 
     permissions :index? do
-      context 'with :manager role' do
-        let!(:model) { create(:model) }
+      let(:model) { Model.first }
 
-        it 'grants access to the model' do
-          expect(subject).to permit(manager, Model.first)
-        end
-      end
+      include_examples 'policy for worker'
     end
   end
 end

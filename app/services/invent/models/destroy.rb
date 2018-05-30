@@ -3,6 +3,8 @@ module Invent
     class Destroy < Invent::ApplicationService
       def initialize(model_id)
         @id = model_id
+
+        super
       end
 
       def run
@@ -27,7 +29,7 @@ module Invent
       def destroy_model
         return if @model.destroy
 
-        @error = @model.errors.full_messages.join('. ')
+        error[:full_message] = @model.errors.full_messages.join('. ')
         raise 'Модель не удалена'
       end
     end

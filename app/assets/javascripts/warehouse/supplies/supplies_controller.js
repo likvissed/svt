@@ -316,7 +316,11 @@
 
         return Math.abs(self.result.shift);
       },
-      shift: this.Operation.getTemplate().shift
+      shift: this.Operation.getTemplate().shift,
+      model: {
+        model_id: 0,
+        item_model: ''
+      }
     };
     this._setDefaultResult(operation);
   }
@@ -325,11 +329,11 @@
     this.result.type = {
       type_id: operation ? operation.item.invent_type_id : 0,
       short_description: operation ? operation.item.item_type : ''
-    }
+    };
     this.result.model = {
       model_id: operation ? operation.item.invent_model_id : 0,
       item_model: operation ? operation.item.item_model : ''
-    }
+    };
     this.result.shift = operation ? operation.shift : this.Operation.getTemplate().shift;
 
     if (operation) {
@@ -337,14 +341,14 @@
       this.result.barcode = operation.item.barcode
       this.loadModels();
     }
-  }
+  };
 
   /**
    * Очистить объект result
    */
   EditSupplyOperationCtrl.prototype.clearResult = function() {
     this._setDefaultResult();
-  }
+  };
 
   /**
    * Загрузить список моделей
@@ -355,15 +359,10 @@
     var self = this;
 
     this.extra.eqModels = [];
-    this.result.model = {
-      model_id: 0,
-      item_model: ''
-    }
-
     this.Server.Invent.Model.query(
       { type_id: self.result.type.type_id },
       function(data) {
-        self.extra.eqModels = [{ model_id: 0, item_model: 'Выберите модель' }].concat(data);
+        self.extra.eqModels = [{ model_id: 0, item_model: 'Выберите модель' }].concat(data.data);
       },
       function(response, status) {
         self.Error.response(response, status);

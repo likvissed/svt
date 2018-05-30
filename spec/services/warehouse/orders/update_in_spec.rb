@@ -7,7 +7,7 @@ module Warehouse
       let(:new_user) { create(:***REMOVED***_user, role: Role.find_by(name: :admin)) }
       subject { UpdateIn.new(new_user, order.id, order_params) }
 
-      context 'when warehouse_type is s:without_invent_num' do
+      context 'when warehouse_type is :without_invent_num' do
         let!(:order) { create(:order) }
         let(:order_json) { order.as_json }
 
@@ -25,7 +25,8 @@ module Warehouse
             end
           end
 
-          include_examples 'order error format'
+          its(:run) { is_expected.to be_falsey }
+          # include_examples 'order error format'
         end
 
         context 'and when added a new operations' do
@@ -102,6 +103,7 @@ module Warehouse
             op.delete('formatted_date')
           end
 
+          edit.data[:order].delete('consumer_obj')
           edit.data[:order]
         end
 
@@ -127,6 +129,16 @@ module Warehouse
 
           it 'creates a new item_to_order record' do
             expect { subject.run }.to change(InvItemToOperation, :count).by(1)
+          end
+
+          it 'broadcasts to items' do
+            expect(subject).to receive(:broadcast_items)
+            subject.run
+          end
+
+          it 'broadcasts to in_orders' do
+            expect(subject).to receive(:broadcast_in_orders)
+            subject.run
           end
 
           context 'and when item does not exist' do

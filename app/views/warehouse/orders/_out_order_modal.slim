@@ -21,6 +21,10 @@ script type="text/ng-template" id="outOrderModal.slim"
         span.help-block ng-show="edit.form['order[invent_workplace_id]'].$invalid" ng-bind="edit.errorMessage('order[invent_workplace_id]')"
 
       .form-group
+        = label_tag "order[request_num]", "№ заявки в личном кабинете", class: "control-label"
+        = text_field_tag "order[request_num]", "", class: "form-control", autocomplete: "off", "ng-model": "edit.order.request_num"
+
+      .form-group
         h4
           ' Позиции
           span ng-if="!edit.extra.visibleCount"
@@ -28,11 +32,11 @@ script type="text/ng-template" id="outOrderModal.slim"
         table.table.table-striped.table-condensed ng-if="edit.extra.visibleCount"
           thead
             tr
-              th.col-fhd-1
-              th.col-fhd-6.col-xlg-6.col-lg-6.col-md-7.col-sm-7 Тип
-              th.col-fhd-3.col-xlg-4.col-lg-4.col-md-4.col-sm-4 Инв. №
-              th.col-fhd-11.col-xlg-11.col-xlg-10.col-md-10.col-sm-10 Модель
-              th.col-fhd-3.col-xlg-3.col-lg-3.col-md-3.col-sm-3 Кол-во
+              th.col-sm-1
+              th.col-sm-5 Тип
+              th.col-sm-4.col-fhd-3 Инв. №
+              th.col-sm-11.col-fhd-12 Модель
+              th.col-sm-3 Кол-во
           tbody
             tr ng-repeat="op in edit.order.operations_attributes" ng-hide="op._destroy"
               td= fa_icon "times-circle lg", class: "pointer", "tooltip-placement": "left", "uib-tooltip": "Убрать позицию",
@@ -45,7 +49,7 @@ script type="text/ng-template" id="outOrderModal.slim"
 
         .form-group
           = label_tag "order[comment]", "Комментарий", class: "control-label"
-          = text_area_tag "order[comment]", "", class: "form-control", rows: "3", "ng-model": "exec.order.comment"
+          = text_area_tag "order[comment]", "", class: "form-control", rows: "3", "ng-model": "edit.order.comment"
 
     .modal-footer
       = button_tag "Вернуться к списку", class: "btn-default btn-sm", "ng-click": "edit.cancel()"

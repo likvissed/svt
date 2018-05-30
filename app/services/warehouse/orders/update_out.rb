@@ -3,19 +3,20 @@ module Warehouse
     # Изменение расходного ордера
     class UpdateOut < BaseService
       def initialize(current_user, order_id, order_params)
-        @error = {}
         @current_user = current_user
         @order_id = order_id
         @order_params = order_params.to_h
         @inv_items_for_destroy = []
         @inv_items_for_update = []
+
+        super
       end
 
       def run
         raise 'Неверные данные' if order_in?
 
-        @order = Order.includes(:inv_item_to_operations, :inv_items).find(@order_id)
-        authorize @order, :update?
+        find_order
+
         return false unless wrap_order_with_transactions
         broadcast_out_orders
         broadcast_items
@@ -30,8 +31,13 @@ module Warehouse
 
       protected
 
-      def wrap_order_with_transactions
+      def find_order
+        @order = Order.includes(:inv_item_to_operations, :inv_items).find(@order_id)
         assign_order_params
+        authorize @order, :update_out?
+      end
+
+      def wrap_order_with_transactions
         prepare_inv_items
 
         Invent::Item.transaction do
@@ -51,6 +57,7 @@ module Warehouse
 
             raise ActiveRecord::Rollback
           rescue ActiveRecord::RecordNotDestroyed
+
             raise ActiveRecord::Rollback
           rescue RuntimeError => e
             Rails.logger.error e.inspect.red
@@ -64,6 +71,7 @@ module Warehouse
       def assign_order_params
         @order.assign_attributes(@order_params)
         @order.set_creator(current_user)
+        @order.skip_validator = true
       end
 
       def prepare_inv_items
@@ -84,7 +92,7 @@ module Warehouse
 
       # Заполнение массива inv_items, элементы которого будут удалены из БД
       def inv_items_for_destroy(inv_items)
-        @inv_items_for_destroy.concat(inv_items)
+        @inv_items_for_destroy.concat(inv_items).each { |i| i.destroy_from_order = true }
       end
 
       # Заполнение массива inv_items, параметры которого будут обновлены

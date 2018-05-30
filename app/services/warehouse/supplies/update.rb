@@ -3,9 +3,10 @@ module Warehouse
     class Update < BaseService
       def initialize(current_user, supply_id, supply_params)
         @current_user = current_user
-        @error = {}
         @supply_id = supply_id
         @supply_params = supply_params
+
+        super
       end
 
       def run
@@ -65,6 +66,8 @@ module Warehouse
           rescue ActiveRecord::RecordNotSaved, ActiveRecord::RecordInvalid => e
             Rails.logger.error e.inspect.red
             Rails.logger.error e.backtrace[0..5].inspect
+
+            process_supply_errors
 
             raise ActiveRecord::Rollback
           rescue ActiveRecord::RecordNotDestroyed

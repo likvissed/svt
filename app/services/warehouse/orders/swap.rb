@@ -3,11 +3,12 @@ module Warehouse
     # Создание приходящего и исходящего ордера (случаи, когди техника переносится из РМ в РМ в рамках отдела)
     class Swap < BaseService
       def initialize(current_user, new_workplace_id, inv_item_ids)
-        @error = {}
         @current_user = current_user
         @new_workplace_id = new_workplace_id
         @inv_item_ids = inv_item_ids
         @done_flag = true
+
+        super
       end
 
       def run
@@ -23,6 +24,8 @@ module Warehouse
 
         false
       end
+
+      protected
 
       def find_workplace
         @workplace = Invent::Workplace.find(@new_workplace_id)
@@ -128,7 +131,8 @@ module Warehouse
           inv_workplace: @workplace,
           consumer: @workplace.user_iss,
           operation: operation,
-          consumer_dept: @workplace.division
+          consumer_dept: @workplace.division,
+          skip_validator: true
         )
         @order.set_creator(current_user)
       end

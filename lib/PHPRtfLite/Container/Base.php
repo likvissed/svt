@@ -27,7 +27,7 @@
  * @package     PHPRtfLite
  * @subpackage  PHPRtfLite_Container
  */
-abstract class PHPRtfLite_Container_Base
+abstract class PHPRtfLite_Container_Base implements PHPRtfLite_Freeable
 {
 
     /**
@@ -36,7 +36,7 @@ abstract class PHPRtfLite_Container_Base
     protected $_rtf;
 
     /**
-     * @var array
+     * @var PHPRtfLite_Table_Cell[]|PHPRtfLite_Element[]|PHPRtfLite_Image[]|PHPRtfLite_FormField[]
      */
     protected $_elements = array();
 
@@ -87,6 +87,16 @@ abstract class PHPRtfLite_Container_Base
     public function getElements()
     {
         return $this->_elements;
+    }
+
+
+    public function free()
+    {
+        foreach ($this->_elements as $element) {
+            if ($element instanceof PHPRtfLite_Freeable) {
+                $element->free();
+            }
+        }
     }
 
 
@@ -268,13 +278,12 @@ abstract class PHPRtfLite_Container_Base
      * @return PHPRtfLite_Image
      */
     public function addImageFromString(
-                        $string,
-                        $type,
-                        PHPRtfLite_ParFormat $parFormat = null,
-                        $width = null,
-                        $height = null
-                    )
-    {
+        $string,
+        $type,
+        PHPRtfLite_ParFormat $parFormat = null,
+        $width = null,
+        $height = null
+    ) {
         $image = PHPRtfLite_Image::createFromString($this->_rtf, $string, $type, $width, $height);
         if ($parFormat) {
             $image->setParFormat($parFormat);

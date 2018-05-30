@@ -8,6 +8,8 @@ module Invent
         @current_user = current_user
         @type = type
         @ids = ids
+
+        super
       end
 
       def run
@@ -24,7 +26,7 @@ module Invent
         false
       end
 
-      private
+      protected
 
       def load_workplaces
         @workplaces = Workplace.where(workplace_id: @ids)

@@ -11,7 +11,7 @@
   function ngWarehouseItemSupplyPopover($compile) {
     return {
       restrict: 'E',
-      template: '<i class="fa fa-truck fa-fw pointer" uib-tooltip="Просмотреть связанные с техникой поставки" uib-popover-template="\'myPopoverTemplate.html\'" popover-title="Список поставок: {{item.item_type}}" popover-placement="right"></i>',
+      template: '<i class="fa fa-truck fa-fw pointer" uib-tooltip="Поставки" uib-popover-template="\'myPopoverTemplate.html\'" popover-title="Список поставок: {{item.item_type}}" popover-placement="right"></i>',
     }
   }
 

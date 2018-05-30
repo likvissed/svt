@@ -147,6 +147,21 @@ module Warehouse
       end
     end
 
+    describe 'PUT #confirm_out' do
+      let!(:order) { create(:order) }
+      let(:params) { { id: order.id } }
+
+      it 'creates instance of the Orders::ConfirmOut' do
+        put :confirm_out, params: params
+        expect(assigns(:confirm_out)).to be_instance_of Orders::ConfirmOut
+      end
+
+      it 'calls :run method' do
+        expect_any_instance_of(Orders::ConfirmOut).to receive(:run)
+        put :confirm_out, params: params
+      end
+    end
+
     describe 'POST #execute_in' do
       let!(:order) { create(:order) }
       let(:params) do
@@ -219,6 +234,26 @@ module Warehouse
       it 'calls :run method' do
         expect_any_instance_of(Orders::PrepareToDeliver).to receive(:run)
         get :prepare_to_deliver, params: params, format: :json
+      end
+    end
+
+    describe 'GET #print' do
+      let!(:order) { create(:order) }
+      let(:params) do
+        {
+          id: order.id,
+          order: order.to_json
+        }
+      end
+
+      it 'creates instance of the Orders::Print' do
+        get :print, params: params, format: :json
+        expect(assigns(:print)).to be_instance_of Orders::Print
+      end
+
+      it 'calls :run method' do
+        expect_any_instance_of(Orders::Print).to receive(:run)
+        get :print, params: params, format: :json
       end
     end
   end

@@ -3,11 +3,12 @@ module Invent
     # Загрузить список техники, которая находится в работе в текущий момент.
     class Index < Invent::ApplicationService
       def initialize(params)
-        @data = {}
         @start = params[:start]
         @length = params[:length]
         @init_filters = params[:init_filters]
         @filters = params[:filters].class.name == 'String' ? JSON.parse(params[:filters]) : params[:filters]
+
+        super
       end
 
       def run
@@ -73,6 +74,8 @@ module Invent
         ).each do |item|
           item['model'] = item['model'].nil? ? item['item_model'] : item['model']['item_model']
           item['description'] = item['property_values'].map { |prop_val| property_value_info(prop_val) }.join('; ')
+          item['translated_status'] = (str = Item.translate_enum(:status, item['status'])).is_a?(String) ? str : ''
+          item['label_status'] = label_status(item, item['translated_status'])
         end
       end
 
@@ -80,6 +83,20 @@ module Invent
         data[:filters] = {}
         data[:filters][:types] = Type.where('name != "unknown"')
         data[:filters][:properties] = Property.group(:name)
+      end
+
+      def label_status(item, text)
+        case item['status']
+        when 'waiting_take'
+          label_class = 'label-primary'
+        when 'waiting_bring'
+          label_class = 'label-danger'
+        else
+          label_class = 'label-default'
+          text = item['workplace_id'] ? 'На РМ' : 'На складе'
+        end
+
+        "<span class='label #{label_class}'>#{text}</span>"
       end
     end
   end

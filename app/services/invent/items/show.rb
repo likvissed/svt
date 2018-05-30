@@ -4,6 +4,8 @@ module Invent
     class Show < Invent::ApplicationService
       def initialize(item_id)
         @item_id = item_id
+
+        super
       end
 
       def run

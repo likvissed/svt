@@ -17,9 +17,9 @@ module Invent
         expect(subject.data.keys).to include(*data_keys)
       end
 
-      it 'adds :model and :description field to each item' do
+      it 'adds %w[model description translated_status label_status] field to each item' do
         subject.run
-        expect(subject.data[:data].first).to include('model', 'description')
+        expect(subject.data[:data].first).to include('model', 'description', 'translated_status', 'label_status')
       end
 
       context 'with init_filters' do

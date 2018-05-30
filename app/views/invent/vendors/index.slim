@@ -4,12 +4,12 @@
   .well
     .table-block
       .row
-        .col-fhd-18.col-xlg-18.col-lg-18.col-md-19.col-sm-20 ng-controller="ModelsCtrl as m_table"
+        .col-md-19.col-lg-18 ng-controller="ModelsCtrl as m_table"
           = render partial: 'invent/models/index'
 
-        .col-fhd-5.col-fhd-offset-1.col-xlg-6.col-lg-6.col-md-5.col-sm-4 ng-controller="VendorsCtrl as v_table"
+        .col-md-5.col-lg-6.col-fhd-offset-1.col-fhd-5 ng-controller="VendorsCtrl as v_table"
           .row
-            .col-fhd-16.col-xlg-14.col-lg-14.col-md-16.multiline-buffer
+            .col-sm-6.col-md-16.col-lg-14.col-fhd-16.multiline-buffer
               = button_tag "Новый вендор", type: :button, class: "btn-primary btn-sm btn-block", "ng-click": "v_table.newVendor()"
           .row
           table.table.table-condensed.table-striped
@@ -19,8 +19,8 @@
                 th
             tbody
               tr ng-repeat="vendor in v_table.vendors"
-                td.col-fhd-22 ng-bind="vendor.vendor_name"
-                td.col-fhd-2.text-center
+                td.col-sm-22 ng-bind="vendor.vendor_name"
+                td.col-sm-2.text-center
                   = fa_icon "trash-o fw", class: "text-danger pointer", "uib-tooltip": "Удалить вендор",
                     "tooltip-append-to-body": true, "ng-click": "v_table.destroyVendor(vendor)"
 

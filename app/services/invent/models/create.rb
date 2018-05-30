@@ -2,8 +2,9 @@ module Invent
   module Models
     class Create < Invent::ApplicationService
       def initialize(model_params)
-        @error = {}
         @model_params = model_params
+
+        super
       end
 
       def run

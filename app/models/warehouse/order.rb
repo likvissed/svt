@@ -14,7 +14,8 @@ module Warehouse
 
     validates :operation, :status, :creator_fio, presence: true
     validates :consumer_dept, presence: true, if: -> { operation == 'in' }
-    validates :validator_fio, presence: true, if: -> { done? && operation == 'out' }
+    validates :validator_fio, presence: { message: :empty }, if: -> { operation == 'out' && !skip_validator }
+    validates :closed_time, presence: true, if: -> { done? }
     validates :invent_workplace_id, presence: true, if: -> { operation == 'out' }
     validate :presence_consumer, if: -> { operations.any?(&:done?) }
     validate :at_least_one_operation
@@ -30,16 +31,23 @@ module Warehouse
     before_update :prevent_update_attributes
     before_destroy :prevent_destroy, prepend: true
 
-    enum operation: { out: 1, in: 2 }
+    enum operation: { out: 1, in: 2, discard: 3 }
     enum status: { processing: 1, done: 2 }
 
     accepts_nested_attributes_for :operations, allow_destroy: true
 
     attr_accessor :consumer_tn
+    # Флаг указывает, что расходный ордер валидный без поля validator_fio (нужно в случаях изменения позиций ордера)
+    attr_accessor :skip_validator
 
     def set_creator(user)
       self.creator_id_tn = user.id_tn
       self.creator_fio = user.fullname
+    end
+
+    def set_validator(user)
+      self.validator_id_tn = user.try(:id_tn)
+      self.validator_fio = user.try(:fullname)
     end
 
     def operations_to_string
@@ -89,6 +97,7 @@ module Warehouse
 
     def calculate_status
       self.status = operations.any?(&:processing?) ? :processing : :done
+      self.closed_time = Time.zone.now if done? && status_changed?
     end
 
     def set_consumer

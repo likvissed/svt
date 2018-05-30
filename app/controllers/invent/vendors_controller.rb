@@ -29,7 +29,7 @@ module Invent
       if @destroy.run
         render json: { full_message: I18n.t('controllers.invent/vendor.destroyed') }
       else
-        render json: { full_message: @destroy.error }, status: 422
+        render json: { full_message: @destroy.error[:full_message] }, status: 422
       end
     end
 

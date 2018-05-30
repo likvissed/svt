@@ -1,7 +1,7 @@
 module Invent
   class ModelPolicy < ApplicationPolicy
     def index?
-      only_for_manager
+      for_worker
     end
   end
 end

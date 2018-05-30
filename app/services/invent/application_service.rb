@@ -14,6 +14,10 @@ class Invent::ApplicationService < ApplicationService
     ActionCable.server.broadcast 'vendors', nil
   end
 
+  def broadcast_items
+    ActionCable.server.broadcast 'items', nil
+  end
+
   # Возвращает массив статусов с переведенными на русскую локаль ключами.
   def workplace_statuses
     Invent::Workplace.statuses.map { |key, _val| [key, Invent::Workplace.translate_enum(:status, key)] }.to_h

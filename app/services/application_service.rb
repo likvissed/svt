@@ -4,6 +4,11 @@ class ApplicationService
 
   attr_reader :data, :current_user, :error
 
+  def initialize(*args)
+    @data = {}
+    @error = {}
+  end
+
   # Разослать сообщение о необходимости обновления сводной таблицы рабочих мест.
   def broadcast_workplaces
     ActionCable.server.broadcast 'workplaces', nil

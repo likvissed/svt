@@ -21,7 +21,7 @@ module Warehouse
       if @destroy.run
         render json: { full_message: I18n.t('controllers.warehouse/item.destroyed') }
       else
-        render json: { full_message: @destroy.data }, status: 422
+        render json: { full_message: @destroy.error[:full_message] }, status: 422
       end
     end
   end

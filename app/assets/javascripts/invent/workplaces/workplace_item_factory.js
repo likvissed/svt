@@ -3,9 +3,9 @@
 
   app.factory('WorkplaceItem', WorkplaceItem);
 
-  WorkplaceItem.$inject = ['$filter', 'PropertyValue'];
+  WorkplaceItem.$inject = ['$filter', 'PropertyValue', 'Server', 'Flash', 'Error'];
 
-  function WorkplaceItem($filter, PropertyValue) {
+  function WorkplaceItem($filter, PropertyValue, Server, Flash, Error) {
     var
       // Типы оборудования
       eqTypes,
@@ -476,6 +476,19 @@
         Object.keys(templateItem).forEach(function(key) { item[key] = data[key]; });
 
         item.workplace_id = workplace_id;
+      },
+      /**
+       * Удалить технику из БД
+       */
+      destroyItem: function(item) {
+        return Server.Invent.Item.delete(
+          { item_id: item.id },
+          function(response) {
+            Flash.notice(response.full_message);
+          },
+          function(response, status) {
+            Error.response(response, status);
+          }).$promise;
       }
     };
   }

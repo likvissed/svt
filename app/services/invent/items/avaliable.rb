@@ -4,6 +4,8 @@ module Invent
     class Avaliable < Invent::ApplicationService
       def initialize(type_id)
         @type_id = type_id
+
+        super
       end
 
       def run

@@ -18,12 +18,7 @@ module Invent
 
         it 'sets location_room_id variable' do
           subject.run
-          expect(subject.workplace_params['location_room_id']).to eq room.room_id
-        end
-
-        it 'creates a @workplace variable' do
-          subject.run
-          expect(subject.workplace).to be_an_instance_of Workplace
+          expect(subject.instance_variable_get(:@workplace_params)['location_room_id']).to eq room.room_id
         end
 
         it 'saves a new workplace in the database' do
@@ -41,6 +36,21 @@ module Invent
         it 'fills a @data at least with %w[short_description fio duty location status] keys' do
           subject.run
           expect(subject.data).to include('short_description', 'fio', 'duty', 'location', 'status')
+        end
+
+        it 'broadcasts to workplaces' do
+          expect(subject).to receive(:broadcast_workplaces)
+          subject.run
+        end
+
+        it 'broadcasts to workplace_list' do
+          expect(subject).to receive(:broadcast_workplace_list)
+          subject.run
+        end
+
+        it 'broadcasts to items' do
+          expect(subject).to receive(:broadcast_items)
+          subject.run
         end
 
         its(:run) { is_expected.to be_truthy }
@@ -105,6 +115,11 @@ module Invent
 
         it 'reduces count of items for workplace_2' do
           expect { subject.run }.to change(workplace_2.reload.items, :count).by(-1)
+        end
+
+        it 'broadcasts to archive_orders' do
+          expect(subject).to receive(:broadcast_archive_orders)
+          subject.run
         end
 
         context 'when Warehouse::Orders::Swap service returns false' do

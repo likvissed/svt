@@ -4,6 +4,8 @@ module Invent
     class Show < Invent::ApplicationService
       def initialize(workplace_count_id)
         @workplace_count_id = workplace_count_id
+
+        super
       end
 
       def run
@@ -16,6 +18,8 @@ module Invent
 
         false
       end
+
+      protected
 
       def load_workplace_count
         @data = WorkplaceCount.includes(:users).find(@workplace_count_id)

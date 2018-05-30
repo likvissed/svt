@@ -2,8 +2,9 @@ module Invent
   module Models
     class Edit < Invent::ApplicationService
       def initialize(model_id)
-        @data = {}
         @id = model_id
+
+        super
       end
 
       def run

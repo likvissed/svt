@@ -22,8 +22,10 @@ module Invent
     validate :presence_model, :check_mandatory, if: -> { errors.details[:type].empty? && !disable_filters }
 
     before_save :set_default_model
+    before_destroy :prevent_destroy, prepend: true, unless: -> { destroy_from_order }
 
     attr_accessor :disable_filters
+    attr_accessor :destroy_from_order
 
     delegate :properties, to: :type
 
@@ -108,7 +110,7 @@ module Invent
       end
     end
 
-    private
+    protected
 
     # Проверка наличия модели.
     def presence_model
@@ -128,6 +130,14 @@ module Invent
 
         errors.add(:base, :property_not_filled, empty_prop: prop.short_description)
       end
+    end
+
+    def prevent_destroy
+      op = warehouse_operations.find(&:processing?)
+      return unless op
+
+      errors.add(:base, :cannot_destroy_with_processing_operation, order_id: op.operationable.id)
+      throw(:abort)
     end
   end
 end

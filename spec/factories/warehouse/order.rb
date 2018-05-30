@@ -3,11 +3,12 @@ module Warehouse
     factory :order, class: Order do
       inv_workplace nil
       creator_id_tn ***REMOVED***
-      validator_id_tn 5336
+      # validator_id_tn 5336
       operation :in
       status 'processing'
       consumer_dept { inv_workplace.try(:workplace_count).try(:division) || ***REMOVED*** }
       comment ''
+      skip_validator true
 
       transient do
         without_operations false

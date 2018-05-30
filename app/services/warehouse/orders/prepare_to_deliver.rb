@@ -3,11 +3,11 @@ module Warehouse
     # Загрузить данные об ордере для редактирования
     class PrepareToDeliver < BaseService
       def initialize(current_user, order_id, order_params)
-        @error = {}
-        @data = {}
         @current_user = current_user
         @order_id = order_id
         @order_params = order_params
+
+        super
       end
 
       def run
@@ -28,8 +28,8 @@ module Warehouse
 
       def find_order
         @order = Order.find(@order_id)
-        authorize @order, :prepare_to_deliver?
         @order.assign_attributes(@order_params)
+        authorize @order, :prepare_to_deliver?
       end
 
       def search_inv_items

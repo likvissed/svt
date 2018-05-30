@@ -4,8 +4,9 @@ module Invent
     class Create < Invent::ApplicationService
       # strong_params - данные, прошедшие фильтрацию.
       def initialize(strong_params)
-        @error = {}
         @wpc_params = strong_params
+
+        super
       end
 
       def run
@@ -21,7 +22,7 @@ module Invent
         false
       end
 
-      private
+      protected
 
       # Сохранить отдел
       def save_workplace
@@ -29,7 +30,6 @@ module Invent
 
         error[:object] = data.errors
         error[:full_message] = data.errors.full_messages.join('. ')
-
         raise 'Данные не сохранены'
       end
     end

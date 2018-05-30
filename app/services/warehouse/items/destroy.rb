@@ -5,6 +5,8 @@ module Warehouse
       def initialize(current_user, item_id)
         @current_user = current_user
         @item_id = item_id
+
+        super
       end
 
       def run
@@ -22,11 +24,11 @@ module Warehouse
       protected
 
       def destroy_item
-        @data = Item.find(@item_id)
-        authorize @data, :destroy?
-        return if @data.destroy
+        @item = Item.find(@item_id)
+        authorize @item, :destroy?
+        return if @item.destroy
 
-        @data = data.errors.full_messages.join('. ')
+        error[:full_message] = @item.errors.full_messages.join('. ')
         raise 'Ордер не удален'
       end
     end

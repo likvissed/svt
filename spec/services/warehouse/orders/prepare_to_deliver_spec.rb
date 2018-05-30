@@ -34,7 +34,7 @@ module Warehouse
         ]
       end
       let!(:order) do
-        o = build(:order, inv_workplace: workplace, operation: :out, operations: operations)
+        o = build(:order, inv_workplace: workplace, operation: :out, operations: operations, validator_id_tn: current_user.id_tn)
         o.save(validate: false)
         o
       end

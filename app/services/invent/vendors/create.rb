@@ -2,8 +2,9 @@ module Invent
   module Vendors
     class Create < Invent::ApplicationService
       def initialize(vendor_params)
-        @error = {}
         @vendor_params = vendor_params
+
+        super
       end
 
       def run

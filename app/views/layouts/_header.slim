@@ -41,7 +41,11 @@
 
     .collapse.navbar-collapse.navbar-collapse-main
       ul.nav.navbar-nav
-        li.dropdown class="#{active_class('/invent/workplace')}"
+        li class="#{active_class('/invent/workplaces')}"
+          = link_to invent_workplaces_path do
+            = fa_icon "clipboard"
+            '  Рабочие места
+        / li.dropdown class="#{active_class('/invent/workplace')}"
           = link_to "", class: "dropdown-toggle", "data-toggle": "dropdown" do
             = fa_icon "clipboard"
             '  Рабочие места
@@ -104,4 +108,5 @@
             b.caret
           ul.dropdown-menu
             li= link_to "Пользователи", users_path
+            li= link_to "Ответственные за ВТ", invent_workplace_counts_path
             li= link_to "Модели техники", invent_vendors_path

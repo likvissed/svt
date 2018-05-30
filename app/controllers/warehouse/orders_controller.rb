@@ -105,6 +105,16 @@ module Warehouse
       end
     end
 
+    def confirm_out
+      @confirm_out = Orders::ConfirmOut.new(current_user, params[:id])
+
+      if @confirm_out.run
+        render json: { full_message: I18n.t('controllers.warehouse/order.confirmed', order_id: params[:id]) }
+      else
+        render json: @confirm_out.error, status: 422
+      end
+    end
+
     def execute_in
       @execute_in = Orders::ExecuteIn.new(current_user, params[:id], order_params)
 
@@ -131,7 +141,7 @@ module Warehouse
       if @destroy.run
         render json: { full_message: I18n.t('controllers.warehouse/order.destroyed') }
       else
-        render json: { full_message: @destroy.data }, status: 422
+        render json: { full_message: @destroy.error[:full_message] }, status: 422
       end
     end
 
@@ -145,46 +155,20 @@ module Warehouse
       end
     end
 
+    def print
+      @print = Orders::Print.new(current_user, params[:id], params[:order])
+
+      if @print.run
+        send_data @print.data.read, filename: "#{params[:id]}.rtf", type: "application/rtf", disposition: "attachment"
+      else
+        render json: { full_message: I18n.t('controllers.app.unprocessable_entity') }, status: 422
+      end
+    end
+
     private
 
     def order_params
-      params.require(:order).permit(
-        :id,
-        :invent_workplace_id,
-        :creator_id_tn,
-        :consumer_id_tn,
-        :consumer_tn,
-        :validator_id_tn,
-        :operation,
-        :status,
-        :creator_fio,
-        :consumer_fio,
-        :validator_fio,
-        :consumer_dept,
-        :comment,
-        operations_attributes: [
-          :id,
-          :item_id,
-          :location_id,
-          :stockman_id_tn,
-          :operationable_id,
-          :operationable_type,
-          :item_type,
-          :item_model,
-          :shift,
-          :stockman_fio,
-          :status,
-          :date,
-          :_destroy,
-          inv_item_ids: [],
-          inv_items_attributes: [
-            :id,
-            :serial_num,
-            :invent_num,
-            :_destroy
-          ]
-        ]
-      )
+      params.require(:order).permit(policy(Order).permitted_attributes)
     end
   end
 end

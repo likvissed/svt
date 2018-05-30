@@ -5,7 +5,7 @@ module Invent
 
       if user.role? :***REMOVED***_user
         division_access? && allowed_time?
-      elsif user.role? :manager
+      elsif user.one_of_roles? :manager, :worker
         true
       else
         false
@@ -18,7 +18,7 @@ module Invent
 
       if user.role? :***REMOVED***_user
         division_access? && allowed_time?
-      elsif user.role? :manager
+      elsif user.one_of_roles? :manager, :worker
         true
       else
         false
@@ -32,7 +32,7 @@ module Invent
 
       if user.role? :***REMOVED***_user
         division_access? && allowed_time?
-      elsif user.one_of_roles? :manager, :read_only
+      elsif user.one_of_roles? :manager, :worker, :read_only
         true
       else
         false
@@ -46,7 +46,7 @@ module Invent
 
       if user.role? :***REMOVED***_user
         division_access? && allowed_time?
-      elsif user.role? :manager
+      elsif user.one_of_roles? :manager, :worker
         true
       else
         false
@@ -55,16 +55,28 @@ module Invent
 
     # Если роль '***REMOVED***_user': есть ли у пользователя доступ на удаление РМ указанного отдела.
     # Если роле не '***REMOVED***_user', но ответственный за отдел + доступ по времени открыт: доступ есть
+    # def destroy?
+    #   return true if admin?
+
+    #   if user.role? :***REMOVED***_user
+    #     division_access? && allowed_time? && !confirmed?
+    #   elsif user.role? :manager
+    #     true
+    #   else
+    #     false
+    #   end
+    # end
+
     def destroy?
       return true if admin?
 
-      if user.role? :***REMOVED***_user
-        division_access? && allowed_time? && !confirmed?
-      elsif user.role? :manager
-        true
-      else
-        false
-      end
+      user.one_of_roles? :manager, :worker
+    end
+
+    def hard_destroy?
+      return true if admin?
+
+      user.one_of_roles? :manager, :worker
     end
 
     class Scope < Scope

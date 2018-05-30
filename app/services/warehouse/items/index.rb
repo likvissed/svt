@@ -3,14 +3,13 @@ module Warehouse
     # Загрузить список склада
     class Index < Warehouse::ApplicationService
       def initialize(params)
-        @data = {}
         @start = params[:start].to_i
         @length = params[:length].to_i
         @init = params[:init_filters] == 'true'
         @conditions = JSON.parse(params[:filters]) if params[:filters]
         @selected_order_id = params[:selected_order_id]
 
-        @current_page = @start / @length + 1
+        super
       end
 
       def run

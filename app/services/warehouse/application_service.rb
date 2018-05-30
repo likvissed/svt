@@ -1,8 +1,8 @@
 class Warehouse::ApplicationService < ApplicationService
   protected
 
-  def broadcast_items
-    ActionCable.server.broadcast 'items', nil
+  def broadcast_items(id = nil, type = nil)
+    ActionCable.server.broadcast 'items', id
   end
 
   def broadcast_supplies

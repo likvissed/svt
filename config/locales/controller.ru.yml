@@ -16,6 +16,8 @@ ru:
       list_created: 'Список отделов и ответственных обновлен'
       updated: 'Данные одела %{dept} обновлены'
       destroyed: 'Отдел удален'
+    invent/item:
+      destroyed: 'Техника удалена'
     invent/model:
       created: 'Модель создана'
       updated: 'Модель обновлена'
@@ -27,6 +29,7 @@ ru:
       created_in: 'Готово. Количество созданных ордеров: %{count}'
       created_out: 'Ордер создан'
       updated: 'Ордер №%{order_id} обновлен'
+      confirmed: 'Ордер №%{order_id} подтвержден'
       destroyed: 'Ордер удален'
       executed: 'Исполнено'
     warehouse/item:

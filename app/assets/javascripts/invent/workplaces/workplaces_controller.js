@@ -171,7 +171,7 @@
 
   WorkplaceIndexCtrl.prototype.reloadWorkplaces = function() {
     this._loadWorkplaces();
-  }
+  };
 
   /**
    * Удалить РМ.
@@ -183,10 +183,9 @@
       self = this,
       confirm_str = "Вы действительно хотите удалить рабочее место \"" + id + "\"?";
 
-    if (!confirm(confirm_str))
-      return false;
+    if (!confirm(confirm_str)) { return false; }
 
-    self.Server.Invent.Workplace.delete(
+    this.Server.Invent.Workplace.delete(
       { workplace_id: id },
       function(response) {
         self.Flash.notice(response.full_message);
@@ -194,7 +193,7 @@
       function(response, status) {
         self.Error.response(response, status);
       });
-  }
+  };
 
 // =====================================================================================================================
 
@@ -643,6 +642,42 @@
     $event.preventDefault();
 
     this.Workplace.delItem(item);
+  };
+
+  /**
+   * Удалить технику из БД.
+   *
+   * @param id
+   */
+  WorkplaceEditCtrl.prototype.destroyItem = function(item) {
+    var
+      self = this,
+      confirm_str = "ВНИМАНИЕ! Техника будет удалена без возможности восстановления! Вы действительно хотите удалить " + item.type.short_description + "?";
+
+    console.log(item);
+    if (!confirm(confirm_str)) { return false; }
+
+    // this.Workplace.destroyWorkplace();
+    this.Item.destroyItem(item).then(
+      function() {
+        self.Workplace.delItem(item);
+      }
+    );
+  };
+
+  /**
+   * Удалить РМ.
+   *
+   * @param id
+   */
+  WorkplaceEditCtrl.prototype.destroyWp = function() {
+    var
+      self = this,
+      confirm_str = "ВНИМАНИЕ! Вместе с рабочим местом будет удалена вся входящая в него техника! Вы действительно хотите удалить рабочее место?";
+
+    if (!confirm(confirm_str)) { return false; }
+
+    this.Workplace.destroyWorkplace();
   };
 
 // =====================================================================================================================

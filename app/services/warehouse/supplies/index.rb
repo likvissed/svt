@@ -3,9 +3,10 @@ module Warehouse
     # Загрузить список склада
     class Index < BaseService
       def initialize(params)
-        @data = {}
         @start = params[:start]
         @length = params[:length]
+
+        super
       end
 
       def run

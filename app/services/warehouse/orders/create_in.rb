@@ -3,11 +3,12 @@ module Warehouse
     # Создание приходного ордера
     class CreateIn < BaseService
       def initialize(current_user, order_params, done_flag = false)
-        @error = {}
         @current_user = current_user
         @order_params = order_params
         @orders_arr = []
         @done_flag = done_flag
+
+        super
       end
 
       def run
@@ -16,8 +17,8 @@ module Warehouse
         processing_nested_attributes if @order_params['operations_attributes']&.any?
         return false unless wrap_order_with_transactions
 
+        broadcast_items
         if @done_flag
-          broadcast_items
           broadcast_archive_orders
         else
           broadcast_in_orders
@@ -98,7 +99,7 @@ module Warehouse
 
       def init_order(param)
         @order = Order.new(param)
-        authorize @order, :create?
+        authorize @order, :create_in?
         @order.set_creator(current_user)
 
         return true unless @done_flag

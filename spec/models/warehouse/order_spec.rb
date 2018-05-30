@@ -20,8 +20,13 @@ module Warehouse
 
     context 'when status is :done and operation is :out' do
       subject { build(:order, status: :done, operation: :out) }
+      before { subject.skip_validator = false }
 
-      it { is_expected.to validate_presence_of(:validator_fio) }
+      # it { is_expected.to validate_presence_of(:validator_fio) }
+      it 'adds :empty error' do
+        subject.valid?
+        expect(subject.errors.details[:validator_fio]).to include(error: :blank)
+      end
     end
 
     context 'when operation is :out' do
@@ -152,6 +157,11 @@ module Warehouse
         it 'sets status :done' do
           subject.save
           expect(subject.reload.done?).to be_truthy
+        end
+
+        it 'sets current time to the :closed_time attribute' do
+          subject.save
+          expect(subject.closed_time).not_to be_nil
         end
       end
 
@@ -366,6 +376,34 @@ module Warehouse
 
       it 'sets creator_fio' do
         expect(subject.creator_fio).to eq user.fullname
+      end
+    end
+
+    describe '#set_validator' do
+      before { subject.set_validator(user) }
+
+      context 'when user exists' do
+        let(:user) { create(:user) }
+
+        it 'sets creator_id_tn' do
+          expect(subject.validator_id_tn).to eq user.id_tn
+        end
+
+        it 'sets creator_fio' do
+          expect(subject.validator_fio).to eq user.fullname
+        end
+      end
+
+      context 'when user is nil' do
+        let(:user) { nil }
+
+        it 'sets nil to creator_id_tn' do
+          expect(subject.validator_id_tn).to be_nil
+        end
+
+        it 'sets nil to creator_fio' do
+          expect(subject.validator_fio).to be_nil
+        end
       end
     end
 

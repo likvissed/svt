@@ -303,6 +303,22 @@
   };
 
   /**
+   * Удалить РМ
+   */
+  Workplace.prototype.destroyWorkplace = function() {
+    var self = this;
+
+    this.Server.Invent.Workplace.hardDelete(
+      { workplace_id: this.workplace.workplace_id },
+      function(response) {
+        self.$window.location.href = response.location;
+      },
+      function(response, status) {
+        self.Error.response(response, status);
+      });
+  }
+
+  /**
    * Создать новое оборудования, установить начальные значения для данного типа.
    *
    * @param selectedType - тип создаваемого устройства

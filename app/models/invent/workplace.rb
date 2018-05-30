@@ -21,22 +21,21 @@ module Invent
     validates :id_tn, user_iss_by_id_tn: true, unless: -> { errors.any? || status_freezed? }
     validate :check_workplace_conditions, if: -> { workplace_type && enabled_filters }
 
+    before_destroy :check_items, prepend: true, unless: -> { hard_destroy }
+    before_destroy :check_processing_orders, prepend: true
+
     # Для тестов (от имени пользователя заполняется поле "Комната")
     attr_accessor :location_room_name, :division
     # Поле указывает, нужно ли использовать валидаторы при создании/редактировании текущей модели
     attr_accessor :enabled_filters
+    # Указывает, что нужно пропустить валидацию check_items
+    attr_accessor :hard_destroy
 
     delegate :division, to: :workplace_count
 
     accepts_nested_attributes_for :items, reject_if: proc { |attr| attr['type_id'].to_i.zero? }
 
     enum status: { confirmed: 0, pending_verification: 1, disapproved: 2, freezed: 3 }
-
-    def destroy
-      raise 'cannot_destroy_workplace_belongs_to_processing_order' if orders.any?(&:processing?)
-
-      super
-    end
 
     # Удалить РМ, связанные экземпляры техники, значения их свойств, а также загруженные файлы.
     def destroy_from_***REMOVED***
@@ -54,7 +53,21 @@ module Invent
       status == 'freezed'
     end
 
-    private
+    protected
+
+    def check_processing_orders
+      return if orders.none?(&:processing?)
+
+      errors.add(:base, :cannot_destroy_workplace_belongs_to_processing_order)
+      throw(:abort)
+    end
+
+    def check_items
+      return if items.empty?
+
+      errors.add(:base, :cannot_destroy_workplace_with_items)
+      throw(:abort)
+    end
 
     # Проверка условий, которые должны выполняться при создании/редактировании рабочих мест.
     def check_workplace_conditions

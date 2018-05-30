@@ -152,6 +152,10 @@
           confirm: {
             method: 'PUT',
             url: '/invent/workplaces/confirm'
+          },
+          hardDelete: {
+            method: 'DELETE',
+            url: '/invent/workplaces/:workplace_id/hard_destroy'
           }
         }),
         /**
@@ -245,6 +249,10 @@
             method: 'GET',
             url: '/warehouse/orders/:id/edit.json'
           },
+          print: {
+            method: 'GET',
+            url: '/warehouse/orders/:id/print'
+          },
           prepareToDeliver: {
             method: 'POST',
             url: '/warehouse/orders/:id/prepare_to_deliver.json'
@@ -264,6 +272,10 @@
           updateOut: {
             method: 'PUT',
             url: '/warehouse/orders/:id/update_out'
+          },
+          confirmOut: {
+            method: 'PUT',
+            url: '/warehouse/orders/:id/confirm_out'
           },
           executeIn: {
             method: 'POST',

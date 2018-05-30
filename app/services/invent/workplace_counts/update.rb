@@ -5,9 +5,10 @@ module Invent
       # workplace_count_id - id отдела
       # strong_params - данные, прошедшие фильтрацию.
       def initialize(workplace_count_id, strong_params)
-        @error = {}
         @workplace_count_id = workplace_count_id
         @wpc_params = strong_params
+
+        super
       end
 
       def run
@@ -20,18 +21,17 @@ module Invent
         Rails.logger.error e.inspect.red
         Rails.logger.error e.backtrace[0..5].inspect
 
-        error[:object] = data.errors
-        error[:full_message] = data.errors.full_messages.join('. ') + data.wp_resp_errors.join('. ')
-
         false
       end
 
-      private
+      protected
 
       # Сохранить отдел
       def update_workplace
         return true if data.update_attributes(@wpc_params)
 
+        error[:object] = data.errors
+        error[:full_message] = data.errors.full_messages.join('. ') + data.wp_resp_errors.join('. ')
         raise 'Данные не обновлены'
       end
     end

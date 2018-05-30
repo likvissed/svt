@@ -5,6 +5,10 @@ module Invent
     class Index < Invent::ApplicationService
       attr_reader :workplace_counts
 
+      def initialize
+        super
+      end
+
       def run
         get_workplace_counts
         transform_to_json
@@ -18,7 +22,7 @@ module Invent
         false
       end
 
-      private
+      protected
 
       def get_workplace_counts
         @workplace_counts = WorkplaceCount

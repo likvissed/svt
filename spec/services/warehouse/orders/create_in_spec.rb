@@ -104,6 +104,16 @@ module Warehouse
         end
       end
 
+      it 'broadcasts to items' do
+        expect(subject).to receive(:broadcast_items)
+        subject.run
+      end
+
+      it 'broadcasts to in_orders' do
+        expect(subject).to receive(:broadcast_in_orders)
+        subject.run
+      end
+
       context 'when order was not created' do
         let(:order) { build(:order) }
         before do
@@ -233,6 +243,11 @@ module Warehouse
           Invent::Item.where.not(item_id: [inv_item_1, inv_item_2].map(&:item_id)).each do |inv_item|
             expect(inv_item.workplace).not_to be_nil
           end
+        end
+
+        it 'broadcasts to archive_orders' do
+          expect(subject).to receive(:broadcast_archive_orders)
+          subject.run
         end
       end
     end

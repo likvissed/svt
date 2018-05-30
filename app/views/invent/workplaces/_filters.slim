@@ -1,16 +1,15 @@
-.col-fhd-2.col-xlg-3.col-lg-3.col-md-3.col-sm-3.multiline-buffer
-  = link_to "Добавиь РМ", new_invent_workplace_path, class: " btn btn-primary btn-block btn-sm"
-.col-fhd-8.col-xlg-3.col-lg-2.col-md-2
-.col-fhd-2.col-xlg-3.col-lg-3.col-md-3.col-sm-4.multiline-buffer
+.col-sm-3.col-fhd-2.multiline-buffer
+  = link_to "Добавить РМ", new_invent_workplace_path, class: " btn btn-primary btn-block btn-sm"
+.col-sm-4.col-md-4.col-xlg-3.col-xlg-offset-3.col-fhd-2.col-fhd-offset-8.multiline-buffer
   = text_field_tag "", "", class: "form-control input-sm", placeholder: "Инвентарный №", "ng-model-options": "{ debounce: 300 }",
     "ng-model": "table.selectedFilters.invent_num", "ng-change": "table.reloadWorkplaces()"
-.col-fhd-2.col-xlg-3.col-lg-3.col-md-3.col-sm-4.multiline-buffer
+.col-sm-4.col-md-3.col-fhd-2.multiline-buffer
   = text_field_tag "", "", class: "form-control input-sm", placeholder: "ID РМ", "ng-model-options": "{ debounce: 300 }",
     "ng-model": "table.selectedFilters.workplace_id", "ng-change": "table.reloadWorkplaces()"
-.col-fhd-2.col-xlg-3.col-lg-3.col-md-3.col-sm-4.multiline-buffer
+.col-sm-4.col-md-3.col-fhd-2.multiline-buffer
   = select_tag "", "", class: "form-control input-sm", "ng-model": "table.selectedFilters.workplace_type_id",
     "ng-options": "type.workplace_type_id as type.short_description for type in table.filters.types", "ng-change": "table.reloadWorkplaces()"
-.col-fhd-3.col-xlg-3.col-lg-3.col-md-3.col-sm-5.multiline-buffer
+.col-sm-5.col-md-4.col-xlg-3.multiline-buffer
   .input-group.input-group-sm.form-input-sm.multiline-select
     ui-select ng-model="table.selectedFilters.division" on-select="table.reloadWorkplaces()" theme="bootstrap"
       ui-select-match placeholder="Отдел"
@@ -21,9 +20,9 @@
       = button_tag type: :button, class: "btn-default", "ng-click": "table.selectedFilters.division = ''; table.reloadWorkplaces()",
         "uib-tooltip": "Очистить", "tooltip-append-to-body": true, "ng-disabled": "!table.selectedFilters.division" do
         = fa_icon "times"
-.col-fhd-2.col-xlg-3.col-lg-3.col-md-3.col-sm-4.multiline-buffer
+.col-sm-4.col-md-3.col-fhd-2.multiline-buffer
   = select_tag "", "", class: "form-control input-sm", "ng-model": "table.selectedFilters.status",
     "ng-options": "status as translated for (status, translated) in table.filters.statuses", "ng-change": "table.reloadWorkplaces()"
-.col-fhd-3.col-xlg-3.col-lg-4.col-md-4.col-sm-5.multiline-buffer
+.col-sm-5.col-md-4.col-xlg-3.multiline-buffer
   = text_field_tag "", "", class: "form-control input-sm", placeholder: "ФИО", "ng-model-options": "{ debounce: 300 }",
     "ng-model": "table.selectedFilters.fullname", "ng-change": "table.reloadWorkplaces()"

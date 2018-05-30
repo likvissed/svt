@@ -3,9 +3,10 @@ module Warehouse
     # Создать поставку
     class Create < BaseService
       def initialize(current_user, supply_params)
-        @error = {}
         @current_user = current_user
         @supply_params = supply_params
+
+        super
       end
 
       def run

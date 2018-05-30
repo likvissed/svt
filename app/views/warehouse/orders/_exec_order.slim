@@ -1,27 +1,34 @@
 script type="text/ng-template" id="execOrder.slim"
   form role="form" name="exec.form"
     .modal-header
-      h4
-        span ng-if="exec.order.status == 'done'"
-          | Ордер №{{exec.order.id}} исполнен
-        span ng-if="exec.order.status == 'processing'"
-          | Исполнить ордер №{{exec.order.id}}
+      .pull-left
+        h4
+          span ng-if="exec.order.status == 'done'"
+            | Ордер №{{exec.order.id}} исполнен
+          span ng-if="exec.order.status == 'processing'"
+            | Ордер №{{exec.order.id}}
+      .pull-right
+        .icon-block
+          = render partial: 'templates/load_spinner'
+        / .icon-block ng-show="exec.order.id"
+          = fa_icon "refresh 2x fw", class: "pointer", "tooltip-placement": "top", "tooltip-append-to-body": true, "uib-tooltip": "Загрузать данные об ордере заново",
+            "ng-click": "exec.reloadOrder()"
 
     .modal-body
       fieldset ng-disabled="exec.order.status == 'done'"
         .row
-          .col-lg-8
+          .col-sm-5
             .form-group
               = label_tag "order[consumer_dept]", "Отдел", class: "control-label"
               = text_field_tag "order[consumer_dept]", "", class: "form-control", "ng-model": "exec.order.consumer_dept",
                 disabled: true
-          .col-lg-8
+          .col-sm-5
             .form-group ng-class="exec.errorClass('order[invent_workplace_id]')"
               = label_tag "order[invent_workplace_id]", "ID рабочего места", class: "control-label"
               = text_field_tag "order[invent_workplace_id]", "", class: "form-control", autocomplete: "off", "ng-model": "exec.order.invent_workplace_id",
                 disabled: true
               span.help-block ng-show="exec.form['order[invent_workplace_id]'].$invalid" ng-bind="exec.errorMessage('order[invent_workplace_id]')"
-          .col-lg-8
+          .col-sm-8
             .form-group ng-class="exec.errorClass('order[consumer]')"
               = label_tag "order[consumer]", class: "control-label" do
                 span ng-if="exec.order.operation == 'in'"
@@ -31,20 +38,24 @@ script type="text/ng-template" id="execOrder.slim"
 
               = text_field_tag "order[consumer]", "", class: "form-control", autocomplete: "off", "ng-model": "exec.order.consumer"
               span.help-block ng-show="exec.form['order[consumer]'].$invalid" ng-bind="exec.errorMessage('order[consumer]')"
+          .col-sm-6
+            = label_tag "order[tel]", "Телефон", class: "control-label"
+            = text_field_tag "order[tel]", "", class: "form-control", autocomplete: "off", "ng-model": "exec.order.consumer_obj.tel",
+              disabled: true
 
         .form-group
           h4 Позиции
           table.table.table-condensed
             thead
               tr
-                th.col-fhd-1
+                th.col-sm-1
                   input type="checkbox" ng-model="exec.isAllOpSelected" ng-click="exec.toggleAll()"
-                th.col-fhd-3 Тип
-                th.col-fhd-3 Инв. №
-                th.col-fhd-2 Кол-во
-                th.col-fhd-9 Модель
-                th.col-fhd-3 Исполнитель
-                th.col-fhd-3 Дата
+                th.col-sm-3 Тип
+                th.col-sm-3 Инв. №
+                th.col-sm-2 Кол-во
+                th.col-sm-9 Модель
+                th.col-sm-3 Исполнитель
+                th.col-sm-3 Дата
             tbody ng-repeat="op in exec.order.operations_attributes" ng-hide="op._destroy" ng-class="{ 'text-muted': exec.isOperationDone(op) }"
               tr ng-exec-in-order-table=true
                 td
@@ -61,6 +72,21 @@ script type="text/ng-template" id="execOrder.slim"
           = text_area_tag "order[comment]", "", class: "form-control", rows: "3", "ng-model": "exec.order.comment"
 
     .modal-footer
-      = button_tag "Исполнить...", class: "btn-success btn-sm", "ng-click": "exec.deliveryItems()", "ng-if": "exec.order.operation == 'out' && exec.order.status != 'done'"
-      = button_tag "Исполнить", class: "btn-success btn-sm", "ng-click": "exec.ok()", "ng-if": "exec.order.operation == 'in' && exec.order.status != 'done'"
-      = button_tag "Закрыть", class: "btn-default btn-sm", "ng-click": "exec.cancel()"
+      - if current_user.one_of_roles? :admin, :manager
+        .pull-left ng-if="exec.order.operation == 'out' && exec.order.status == 'processing' && !exec.order.validator_id_tn"
+          = button_tag "Утвердить", class: "btn-success", "ng-click": "exec.confirmOrder()"
+        / .pull-left ng-if="exec.order.operation == 'out' && exec.order.status == 'processing' && !exec.order.validator_id_tn"
+        /   .btn-group
+        /     = button_tag "Утвердить", class: "btn-success", "ng-click": "exec.confirmOrder()"
+        /     = button_tag "Отклонить", class: "btn-danger", "ng-click": "exec.confirmOrder()"
+
+      .pull-left ng-if="exec.order.operation == 'out'"
+        span class='label label-success' ng-show="exec.order.validator_id_tn" Утвержден
+        / span class='label label-danger' Отклонен
+        - if !current_user.one_of_roles? :admin, :manager
+          span class='label label-info' ng-show="!exec.order.validator_id_tn" В ожидании проверки
+
+      .pull-right
+        = button_tag "Исполнить...", class: "btn-success btn-sm", "ng-click": "exec.deliveryItems()", "ng-if": "exec.order.operation == 'out' && exec.order.status != 'done'"
+        = button_tag "Исполнить", class: "btn-success btn-sm", "ng-click": "exec.ok()", "ng-if": "exec.order.operation == 'in' && exec.order.status != 'done'"
+        = button_tag "Закрыть", class: "btn-default btn-sm", "ng-click": "exec.cancel()"

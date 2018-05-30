@@ -4,8 +4,9 @@ module Warehouse
     class Edit < BaseService
       def initialize(current_user, supply_id)
         @current_user = current_user
-        @data = {}
         @supply_id = supply_id
+
+        super
       end
 
       def run

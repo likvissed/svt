@@ -22,4 +22,10 @@ FactoryBot.define do
     short_description 'Гость'
     long_description 'Доступ только на чтение'
   end
+
+  factory :worker_role, class: Role do
+    name 'worker'
+    short_description 'Работник'
+    long_description 'Доступ на основные действия с моделями'
+  end
 end

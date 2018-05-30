@@ -23,13 +23,13 @@
                 td.text-center
                   = fa_icon "dot-circle-o", class: "text-success", "ng-show": "user['online?']", "uib-tooltip": "online"
                   = fa_icon "dot-circle-o", class: "text-danger", "ng-show": "!user['online?']", "uib-tooltip": "offline"
-                td.col-fhd-2 ng-bind="user.tn"
-                td.col-fhd-6 ng-bind="user.fullname"
-                td.col-fhd-2 ng-bind="user.phone"
-                td.col-fhd-3 ng-bind="user.role.short_description"
-                td.col-fhd-5 ng-bind="user.current_sign_in_data"
-                td.col-fhd-5 ng-bind="user.last_sign_in_data"
-                td.col-fhd-1.text-center
+                td.col-sm-2 ng-bind="user.tn"
+                td.col-sm-6 ng-bind="user.fullname"
+                td.col-sm-2 ng-bind="user.phone"
+                td.col-sm-3 ng-bind="user.role.short_description"
+                td.col-sm-5 ng-bind="user.current_sign_in_data"
+                td.col-sm-5 ng-bind="user.last_sign_in_data"
+                td.col-sm-1.text-center
                   = fa_icon "pencil-square-o fw", class: "pointer", "uib-tooltip": "Редактировать пользователя",
                     "ng-click": "u_table.editUser(user)", "tooltip-append-to-body": "true"
                   = fa_icon "trash-o fw", class: "text-danger pointer", "uib-tooltip": "Удалить пользователя",

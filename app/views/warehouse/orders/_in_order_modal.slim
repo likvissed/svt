@@ -40,10 +40,10 @@ script type="text/ng-template" id="inOrderModal.slim"
         table.table.table-striped.table-condensed ng-if="edit.extra.visibleCount"
           thead
             tr
-              th.col-fhd-1
-              th.col-fhd-6.col-xlg-6.col-lg-6.col-md-7.col-sm-7 Тип
-              th.col-fhd-5.col-xlg-5.col-lg-5.col-md-5.col-sm-5 Инв. №
-              th.col-fhd-12.col-xlg-12.col-xlg-12.col-md-11.col-sm-11 Модель
+              th.col-sm-1
+              th.col-sm-5 Тип
+              th.col-sm-5 Инв. №
+              th.col-sm-13 Модель
           tbody
             tr.animate-show ng-repeat="op in edit.order.operations_attributes" ng-hide="op._destroy" ng-if="op.inv_item_ids.length"
               td= fa_icon "times-circle lg", class: "pointer", "tooltip-placement": "left", "uib-tooltip": "Убрать позицию",

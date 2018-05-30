@@ -53,6 +53,10 @@ ru:
         invent_num: "Инвентарный номер"
         model: "Модель"
         item_model: "Наименование модели"
+        statuses:
+          waiting_take: 'Должен получить'
+          waiting_bring: 'Должен сдать'
+          prepared_to_swap: ''
 
       invent/item/property_values:
         base: ''
@@ -78,6 +82,7 @@ ru:
         consumer_dept: 'Отдел'
         operation: 'Тип ордера'
         status: 'Статус ордера'
+        closed_time: 'Дата исполнения'
         operations:
           out: 'Расходный'
           in: 'Приходный'
@@ -85,6 +90,7 @@ ru:
           processing: 'В работе'
           done: 'Исполнен'
         consumer_fio: 'ФИО работника'
+        validator_fio: ''
 
       operations:
         base: ''
@@ -97,6 +103,8 @@ ru:
 
       warehouse/order/operations/item:
         base: ''
+        count: 'Доступное количество техники на складе'
+        count_reserved: 'Зарезервированное количество техники на складе'
 
       warehouse/order/operations/inv_item_to_operations:
         inv_item: ''
@@ -177,6 +185,8 @@ ru:
           attributes:
             base:
               cannot_destroy_items: 'Не удалось удалить запись (обратитесь к администратору, т. ***REMOVED***)'
+              cannot_destroy_workplace_belongs_to_processing_order: 'Невозможно удалить РМ, так как имеется связанный с РМ незакрытый ордер'
+              cannot_destroy_workplace_with_items: 'Невозможно удалить РМ, содержащее технику'
               wrong_rm_pk_composition: 'Неправильный состав стационарного рабочего места'
               wrong_rm_mob_composition: 'Неправильный состав мобильного рабочего места'
               wrong_rm_net_print_composition: 'Неправильный состав рабочего места печати'
@@ -234,6 +244,7 @@ ru:
                вручную"'
               field_is_empty: 'Не заполнено поле "%{empty_field}"'
               property_not_filled: 'Не указано свойство "%{empty_prop}"'
+              cannot_destroy_with_processing_operation: 'Невозможно удалить технику, т.к. она используется в незакрытых позициях ордера №%{order_id}'
             type_id:
              blank: 'не выбран'
             model_id:
@@ -277,6 +288,8 @@ ru:
               cannot_update: 'не может быть изменен'
             consumer_dept:
               cannot_update: 'не может быть изменен'
+            validator_fio:
+              empty: 'Ордер не утвержден'
 
         warehouse/supply:
           attributes:

@@ -1,7 +1,7 @@
 module Warehouse
   class ItemPolicy < ApplicationPolicy
     def destroy?
-      only_for_manager
+      for_worker
     end
   end
 end

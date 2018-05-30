@@ -274,5 +274,27 @@ module Invent
         end
       end
     end
+
+    describe '#prevent_destroy' do
+      its(:destroy) { is_expected.to be_truthy }
+
+      context 'when item has operation with :processing status' do
+        let!(:order) { create(:order, :default_workplace) }
+        subject { order.inv_items.first }
+
+        it 'does not destroy Item' do
+          expect { subject.destroy }.not_to change(Item, :count)
+        end
+
+        it 'does not destroy warehouse_inv_item_to_operations' do
+          expect { subject.destroy }.not_to change(Warehouse::InvItemToOperation, :count)
+        end
+
+        it 'adds :cannot_destroy_with_processing_operation error' do
+          subject.destroy
+          expect(subject.errors.details[:base]).to include(error: :cannot_destroy_with_processing_operation, order_id: order.id)
+        end
+      end
+    end
   end
 end

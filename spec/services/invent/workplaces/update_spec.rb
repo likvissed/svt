@@ -16,12 +16,12 @@ module Invent
 
         it 'creates a @workplace variable' do
           subject.run
-          expect(subject.workplace).to eq old_workplace
+          expect(subject.instance_variable_get(:@workplace)).to eq old_workplace
         end
 
         it 'sets location_room_id variable' do
           subject.run
-          expect(subject.workplace_params['location_room_id']).to eq room.room_id
+          expect(subject.instance_variable_get(:@workplace_params)['location_room_id']).to eq room.room_id
         end
 
         it 'changes workplace attributes' do

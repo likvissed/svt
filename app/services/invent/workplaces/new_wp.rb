@@ -3,7 +3,8 @@ module Invent
     class NewWp < BaseService
       def initialize(current_user)
         @current_user = current_user
-        @data = {}
+
+        super
       end
 
       def run

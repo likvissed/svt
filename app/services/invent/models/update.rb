@@ -2,10 +2,10 @@ module Invent
   module Models
     class Update < Invent::ApplicationService
       def initialize(model_id, model_params)
-        @data = {}
-        @error = {}
         @model_id = model_id
         @model_params = model_params
+
+        super
       end
 
       def run

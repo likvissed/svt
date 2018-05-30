@@ -6,7 +6,7 @@
       .row
         = render partial: 'filters'
       .row
-        .col-fhd-24
+        .col-sm-24
           table.table.table-striped.table-condensed
             thead
               tr
@@ -20,22 +20,22 @@
                 th
             tbody
               tr ng-repeat="wp in table.workplaces"
-                td.col-fhd-1 ng-bind="wp.workplace_id"
-                td.col-fhd-2 ng-bind="wp.division"
-                td.col-fhd-4 ng-bind="wp.wp_type"
-                td.col-fhd-6 ng-bind="wp.responsible"
-                td.col-fhd-5 ng-bind="wp.location"
-                td.col-fhd-2 ng-bind="wp.count"
-                td.col-fhd-3 ng-bind-html="wp.label_status"
-                td.col-fhd-1.text-center
+                td.col-sm-1 ng-bind="wp.workplace_id"
+                td.col-sm-2 ng-bind="wp.division"
+                td.col-sm-4 ng-bind="wp.wp_type"
+                td.col-sm-6 ng-bind="wp.responsible"
+                td.col-sm-5 ng-bind="wp.location"
+                td.col-sm-2 ng-bind="wp.count"
+                td.col-sm-3 ng-bind-html="wp.label_status"
+                td.col-sm-1.text-center
                   a ng-href="/invent/workplaces/{{wp.workplace_id}}/edit" class="default-color"
                     = fa_icon "pencil-square-o fw", class: "pointer", "uib-tooltip": "Редактировать состав РМ",
                       "tooltip-append-to-body": true, "ng-click": "edit.editPosition(op)"
-                  = fa_icon "trash-o fw", class: "text-danger pointer", "uib-tooltip": "Удалить РМ (с сохранением техники)",
+                  = fa_icon "trash-o fw", class: "text-danger pointer", "uib-tooltip": "Удалить РМ (только если оно не содержит технику)",
                     "tooltip-append-to-body": true, "ng-click": "table.destroyWp(wp.workplace_id)"
       .row
-        .col-xs-12
+        .col-sm-12
           div.animate-show ng-table-info="" info-attrs="table.pagination" ng-if="table.workplaces"
-        .col-xs-12
+        .col-sm-12
           ul{ uib-pagination="true" total-items="table.pagination.filteredRecords" ng-model="table.pagination.currentPage"
             max-size="table.pagination.maxSize" class="pagination-sm pull-right" ng-change="table.changePage()" }

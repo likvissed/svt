@@ -31,7 +31,7 @@ module Invent
       if @show.run
         render json: @show.data
       else
-        render json: { full_message: @show.errors.full_messages.join('. ') }, status: 422
+        render json: { full_message: @show.error[:full_message] }, status: 422
       end
     end
 
@@ -41,7 +41,7 @@ module Invent
       if @edit.run
         render json: @edit.data
       else
-        render json: { full_message: @edit.errors.full_messages.join('. ') }, status: 422
+        render json: { full_message: @edit.error[:full_message] }, status: 422
       end
     end
 
@@ -52,6 +52,16 @@ module Invent
         render json: @avaliable.data
       else
         render json: { full_message: I18n.t('controllers.app.unprocessable_entity') }, status: 422
+      end
+    end
+
+    def destroy
+      @destroy = Items::Destroy.new(current_user, params[:item_id])
+
+      if @destroy.run
+        render json: @destroy.data
+      else
+        render json: { full_message: @destroy.error[:full_message] }, status: 422
       end
     end
   end

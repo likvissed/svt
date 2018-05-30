@@ -48,9 +48,7 @@ module Invent
     end
 
     describe 'POST #create' do
-      let(:workplace) do
-        build(:workplace_pk, :add_items, items: %i[pc monitor], workplace_count: workplace_count)
-      end
+      let(:workplace) { build(:workplace_pk, :add_items, items: %i[pc monitor], workplace_count: workplace_count) }
       let(:wp_params) { { workplace: workplace.as_json } }
 
       it 'creates instance of the LkInvents::CreateWorkplace' do
@@ -64,26 +62,26 @@ module Invent
       end
     end
 
-    describe 'GET #list_wp' do
-      context 'when html request' do
-        it 'renders list_wp view' do
-          get :list_wp
-          expect(response).to render_template :list_wp
-        end
-      end
+    # describe 'GET #list_wp' do
+    #   context 'when html request' do
+    #     it 'renders list_wp view' do
+    #       get :list_wp
+    #       expect(response).to render_template :list_wp
+    #     end
+    #   end
 
-      context 'when json request' do
-        it 'creates instance of the Workplaces::Index' do
-          get :list_wp, format: :json, params: { init_filters: false, filters: false }
-          expect(assigns(:list_wp)).to be_instance_of Workplaces::ListWp
-        end
+    #   context 'when json request' do
+    #     it 'creates instance of the Workplaces::Index' do
+    #       get :list_wp, format: :json, params: { init_filters: false, filters: false }
+    #       expect(assigns(:list_wp)).to be_instance_of Workplaces::ListWp
+    #     end
 
-        it 'calls :run method' do
-          expect_any_instance_of(Workplaces::ListWp).to receive(:run)
-          get :list_wp, format: :json, params: { init_filters: false, filters: false }
-        end
-      end
-    end
+    #     it 'calls :run method' do
+    #       expect_any_instance_of(Workplaces::ListWp).to receive(:run)
+    #       get :list_wp, format: :json, params: { init_filters: false, filters: false }
+    #     end
+    #   end
+    # end
 
     describe 'GET #pc_config_from_audit' do
       it 'creates instance of the LkInvents::PcConfigFromAudit' do
@@ -169,17 +167,41 @@ module Invent
     end
 
     describe 'DELETE #destroy' do
-      let!(:workplace) do
-        create(:workplace_pk, :add_items, items: %i[pc monitor], workplace_count: workplace_count)
-      end
+      let!(:workplace) { create(:workplace_pk, :add_items, items: %i[pc monitor], workplace_count: workplace_count) }
+      let(:params) { { workplace_id: workplace.workplace_id } }
       subject { delete :destroy, params: { workplace_id: workplace.workplace_id } }
 
-      it 'destroys the selected workplace' do
-        expect { subject }.to change(Workplace, :count).by(-1)
+      it 'creates instance of the Workplaces::Destroy' do
+        delete :destroy, params: params
+        expect(assigns(:destroy)).to be_instance_of Workplaces::Destroy
       end
 
-      it 'does not destroy items of the selected workplace' do
-        expect { subject }.not_to change(Item, :count)
+      it 'calls :run method' do
+        expect_any_instance_of(Workplaces::Destroy).to receive(:run)
+        delete :destroy, params: params
+      end
+    end
+
+    describe 'DELETE #hard_destroy' do
+      let!(:workplace) { create(:workplace_pk, :add_items, items: %i[pc monitor], workplace_count: workplace_count) }
+      let(:params) { { workplace_id: workplace.workplace_id } }
+      let(:address) { 'prev_address' }
+      let(:session_obj) { { workplace_prev_url: address } }
+      let(:response_obj) { { location: address } }
+
+      it 'creates instance of the Workplaces::HardDestroy' do
+        delete :hard_destroy, params: params
+        expect(assigns(:hard_destroy)).to be_instance_of Workplaces::HardDestroy
+      end
+
+      it 'calls :run method' do
+        expect_any_instance_of(Workplaces::HardDestroy).to receive(:run)
+        delete :hard_destroy, params: params
+      end
+
+      it 'responces with :location variable' do
+        delete :hard_destroy, params: params, session: session_obj
+        expect(response.body).to eq response_obj.to_json
       end
     end
 

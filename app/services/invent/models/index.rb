@@ -2,12 +2,13 @@ module Invent
   module Models
     class Index < Invent::ApplicationService
       def initialize(params)
-        @data = {}
         @start = params[:start]
         @length = params[:length]
         @type_id = params[:type_id]
         @init_filters = params[:init_filters] == 'true'
         @conditions = JSON.parse(params[:filters]) if params[:filters]
+
+        super
       end
 
       def run

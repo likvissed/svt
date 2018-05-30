@@ -26,8 +26,14 @@
           div ng-if="!wp.workplace.enabled_filters"
             = fa_icon "toggle-off lg", class: "text-danger"
             |  Ограничения отключены
+    .divider-vertical
 
     .navbar-form.navbar-right
       .btn-group
         = button_tag "Готово", class: "btn-success", "ng-click": "wp.saveWorkplace()"
         = link_to "Отмена", request.referrer, class: "btn btn-default"
+    .divider-vertical.navbar-right
+    span.ng-hide ng-show="wp.workplace.workplace_id"
+      .navbar-form.navbar-right
+        = button_tag "Удалить, как дубликат", class: "btn-danger", "uib-tooltip": "Удалить РМ без создания ордеров", "ng-click": "wp.destroyWp()"
+      .divider-vertical.navbar-right

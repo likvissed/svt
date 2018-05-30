@@ -41,7 +41,7 @@ module Invent
       if @show.run
         render json: @show.data
       else
-        render json: { full_message: @show.errors.full_messages.join('. ') }, status: 422
+        render json: { full_message: @show.error[:full_message] }, status: 422
       end
     end
 

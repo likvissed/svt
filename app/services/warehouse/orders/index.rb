@@ -3,10 +3,11 @@ module Warehouse
     # Загрузить список ордеров
     class Index < BaseService
       def initialize(params, **order_conditions)
-        @data = {}
         @start = params[:start]
         @length = params[:length]
         @order_conditions = order_conditions
+
+        super
       end
 
       def run
@@ -38,6 +39,7 @@ module Warehouse
         data[:data] = @orders.as_json(include: %i[creator consumer validator], methods: :operations_to_string).each do |order|
           order['status_translated'] = Order.translate_enum(:status, order['status'])
           order['operation_translated'] = Order.translate_enum(:operation, order['operation'])
+          order['closed_time'] = order['closed_time'].strftime('%d-%m-%Y %H:%M:%S') if order['closed_time']
         end
       end
     end
