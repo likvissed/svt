@@ -382,36 +382,6 @@
       });
   };
 
-  Workplace.prototype.loadItem = function(id) {
-    var self = this;
-
-    return this.Server.Invent.Item.get(
-      { item_id: id },
-      function(data) {
-        self._addNewItem();
-
-        var
-          // Получаем индекс созданного элемента
-          length = self.workplace.inv_items_attributes.length - 1,
-          // Созданный элемент
-          item = self.workplace.inv_items_attributes[length];
-
-        self.Item.addProperties(data);
-        self.Item.setItemAttributes(item, data, self.workplace.workplace_id);
-        self.workplace.inv_item_ids.push(item.id);
-
-        self.workplace.inv_items_attributes[length]._existing = true;
-
-        // Сделать созданный элемент активным в табах.
-        self.$timeout(function () {
-          self.additional.activeTab = length;
-        }, 0);
-      },
-      function(response, status) {
-        self.Error.response(response, status);
-      }).$promise;
-  };
-
   /**
    * Удалить элемент из массива items_attributes.
    *

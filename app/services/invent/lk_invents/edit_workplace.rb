@@ -66,7 +66,6 @@ module Invent
         data['items_attributes'].each do |item|
           prepare_to_edit_item(item)
         end
-        data['inv_item_ids'] = data['inv_items_attributes'].map { |item| item['id'] }
       end
     end
   end

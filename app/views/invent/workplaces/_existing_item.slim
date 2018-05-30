@@ -1,9 +1,0 @@
-script type="text/ng-template" id="existingItem.slim"
-  .modal-header
-    h4 Введите ID техники
-    .modal-body
-      .form-group
-        = text_field_tag "", "", class: "form-control", "ng-model": "select.id"
-    .modal-footer
-      = button_tag "Добавить", type: :button, class: "btn-success", "ng-click": "select.ok()", "ng-disabled": "!select.id"
-      = button_tag "Отмена", type: :button, class: "btn-default", "ng-click": "select.cancel()"

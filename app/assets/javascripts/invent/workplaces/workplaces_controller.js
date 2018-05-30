@@ -6,8 +6,7 @@
     .controller('WorkplaceListCtrl', WorkplaceListCtrl)
     .controller('WorkplaceEditCtrl', WorkplaceEditCtrl)
     .controller('ManuallyPcDialogCtrl', ManuallyPcDialogCtrl)
-    .controller('SelectItemTypeCtrl', SelectItemTypeCtrl)
-    .controller('SelectExistingItem', SelectExistingItem);
+    .controller('SelectItemTypeCtrl', SelectItemTypeCtrl);
 
   WorkplaceIndexCtrl.$inject = ['Workplaces', 'ActionCableChannel', 'TablePaginator', 'Server', 'Config', 'Flash', 'Error', 'Cookies'];
   WorkplaceListCtrl.$inject = ['$scope', '$compile', '$controller', 'DTOptionsBuilder', 'DTColumnBuilder', 'ActionCableChannel', 'Server', 'Config', 'Flash', 'Error', 'Cookies'];
@@ -522,7 +521,7 @@
   WorkplaceEditCtrl.prototype.formatLabel = function(id_tn) {
     if (!this.users) { return ''; }
 
-    for (var i = 0; i < this.users.length; i++) {
+    for (var i = 0; i < this.users.length; i ++) {
       if (id_tn === this.users[i].id_tn) {
         return this.users[i].fio;
       }
@@ -630,27 +629,6 @@
       function() {
         self.Workplace.setFirstActiveTab()
       });
-  };
-
-  WorkplaceEditCtrl.prototype.addExistingItem = function () {
-    var self = this;
-
-    var modalInstance = this.$uibModal.open({
-      animation: this.Config.global.modalAnimation,
-      templateUrl: 'existingItem.slim',
-      controller: 'SelectExistingItem',
-      controllerAs: 'select',
-      size: 'md',
-      backdrop: 'static'
-    });
-
-    modalInstance.result.then(
-      function () {
-      },
-      function () {
-        self.Workplace.setFirstActiveTab()
-      }
-    );
   };
 
   /**
@@ -815,27 +793,6 @@
   };
 
   SelectItemTypeCtrl.prototype.cancel = function() {
-    this.$uibModalInstance.dismiss();
-  };
-
-// =====================================================================================================================
-
-  function SelectExistingItem($uibModalInstance, Workplace) {
-    this.$uibModalInstance = $uibModalInstance;
-    this.Workplace = Workplace;
-  }
-
-  SelectExistingItem.prototype.ok = function() {
-    var self = this;
-
-    this.Workplace.loadItem(this.id).then(
-      function() {
-        self.$uibModalInstance.close();
-      }
-    );
-  };
-
-  SelectExistingItem.prototype.cancel = function() {
     this.$uibModalInstance.dismiss();
   };
 })();
