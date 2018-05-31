@@ -3,12 +3,12 @@ html
   head
     meta content="text/html; charset=UTF-8" http-equiv="Content-Type"
     title= yield :title
+    = favicon_link_tag 'favicon.png'
     = csrf_meta_tags
     = action_cable_meta_tag
     = stylesheet_link_tag 'application', media: 'all'
     = javascript_include_tag 'application'
     = javascript_pack_tag 'application'
-    = favicon_link_tag 'pc'
   body#svt_welcome ng-app="SVT"
     = render partial: "layouts/flash"
     = render partial: "layouts/header"
