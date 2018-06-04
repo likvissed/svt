@@ -11,11 +11,6 @@ module Invent
         context 'and when status is disapproved' do
           before { workplace.status = :disapproved }
 
-          it 'sets :pending_verification status' do
-            expect(subject).to permit(***REMOVED***_user, workplace)
-            expect(workplace.status).to eq 'pending_verification'
-          end
-
           it 'grants access' do
             expect(subject).to permit(***REMOVED***_user, Workplace.find(workplace.workplace_id))
           end

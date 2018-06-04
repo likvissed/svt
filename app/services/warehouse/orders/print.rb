@@ -32,10 +32,24 @@ module Warehouse
 
       def generate_report
         new_params = @order_params['operations_attributes'].map do |op|
-          op['inv_items_attributes'].map { |inv_item| { item_id: inv_item['id'], invent_num: inv_item['invent_num'] } }
+          if op['inv_items_attributes']
+            op['inv_items_attributes'].map { |inv_item| generate_item_obj(inv_item['id'], inv_item['invent_num'], inv_item['serial_num']) }
+          else
+            op['inv_item_ids'].map { |inv_item_id| generate_item_obj(inv_item_id) }
+          end
         end.flatten
+        date = @order.done? ? @order.closed_time : Time.zone.now
+        l_date =  I18n.l(date, format: '%d %B %Y')
 
-        @data = IO.popen("php #{Rails.root}/lib/generate_order_report.php #{Rails.env} #{@order_id} '#{new_params.to_json}'")
+        @data = IO.popen("php #{Rails.root}/lib/generate_order_report.php #{Rails.env} #{@order_id} '#{@order_params["consumer_fio"] || @order_params["consumer_tn"]}' '#{l_date}' '#{new_params.to_json}'")
+      end
+
+      def generate_item_obj(id, invent_num = '', serial_num = '')
+        {
+          item_id: id,
+          invent_num: invent_num,
+          serial_num: serial_num
+        }
       end
     end
   end

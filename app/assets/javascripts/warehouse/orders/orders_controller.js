@@ -529,6 +529,17 @@
   };
 
   /**
+   * Распечатать ордер.
+   */
+  ExecOrderController.prototype.printOrder = function() {
+    var
+      self = this,
+      sendData = this.Order.getObjectToSend();
+
+    window.open('/warehouse/orders/' + this.order.id + '/print?order=' + JSON.stringify(sendData), '_blank');
+  };
+
+  /**
    * Закрыть модальное окно.
    */
   ExecOrderController.prototype.cancel = function() {

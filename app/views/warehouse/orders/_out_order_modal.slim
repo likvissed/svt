@@ -6,6 +6,9 @@ script type="text/ng-template" id="outOrderModal.slim"
       .pull-right
         .icon-block
           = render partial: 'templates/load_spinner'
+        .icon-block
+          a.default-color ng-href="{{ edit.order.invent_workplace_id ? '/invent/workplaces/' + edit.order.invent_workplace_id + '/edit' : '/invent/workplaces'}}" target="blank"
+            = fa_icon "external-link 2x fw", class: "pointer", "uib-tooltip": "Перейти к списку рабочих мест", "tooltip-append-to-body": "true"
         .icon-block ng-show="edit.order.id"
           = fa_icon "refresh 2x fw", class: "pointer", "tooltip-placement": "top", "tooltip-append-to-body": true, "uib-tooltip": "Загрузать данные об ордере заново",
             "ng-click": "edit.reloadOrder()"

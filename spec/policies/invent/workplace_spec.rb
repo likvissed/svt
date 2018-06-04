@@ -126,7 +126,6 @@ module Invent
           expect(workplace.status).to eq 'pending_verification'
         end
       end
-
     end
 
     # permissions :destroy? do
