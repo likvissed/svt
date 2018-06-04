@@ -2,7 +2,8 @@ module Invent
   module Workplaces
     # Загрузить все рабочие места.
     class Index < BaseService
-      def initialize(params)
+      def initialize(current_user, params)
+        @current_user = current_user
         @start = params[:start]
         @length = params[:length]
         @init_filters = params[:init_filters] == 'true'
@@ -28,7 +29,7 @@ module Invent
       protected
 
       def load_workplace
-        @workplaces = Workplace
+        @workplaces = policy_scope(Workplace)
                         .left_outer_joins(:workplace_type)
                         .select('invent_workplace.*, invent_workplace_type.short_description as wp_type')
                         .group(:workplace_id)
@@ -78,7 +79,7 @@ module Invent
       # Загрузить данные для фильтров
       def load_filters
         data[:filters] = {}
-        data[:filters][:divisions] = WorkplaceCount.select(:workplace_count_id, :division).order('CAST(division AS SIGNED)')
+        data[:filters][:divisions] = policy_scope(WorkplaceCount).select(:workplace_count_id, :division).order('CAST(division AS SIGNED)')
         data[:filters][:statuses] = workplace_statuses
         data[:filters][:types] = WorkplaceType.select(:workplace_type_id, :short_description)
       end

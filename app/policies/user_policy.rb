@@ -1,5 +1,5 @@
 class UserPolicy < ApplicationPolicy
-  def index?
+  def ctrl_access?
     return true if admin?
 
     user.role? :manager

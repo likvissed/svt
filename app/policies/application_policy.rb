@@ -8,7 +8,7 @@ class ApplicationPolicy
 
   # Пользователям с ролью ***REMOVED***_user доступ запрещен
   def authorization?
-    !user.role? :***REMOVED***_user
+    not_for_***REMOVED***_user
   end
 
   def admin?
@@ -40,5 +40,9 @@ class ApplicationPolicy
     return true if admin?
 
     user.one_of_roles? :manager, :worker
+  end
+
+  def not_for_***REMOVED***_user
+    !user.role? :***REMOVED***_user
   end
 end

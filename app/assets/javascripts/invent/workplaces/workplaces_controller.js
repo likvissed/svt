@@ -507,6 +507,7 @@
   WorkplaceEditCtrl.prototype.loadUsers = function() {
     var self = this;
 
+    this.workplace.id_tn = null;
     this.Workplace.loadUsers().then(function() {
       self.users = self.Workplace.users;
     });

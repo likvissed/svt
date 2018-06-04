@@ -9,7 +9,7 @@ module Invent
       iss_reference_room { iss_reference_building.iss_reference_rooms.first }
       comment ''
       status :pending_verification
-      enabled_filters true
+      disabled_filters false
 
       transient do
         # Отдел по умолчанию

@@ -1,9 +1,24 @@
 module Invent
   shared_examples 'workplace policy with :***REMOVED***_user role for existing workplace' do
     context 'when :***REMOVED***_user role' do
-      context 'and with valid user, in allowed time, when workplace status is not confirmed' do
-        it 'grants access to the workplace' do
-          expect(subject).to permit(***REMOVED***_user, Workplace.find(workplace.workplace_id))
+      context 'and with valid user, in allowed time, when workplace' do
+        context 'and when status is pending_verification' do
+          it 'grants access' do
+            expect(subject).to permit(***REMOVED***_user, Workplace.find(workplace.workplace_id))
+          end
+        end
+
+        context 'and when status is disapproved' do
+          before { workplace.status = :disapproved }
+
+          it 'sets :pending_verification status' do
+            expect(subject).to permit(***REMOVED***_user, workplace)
+            expect(workplace.status).to eq 'pending_verification'
+          end
+
+          it 'grants access' do
+            expect(subject).to permit(***REMOVED***_user, Workplace.find(workplace.workplace_id))
+          end
         end
       end
 
@@ -18,7 +33,7 @@ module Invent
       context 'and when out of allowed time' do
         let(:workplace_count) { create(:inactive_workplace_count, users: [***REMOVED***_user]) }
 
-        it 'denies access to the workplace' do
+        it 'denies access' do
           expect(subject).not_to permit(***REMOVED***_user, Workplace.find(workplace.workplace_id))
         end
       end
@@ -28,8 +43,8 @@ module Invent
           create(:workplace_mob, :add_items, items: %i[tablet], workplace_count: workplace_count, status: 'confirmed')
         end
 
-        it 'grants access to the workplace' do
-          expect(subject).to permit(***REMOVED***_user, Workplace.find(workplace.workplace_id))
+        it 'denies access' do
+          expect(subject).not_to permit(***REMOVED***_user, Workplace.find(workplace.workplace_id))
         end
       end
     end
@@ -37,11 +52,35 @@ module Invent
 
   shared_examples 'workplace policy with :***REMOVED***_user role for new workplace' do
     context 'with :***REMOVED***_user role' do
-      context 'and when in allowed time' do
+      context 'and when user has any workplace_count' do
         let(:workplace_count) { create(:active_workplace_count, users: [***REMOVED***_user]) }
 
-        it 'grants access to the workplace' do
+        it 'grants access' do
           expect(subject).to permit(***REMOVED***_user, Workplace.new(workplace_count: workplace_count))
+        end
+      end
+
+      context 'and when user does not have any workplace_count' do
+        it 'denies access to the workplace' do
+          expect(subject).not_to permit(***REMOVED***_user, Workplace.new)
+        end
+      end
+    end
+  end
+
+  shared_examples 'workplace policy with :***REMOVED***_user role for create workplace' do
+    context 'with :***REMOVED***_user role' do
+      context 'and when in allowed time' do
+        let(:workplace_count) { create(:active_workplace_count, users: [***REMOVED***_user]) }
+        let(:workplace) { Workplace.new(workplace_count: workplace_count, status: nil) }
+
+        it 'grants access to the workplace' do
+          expect(subject).to permit(***REMOVED***_user, workplace)
+        end
+
+        it 'sets :pending_verification status' do
+          expect(subject).to permit(***REMOVED***_user, workplace)
+          expect(workplace.status).to eq 'pending_verification'
         end
       end
 

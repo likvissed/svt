@@ -4,7 +4,7 @@ RSpec.describe UserPolicy do
   let(:manager) { create(:***REMOVED***_user) }
   subject { UserPolicy }
 
-  permissions :index? do
+  permissions :ctrl_access? do
     context 'with :manager role' do
       let!(:user) { create(:user) }
 

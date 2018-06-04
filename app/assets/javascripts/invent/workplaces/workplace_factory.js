@@ -21,56 +21,18 @@
     this.Item = WorkplaceItem;
     this.PropertyValue = PropertyValue;
 
-    // ====================================== Данные с сервера =============================================================
-
     // Поле select, предлагающее выбрать тип оборудования
-    this.selectWpType = { workplace_type_id: 0, long_description: 'Выберите тип' };
+    this.selectWpType = { workplace_type_id: null, long_description: 'Выберите тип' };
     // Поле select, предлагающее выбрать вид деятельности
-    this.selectWpSpec = { workplace_specialization_id: 0, short_description: 'Выберите вид' };
+    this.selectWpSpec = { workplace_specialization_id: null, short_description: 'Выберите вид' };
     // Список отделов
     this.divisions = [];
     // Поле select, предлагающее выбрать площадку
-    this.selectIssLocation = { site_id: -1, name: 'Выберите площадку' };
+    this.selectIssLocation = { site_id: null, name: 'Выберите площадку' };
     // Поле select, предлагающее выбрать корпус
-    this.selectIssBuilding = { building_id: -1, name: 'Выберите корпус' };
-
-// ====================================== Данные, которые отправяются на сервер ========================================
-
+    this.selectIssBuilding = { building_id: null, name: 'Выберите корпус' };
     // Копия объекта this.workplace, который отправится на сервер.
     this.workplaceCopy = null;
-
-// ====================================== Шаблоны данных ===============================================================
-
-    // Шаблон данных о рабочем месте (новом или редактируемом)
-    this._templateWorkplace = {
-      // Показывает, нужно ли при создании/редактировании РМ использовать проверки на состав РМ
-      enabled_filters: true,
-      // Id в таблице отделов
-      workplace_count_id: 0,
-      // Тип РМ
-      workplace_type_id: this.selectWpType.workplace_type_id,
-      // Объект - тип РМ
-      workplace_type: this.selectWpType,
-      // Вид выполняемой работы
-      workplace_specialization_id: this.selectWpSpec.workplace_specialization_id,
-      // Ответственный за РМ
-      id_tn: '',
-      // Площадка
-      location_site_id: this.selectIssLocation.site_id,
-      // Объект - площадка
-      location_site: this.selectIssLocation,
-      // Корпус
-      location_building_id: this.selectIssBuilding.building_id,
-      // Комната
-      location_room_name: '',
-      // Дефолтный статус РМ (0 - подтверждено)
-      status: 'confirmed',
-      // Состав РМ
-      items_attributes: []
-    };
-
-// =====================================================================================================================
-
     this.additional = this.Item.getAdditional();
   }
 
@@ -135,7 +97,7 @@
     var self = this;
 
     // По умолчанию фильтры всегда включены
-    this.workplace.enabled_filters = true;
+    this.workplace.disabled_filters = false;
 
     data.prop_data.iss_locations.forEach(function(value) { value.iss_reference_buildings.unshift(self.selectIssBuilding); });
     this.Item.setTypes(data.prop_data.eq_types);
@@ -148,7 +110,7 @@
     this.iss_locations = [this.selectIssLocation].concat(data.prop_data.iss_locations);
 
     this.statuses = data.prop_data.statuses;
-    this.divisions = data.divisions;
+    this.divisions = data.prop_data.divisions;
 
     this.additional.pcAttrs = data.prop_data.file_depending;
     this.additional.singleItems = data.prop_data.single_pc_items;
@@ -180,10 +142,11 @@
     } else {
       return this.Server.Invent.Workplace.new(
         function(data) {
-          self.workplace = angular.copy(self._templateWorkplace);
+          self.workplace = data.workplace;
           self.users = [];
 
           self._setProperties(data);
+          self._addObjects();
 
           self.workplace.division = self.divisions[0];
         }, function(response, status) {
@@ -220,7 +183,7 @@
    */
   Workplace.prototype.setDefaultLocation = function(type) {
     if (type == 'building') {
-      this.workplace.location_building_id = -1;
+      this.workplace.location_building_id = null;
     }
 
     this.workplace.location_room_name = '';

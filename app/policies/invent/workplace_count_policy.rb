@@ -1,5 +1,9 @@
 module Invent
   class WorkplaceCountPolicy < ApplicationPolicy
+    def ctrl_access?
+      not_for_***REMOVED***_user
+    end
+
     # Если роль '***REMOVED***_user': есть ли у пользователя доступ к указанному отделу.
     # Если роль 'manager': доступ есть.
     def generate_pdf?
@@ -11,6 +15,16 @@ module Invent
         true
       else
         false
+      end
+    end
+
+    class Scope < Scope
+      def resolve
+        if user.role? :***REMOVED***_user
+          scope.joins(:users).where(users: { tn: user.tn })
+        else
+          scope.all
+        end
       end
     end
 

@@ -31,8 +31,9 @@
                   a ng-href="/invent/workplaces/{{wp.workplace_id}}/edit" class="default-color"
                     = fa_icon "pencil-square-o fw", class: "pointer", "uib-tooltip": "Редактировать состав РМ",
                       "tooltip-append-to-body": true, "ng-click": "edit.editPosition(op)"
-                  = fa_icon "trash-o fw", class: "text-danger pointer", "uib-tooltip": "Удалить РМ (только если оно не содержит технику)",
-                    "tooltip-append-to-body": true, "ng-click": "table.destroyWp(wp.workplace_id)"
+                  - if current_user.one_of_roles? :admin, :manager, :worker
+                    = fa_icon "trash-o fw", class: "text-danger pointer", "uib-tooltip": "Удалить РМ (только если оно не содержит технику)",
+                      "tooltip-append-to-body": true, "ng-click": "table.destroyWp(wp.workplace_id)"
       .row
         .col-sm-12
           div.animate-show ng-table-info="" info-attrs="table.pagination" ng-if="table.workplaces"

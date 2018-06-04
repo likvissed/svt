@@ -8,7 +8,7 @@ module Invent
     before { create(:vendor) }
     subject { VendorPolicy }
 
-    permissions :index? do
+    permissions :ctrl_access? do
       let(:model) { Vendor.first }
 
       include_examples 'policy for worker'

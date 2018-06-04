@@ -38,7 +38,7 @@ module Warehouse
             end
           end
         elsif order.operation.to_s == 'out'
-          order.inv_workplace ||= create(:workplace_pk, enabled_filters: false)
+          order.inv_workplace ||= create(:workplace_pk, disabled_filters: true)
 
           if order.operations.empty? && !ev.without_operations
             item_1 = Item.find_by(item_type: 'Клавиатура', item_model: 'OKLICK') || create(:new_item, warehouse_type: :without_invent_num, item_type: 'Клавиатура', item_model: 'OKLICK', count: 20, count_reserved: 2)

@@ -1,5 +1,5 @@
 module Warehouse
-  class OrdersController < ApplicationController
+  class OrdersController < Warehouse::ApplicationController
     def index_in
       respond_to do |format|
         format.html

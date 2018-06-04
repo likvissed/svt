@@ -1,5 +1,5 @@
 module Warehouse
-  class OrderPolicy < ApplicationPolicy
+  class OrderPolicy < Warehouse::ApplicationPolicy
     def new?
       for_worker
     end
@@ -34,10 +34,6 @@ module Warehouse
     end
 
     def execute_out?
-      for_worker
-    end
-
-    def destroy?
       for_worker
     end
 

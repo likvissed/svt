@@ -16,41 +16,41 @@
       = label_tag :workplace_workplace_type_id, "Тип рабочего места", class: "control-label"
       = select_tag "workplace[workplace_type_id]", "", class: "form-control",
         "ng-model": "wp.workplace.workplace_type", "ng-change": "wp.setWorkplaceType()",
-        "ng-options": "wp_type as wp_type.long_description disable when wp_type.workplace_type_id == 0 for wp_type in wp.wp_types track by wp_type.workplace_type_id"
+        "ng-options": "wp_type as wp_type.long_description disable when !wp_type.workplace_type_id for wp_type in wp.wp_types track by wp_type.workplace_type_id"
 .row
   .col-sm-24
     .form-group
       = label_tag :workplace_workplace_specialization_id, "Вид выполняемой работы", class: "control-label"
       = select_tag "workplace[workplace_specialization_id]", "", class: "form-control",
         "ng-model": "wp.workplace.workplace_specialization_id",
-        "ng-options": "spec.workplace_specialization_id as spec.short_description disable when spec.workplace_specialization_id == 0 for spec in wp.specs"
+        "ng-options": "spec.workplace_specialization_id as spec.short_description disable when !spec.workplace_specialization_id for spec in wp.specs"
 .row
   .col-sm-24
     .form-group
       = label_tag :workplace_location_site_id, "Площадка", class: "control-label"
       = select_tag "workplace[location_site_id]", "", class: "form-control", "ng-model": "wp.workplace.location_site",
         "ng-change": "wp.setLocationSite(); wp.setDefaultLocation('building')",
-        "ng-options": "loc_site.name disable when loc_site.site_id == -1 for loc_site in wp.iss_locations track by loc_site.site_id"
+        "ng-options": "loc_site.name disable when !loc_site.site_id for loc_site in wp.iss_locations track by loc_site.site_id"
 .row
   .col-sm-24
     .form-group
       = label_tag :workplace_location_building_id, "Корпус", class: "control-label"
       = select_tag "workplace[location_building_id]", "", class: "form-control", "ng-model": "wp.workplace.location_building_id",
-        "ng-disabled": "wp.workplace.location_site.site_id == -1", "ng-change": "wp.setDefaultLocation()",
-        "ng-options": "loc_building.building_id as loc_building.name disable when loc_building.building_id == -1 for loc_building in wp.workplace.location_site.iss_reference_buildings"
+        "ng-disabled": "!wp.workplace.location_site.site_id", "ng-change": "wp.setDefaultLocation()",
+        "ng-options": "loc_building.building_id as loc_building.name disable when !loc_building.building_id for loc_building in wp.workplace.location_site.iss_reference_buildings"
 .row
   .col-sm-24
     .form-group
       = label_tag :workplace_location_room, "Комната", class: "control-label"
       = text_field_tag "workplace[location_room]", "", class: "form-control", "ng-model": "wp.workplace.location_room_name",
         "ng-disabled": "wp.workplace.location_building_id == -1", "ng-value": "wp.workplace.location_room_name"
-.row
-  .col-sm-24
-    .form-group
-      = label_tag :workplace_status, "Статус", class: "control-label"
-      = select_tag "workplace[status]", "", class: "form-control", "ng-model": "wp.workplace.status",
-        "ng-options": "status as translated for (status, translated) in wp.statuses"
-
+- if !current_user.role? :***REMOVED***_user
+  .row
+    .col-sm-24
+      .form-group
+        = label_tag :workplace_status, "Статус", class: "control-label"
+        = select_tag "workplace[status]", "", class: "form-control", "ng-model": "wp.workplace.status",
+          "ng-options": "status as translated for (status, translated) in wp.statuses"
 .row
   .col-sm-24
     .form-group

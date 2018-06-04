@@ -8,7 +8,7 @@ module Invent
     before { create(:model) }
     subject { ModelPolicy }
 
-    permissions :index? do
+    permissions :ctrl_access? do
       let(:model) { Model.first }
 
       include_examples 'policy for worker'

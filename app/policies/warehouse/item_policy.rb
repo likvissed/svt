@@ -1,7 +1,4 @@
 module Warehouse
-  class ItemPolicy < ApplicationPolicy
-    def destroy?
-      for_worker
-    end
+  class ItemPolicy < Warehouse::ApplicationPolicy
   end
 end

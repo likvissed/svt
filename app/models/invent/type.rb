@@ -19,7 +19,7 @@ module Invent
     has_many :items, dependent: :destroy
     has_many :property_to_types, dependent: :destroy
     has_many :properties, -> { order(:property_order) }, through: :property_to_types
-    has_many :models, dependent: :destroy
+    has_many :models, -> { order(:item_model) }, dependent: :destroy
     has_many :vendors, through: :models
   end
 end

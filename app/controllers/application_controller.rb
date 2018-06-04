@@ -10,7 +10,7 @@ class ApplicationController < ActionController::Base
   after_action :set_csrf_cookie_for_ng
   after_action :user_activity
   before_action :authenticate_user!
-  before_action :authorization, if: -> { current_user }
+  # before_action :authorization, if: -> { current_user }
 
   # Обрабтка случаев, когда у пользователя нет доступа на выполнение запрашиваемых действий
   rescue_from Pundit::NotAuthorizedError do |exception|
@@ -90,9 +90,9 @@ class ApplicationController < ActionController::Base
   end
 
   # Проверка роли перед доступом к контроллерам
-  def authorization
-    authorize :application, :authorization?
-  end
+  # def authorization
+  #   authorize :application, :authorization?
+  # end
 
   def user_activity
     current_user.try(:touch)

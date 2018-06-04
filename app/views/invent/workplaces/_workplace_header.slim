@@ -17,15 +17,16 @@
           ui-select-choices repeat="obj in wp.divisions | filter: $select.search"
             div ng-bind-html="obj.division | highlight: $select.search"
       span<>
-      .form-group
-        = button_tag type: :button, class: "btn-default", "uib-tooltip": "Показывает, будут ли включены ограничения на состав РМ",
-          "ng-click": "wp.workplace.enabled_filters = !wp.workplace.enabled_filters" do
-          div ng-if="wp.workplace.enabled_filters"
-            = fa_icon "toggle-on lg", class: "text-success"
-            |  Ограничения включены
-          div ng-if="!wp.workplace.enabled_filters"
-            = fa_icon "toggle-off lg", class: "text-danger"
-            |  Ограничения отключены
+      - if !current_user.role? :***REMOVED***_user
+        .form-group
+          = button_tag type: :button, class: "btn-default", "uib-tooltip": "Показывает, будут ли включены ограничения на состав РМ",
+            "ng-click": "wp.workplace.disabled_filters = !wp.workplace.disabled_filters" do
+            div ng-if="!wp.workplace.disabled_filters"
+              = fa_icon "toggle-on lg", class: "text-success"
+              |  Ограничения включены
+            div ng-if="wp.workplace.disabled_filters"
+              = fa_icon "toggle-off lg", class: "text-danger"
+              |  Ограничения отключены
     .divider-vertical
 
     .navbar-form.navbar-right
@@ -33,7 +34,8 @@
         = button_tag "Готово", class: "btn-success", "ng-click": "wp.saveWorkplace()"
         = link_to "Отмена", request.referrer, class: "btn btn-default"
     .divider-vertical.navbar-right
-    span.ng-hide ng-show="wp.workplace.workplace_id"
-      .navbar-form.navbar-right
-        = button_tag "Удалить, как дубликат", class: "btn-danger", "uib-tooltip": "Удалить РМ без создания ордеров", "ng-click": "wp.destroyWp()"
-      .divider-vertical.navbar-right
+    - if !current_user.role? :***REMOVED***_user
+      span.ng-hide ng-show="wp.workplace.workplace_id"
+        .navbar-form.navbar-right
+          = button_tag "Удалить, как дубликат", class: "btn-danger", "uib-tooltip": "Удалить РМ без создания ордеров", "ng-click": "wp.destroyWp()"
+        .divider-vertical.navbar-right

@@ -122,8 +122,8 @@ module Invent
     end
 
     describe '#check_workplace_conditions' do
-      context 'when :enabled_filters flag is not set' do
-        subject { build(:workplace_pk, :add_items, items: %i[pc allin1 notebook], enabled_filters: false) }
+      context 'when :disabled_filters flag is set' do
+        subject { build(:workplace_pk, :add_items, items: %i[pc allin1 notebook], disabled_filters: true) }
 
         it 'does not run :check_workplace_conditions validation' do
           expect(subject).not_to receive(:check_workplace_conditions)

@@ -49,17 +49,13 @@ Rails.application.routes.draw do
     # Расшифровать файл конфигурации ПК, загруженный пользователем.
     post '***REMOVED***_invents/pc_config_from_user', to: '***REMOVED***_invents#pc_config_from_user'
     # Записать данные о РМ
-    post '***REMOVED***_invents/create_workplace', to: '***REMOVED***_invents#create_workplace'
+    # post '***REMOVED***_invents/create_workplace', to: '***REMOVED***_invents#create_workplace'
     # Получить данные о РМ
-    get '***REMOVED***_invents/edit_workplace/:workplace_id',
-        to: '***REMOVED***_invents#edit_workplace',
-        constraints: { workplace_id: /\d+/ }
+    # get '***REMOVED***_invents/edit_workplace/:workplace_id', to: '***REMOVED***_invents#edit_workplace', constraints: { workplace_id: /\d+/ }
     # Обновить данные о РМ
-    patch '***REMOVED***_invents/update_workplace/:workplace_id',
-          to: '***REMOVED***_invents#update_workplace',
-          constraints: { workplace_id: /\d+/ }
+    # patch '***REMOVED***_invents/update_workplace/:workplace_id', to: '***REMOVED***_invents#update_workplace', constraints: { workplace_id: /\d+/ }
     # Удалить РМ
-    delete '***REMOVED***_invents/destroy_workplace/:workplace_id', to: '***REMOVED***_invents#destroy_workplace', constraints: { workplace_id: /\d+/ }
+    # delete '***REMOVED***_invents/destroy_workplace/:workplace_id', to: '***REMOVED***_invents#destroy_workplace', constraints: { workplace_id: /\d+/ }
     # Создать PDF файл со списком РМ для отдела
     get '***REMOVED***_invents/generate_pdf/:division', to: '***REMOVED***_invents#generate_pdf', constraints: { division: /\d+/ }
     # Скачать скрипт для генерации файла конфигурации ПК

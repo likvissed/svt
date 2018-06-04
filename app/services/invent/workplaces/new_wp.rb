@@ -10,7 +10,6 @@ module Invent
       def run
         init_workplace
         load_properties
-        load_divisions
 
         true
       rescue RuntimeError => e
@@ -23,19 +22,21 @@ module Invent
       protected
 
       def init_workplace
-        wp = Workplace.new
-        authorize wp, :new?
+        @workplace = Workplace.new
+        authorize @workplace, :new?
+        set_workplace_params
+      end
+
+      def set_workplace_params
+        data[:workplace] = @workplace.as_json(methods: :disabled_filters)
+        data[:workplace]['items_attributes'] = []
       end
 
       def load_properties
-        properties = LkInvents::InitProperties.new
+        properties = LkInvents::InitProperties.new(@current_user)
         return data[:prop_data] = properties.data if properties.run
 
         raise 'Ошибка сервиса LkInvents::InitProperties'
-      end
-
-      def load_divisions
-        data[:divisions] = WorkplaceCount.select(:workplace_count_id, :division).sort_by { |obj| obj.division.to_i }
       end
     end
   end

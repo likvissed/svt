@@ -455,9 +455,9 @@
   ExecOrderController.prototype.deliveryItems = function() {
     var self = this;
 
-    if (!confirm('Вы действительно хотите исполнить выбранные позиции? Удалить исполненные позиции или отменить их исполнение невозмозно')) {
-      return false;
-    }
+    // if (!confirm('Вы действительно хотите исполнить выбранные позиции? Удалить исполненные позиции или отменить их исполнение невозмозно')) {
+    //   return false;
+    // }
 
     this.Order.prepareToDeliver()
       .then(

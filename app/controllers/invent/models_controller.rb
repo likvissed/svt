@@ -81,7 +81,7 @@ module Invent
     end
 
     def check_access
-      authorize [:invent, :model], :index?
+      authorize [:invent, :model], :ctrl_access?
     end
   end
 end

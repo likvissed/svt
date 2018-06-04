@@ -35,6 +35,7 @@ module Invent
       # Загрузить объект РМ.
       def load_workplace_html
         @data = Workplace.find(@workplace_id)
+        authorize @data, :edit?
       end
 
       # Загрузить все данные о РМ и все необходимые свойства (все типы оборудования, типы РМ, их возможные свойства,
@@ -42,7 +43,6 @@ module Invent
       def load_workplace_json
         load_workplace
         load_properties
-        load_divisions
       end
 
       def load_workplace
@@ -52,13 +52,9 @@ module Invent
       end
 
       def load_properties
-        properties = LkInvents::InitProperties.new(nil, @edit_workplace.workplace.division)
+        properties = LkInvents::InitProperties.new(@current_user, @edit_workplace.workplace.division)
         return data[:prop_data] = properties.data if properties.run
         raise 'LkInvents::InitProperties не отработал'
-      end
-
-      def load_divisions
-        data[:divisions] = WorkplaceCount.select(:workplace_count_id, :division).sort_by { |obj| obj.division.to_i }
       end
     end
   end

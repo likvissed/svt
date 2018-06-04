@@ -40,7 +40,7 @@ module Invent
     end
 
     def check_access
-      authorize [:invent, :vendor], :index?
+      authorize [:invent, :vendor], :ctrl_access?
     end
   end
 end
