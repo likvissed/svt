@@ -48,17 +48,12 @@ module Invent
     end
 
     def list_wp
-      respond_to do |format|
-        format.html
-        format.json do
-          @list_wp = Workplaces::ListWp.new(params[:init_filters], params[:filters])
+      @list_wp = Workplaces::ListWp.new(current_user, params)
 
-          if @list_wp.run
-            render json: @list_wp.data
-          else
-            render json: { full_message: I18n.t('controllers.app.unprocessable_entity') }, status: 422
-          end
-        end
+      if @list_wp.run
+        render json: @list_wp.data
+      else
+        render json: { full_message: I18n.t('controllers.app.unprocessable_entity') }, status: 422
       end
     end
 

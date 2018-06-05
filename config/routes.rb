@@ -2,7 +2,8 @@ Rails.application.routes.draw do
   devise_for :users, controllers: { omniauth_callbacks: 'users/callbacks' }
 
   authenticated :user do
-    root 'invent/workplaces#index', as: :authenticated_root
+    # root 'invent/workplaces#index', as: :authenticated_root
+    root to: redirect(path: '/invent/workplaces'), as: :authenticated_root
   end
 
   devise_scope :user do
@@ -21,7 +22,7 @@ Rails.application.routes.draw do
     resources :workplaces, param: :workplace_id do
       collection do
         # Вывести все РМ списком
-        # get 'list_wp', to: 'workplaces#list_wp'
+        get 'list_wp', to: 'workplaces#list_wp'
         # Подтвердить/отклонить конфигурацию РМ
         put 'confirm', to: 'workplaces#confirm'
         # Получить данные о системном блоке из аудита

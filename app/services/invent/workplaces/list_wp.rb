@@ -2,20 +2,19 @@ module Invent
   module Workplaces
     # Загрузить все рабочие места
     class ListWp < BaseService
-      # init_filters- флаг, определяющий, нужно ли загрузить данные для фильтров.
-      # filters - объект, содержащий выбранные фильтры.
-      def initialize(init_filters = false, filters = false)
-        @init_filters = init_filters
-        @filters = filters
+      def initialize(current_user, params)
+        @current_user = current_user
+        @start = params[:start]
+        @length = params[:length]
+        @conditions = JSON.parse(params[:filters]) if params[:filters]
 
         super
       end
 
       def run
         load_workplace
-        run_filters if @filters
+        limit_records
         prepare_to_render
-        load_filters if @init_filters
 
         true
       rescue RuntimeError => e
@@ -28,26 +27,28 @@ module Invent
       protected
 
       def load_workplace
-        @workplaces = Workplace.includes(
-          :user_iss,
-          :workplace_type,
-          :workplace_specialization,
-          :workplace_count,
-          :iss_reference_site,
-          :iss_reference_building,
-          :iss_reference_room,
-          items: [:type, :model, property_values: %i[property property_list]]
-        ).where(status: :pending_verification)
+        data[:recordsTotal] = Workplace.count
+        @workplaces = policy_scope(Workplace)
+        run_filters if @conditions
       end
 
-      # Отфильтровать полученные данные
-      def run_filters
-        return if @filters['workplace_count_id'].to_i.zero?
-        @workplaces = @workplaces.where(workplace_count_id: @filters['workplace_count_id'])
+      def limit_records
+        data[:recordsFiltered] = @workplaces.length
+        @workplaces = @workplaces
+                        .includes(
+                          :user_iss,
+                          :workplace_type,
+                          :workplace_specialization,
+                          :workplace_count,
+                          :iss_reference_site,
+                          :iss_reference_building,
+                          :iss_reference_room,
+                          items: [:type, :model, property_values: %i[property property_list]]
+                        ).order(workplace_id: :desc).limit(@length).offset(@start)
       end
 
       def prepare_to_render
-        data[:workplaces] = @workplaces.as_json(
+        data[:data] = @workplaces.as_json(
           include: [
             :user_iss,
             :workplace_type,
@@ -63,7 +64,8 @@ module Invent
                 property_values: {
                   include: %i[property property_list]
                 }
-              ]
+              ],
+              methods: :short_item_model
             }
           ]
         ).map do |wp|
@@ -83,28 +85,11 @@ module Invent
 
       # Преобразовать данные о составе РМ в массив строк.
       def item_info(item)
-        model = get_model(item)
+        model = item['short_item_model'].blank? ? 'не указана' : item['short_item_model']
         property_values = item['property_values'].map { |prop_val| property_value_info(prop_val) }
 
-        "#{item['type']['short_description']}: Инв №: #{item['invent_num']}; #{model}; Конфигурация:
+        "#{item['type']['short_description']}: Инв №: #{item['invent_num']}; Модель: #{model}; Конфигурация:
  #{property_values.join('; ')}"
-      end
-
-      # Загрузить данные для фильтров
-      def load_filters
-        data[:filters] = {}
-        data[:filters][:divisions] = WorkplaceCount.select(:workplace_count_id, :division).order('CAST(division AS SIGNED)')
-      end
-
-      # Получить модель в виде строки
-      def get_model(item)
-        if item['model']
-          "Модель: #{item['model']['item_model']}"
-        elsif !item['model'] && !item['item_model'].empty?
-          wrap_problem_string("Модель: #{item['item_model']}")
-        else
-          'Модель не указана'
-        end
       end
 
       # Обернуть строку в тег <span class='manually'>

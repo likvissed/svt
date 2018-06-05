@@ -159,20 +159,29 @@ module Invent
       end
 
       context 'when type is not :pc' do
-        context 'when model exists' do
-          subject { build(:item, type_name: :monitor) }
+        subject { build(:item, type_name: :monitor) }
 
-          it 'returns value from model.item_model' do
-            expect(subject.get_item_model).to eq subject.model.item_model
-          end
+        it 'runs :short_item_model method' do
+          expect(subject).to receive(:short_item_model)
+          subject.get_item_model
         end
+      end
+    end
 
-        context 'when item_model exists' do
-          subject { build(:item, type_name: :monitor, model: nil, item_model: 'My model') }
+    describe '#short_item_model' do
+      context 'when model exists' do
+        subject { build(:item, type_name: :monitor) }
 
-          it 'returns value from item_model' do
-            expect(subject.get_item_model).to eq subject.item_model
-          end
+        it 'returns value from model.item_model' do
+          expect(subject.get_item_model).to eq subject.model.item_model
+        end
+      end
+
+      context 'when item_model exists' do
+        subject { build(:item, type_name: :monitor, model: nil, item_model: 'My model') }
+
+        it 'returns value from item_model' do
+          expect(subject.get_item_model).to eq subject.item_model
         end
       end
     end

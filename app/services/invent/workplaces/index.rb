@@ -29,21 +29,12 @@ module Invent
       protected
 
       def load_workplace
+        data[:recordsTotal] = Workplace.count
         @workplaces = policy_scope(Workplace)
                         .left_outer_joins(:workplace_type)
                         .select('invent_workplace.*, invent_workplace_type.short_description as wp_type')
                         .group(:workplace_id)
         run_filters if @conditions
-      end
-
-      # Отфильтровать полученные данные
-      def run_filters
-        @workplaces = @workplaces.left_outer_joins(:user_iss).where('fio LIKE ?', "%#{@conditions['fullname']}%") if @conditions['fullname'].present?
-        @workplaces = @workplaces.left_outer_joins(:items).where('invent_num LIKE ?', "%#{@conditions['invent_num']}%") if @conditions['invent_num'].present?
-        @workplaces = @workplaces.where(workplace_count_id: @conditions['workplace_count_id']) unless @conditions['workplace_count_id'].to_i.zero?
-        @workplaces = @workplaces.where(status: @conditions['status']) if @conditions.has_key?('status') && @conditions['status'] != 'all'
-        @workplaces = @workplaces.where(workplace_type_id: @conditions['workplace_type_id']) unless @conditions['workplace_type_id'].to_i.zero?
-        @workplaces = @workplaces.where(workplace_id: @conditions['workplace_id']) unless @conditions['workplace_id'].to_i.zero?
       end
 
       # Ограничение выборки взависимости от выбранного пользователем номера страницы.
@@ -72,8 +63,6 @@ module Invent
           wp.delete('iss_reference_room')
           wp.delete('user_iss')
         end
-
-        @data[:recordsTotal] = Workplace.count
       end
 
       # Загрузить данные для фильтров

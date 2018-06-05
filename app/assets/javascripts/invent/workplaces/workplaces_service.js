@@ -3,39 +3,16 @@
 
   app.service('Workplaces', Workplaces);
 
-  Workplaces.$inject = ['Server', 'TablePaginator', 'Config', 'Flash', 'Error'];
+  Workplaces.$inject = ['WorkplacesFilter', 'Server', 'TablePaginator', 'Config', 'Flash', 'Error'];
 
-  function Workplaces(Server, TablePaginator, Config, Flash, Error) {
+  function Workplaces(Filter, Server, TablePaginator, Config, Flash, Error) {
+    this.Filter = Filter;
     this.Server = Server;
     this.TablePaginator = TablePaginator;
     this.Config = Config;
     this.Flash = Flash;
     this.Error = Error;
-
-    this.filters = {
-      statuses: { 'all': 'Все статусы' },
-      types: [{
-        workplace_type_id: 0,
-        short_description: 'Все типы'
-      }]
-    };
-    this.selectedTableFilters = {
-      invent_num: '',
-      workplace_id: '',
-      workplace_type_id: this.filters.types[0].workplace_type_id,
-      division: '',
-      status: 'all',
-      fullname: ''
-    };
   }
-
-  Workplaces.prototype._getFiltersToSend = function() {
-    var obj = angular.copy(this.selectedTableFilters);
-    obj.workplace_count_id = obj.division.workplace_count_id;
-    delete(obj.division);
-
-    return obj;
-  };
 
   Workplaces.prototype.loadWorkplaces = function(init) {
     var self = this;
@@ -45,7 +22,7 @@
         start: this.TablePaginator.startNum(),
         length: this.Config.global.uibPaginationConfig.itemsPerPage,
         init_filters: init,
-        filters: this._getFiltersToSend()
+        filters: this.Filter.get()
       },
       function(response) {
         // Список РМ
@@ -54,9 +31,7 @@
         self.TablePaginator.setData(response);
 
         if (init) {
-          self.filters.divisions = response.filters.divisions;
-          Object.assign(self.filters.statuses, response.filters.statuses);
-          self.filters.types = self.filters.types.concat(response.filters.types);
+          self.Filter.set(response.filters);
         }
       },
       function(response, status) {
@@ -64,4 +39,42 @@
       }
     ).$promise;
   };
+
+  Workplaces.prototype.loadListWorkplaces = function() {
+    var self = this;
+
+    return this.Server.Invent.Workplace.list(
+      {
+        start: this.TablePaginator.startNum(),
+        length: this.Config.global.uibPaginationConfig.itemsPerPage,
+        filters: this.Filter.get()
+      },
+      function(response) {
+        // Список РМ
+        self.workplaces = response.data;
+        self._prepareWorkplaceToRender();
+
+        // Данные для составления нумерации страниц
+        self.TablePaginator.setData(response);
+      },
+      function(response, status) {
+        self.Error.response(response, status);
+      }
+    ).$promise;
+  };
+
+  Workplaces.prototype._prepareWorkplaceToRender = function() {
+    var
+      items,
+      composition;
+
+    this.workplaces.forEach(function(el) {
+      items = [];
+
+      el.items.forEach(function(value) { items.push('<li>' + value + '</li>'); });
+      el.renderData = '<span>' + el.workplace + '</span><br>';
+      composition = items.length == 0 ? 'Состав отсутствует' : 'Состав:<ul>' + items.join('') + '</ul>';
+      el.renderData += composition;
+    });
+  }
 })();

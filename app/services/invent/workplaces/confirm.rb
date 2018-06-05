@@ -16,7 +16,6 @@ module Invent
         load_workplaces
         update_workplaces
         broadcast_workplaces
-        broadcast_workplace_list
 
         true
       rescue RuntimeError => e
