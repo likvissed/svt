@@ -9,8 +9,13 @@ module Warehouse
 
       its(:run) { is_expected.to be_truthy }
 
-      it 'destroys selected order' do
+      it 'destroys selected item' do
         expect { subject.run }.to change(Item, :count).by(-1)
+      end
+
+      it 'broadcasts to items' do
+        expect(subject).to receive(:broadcast_items)
+        subject.run
       end
 
       context 'when order is not destroyed' do

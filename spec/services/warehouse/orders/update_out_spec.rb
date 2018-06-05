@@ -217,6 +217,16 @@ module Warehouse
             end
           end
 
+          it 'broadcasts to items' do
+            expect(subject).to receive(:broadcast_items)
+            subject.run
+          end
+
+          it 'broadcasts to out_orders' do
+            expect(subject).to receive(:broadcast_out_orders)
+            subject.run
+          end
+
           include_examples 'updating order'
 
           its(:run) { is_expected.to be_truthy }

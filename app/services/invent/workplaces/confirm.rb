@@ -44,7 +44,7 @@ module Invent
           @data = 'Данные отклонены'
         else
           errors.add(:base, :unknown_action)
-          raise 'Неизвестное действие.'
+          raise 'Неизвестное действие'
         end
 
         return if errors_arr.empty?

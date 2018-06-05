@@ -23,6 +23,21 @@ module Invent
         expect { subject.run }.to change(PropertyValue, :count). by(-prop_val_count)
       end
 
+      it 'broadcasts to workplaces' do
+        expect(subject).to receive(:broadcast_workplaces)
+        subject.run
+      end
+
+      it 'broadcasts to workplaces_list' do
+        expect(subject).to receive(:broadcast_workplaces_list)
+        subject.run
+      end
+
+      it 'broadcasts to items' do
+        expect(subject).to receive(:broadcast_items)
+        subject.run
+      end
+
       its(:run) { is_expected.to be_truthy }
     end
   end

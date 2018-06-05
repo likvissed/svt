@@ -22,6 +22,11 @@ module Invent
           expect(subject).to receive(:broadcast_users)
           subject.run
         end
+
+        it 'broadcasts to users' do
+          expect(subject).to receive(:broadcast_users)
+          subject.run
+        end
       end
 
       context 'with invalid params' do
