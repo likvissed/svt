@@ -439,9 +439,9 @@
     function setCookie(name, key, value) {
       obj[key] = value;
 
-      while(!angular.isUndefined($cookies.getObject(name))) {
-        $cookies.remove(name);
-      }
+      // while(!angular.isUndefined($cookies.getObject(name))) {
+      //   $cookies.remove(name);
+      // }
       $cookies.putObject(name, obj);
     }
 
