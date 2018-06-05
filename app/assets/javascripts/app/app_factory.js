@@ -439,9 +439,13 @@
     function setCookie(name, key, value) {
       obj[key] = value;
 
-      // while(!angular.isUndefined($cookies.getObject(name))) {
-      //   $cookies.remove(name);
-      // }
+      if (name == 'workplace') {
+        console.log('here');
+        $cookies.remove('workplace', { path: '/' });
+        $cookies.remove('workplace', { path: '/invent' });
+        $cookies.remove('workplace', { path: '/invent/workplaces' });
+      }
+
       $cookies.putObject(name, obj);
     }
 
