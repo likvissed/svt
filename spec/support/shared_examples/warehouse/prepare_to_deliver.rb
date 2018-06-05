@@ -16,7 +16,7 @@ module Warehouse
 
     it 'loads inv_items objects of selected operations' do
       subject.run
-      expect(subject.data[:operations_attributes].last['inv_items_attributes'].first).to include('id', 'property_values', 'get_item_model')
+      expect(subject.data[:operations_attributes].last['inv_items_attributes'].first).to include('id', 'property_values', 'short_item_model')
     end
   end
 end
