@@ -19,7 +19,7 @@ module Invent
               numericality: { only_integer: true },
               reduce: true, unless: :status_freezed?
     validates :id_tn, user_iss_by_id_tn: true, unless: -> { errors.any? || status_freezed? }
-    validate :check_workplace_conditions, if: -> { workplace_type && enabled_filters }
+    validate :check_workplace_conditions, if: -> { workplace_type && !disabled_filters }
 
     before_destroy :check_items, prepend: true, unless: -> { hard_destroy }
     before_destroy :check_processing_orders, prepend: true
@@ -27,7 +27,7 @@ module Invent
     # Для тестов (от имени пользователя заполняется поле "Комната")
     attr_accessor :location_room_name, :division
     # Поле указывает, нужно ли использовать валидаторы при создании/редактировании текущей модели
-    attr_accessor :enabled_filters
+    attr_accessor :disabled_filters
     # Указывает, что нужно пропустить валидацию check_items
     attr_accessor :hard_destroy
 
@@ -71,8 +71,6 @@ module Invent
 
     # Проверка условий, которые должны выполняться при создании/редактировании рабочих мест.
     def check_workplace_conditions
-      return unless workplace_type
-
       @types = Type.all
       # count_all_types - объект вида { type: count }, где:
       #   type  - имя типа оборудования

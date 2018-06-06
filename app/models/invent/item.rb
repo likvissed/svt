@@ -59,13 +59,18 @@ module Invent
 
     def get_item_model
       if Type::TYPE_WITH_FILES.include?(type.name)
-        props = Property.where(name: Property::FILE_DEPENDING)
-        attrs = property_values.where(property: props).map(&:value).reject(&:blank?).join(' / ')
+        @@props ||= Property.where(name: Property::FILE_DEPENDING)
+        attrs = property_values.select { |prop_val| @@props.map(&:property_id).include?(prop_val.property_id) }.map(&:value).reject(&:blank?).join(' / ')
+        # attrs = property_values.where(property: @props).map(&:value).reject(&:blank?).join(' / ')
         attrs = 'Конфигурация отсутствует' if attrs.blank?
         item_model.blank? ? attrs : "#{item_model}: #{attrs}"
       else
-        model.try(:item_model) || item_model
+        short_item_model
       end
+    end
+
+    def short_item_model
+      model.try(:item_model) || item_model
     end
 
     def get_value(property)

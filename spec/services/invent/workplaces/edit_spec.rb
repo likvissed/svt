@@ -29,9 +29,9 @@ module Invent
       end
 
       describe 'format json' do
-        it 'fills the @data with %w[wp_data prop_data divisioins] keys' do
+        it 'fills the @data with %w[wp_data prop_data] keys' do
           subject.run :json
-          expect(subject.data).to include(:wp_data, :prop_data, :divisions)
+          expect(subject.data).to include(:wp_data, :prop_data)
         end
       end
 

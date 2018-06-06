@@ -1,0 +1,35 @@
+.row
+  .col-sm-24
+    table.table.table-striped.table-condensed
+      thead
+        tr
+          th ID
+          th Отдел
+          th Тип
+          th Ответственный
+          th Расположение
+          th Кол-во техники
+          th Статус
+          th
+      tbody
+        tr ng-repeat="wp in table.workplaces"
+          td.col-sm-1 ng-bind="wp.workplace_id"
+          td.col-sm-2 ng-bind="wp.division"
+          td.col-sm-4 ng-bind="wp.wp_type"
+          td.col-sm-6 ng-bind="wp.responsible"
+          td.col-sm-5 ng-bind="wp.location"
+          td.col-sm-2 ng-bind="wp.count"
+          td.col-sm-3 ng-bind-html="wp.label_status"
+          td.col-sm-1.text-center
+            a ng-href="/invent/workplaces/{{wp.workplace_id}}/edit" class="default-color"
+              = fa_icon "pencil-square-o fw", class: "pointer", "uib-tooltip": "Редактировать состав РМ",
+                "tooltip-append-to-body": true, "ng-click": "edit.editPosition(op)"
+            - if current_user.one_of_roles? :admin, :manager, :worker
+              = fa_icon "trash-o fw", class: "text-danger pointer", "uib-tooltip": "Удалить РМ (только если оно не содержит технику)",
+                "tooltip-append-to-body": true, "ng-click": "table.destroyWp(wp.workplace_id)"
+.row
+  .col-sm-12
+    div.animate-show ng-table-info="" info-attrs="table.pagination" ng-if="table.workplaces"
+  .col-sm-12
+    ul{ uib-pagination="true" total-items="table.pagination.filteredRecords" ng-model="table.pagination.currentPage"
+      max-size="table.pagination.maxSize" class="pagination-sm pull-right" ng-change="table.reloadWorkplaces()" }

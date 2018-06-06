@@ -62,26 +62,17 @@ module Invent
       end
     end
 
-    # describe 'GET #list_wp' do
-    #   context 'when html request' do
-    #     it 'renders list_wp view' do
-    #       get :list_wp
-    #       expect(response).to render_template :list_wp
-    #     end
-    #   end
+    describe 'GET #list_wp' do
+      it 'creates instance of the Workplaces::Index' do
+        get :list_wp, format: :json, params: { init_filters: false, filters: false }
+        expect(assigns(:list_wp)).to be_instance_of Workplaces::ListWp
+      end
 
-    #   context 'when json request' do
-    #     it 'creates instance of the Workplaces::Index' do
-    #       get :list_wp, format: :json, params: { init_filters: false, filters: false }
-    #       expect(assigns(:list_wp)).to be_instance_of Workplaces::ListWp
-    #     end
-
-    #     it 'calls :run method' do
-    #       expect_any_instance_of(Workplaces::ListWp).to receive(:run)
-    #       get :list_wp, format: :json, params: { init_filters: false, filters: false }
-    #     end
-    #   end
-    # end
+      it 'calls :run method' do
+        expect_any_instance_of(Workplaces::ListWp).to receive(:run)
+        get :list_wp, format: :json, params: { init_filters: false, filters: false }
+      end
+    end
 
     describe 'GET #pc_config_from_audit' do
       it 'creates instance of the LkInvents::PcConfigFromAudit' do

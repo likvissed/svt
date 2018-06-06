@@ -15,7 +15,8 @@ module Invent
 
         destroy_workplace
         broadcast_workplaces
-        broadcast_workplace_list
+        broadcast_workplaces_list
+        broadcast_items
 
         true
       rescue RuntimeError => e

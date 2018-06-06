@@ -1,6 +1,6 @@
 module Invent
   class ModelPolicy < ApplicationPolicy
-    def index?
+    def ctrl_access?
       for_worker
     end
   end

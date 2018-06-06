@@ -18,8 +18,9 @@ module Invent
           end
         end
 
-        broadcast_workplaces
         broadcast_items
+        broadcast_workplaces
+        broadcast_workplaces_list
 
         true
       rescue RuntimeError => e

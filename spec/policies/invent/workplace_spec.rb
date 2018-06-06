@@ -52,13 +52,47 @@ module Invent
       end
     end
 
+    permissions :ctrl_access? do
+      context 'with ***REMOVED***_user role' do
+        context 'and when user has workplace_count' do
+          let!(:wp_c) { create(:active_workplace_count, users: [***REMOVED***_user]) }
+
+          it 'grants access' do
+            expect(subject).to permit(***REMOVED***_user, [:invent, :workplace])
+          end
+        end
+
+        context 'and when user does not have workplace_count' do
+          let!(:wp_c) { create(:active_workplace_count, users: [manager]) }
+
+          it 'denies access' do
+            expect(subject).not_to permit(***REMOVED***_user, [:invent, :workplace])
+          end
+        end
+      end
+
+      %w[manager worker read_only].each do |role|
+        context "with #{role} role" do
+          it 'grants access' do
+            expect(subject).to permit(send(role), [:invent, :workplace])
+          end
+        end
+      end
+    end
+
     permissions :new? do
       include_examples 'workplace policy with :***REMOVED***_user role for new workplace'
       include_examples 'workplace policy for another roles'
+
+      # context 'with ***REMOVED***_user' do
+      #   it 'grants access' do
+      #     expect(subject).to permit(***REMOVED***_user, Workplace.new())
+      #   end
+      # end
     end
 
     permissions :create? do
-      include_examples 'workplace policy with :***REMOVED***_user role for new workplace'
+      include_examples 'workplace policy with :***REMOVED***_user role for create workplace'
       include_examples 'workplace policy for another roles'
     end
 
@@ -83,6 +117,15 @@ module Invent
 
       include_examples 'workplace policy with :***REMOVED***_user role for existing workplace'
       include_examples 'workplace policy for another roles'
+
+      context 'when workplace has disapproved status' do
+        before { workplace.status = :disapproved }
+
+        it 'sets :pending_verification status' do
+          expect(subject).to permit(***REMOVED***_user, workplace)
+          expect(workplace.status).to eq 'pending_verification'
+        end
+      end
     end
 
     # permissions :destroy? do

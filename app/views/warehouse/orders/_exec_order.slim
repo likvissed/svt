@@ -4,12 +4,16 @@ script type="text/ng-template" id="execOrder.slim"
       .pull-left
         h4
           span ng-if="exec.order.status == 'done'"
-            | Ордер №{{exec.order.id}} исполнен
+            | Ордер № {{exec.order.id}} исполнен
           span ng-if="exec.order.status == 'processing'"
-            | Ордер №{{exec.order.id}}
+            | Ордер № {{exec.order.id}}
+          span ng-if="exec.order.request_num"
+            |  (Заявка № {{exec.order.request_num}})
       .pull-right
         .icon-block
           = render partial: 'templates/load_spinner'
+        .icon-block ng-if="exec.order.status == 'done' && exec.order.operation == 'out'"
+          = fa_icon "print 2x fw", class: "pointer", "uib-tooltip": "Распечатать ордер", "tooltip-append-to-body": "true", "ng-click": "exec.printOrder()"
         / .icon-block ng-show="exec.order.id"
           = fa_icon "refresh 2x fw", class: "pointer", "tooltip-placement": "top", "tooltip-append-to-body": true, "uib-tooltip": "Загрузать данные об ордере заново",
             "ng-click": "exec.reloadOrder()"

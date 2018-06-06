@@ -43,6 +43,7 @@ module Inv
         resource '/invent/***REMOVED***_invents/destroy_workplace*', headers: :any, methods: [:delete]
         resource '/invent/***REMOVED***_invents/generate_pdf*', headers: :any, methods: [:get]
         resource '/invent/***REMOVED***_invents/get_pc_script*', headers: :any, methods: [:get]
+        resource '/invent/***REMOVED***_invents/existing_item*', headers: :any, methods: [:get]
       end
     end
 

@@ -2,8 +2,8 @@ class Invent::ApplicationService < ApplicationService
   protected
 
   # Разослать сообщение о необходимости обновления списка рабочих мест.
-  def broadcast_workplace_list
-    ActionCable.server.broadcast 'workplace_list', nil
+  def broadcast_workplaces_list
+    ActionCable.server.broadcast 'workplaces_list', nil
   end
 
   def broadcast_models

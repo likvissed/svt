@@ -32,11 +32,11 @@ module Invent
         false
       end
 
-      private
+      protected
 
       # Получить список отделов, доступных на редактирование для указанного пользователя.
       def load_divisions
-        @divisions = @current_user.workplace_counts
+        @divisions = policy_scope(WorkplaceCount).order('CAST(division AS UNSIGNED)')
         raise Pundit::NotAuthorizedError, 'Access denied' if @divisions.empty?
 
         data[:divisions] = @divisions.as_json.each do |division|

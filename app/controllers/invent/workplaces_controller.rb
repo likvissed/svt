@@ -1,10 +1,12 @@
 module Invent
   class WorkplacesController < ApplicationController
+    before_action :check_access
+
     def index
       respond_to do |format|
         format.html
         format.json do
-          @index = Workplaces::Index.new(params)
+          @index = Workplaces::Index.new(current_user, params)
 
           if @index.run
             render json: @index.data
@@ -38,24 +40,20 @@ module Invent
 
       if @create.run
         flash[:notice] = I18n.t('controllers.invent/workplace.created')
-        render json: { location: session[:workplace_prev_url] }
+        # session[:workplace_prev_url]
+        render json: { location: invent_workplaces_path }
       else
         render json: { full_message: @create.error[:full_message] }, status: 422
       end
     end
 
     def list_wp
-      respond_to do |format|
-        format.html
-        format.json do
-          @list_wp = Workplaces::ListWp.new(params[:init_filters], params[:filters])
+      @list_wp = Workplaces::ListWp.new(current_user, params)
 
-          if @list_wp.run
-            render json: @list_wp.data
-          else
-            render json: { full_message: I18n.t('controllers.app.unprocessable_entity') }, status: 422
-          end
-        end
+      if @list_wp.run
+        render json: @list_wp.data
+      else
+        render json: { full_message: I18n.t('controllers.app.unprocessable_entity') }, status: 422
       end
     end
 
@@ -143,38 +141,43 @@ module Invent
       send_file(Rails.root.join('public', 'downloads', 'SysInfo.exe'), disposition: 'attachment')
     end
 
-    private
+    protected
 
     def workplace_params
-      params.require(:workplace).permit(
-        :workplace_id,
-        :enabled_filters,
-        :workplace_count_id,
-        :workplace_type_id,
-        :workplace_specialization_id,
-        :id_tn,
-        :location_site_id,
-        :location_building_id,
-        :location_room_name,
-        :location_room_id,
-        :comment,
-        :status,
-        item_ids: [],
-        items_attributes: [
-          :id,
-          :parent_id,
-          :type_id,
-          :model_id,
-          :item_model,
-          :workplace_id,
-          :location,
-          :invent_num,
-          :serial_num,
-          :status,
-          :_destroy,
-          property_values_attributes: %i[id property_id item_id property_list_id value _destroy]
-        ]
-      )
+      params.require(:workplace).permit(policy(Workplace).permitted_attributes)
+      # params.require(:workplace).permit(
+      #   :workplace_id,
+      #   :enabled_filters,
+      #   :workplace_count_id,
+      #   :workplace_type_id,
+      #   :workplace_specialization_id,
+      #   :id_tn,
+      #   :location_site_id,
+      #   :location_building_id,
+      #   :location_room_name,
+      #   :location_room_id,
+      #   :comment,
+      #   :status,
+      #   item_ids: [],
+      #   items_attributes: [
+      #     :id,
+      #     :parent_id,
+      #     :type_id,
+      #     :model_id,
+      #     :item_model,
+      #     :workplace_id,
+      #     :location,
+      #     :invent_num,
+      #     :serial_num,
+      #     :status,
+      #     :_destroy,
+      #     property_values_attributes: %i[id property_id item_id property_list_id value _destroy]
+      #   ]
+      # )
+    end
+
+    def check_access
+      authorize [:invent, :workplace], :ctrl_access?
     end
   end
 end

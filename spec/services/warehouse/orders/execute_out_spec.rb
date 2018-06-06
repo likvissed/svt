@@ -86,6 +86,21 @@ module Warehouse
             order_json
           end
 
+          it 'broadcasts to out_orders' do
+            expect(subject).to receive(:broadcast_out_orders)
+            subject.run
+          end
+
+          it 'broadcasts to archive_orders' do
+            expect(subject).to receive(:broadcast_archive_orders)
+            subject.run
+          end
+
+          it 'broadcasts to items' do
+            expect(subject).to receive(:broadcast_items)
+            subject.run
+          end
+
           include_examples 'execute_out specs'
 
           it 'does not change count of non-selected items' do

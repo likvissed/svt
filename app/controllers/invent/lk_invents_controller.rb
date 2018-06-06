@@ -2,8 +2,8 @@ module Invent
   class LkInventsController < ApplicationController
     skip_before_action :authenticate_user!
     skip_before_action :verify_authenticity_token
-    skip_before_action :authorization
-    before_action :check_***REMOVED***_authorization, except: :svt_access
+    # skip_before_action :authorization
+    before_action :check_***REMOVED***_authorization, except: %i[svt_access existing_item]
     # after_action -> { sign_out @***REMOVED***_auth.data }, except: :svt_access
 
     respond_to :json
@@ -123,6 +123,16 @@ module Invent
 
     def send_pc_script
       send_file(Rails.root.join('public', 'downloads', 'SysInfo.exe'), disposition: 'attachment')
+    end
+
+    def existing_item
+      @existing_item = Items::ExistingItem.new(Type::ALL_PRINT_TYPES, params[:invent_num])
+
+      if @existing_item.run
+        render json: @existing_item.data
+      else
+        render json: { full_message: 'Обратитесь к администратору, т.***REMOVED***' }, status: 422
+      end
     end
 
     private

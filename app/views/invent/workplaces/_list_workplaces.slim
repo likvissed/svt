@@ -1,0 +1,27 @@
+.row
+  .col-sm-24
+    table.table.table-striped.table-condensed
+      thead
+        tr
+          th ID
+          th
+          th Описание
+          th
+      tbody
+        tr ng-repeat="wp in list.workplaces"
+          td.col-sm-1 ng-bind="wp.workplace_id"
+          td
+          td.col-sm-22 ng-bind-html="wp.renderData"
+          td.col-sm-1
+            a ng-href="/invent/workplaces/{{wp.workplace_id}}/edit" class="default-color"
+              = fa_icon "pencil-square-o fw", class: "pointer", "uib-tooltip": "Редактировать состав РМ",
+                "tooltip-append-to-body": true, "ng-click": "edit.editPosition(op)"
+            - if current_user.one_of_roles? :admin, :manager, :worker
+              = fa_icon "trash-o fw", class: "text-danger pointer", "uib-tooltip": "Удалить РМ (только если оно не содержит технику)",
+                "tooltip-append-to-body": true, "ng-click": "list.destroyWp(wp.workplace_id)"
+.row
+  .col-sm-12
+    div.animate-show ng-table-info="" info-attrs="list.pagination" ng-if="list.workplaces"
+  .col-sm-12
+    ul{ uib-pagination="true" total-items="list.pagination.filteredRecords" ng-model="list.pagination.currentPage"
+      max-size="list.pagination.maxSize" class="pagination-sm pull-right" ng-change="list.reloadWorkplaces()" }

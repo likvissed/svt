@@ -73,6 +73,6 @@ class UsersController < ApplicationController
   end
 
   def check_access
-    authorize :user, :index?
+    authorize :user, :ctrl_access?
   end
 end

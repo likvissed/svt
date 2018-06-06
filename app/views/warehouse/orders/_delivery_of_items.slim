@@ -9,7 +9,6 @@ script type="text/ng-template" id="deliveryOfItems.slim"
         .icon-block
           = render partial: 'templates/load_spinner'
         .icon-block
-          / a.default-color ng-href="/warehouse/orders/{{delivery.order.id}}/print"
           = fa_icon "print 2x fw", class: "pointer", "uib-tooltip": "Распечатать ордер", "tooltip-append-to-body": "true", "ng-click": "delivery.printOrder()"
         .icon-block
           a.default-color ng-href="/invent/workplaces/{{delivery.order.invent_workplace_id}}/edit" target="blank"

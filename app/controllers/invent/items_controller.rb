@@ -1,5 +1,7 @@
 module Invent
   class ItemsController < ApplicationController
+    before_action :check_access
+
     def index
       respond_to do |format|
         format.html
@@ -63,6 +65,12 @@ module Invent
       else
         render json: { full_message: @destroy.error[:full_message] }, status: 422
       end
+    end
+
+    protected
+
+    def check_access
+      authorize [:invent, :item], :ctrl_access?
     end
   end
 end

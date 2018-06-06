@@ -18,7 +18,7 @@ module Invent
           filters: false
         }
       end
-      subject { Index.new(params) }
+      subject { Index.new(user, params) }
       before { subject.run }
 
       it 'fills the @data object with %i[data recordsTotal recordsFiltered] keys' do
@@ -32,7 +32,7 @@ module Invent
       context 'with init_filters' do
         subject do
           params[:init_filters] = 'true'
-          Index.new(params)
+          Index.new(user, params)
         end
 
         it 'assigns %i[divisions statuses types] to the :filters key' do
@@ -58,7 +58,7 @@ module Invent
         let(:filter) { {} }
         subject do
           params[:filters] = filter
-          Index.new(params)
+          Index.new(user, params)
         end
 
         context 'and with :fullname filter' do

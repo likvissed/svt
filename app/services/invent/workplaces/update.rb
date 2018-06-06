@@ -25,8 +25,9 @@ module Invent
           swap_items if @swap.any?
         end
 
+        broadcast_items
         broadcast_workplaces
-        broadcast_workplace_list
+        broadcast_workplaces_list
         broadcast_archive_orders if @swap.any?
 
         true

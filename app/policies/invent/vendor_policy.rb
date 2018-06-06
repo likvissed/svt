@@ -1,6 +1,6 @@
 module Invent
   class VendorPolicy < ApplicationPolicy
-    def index?
+    def ctrl_access?
       for_worker
     end
   end

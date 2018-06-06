@@ -3,6 +3,8 @@ module Invent
     self.primary_key = :model_id
     self.table_name = "#{table_name_prefix}model"
 
+    default_scope { order(:item_model) }
+
     has_many :model_property_lists, dependent: :destroy
     has_many :items, dependent: :restrict_with_error
     has_many :warehouse_items, class_name: 'Warehouse::Item', foreign_key: 'invent_model_id', dependent: :restrict_with_error

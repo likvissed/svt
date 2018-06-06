@@ -2,7 +2,8 @@ Rails.application.routes.draw do
   devise_for :users, controllers: { omniauth_callbacks: 'users/callbacks' }
 
   authenticated :user do
-    root 'invent/workplaces#index', as: :authenticated_root
+    # root 'invent/workplaces#index', as: :authenticated_root
+    root to: redirect(path: '/invent/workplaces'), as: :authenticated_root
   end
 
   devise_scope :user do
@@ -21,7 +22,7 @@ Rails.application.routes.draw do
     resources :workplaces, param: :workplace_id do
       collection do
         # Вывести все РМ списком
-        # get 'list_wp', to: 'workplaces#list_wp'
+        get 'list_wp', to: 'workplaces#list_wp'
         # Подтвердить/отклонить конфигурацию РМ
         put 'confirm', to: 'workplaces#confirm'
         # Получить данные о системном блоке из аудита
@@ -49,21 +50,19 @@ Rails.application.routes.draw do
     # Расшифровать файл конфигурации ПК, загруженный пользователем.
     post '***REMOVED***_invents/pc_config_from_user', to: '***REMOVED***_invents#pc_config_from_user'
     # Записать данные о РМ
-    post '***REMOVED***_invents/create_workplace', to: '***REMOVED***_invents#create_workplace'
+    # post '***REMOVED***_invents/create_workplace', to: '***REMOVED***_invents#create_workplace'
     # Получить данные о РМ
-    get '***REMOVED***_invents/edit_workplace/:workplace_id',
-        to: '***REMOVED***_invents#edit_workplace',
-        constraints: { workplace_id: /\d+/ }
+    # get '***REMOVED***_invents/edit_workplace/:workplace_id', to: '***REMOVED***_invents#edit_workplace', constraints: { workplace_id: /\d+/ }
     # Обновить данные о РМ
-    patch '***REMOVED***_invents/update_workplace/:workplace_id',
-          to: '***REMOVED***_invents#update_workplace',
-          constraints: { workplace_id: /\d+/ }
+    # patch '***REMOVED***_invents/update_workplace/:workplace_id', to: '***REMOVED***_invents#update_workplace', constraints: { workplace_id: /\d+/ }
     # Удалить РМ
-    delete '***REMOVED***_invents/destroy_workplace/:workplace_id', to: '***REMOVED***_invents#destroy_workplace', constraints: { workplace_id: /\d+/ }
+    # delete '***REMOVED***_invents/destroy_workplace/:workplace_id', to: '***REMOVED***_invents#destroy_workplace', constraints: { workplace_id: /\d+/ }
     # Создать PDF файл со списком РМ для отдела
     get '***REMOVED***_invents/generate_pdf/:division', to: '***REMOVED***_invents#generate_pdf', constraints: { division: /\d+/ }
     # Скачать скрипт для генерации файла конфигурации ПК
     get '***REMOVED***_invents/pc_script', to: '***REMOVED***_invents#send_pc_script'
+    # Проверить, существует ли техника с указанным инвентарным номером
+    get '***REMOVED***_invents/existing_item', to: '***REMOVED***_invents#existing_item'
 
     resources :items, only: [:index, :show, :edit, :destroy], param: :item_id do
       collection do

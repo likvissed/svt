@@ -43,8 +43,8 @@ module Invent
           subject.run
         end
 
-        it 'broadcasts to workplace_list' do
-          expect(subject).to receive(:broadcast_workplace_list)
+        it 'broadcasts to workplaces_list' do
+          expect(subject).to receive(:broadcast_workplaces_list)
           subject.run
         end
 

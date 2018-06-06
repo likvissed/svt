@@ -130,6 +130,11 @@
             method: 'GET',
             isArray: false
           },
+          list: {
+            method: 'GET',
+            isArray: false,
+            url: '/invent/workplaces/list_wp.json'
+          },
           new: {
             method: 'GET',
             url: '/invent/workplaces/new.json'
@@ -388,7 +393,9 @@
             // Фильтр по типам
             tableTypeFilter: '0',
             // Фильтр списка РМ по отделам
-            tableListDivisionFilter: '0'
+            tableListDivisionFilter: '0',
+            // Флаг, определяющий, как показывать РМ: в виде списка или таблицы
+            tableListTypeFilter: false
           };
           break;
       }
@@ -431,6 +438,13 @@
      */
     function setCookie(name, key, value) {
       obj[key] = value;
+
+      if (name == 'workplace') {
+        console.log('here');
+        $cookies.remove('workplace', { path: '/' });
+        $cookies.remove('workplace', { path: '/invent' });
+        $cookies.remove('workplace', { path: '/invent/workplaces' });
+      }
 
       $cookies.putObject(name, obj);
     }

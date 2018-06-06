@@ -32,6 +32,11 @@ module Warehouse
           expect { subject.run }.not_to change(Item, :count)
         end
 
+        it 'broadcasts to in_orders' do
+          expect(subject).to receive(:broadcast_in_orders)
+          subject.run
+        end
+
         context 'and when order is not destroyed' do
           before { allow_any_instance_of(Order).to receive(:destroy).and_return(false) }
 
@@ -80,6 +85,16 @@ module Warehouse
           subject.run
           expect(item_1.reload.count_reserved).to be_zero
           expect(item_2.reload.count_reserved).to be_zero
+        end
+
+        it 'broadcasts to items' do
+          expect(subject).to receive(:broadcast_items).with(order.id)
+          subject.run
+        end
+
+        it 'broadcasts to out_orders' do
+          expect(subject).to receive(:broadcast_out_orders)
+          subject.run
         end
 
         context 'and when order is not destroyed' do

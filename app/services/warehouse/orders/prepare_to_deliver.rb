@@ -59,7 +59,7 @@ module Warehouse
                                                    include: %i[property property_list]
                                                  }
                                                },
-                                               methods: :get_item_model
+                                               methods: :short_item_model
                                              }
                                            }
                                          )

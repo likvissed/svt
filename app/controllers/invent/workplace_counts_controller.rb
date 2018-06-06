@@ -1,5 +1,7 @@
 module Invent
   class WorkplaceCountsController < ApplicationController
+    before_action :check_access
+
     def index
       respond_to do |format|
         format.html
@@ -65,7 +67,7 @@ module Invent
       end
     end
 
-    private
+    protected
 
     def workplace_count_params
       params.require(:workplace_count).permit(
@@ -80,6 +82,10 @@ module Invent
           _destroy
         ]
       )
+    end
+
+    def check_access
+      authorize [:invent, :workplace_count], :ctrl_access?
     end
   end
 end

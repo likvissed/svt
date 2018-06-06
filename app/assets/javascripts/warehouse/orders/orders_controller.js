@@ -455,9 +455,9 @@
   ExecOrderController.prototype.deliveryItems = function() {
     var self = this;
 
-    if (!confirm('Вы действительно хотите исполнить выбранные позиции? Удалить исполненные позиции или отменить их исполнение невозмозно')) {
-      return false;
-    }
+    // if (!confirm('Вы действительно хотите исполнить выбранные позиции? Удалить исполненные позиции или отменить их исполнение невозмозно')) {
+    //   return false;
+    // }
 
     this.Order.prepareToDeliver()
       .then(
@@ -526,6 +526,17 @@
         self.errorResponse(response);
       }
     )
+  };
+
+  /**
+   * Распечатать ордер.
+   */
+  ExecOrderController.prototype.printOrder = function() {
+    var
+      self = this,
+      sendData = this.Order.getObjectToSend();
+
+    window.open('/warehouse/orders/' + this.order.id + '/print?order=' + JSON.stringify(sendData), '_blank');
   };
 
   /**

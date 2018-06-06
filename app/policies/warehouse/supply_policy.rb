@@ -1,5 +1,5 @@
 module Warehouse
-  class SupplyPolicy < ApplicationPolicy
+  class SupplyPolicy < Warehouse::ApplicationPolicy
     def new?
       for_worker
     end
@@ -13,10 +13,6 @@ module Warehouse
     end
 
     def update?
-      for_worker
-    end
-
-    def destroy?
       for_worker
     end
   end

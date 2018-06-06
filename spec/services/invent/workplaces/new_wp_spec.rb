@@ -4,18 +4,19 @@ module Invent
   module Workplaces
     RSpec.describe NewWp, type: :model do
       let(:user) { create(:user) }
-      let(:workplace_count) { create(:active_workplace_count, users: [user]) }
-      subject { NewWp.new(user) }
-
-      it 'fills the @data with %w[prop_data divisioins] keys' do
-        subject.run
-        expect(subject.data).to include(:prop_data, :divisions)
-      end
-
+      let!(:workplace_count) { create(:active_workplace_count, users: [user]) }
       let(:properties) do
-        prop = LkInvents::InitProperties.new
+        prop = LkInvents::InitProperties.new(user)
         prop.run
         prop.data
+      end
+      subject { NewWp.new(user) }
+
+      its(:run) { is_expected.to be_truthy }
+
+      it 'fills the @data with %w[prop_data workplace] keys' do
+        subject.run
+        expect(subject.data).to include(:prop_data, :workplace)
       end
 
       it 'load properties to the :prop_data key' do
@@ -23,9 +24,9 @@ module Invent
         expect(subject.data[:prop_data]).to eq properties
       end
 
-      it 'load all divisions to the :divisions key' do
+      it 'sets %w[disabled_filters items_attributes] attributes' do
         subject.run
-        expect(subject.data[:divisions].length).to eq WorkplaceCount.count
+        expect(subject.data[:workplace]).to include('disabled_filters', 'items_attributes')
       end
     end
   end

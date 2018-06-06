@@ -163,7 +163,7 @@ module Warehouse
       end
 
       context 'when warehouse_type is :with_invent_num' do
-        let(:workplace) { create(:workplace_pk, enabled_filters: false) }
+        let(:workplace) { create(:workplace_pk, disabled_filters: true) }
         let(:operation_1) { attributes_for(:order_operation, item_id: pc_items.id, shift: -2) }
         let(:operation_2) { attributes_for(:order_operation, item_id: monitor_items.id, shift: -2) }
         let(:operation_3) { attributes_for(:order_operation, item_id: mfu_items.id, shift: -1) }
@@ -215,6 +215,16 @@ module Warehouse
               o['operations_attributes'] = order.operations.as_json
               o['operations_attributes'].first['shift'] = -1
             end
+          end
+
+          it 'broadcasts to items' do
+            expect(subject).to receive(:broadcast_items)
+            subject.run
+          end
+
+          it 'broadcasts to out_orders' do
+            expect(subject).to receive(:broadcast_out_orders)
+            subject.run
           end
 
           include_examples 'updating order'

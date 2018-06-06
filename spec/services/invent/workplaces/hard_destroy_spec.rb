@@ -17,13 +17,18 @@ module Invent
         expect { subject.run }.to change(Item, :count).by(-workplace.items.count)
       end
 
+      it 'broadcasts to items' do
+        expect(subject).to receive(:broadcast_items)
+        subject.run
+      end
+
       it 'broadcasts to workplaces' do
         expect(subject).to receive(:broadcast_workplaces)
         subject.run
       end
 
-      it 'broadcasts to items' do
-        expect(subject).to receive(:broadcast_items)
+      it 'broadcasts to workplaces_list' do
+        expect(subject).to receive(:broadcast_workplaces_list)
         subject.run
       end
 

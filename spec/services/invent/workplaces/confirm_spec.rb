@@ -41,6 +41,11 @@ module Invent
 
           its(:run) { is_expected.to be_truthy }
         end
+
+        it 'broadcasts to workplaces' do
+          expect(subject).to receive(:broadcast_workplaces)
+          subject.run
+        end
       end
 
       context 'with invalid type' do

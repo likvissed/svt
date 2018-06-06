@@ -8,6 +8,34 @@ module Invent
     let(:***REMOVED***_user) { create(:***REMOVED***_user) }
     subject { WorkplaceCountPolicy }
 
+    permissions '.scope' do
+      let(:scope) { WorkplaceCount }
+      subject(:policy_scope) { WorkplaceCountPolicy::Scope.new(user, scope).resolve }
+
+      context 'for users with ***REMOVED***_role' do
+        let(:user) { ***REMOVED***_user }
+        let!(:wp_c) { create(:active_workplace_count, users: [user]) }
+
+        # it 'shows only user workplace_counts' do
+        #   expect(policy_scope).to eq [wp_c]
+        # end
+      end
+
+      context 'for another users' do
+        let(:user) { manager }
+
+        it 'shows all workplace_counts' do
+          expect(policy_scope.count).to eq WorkplaceCount.count
+        end
+      end
+    end
+
+    permissions :ctrl_access? do
+      let(:model) { create(:active_workplace_count, users: [***REMOVED***_user]) }
+
+      include_examples 'policy not for ***REMOVED***_user'
+    end
+
     permissions :generate_pdf? do
       let!(:workplace_count) { create(:active_workplace_count, users: [***REMOVED***_user]) }
 

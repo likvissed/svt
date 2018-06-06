@@ -16,7 +16,6 @@ module Invent
         load_workplaces
         update_workplaces
         broadcast_workplaces
-        broadcast_workplace_list
 
         true
       rescue RuntimeError => e
@@ -45,7 +44,7 @@ module Invent
           @data = 'Данные отклонены'
         else
           errors.add(:base, :unknown_action)
-          raise 'Неизвестное действие.'
+          raise 'Неизвестное действие'
         end
 
         return if errors_arr.empty?

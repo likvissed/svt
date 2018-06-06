@@ -34,6 +34,26 @@ module Warehouse
           order_json
         end
 
+        it 'broadcasts to in_orders' do
+          expect(subject).to receive(:broadcast_in_orders)
+          subject.run
+        end
+
+        it 'broadcasts to archive_orders' do
+          expect(subject).to receive(:broadcast_archive_orders)
+          subject.run
+        end
+
+        it 'broadcasts to items' do
+          expect(subject).to receive(:broadcast_items)
+          subject.run
+        end
+
+        it 'broadcasts to workplaces' do
+          expect(subject).to receive(:broadcast_workplaces)
+          subject.run
+        end
+
         context 'and when :operation attribute changes to :out' do
           before { order_params['operation'] = 'out' }
 

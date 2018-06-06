@@ -3,6 +3,7 @@ module Invent
     # Загрузить список техники, которая находится в работе в текущий момент.
     class Index < Invent::ApplicationService
       def initialize(params)
+        @current_user = current_user
         @start = params[:start]
         @length = params[:length]
         @init_filters = params[:init_filters]
