@@ -126,7 +126,7 @@ module Invent
     end
 
     def existing_item
-      @existing_item = Items::ExistingItem.new(InvType::ALL_PRINT_TYPES,params[:invent_num])
+      @existing_item = Items::ExistingItem.new(Type::ALL_PRINT_TYPES, params[:invent_num])
 
       if @existing_item.run
         render json: @existing_item.data

@@ -77,76 +77,76 @@ module Invent
       end
     end
 
-    describe 'POST #create_workplace' do
-      let(:workplace) do
-        build(:workplace_pk, :add_items, items: %i[pc monitor], workplace_count: workplace_count)
-      end
-      let(:wp_params) { { workplace: workplace.as_json } }
+    # describe 'POST #create_workplace' do
+    #   let(:workplace) do
+    #     build(:workplace_pk, :add_items, items: %i[pc monitor], workplace_count: workplace_count)
+    #   end
+    #   let(:wp_params) { { workplace: workplace.as_json } }
 
-      it 'creates instance of the Workplaces::Create' do
-        post :create_workplace, params: wp_params
-        expect(assigns(:workplace)).to be_instance_of Workplaces::Create
-      end
+    #   it 'creates instance of the Workplaces::Create' do
+    #     post :create_workplace, params: wp_params
+    #     expect(assigns(:workplace)).to be_instance_of Workplaces::Create
+    #   end
 
-      it 'calls :run method' do
-        expect_any_instance_of(Workplaces::Create).to receive(:run)
-        post :create_workplace, params: wp_params
-      end
-    end
+    #   it 'calls :run method' do
+    #     expect_any_instance_of(Workplaces::Create).to receive(:run)
+    #     post :create_workplace, params: wp_params
+    #   end
+    # end
 
-    describe 'GET #edit_workplace' do
-      let!(:workplace) do
-        create(:workplace_pk, :add_items, items: %i[pc monitor], workplace_count: workplace_count)
-      end
+    # describe 'GET #edit_workplace' do
+    #   let!(:workplace) do
+    #     create(:workplace_pk, :add_items, items: %i[pc monitor], workplace_count: workplace_count)
+    #   end
 
-      it 'creates instance of the LkInvents::EditWorkplace' do
-        get :edit_workplace, params: { workplace_id: workplace.workplace_id }
-        expect(assigns(:workplace)).to be_instance_of LkInvents::EditWorkplace
-      end
+    #   it 'creates instance of the LkInvents::EditWorkplace' do
+    #     get :edit_workplace, params: { workplace_id: workplace.workplace_id }
+    #     expect(assigns(:workplace)).to be_instance_of LkInvents::EditWorkplace
+    #   end
 
-      it 'calls :run method' do
-        expect_any_instance_of(LkInvents::EditWorkplace).to receive(:run)
-        get :edit_workplace, params: { workplace_id: workplace.workplace_id }
-      end
-    end
+    #   it 'calls :run method' do
+    #     expect_any_instance_of(LkInvents::EditWorkplace).to receive(:run)
+    #     get :edit_workplace, params: { workplace_id: workplace.workplace_id }
+    #   end
+    # end
 
-    describe 'PUT #update_workplace' do
-      let!(:workplace) do
-        create(:workplace_pk, :add_items, items: %i[pc monitor], workplace_count: workplace_count)
-      end
-      let(:wp_params) do
-        {
-          workplace_id: workplace.workplace_id,
-          workplace: workplace.as_json
-        }
-      end
+    # describe 'PUT #update_workplace' do
+    #   let!(:workplace) do
+    #     create(:workplace_pk, :add_items, items: %i[pc monitor], workplace_count: workplace_count)
+    #   end
+    #   let(:wp_params) do
+    #     {
+    #       workplace_id: workplace.workplace_id,
+    #       workplace: workplace.as_json
+    #     }
+    #   end
 
-      it 'creates instance of the Workplaces::Update' do
-        put :update_workplace, params: wp_params
-        expect(assigns(:workplace)).to be_instance_of Workplaces::Update
-      end
+    #   it 'creates instance of the Workplaces::Update' do
+    #     put :update_workplace, params: wp_params
+    #     expect(assigns(:workplace)).to be_instance_of Workplaces::Update
+    #   end
 
-      it 'calls :run method' do
-        expect_any_instance_of(Workplaces::Update).to receive(:run)
-        put :update_workplace, params: wp_params
-      end
-    end
+    #   it 'calls :run method' do
+    #     expect_any_instance_of(Workplaces::Update).to receive(:run)
+    #     put :update_workplace, params: wp_params
+    #   end
+    # end
 
-    describe 'DELETE #destroy_workplace' do
-      let!(:workplace) do
-        create(:workplace_pk, :add_items, items: %i[pc monitor], workplace_count: workplace_count)
-      end
+    # describe 'DELETE #destroy_workplace' do
+    #   let!(:workplace) do
+    #     create(:workplace_pk, :add_items, items: %i[pc monitor], workplace_count: workplace_count)
+    #   end
 
-      it 'create instance of the LkInvents::DestroyWorkplace' do
-        delete :destroy_workplace, params: { workplace_id: workplace.workplace_id }
-        expect(assigns(:workplace)).to be_instance_of LkInvents::DestroyWorkplace
-      end
+    #   it 'create instance of the LkInvents::DestroyWorkplace' do
+    #     delete :destroy_workplace, params: { workplace_id: workplace.workplace_id }
+    #     expect(assigns(:workplace)).to be_instance_of LkInvents::DestroyWorkplace
+    #   end
 
-      it 'calls :run method' do
-        expect_any_instance_of(LkInvents::DestroyWorkplace).to receive(:run)
-        delete :destroy_workplace, params: { workplace_id: workplace.workplace_id }
-      end
-    end
+    #   it 'calls :run method' do
+    #     expect_any_instance_of(LkInvents::DestroyWorkplace).to receive(:run)
+    #     delete :destroy_workplace, params: { workplace_id: workplace.workplace_id }
+    #   end
+    # end
 
     describe 'GET #generate_pdf' do
       it 'create instance of the LkInvents::DivisionReport' do
