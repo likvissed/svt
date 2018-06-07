@@ -27,8 +27,8 @@
                 td.col-sm-2.col-md-1
                   = button_tag "Открыть", type: :button, class: "btn-default btn-xs", "ng-click": "table.execOrder(order)"
                 td.col-sm-1 ng-bind="order.id"
-                td.col-sm-1 ng-bind="order.invent_workplace_id"
                 td.col-sm-1 ng-bind="order.consumer_dept"
+                td.col-sm-1 ng-bind="order.invent_workplace_id"
                 / td.col-sm-2 ng-bind="order.operation_translated"
                 td.col-sm-10 ng-bind="order.operations_to_string"
                 td.col-sm-3.col-xlg-4 ng-bind="order.creator.fio || order.creator_fio"
