@@ -15,7 +15,7 @@ module Invent
     after_initialize :set_default_property_list_id_to_zero
 
     def value
-      if property.name == 'ram' && super.present? && !super.match(/.* Гб/)
+      if try(:property).try(:name) == 'ram' && super.present? && !super.match(/.* Гб/)
         "#{super} Гб"
       else
         super

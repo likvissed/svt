@@ -44,7 +44,7 @@ module Warehouse
           begin
             Item.transaction(requires_new: true) do
               @inv_items_for_destroy.each(&:destroy!)
-              @inv_items_for_update.each { |inv_item| inv_item.update(workplace: nil, status: nil) }
+              @inv_items_for_update.each { |inv_item| inv_item.update(workplace: nil, status: :in_stock) }
 
               update_items
               save_order(@order)

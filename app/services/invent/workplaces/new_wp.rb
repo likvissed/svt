@@ -9,6 +9,7 @@ module Invent
 
       def run
         init_workplace
+        init_workplace_templates
         load_properties
 
         true

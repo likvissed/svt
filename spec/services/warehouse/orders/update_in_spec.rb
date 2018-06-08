@@ -259,7 +259,7 @@ module Warehouse
           it 'sets nil value to the :status attribute into the invent_item record' do
             subject.run
 
-            expect(updated_item.reload.status).to be_nil
+            expect(updated_item.reload.status).to eq 'in_workplace'
           end
 
           context 'and when order is not updated' do

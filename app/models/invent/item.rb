@@ -31,7 +31,7 @@ module Invent
 
     accepts_nested_attributes_for :property_values, allow_destroy: true
 
-    enum status: { waiting_take: 1, waiting_bring: 2, prepared_to_swap: 3 }
+    enum status: { waiting_take: 1, waiting_bring: 2, prepared_to_swap: 3, in_stock: 4, in_workplace: 5 }
 
     def self.by_invent_num(invent_num)
       return all if invent_num.blank?
@@ -53,8 +53,13 @@ module Invent
       where(workplace: { invent_workplace_count: { division: division } })
     end
 
+    def self.by_status(status_key)
+      return all if status_key.blank? || status_key == 'all'
+      where(status: status_key)
+    end
+
     def model_exists?
-      model || !item_model.empty?
+      model || item_model.present?
     end
 
     def get_item_model

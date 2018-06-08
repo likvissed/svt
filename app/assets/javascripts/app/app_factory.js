@@ -440,7 +440,6 @@
       obj[key] = value;
 
       if (name == 'workplace') {
-        console.log('here');
         $cookies.remove('workplace', { path: '/' });
         $cookies.remove('workplace', { path: '/invent' });
         $cookies.remove('workplace', { path: '/invent/workplaces' });

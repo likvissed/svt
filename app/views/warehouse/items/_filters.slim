@@ -16,10 +16,13 @@
       = button_tag type: :button, class: "btn-default", "ng-click": "table.destroyOrder()", "uib-tooltip": "Удалить ордер", "tooltip-append-to-body": true,
         "ng-disabled": "!table.selectedOrder.id" do
         = fa_icon "trash", class: "text-danger"
-
-.col-sm-6.col-md-5.col-lg-4.col-xlg-3.col-xlg-offset-1.col-fhd-3.col-fhd-offset-4.multiline-buffer
-  = button_tag "Показать отсутствующие", type: :button, class: "btn-default btn-sm btn-block", "ng-click": "table.showOnlyPresenceFilter()",
-    "ng-class": "{ active: !table.selectedFilters.showOnlyPresence }"
+.col-sm-6.col-md-5.col-lg-4.col-xlg-4.col-fhd-3.col-fhd-offset-1.multiline-buffer
+  = button_tag type: :button, class: "btn btn-default btn-block btn-sm", "ng-click": "table.showOnlyPresenceFilter()" do
+    span ng-if="!table.selectedFilters.showOnlyPresence"
+      = fa_icon "toggle-on lg", class: "text-success"
+    span ng-if="table.selectedFilters.showOnlyPresence"
+      = fa_icon "toggle-off lg", class: "text-danger"
+    |  Показать отсутствующие
 .col-sm-5.col-lg-3.col-fhd-2.multiline-buffer
   = select_tag "", "", class: "form-control input-sm", "ng-model": "table.selectedFilters.used", "ng-change": "table.reloadItems()",
     "ng-options": "used.value as used.descr for used in table.filters.selUsedFilter"
@@ -34,6 +37,9 @@
       = button_tag type: :button, class: "btn-default", "ng-click": "table.closeItemTypeFilter()", "uib-tooltip": "Очистить", "tooltip-append-to-body": true,
         "ng-disabled": "!table.selectedFilters.item_type" do
         = fa_icon "times"
+.col-sm-5.col-lg-4.col-xlg-3.multiline-buffer
+  = text_field_tag "", "", class: "form-control input-sm", placeholder: "Модель", "ng-model": "table.selectedFilters.item_model",
+    "ng-model-options": "{ debounce: 300 }", "ng-change": "table.reloadItems()"
 .col-sm-5.col-lg-4.col-xlg-3.multiline-buffer
   = text_field_tag "", "", class: "form-control input-sm", placeholder: "Штрих-код производителя", "ng-model": "table.selectedFilters.barcode",
     "ng-model-options": "{ debounce: 300 }", "ng-change": "table.reloadItems()"

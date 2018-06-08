@@ -43,6 +43,7 @@ module Invent
       def load_workplace_json
         load_workplace
         load_properties
+        init_workplace_templates
       end
 
       def load_workplace

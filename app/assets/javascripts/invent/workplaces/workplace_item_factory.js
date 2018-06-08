@@ -13,21 +13,21 @@
       selectEqType = { type_id: 0, short_description: 'Выберите тип' },
       // Шаблон экземпляра техники, добавляемого к РМ
       templateItem = {
-        id: null,
-        // item_id: null,
-        type_id: 0,
-        workplace_id: 0,
-        location: '',
-        invent_num: '',
-        serial_num: '',
-        model_id: 0,
-        item_model: '',
-        property_values_attributes: [],
-        // По умолчанию показать пользователю "Выберите тип"
-        type: selectEqType,
-        // Выбранная модель
-        model: null,
-        status: null
+        // id: null,
+        // // item_id: null,
+        // type_id: 0,
+        // workplace_id: 0,
+        // location: '',
+        // invent_num: '',
+        // serial_num: '',
+        // model_id: 0,
+        // item_model: '',
+        // property_values_attributes: [],
+        // // По умолчанию показать пользователю "Выберите тип"
+        // type: selectEqType,
+        // // Выбранная модель
+        // model: null,
+        // status: 'in_workplace'
       },
       // Начальные данные для select тэга модели.
       templateSelectModel = [
@@ -47,7 +47,9 @@
         // Разрешенные форматы загружаемого файла.
         fileFormats: [''],
         // Доп. описание модели
-        model_descr: 'Под моделью понимается совокупность наименования производителя указанного вами оборудования (обычно самая большая надпись на корпусе), а также наименования конкретного вида оборудования. Например, Zalman Z3, Samsung S23C350 и т.п.'
+        model_descr: 'Под моделью понимается совокупность наименования производителя указанного вами оборудования (обычно самая большая надпись на корпусе), а также наименования конкретного вида оборудования. Например, Zalman Z3, Samsung S23C350 и т.п.',
+        // Статусы обозначающие перемещение техники
+        statusesForChangeItem: ['prepared_to_swap', 'waiting_bring', 'waiting_take']
       };
 
     /**
@@ -287,6 +289,13 @@
     }
 
     return {
+      /**
+       * Установить шаблон объекта техники.
+       */
+      setTemplate: function(data) {
+        templateItem = data;
+        templateItem['type'] = selectEqType;
+      },
       /**
        * Получить шаблонный объект экземпляра техники.
        */

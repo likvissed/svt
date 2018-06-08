@@ -485,9 +485,9 @@ module Warehouse
             expect(inv_mfu_item.reload.workplace_id).to be_nil
           end
 
-          it 'sets :waiting_take status of inv_item' do
+          it 'sets :in_stock status of inv_item' do
             subject.run
-            expect(inv_mfu_item.reload.status).to be_nil
+            expect(inv_mfu_item.reload.status).to eq 'in_stock'
           end
         end
 

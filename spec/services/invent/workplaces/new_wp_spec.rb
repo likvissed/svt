@@ -14,14 +14,29 @@ module Invent
 
       its(:run) { is_expected.to be_truthy }
 
-      it 'fills the @data with %w[prop_data workplace] keys' do
+      it 'fills the @data with %w[prop_data workplace item property_value] keys' do
         subject.run
-        expect(subject.data).to include(:prop_data, :workplace)
+        expect(subject.data).to include(:prop_data, :workplace, :item, :property_value)
       end
 
-      it 'load properties to the :prop_data key' do
+      it 'loads properties to the :prop_data key' do
         subject.run
         expect(subject.data[:prop_data]).to eq properties
+      end
+
+      it 'adds %w[id property_values_attributes] attribute to the item object' do
+        subject.run
+        expect(subject.data[:item]).to include('id', 'property_values_attributes')
+      end
+
+      it 'adds id attribute to the property_value object' do
+        subject.run
+        expect(subject.data[:item]).to include('id')
+      end
+
+      it 'sets :in_workplace status' do
+        subject.run
+        expect(subject.data[:item]['status']).to eq 'in_workplace'
       end
 
       it 'sets %w[disabled_filters items_attributes] attributes' do

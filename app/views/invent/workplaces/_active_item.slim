@@ -1,5 +1,5 @@
 fieldset.ng-hide ng-show="item" ng-disabled="item.status == 'prepared_to_swap'"
-  .col-sm-24.col-lg-18.col-lg-offset-3.col-xlg-16.col-xlg-offset-4.col-fhd-12.col-fhd-offset-6 ng-if='item.status'
+  .col-sm-24.col-lg-18.col-lg-offset-3.col-xlg-16.col-xlg-offset-4.col-fhd-12.col-fhd-offset-6 ng-if="wp.additional.statusesForChangeItem | contains:item.status"
     .form-group
       p.info-block.bg-warning
         span ng-if="item.status == 'prepared_to_swap'"
@@ -103,5 +103,5 @@ fieldset.ng-hide ng-show="item" ng-disabled="item.status == 'prepared_to_swap'"
                     "ng-model": "item.property_values_attributes[$index].value"
 
     - if !current_user.role? :***REMOVED***_user
-      .col-md-10.col-md-offset-7 ng-if="!item.status"
+      .col-md-10.col-md-offset-7 ng-if="!(wp.additional.statusesForChangeItem | contains:item.status)"
         = button_tag "Удалить технику, как дубликат", class: "btn-danger btn-block", "ng-click": "wp.destroyItem(item)"

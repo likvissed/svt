@@ -21,7 +21,8 @@ module Invent
       respond_to do |format|
         format.html do
           authorize Workplace.new
-          session[:workplace_prev_url] = request.referrer
+          # session[:workplace_prev_url] = request.referrer
+          session[:workplace_prev_url] = invent_workplaces_path
         end
         format.json do
           @new_wp = Workplaces::NewWp.new(current_user)
@@ -83,7 +84,8 @@ module Invent
       respond_to do |format|
         format.html do
           @workplace = @edit.data if @edit.run(request.format.symbol)
-          session[:workplace_prev_url] = request.referrer
+          # session[:workplace_prev_url] = request.referrer
+          session[:workplace_prev_url] = invent_workplaces_path
         end
         format.json do
           if @edit.run(request.format.symbol)
@@ -100,7 +102,7 @@ module Invent
 
       if @update.run
         flash[:notice] = I18n.t('controllers.invent/workplace.updated')
-        render json: { location: session[:workplace_prev_url] }
+        render json: { location: invent_workplaces_path }
       else
         render json: { full_message: @update.error[:full_message] }, status: 422
       end
@@ -121,7 +123,7 @@ module Invent
 
       if @hard_destroy.run
         flash[:notice] = I18n.t('controllers.invent/workplace.destroyed')
-        render json: { location: session[:workplace_prev_url] }
+        render json: { location: invent_workplaces_path }
       else
         render json: { full_message: @hard_destroy.error[:full_message] }, status: 422
       end

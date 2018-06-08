@@ -121,10 +121,10 @@ module Warehouse
             expect(first_inv_item.reload.status).to eq 'waiting_take'
           end
 
-          it 'sets nil status selected item' do
+          it 'sets :in_workplace status selected item' do
             subject.run
 
-            expect(sec_inv_item.reload.status).to be_nil
+            expect(sec_inv_item.reload.status).to eq 'in_workplace'
           end
 
           it 'sets serial_num to the each selected item' do
