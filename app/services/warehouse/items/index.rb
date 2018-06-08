@@ -51,6 +51,7 @@ module Warehouse
         @items = @items.where('used = ?', @conditions['used'].to_s == 'true') if @conditions.key?('used') && @conditions['used'] != 'all'
         @items = @items.where('item_type = ?', @conditions['item_type']) if @conditions['item_type'].present?
         @items = @items.where('barcode = ?', @conditions['barcode']) if @conditions['barcode'].present?
+        @items = @items.where('item_model LIKE ?', "%#{@conditions['item_model']}%") if @conditions['item_model'].present?
       end
 
       def limit_records

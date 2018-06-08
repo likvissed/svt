@@ -104,6 +104,17 @@ module Warehouse
         end
       end
 
+      context 'when :item_model filter is set' do
+        before { params[:filters] = { item_model: item_2.item_model }.to_json }
+
+        it 'loads only records with specified item_type' do
+          subject.run
+          subject.data[:data].each do |i|
+            expect(i['item_model']).to eq item_2.item_model
+          end
+        end
+      end
+
       context 'when :barcode filter is set' do
         before { params[:filters] = { barcode: barcode }.to_json }
 
