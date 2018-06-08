@@ -176,7 +176,7 @@ module Invent
     describe 'DELETE #hard_destroy' do
       let!(:workplace) { create(:workplace_pk, :add_items, items: %i[pc monitor], workplace_count: workplace_count) }
       let(:params) { { workplace_id: workplace.workplace_id } }
-      let(:address) { 'prev_address' }
+      let(:address) { invent_workplaces_path }
       let(:session_obj) { { workplace_prev_url: address } }
       let(:response_obj) { { location: address } }
 
