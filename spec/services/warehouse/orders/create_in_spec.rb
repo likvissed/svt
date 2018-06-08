@@ -233,7 +233,7 @@ module Warehouse
           subject.run
           [inv_item_1.reload, inv_item_2.reload].each do |inv_item|
             expect(inv_item.workplace).to be_nil
-            expect(inv_item.status).to be_nil
+            expect(inv_item.status).to eq 'in_stock'
           end
         end
 

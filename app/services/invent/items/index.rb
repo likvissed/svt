@@ -40,6 +40,7 @@ module Invent
         @items = @items.where('invent_num LIKE ?', "%#{@filters['invent_num']}%") if @filters['invent_num'].present?
         @items = @items.left_outer_joins(:model).where('invent_model.item_model LIKE :item_model OR invent_item.item_model LIKE :item_model', item_model: "%#{@filters['item_model']}%") if @filters['item_model'].present?
         @items = @items.left_outer_joins(workplace: :user_iss).where('fio LIKE ?', "%#{@filters['responsible']}%") if @filters['responsible'].present?
+        @items = @items.by_status(@filters['status'])
 
         return unless @filters['properties']&.any?
         @filters['properties'].each do |prop|
@@ -84,6 +85,7 @@ module Invent
         data[:filters] = {}
         data[:filters][:types] = Type.where('name != "unknown"')
         data[:filters][:properties] = Property.group(:name)
+        data[:filters][:statuses] = item_statuses
       end
 
       def label_status(item, text)
@@ -91,13 +93,18 @@ module Invent
         when 'waiting_take'
           label_class = 'label-primary'
         when 'waiting_bring'
-          label_class = 'label-danger'
+          label_class = 'label-warning'
+        when 'in_stock'
+          label_class = 'label-info'
         else
           label_class = 'label-default'
-          text = item['workplace_id'] ? 'На РМ' : 'На складе'
         end
 
         "<span class='label #{label_class}'>#{text}</span>"
+      end
+
+      def item_statuses
+        Invent::Item.statuses.map { |key, _val| [key, Invent::Item.translate_enum(:status, key)] }.to_h
       end
     end
   end

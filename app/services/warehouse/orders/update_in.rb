@@ -79,7 +79,7 @@ module Warehouse
           if op.new_record?
             op.inv_items.each { |inv_item| inv_item.update!(status: :waiting_bring) }
           elsif op._destroy
-            op.inv_items.each { |inv_item| inv_item.update!(status: nil) }
+            op.inv_items.each { |inv_item| inv_item.update!(status: :in_workplace) }
           end
         end
       end

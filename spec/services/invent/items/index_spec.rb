@@ -25,9 +25,9 @@ module Invent
       context 'with init_filters' do
         before { params[:init_filters] = 'true' }
 
-        it 'assigns %i[types] to the :filters key' do
+        it 'assigns %i[types properties statuses] to the :filters key' do
           subject.run
-          expect(subject.data[:filters]).to include(:types)
+          expect(subject.data[:filters]).to include(:types, :properties, :statuses)
         end
 
         its(:run) { is_expected.to be_truthy }
@@ -108,6 +108,19 @@ module Invent
           it 'returns filtered data' do
             subject.data[:data].each do |el|
               expect(el['description']).to match(/#{prop.short_description}: #{filters[:properties].first[:property_value]}/)
+            end
+          end
+        end
+
+        context 'and with status filter' do
+          let(:status) { :waiting_take }
+          let(:status_translated) { Invent::Item.translate_enum(:status, :waiting_take) }
+          let(:filters) { { status: status } }
+          let!(:item) { create(:item, :with_property_values, type_name: :monitor, status: status) }
+
+          it 'returns filtered data' do
+            subject.data[:data].each do |el|
+              expect(el['translated_status']).to match(/#{status_translated}/)
             end
           end
         end

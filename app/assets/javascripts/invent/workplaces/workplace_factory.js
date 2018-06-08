@@ -119,6 +119,14 @@
   };
 
   /**
+   * Установить шаблоны объектов техники и свойств техники.
+   */
+  Workplace.prototype._setTemplates = function(data) {
+    this.Item.setTemplate(data.item);
+    this.PropertyValue.setTemplate(data.property_value);
+  };
+
+  /**
    * Получить данные о РМ.
    */
   Workplace.prototype.init = function(id) {
@@ -132,6 +140,7 @@
 
           self._setProperties(data);
           self._addObjects();
+          self._setTemplates(data);
 
           self.workplace.division = self.divisions.find(function(el) {
             if (el.workplace_count_id == self.workplace.workplace_count_id) { return true; }
@@ -147,6 +156,7 @@
 
           self._setProperties(data);
           self._addObjects();
+          self._setTemplates(data);
 
           self.workplace.division = self.divisions[0];
         }, function(response, status) {

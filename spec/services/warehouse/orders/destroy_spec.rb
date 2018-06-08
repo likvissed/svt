@@ -24,7 +24,7 @@ module Warehouse
         it 'sets nil status to the each inv_item' do
           subject.run
           Invent::Item.find_each do |inv_item|
-            expect(inv_item.status).to be_nil
+            expect(inv_item.status).to eq 'in_workplace'
           end
         end
 

@@ -56,7 +56,9 @@ ru:
         statuses:
           waiting_take: 'Должен получить'
           waiting_bring: 'Должен сдать'
-          prepared_to_swap: ''
+          prepared_to_swap: 'Подготовлен к переводу на другое РМ'
+          in_stock: 'На складе'
+          in_workplace: 'На РМ'
 
       invent/item/property_values:
         base: ''

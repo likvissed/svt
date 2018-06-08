@@ -65,6 +65,16 @@ module Invent
         @workplaces = @workplaces.where(workplace_type_id: @conditions['workplace_type_id']) unless @conditions['workplace_type_id'].to_i.zero?
         @workplaces = @workplaces.where(workplace_id: @conditions['workplace_id']) unless @conditions['workplace_id'].to_i.zero?
       end
+
+      def init_workplace_templates
+        @workplace ||= Workplace.new
+        data[:item] = @workplace.items.build(status: :in_workplace).as_json
+        data[:item]['property_values_attributes'] = []
+        data[:item]['id'] = nil
+
+        data[:property_value] = PropertyValue.new.as_json
+        data[:property_value]['id'] = nil
+      end
     end
   end
 end

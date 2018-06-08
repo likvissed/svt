@@ -72,11 +72,11 @@ module Warehouse
           expect { subject.run }.to change { Item.first.count }.by(operations.first.shift)
         end
 
-        it 'sets nil to the workplace and status attributes into the invent_item record' do
+        it 'sets nil to the workplace and :in_stock to the status attributes into the invent_item record' do
           subject.run
 
           expect(first_inv_item.reload.workplace).to be_nil
-          expect(first_inv_item.reload.status).to be_nil
+          expect(first_inv_item.reload.status).to eq 'in_stock'
         end
 
         it 'does not set nil to the workplace into another invent_item records' do

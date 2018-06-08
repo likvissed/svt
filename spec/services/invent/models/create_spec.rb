@@ -36,7 +36,7 @@ module Invent
       end
 
       it 'creates only those model_property_lists in which there is a field property_list_id' do
-        expect { subject.run }.to change(ModelPropertyList, :count).by(3)
+        expect { subject.run }.to change(ModelPropertyList, :count).by(2)
       end
 
       it 'sets item_model' do

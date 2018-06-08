@@ -8,13 +8,13 @@
     var
       // Шаблон объекта значения свойства выбранного экземпляра техники
       templatePropertyValue = {
-        id: null,
-        property_id: 0,
-        item_id: 0,
-        property_list_id: 0,
-        value: '',
-        // Массив возможных значений отфильтрованных по модели и свойству
-        filteredList: []
+        // id: null,
+        // property_id: 0,
+        // item_id: 0,
+        // property_list_id: 0,
+        // value: '',
+        // // Массив возможных значений отфильтрованных по модели и свойству
+        // filteredList: []
       },
       templateSelectProp = [
         // Для строки "Выберите тип"
@@ -24,6 +24,13 @@
       ];
 
     return {
+      /**
+       * Установить шаблон объекта свойства техники.
+       */
+      setTemplate: function(data) {
+        templatePropertyValue = data;
+        data['filteredList'] = [];
+      },
       /**
        * Получить объект-шаблон property_value.
        */

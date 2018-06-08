@@ -74,7 +74,7 @@ module Warehouse
                 save_order(order)
 
                 if @done_flag
-                  order.operations.each { |op| op.inv_items.each { |inv_item| inv_item.update!(status: nil, workplace: nil) } }
+                  order.operations.each { |op| op.inv_items.each { |inv_item| inv_item.update!(status: :in_stock, workplace: nil) } }
                 else
                   order.operations.each { |op| op.inv_items.each { |inv_item| inv_item.update!(status: :waiting_bring) } }
                 end

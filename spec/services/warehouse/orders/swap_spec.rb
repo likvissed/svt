@@ -71,11 +71,19 @@ module Warehouse
         end
       end
 
-      it 'sets new :workplace' do
+      it 'sets new :workplace to each inv_item' do
         subject.run
 
         Order.all.includes(:inv_items).each do |o|
           o.inv_items.each { |i| expect(i.workplace).to eq workplace_1 }
+        end
+      end
+
+      it 'sets a :in_workplace status to each inv_item' do
+        subject.run
+
+        Order.all.includes(:inv_items).each do |o|
+          o.inv_items.each { |i| expect(i.status).to eq 'in_workplace' }
         end
       end
 

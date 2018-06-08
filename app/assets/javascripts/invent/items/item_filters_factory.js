@@ -21,7 +21,8 @@
             property_id: 0,
             long_description: 'Выберите свойство'
           }
-        ]
+        ],
+        statuses: { all: 'Все статусы' }
       },
       // Данные, которые будут отправлены на сервер
       _selected = {
@@ -30,6 +31,7 @@
         invent_num: '',
         responsible: '',
         item_model: '',
+        status: Object.keys(_filters.statuses)[0],
         properties: []
       };
 
@@ -54,7 +56,11 @@
         angular.forEach(_filters, function(arr, key) {
           if (!data.hasOwnProperty(key)) { return true; }
 
-          this[key] = this[key].concat(data[key]);
+          if (Array.isArray(this[key])) {
+            this[key] = this[key].concat(data[key]);
+          } else {
+            this[key] = Object.assign(this[key], data[key]);
+          }
         }, _filters);
 
         _addProperty();

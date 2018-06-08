@@ -76,7 +76,7 @@ module Warehouse
         end
 
         save_order(@order)
-        @order.operations.each { |op| op.inv_items.each { |inv_item| inv_item.update!(status: nil, workplace: nil) } }
+        @order.operations.each { |op| op.inv_items.each { |inv_item| inv_item.update!(status: :in_stock, workplace: nil) } }
       end
 
       def wrap_out_orders
@@ -121,7 +121,7 @@ module Warehouse
 
         save_order(@order)
         @order.operations.each do |op|
-          op.inv_items.each { |inv_item| inv_item.update!(workplace: @workplace) }
+          op.inv_items.each { |inv_item| inv_item.update!(status: :in_workplace, workplace: @workplace) }
           op.item.save!
         end
       end
