@@ -34,7 +34,11 @@ module Invent
 
       def limit_records
         data[:recordsFiltered] = @workplaces.length
-        @workplaces = @workplaces
+        @workplaces = @workplaces.order(workplace_id: :desc).limit(@length).offset(@start)
+      end
+
+      def prepare_to_render
+        data[:data] = @workplaces
                         .includes(
                           :user_iss,
                           :workplace_type,
@@ -44,43 +48,40 @@ module Invent
                           :iss_reference_building,
                           :iss_reference_room,
                           items: [:type, :model, property_values: %i[property property_list]]
-                        ).order(workplace_id: :desc).limit(@length).offset(@start)
-      end
+                        )
+                        .as_json(
+                          include: [
+                            :user_iss,
+                            :workplace_type,
+                            :workplace_specialization,
+                            :workplace_count,
+                            :iss_reference_site,
+                            :iss_reference_building,
+                            :iss_reference_room,
+                            items: {
+                              include: [
+                                :type,
+                                :model,
+                                property_values: {
+                                  include: %i[property property_list]
+                                }
+                              ],
+                              methods: :short_item_model
+                            }
+                          ]
+                        ).map do |wp|
+                          fio = wp['user_iss'] ? wp['user_iss']['fio'] : wrap_problem_string('Ответственный не найден')
+                          workplace = "ФИО: #{fio}; Отдел: #{wp['workplace_count']['division']};
+#{wp['workplace_type']['short_description']}; Расположение: #{wp_location_string(wp)}; Основной вид деятельности:
+#{wp['workplace_specialization']['short_description']}"
+                          items = wp['items'].map { |item| item_info(item) }
 
-      def prepare_to_render
-        data[:data] = @workplaces.as_json(
-          include: [
-            :user_iss,
-            :workplace_type,
-            :workplace_specialization,
-            :workplace_count,
-            :iss_reference_site,
-            :iss_reference_building,
-            :iss_reference_room,
-            items: {
-              include: [
-                :type,
-                :model,
-                property_values: {
-                  include: %i[property property_list]
-                }
-              ],
-              methods: :short_item_model
-            }
-          ]
-        ).map do |wp|
-          fio = wp['user_iss'] ? wp['user_iss']['fio'] : wrap_problem_string('Ответственный не найден')
-          workplace = "ФИО: #{fio}; Отдел: #{wp['workplace_count']['division']};
- #{wp['workplace_type']['short_description']}; Расположение: #{wp_location_string(wp)}; Основной вид деятельности:
- #{wp['workplace_specialization']['short_description']}"
-          items = wp['items'].map { |item| item_info(item) }
-
-          {
-            workplace_id: wp['workplace_id'],
-            workplace: workplace,
-            items: items
-          }
-        end
+                          {
+                            workplace_id: wp['workplace_id'],
+                            workplace: workplace,
+                            items: items
+                          }
+                        end
       end
 
       # Преобразовать данные о составе РМ в массив строк.
