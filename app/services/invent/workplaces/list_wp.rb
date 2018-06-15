@@ -34,11 +34,7 @@ module Invent
 
       def limit_records
         data[:recordsFiltered] = @workplaces.length
-        @workplaces = @workplaces.order(workplace_id: :desc).limit(@length).offset(@start)
-      end
-
-      def prepare_to_render
-        data[:data] = @workplaces
+        @workplaces = @workplaces
                         .includes(
                           :user_iss,
                           :workplace_type,
@@ -48,7 +44,11 @@ module Invent
                           :iss_reference_building,
                           :iss_reference_room,
                           items: [:type, :model, property_values: %i[property property_list]]
-                        )
+                        ).order(workplace_id: :desc).limit(@length).offset(@start)
+      end
+
+      def prepare_to_render
+        data[:data] = @workplaces
                         .as_json(
                           include: [
                             :user_iss,

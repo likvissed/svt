@@ -59,7 +59,7 @@ module Invent
       # Отфильтровать полученные данные
       def run_filters
         @workplaces = @workplaces.left_outer_joins(:user_iss).where('fio LIKE ?', "%#{@conditions['fullname']}%") if @conditions['fullname'].present?
-        @workplaces = @workplaces.left_outer_joins(:items).where('invent_num LIKE ?', "%#{@conditions['invent_num']}%") if @conditions['invent_num'].present?
+        @workplaces = @workplaces.includes(:items).where('invent_item.invent_num LIKE ?', "%#{@conditions['invent_num']}%").references(:items) if @conditions['invent_num'].present?
         @workplaces = @workplaces.where(workplace_count_id: @conditions['workplace_count_id']) unless @conditions['workplace_count_id'].to_i.zero?
         @workplaces = @workplaces.where(status: @conditions['status']) if @conditions.has_key?('status') && @conditions['status'] != 'all'
         @workplaces = @workplaces.where(workplace_type_id: @conditions['workplace_type_id']) unless @conditions['workplace_type_id'].to_i.zero?
