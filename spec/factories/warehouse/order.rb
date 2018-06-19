@@ -6,7 +6,7 @@ module Warehouse
       # validator_id_tn 5336
       operation :in
       status 'processing'
-      consumer_dept { inv_workplace.try(:workplace_count).try(:division) || ***REMOVED*** }
+      consumer_dept { inv_workplace.try(:division) }
       comment ''
       skip_validator true
 

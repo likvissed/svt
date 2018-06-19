@@ -702,7 +702,7 @@
     // Тип техники: новая или б/у
     this.itemType = '';
     // Отдел необходим для ограничения выборки техники (в окне поиска техники)
-    $scope.division = this.Workplace.workplace.division.division;
+    // $scope.division = this.Workplace.workplace.division.division;
 
     $scope.$on('removeDuplicateInvItems', function(event, data) {
       self._removeDuplicateItems(data);

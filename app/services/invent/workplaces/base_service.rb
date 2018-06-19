@@ -52,7 +52,8 @@ module Invent
         swap = Warehouse::Orders::Swap.new(@current_user, @workplace.workplace_id, @swap)
         return true if swap.run
 
-        errors.add(:base, swap.error[:full_message])
+        # errors.add(:base, swap.error[:full_message])
+        @error = swap.error
         raise 'Не удалось перенести технику'
       end
 

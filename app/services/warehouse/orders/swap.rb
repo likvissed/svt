@@ -32,7 +32,7 @@ module Warehouse
       end
 
       def find_inv_items
-        @inv_items_obj = Invent::Item.find(@inv_item_ids).group_by(&:workplace_id)
+        @inv_items_obj = Invent::Item.includes(workplace: :workplace_count).find(@inv_item_ids).group_by(&:workplace_id)
       end
 
       def wrap_in_orders
@@ -60,7 +60,7 @@ module Warehouse
       end
 
       def create_in_order(inv_items)
-        init_order(:in)
+        init_order(:in, consumer_dept: inv_items.first.workplace.division)
 
         inv_items.each do |inv_item|
           op = @order.operations.build(
@@ -126,12 +126,12 @@ module Warehouse
         end
       end
 
-      def init_order(operation)
+      def init_order(operation, **params)
         @order = Order.new(
           inv_workplace: @workplace,
           consumer: @workplace.user_iss,
           operation: operation,
-          consumer_dept: @workplace.division,
+          # consumer_dept: params[:consumer_dept] || @workplace.division,
           skip_validator: true
         )
         @order.set_creator(current_user)

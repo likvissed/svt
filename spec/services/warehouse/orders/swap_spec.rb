@@ -91,17 +91,25 @@ module Warehouse
         let!(:workplace_4) { create(:workplace_pk, :add_items, items: %i[pc monitor], dept: ***REMOVED***) }
         let(:swap_items) { [workplace_2.items.last.item_id, workplace_4.items.first.item_id] }
 
-        its(:run) { is_expected.to be_falsey }
+        its(:run) { is_expected.to be_truthy }
 
-        it 'does not create any order' do
-          expect { subject.run }.not_to change(Order, :count)
+        # it 'does not create any order' do
+        #   expect { subject.run }.not_to change(Order, :count)
+        # end
+
+        it 'creates as many warehouse_orders as the number of workplaces is specified' do
+          expect { subject.run }.to change(Order, :count).by(2*2)
         end
 
         it 'does not change :workplace attribute of selected items' do
           subject.run
-          expect(workplace_1.reload.items.count).to eq 2
-          expect(workplace_2.reload.items.count).to eq 2
-          expect(workplace_4.reload.items.count).to eq 2
+          # expect(workplace_1.reload.items.count).to eq 2
+          # expect(workplace_2.reload.items.count).to eq 2
+          # expect(workplace_4.reload.items.count).to eq 2
+
+          expect(workplace_1.reload.items.count).to eq 4
+          expect(workplace_2.reload.items.count).to eq 1
+          expect(workplace_4.reload.items.count).to eq 1
         end
       end
 

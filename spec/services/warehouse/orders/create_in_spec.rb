@@ -6,13 +6,15 @@ module Warehouse
       let!(:current_user) { create(:***REMOVED***_user) }
       let(:workplace_1) { create(:workplace_pk, :add_items, items: %i[pc monitor], dept: ***REMOVED***) }
       let(:workplace_2) { create(:workplace_pk, :add_items, items: %i[pc monitor], dept: ***REMOVED***) }
+      let(:workplace_3) { create(:workplace_pk, :add_items, items: %i[pc monitor], dept: 712) }
       let(:operation_1) { attributes_for(:order_operation, inv_item_ids: [workplace_1.items.first.item_id]) }
       let(:operation_2) { attributes_for(:order_operation, inv_item_ids: [workplace_2.items.first.item_id]) }
       let(:operation_3) { attributes_for(:order_operation, item_type: 'Мышь', item_model: 'Logitech') }
+      let(:operation_4) { attributes_for(:order_operation, inv_item_ids: [workplace_3.items.first.item_id]) }
       let(:order_params) do
         order = attributes_for(:order)
         # Операции с инв. номером
-        order[:operations_attributes] = [operation_1, operation_2]
+        order[:operations_attributes] = [operation_1, operation_2, operation_4]
         # Операции без инв. номера
         order[:operations_attributes] << operation_3
         order
@@ -89,12 +91,12 @@ module Warehouse
       end
 
       it 'creates as many warehouse_orders as the number of workplaces is specified in the operations_attributes (plus one more if the operation does not have invent_item_id param)' do
-        expect { subject.run }.to change(Order, :count).by(3)
+        expect { subject.run }.to change(Order, :count).by(4)
       end
 
       it 'sets total count of created orders to the data variable' do
         subject.run
-        expect(subject.data).to eq 3
+        expect(subject.data).to eq 4
       end
 
       it 'changes status to :waiting_bring of each selected item' do

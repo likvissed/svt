@@ -11,7 +11,7 @@ module Warehouse
     it { is_expected.to belong_to(:consumer).class_name('UserIss').with_foreign_key('consumer_id_tn') }
     it { is_expected.to belong_to(:validator).class_name('UserIss').with_foreign_key('validator_id_tn') }
     it { is_expected.to validate_presence_of(:operation) }
-    it { is_expected.to validate_presence_of(:status) }
+    # it { is_expected.to validate_presence_of(:status) }
     it { is_expected.to validate_presence_of(:creator_fio) }
     it { is_expected.not_to validate_presence_of(:consumer_fio) }
     it { is_expected.not_to validate_presence_of(:consumer_dept) }
@@ -35,11 +35,21 @@ module Warehouse
       it { is_expected.to validate_presence_of(:invent_workplace_id) }
     end
 
-    context 'when operation is :in' do
-      subject { build(:order, operation: :in) }
+    # context 'when operation is :in' do
+    #   before { subject.dont_calculate_status = true }
 
-      it { is_expected.to validate_presence_of(:consumer_dept) }
-    end
+    #   context 'and when status is done' do
+    #     subject { build(:order, operation: :in, status: :done) }
+
+    #     it { is_expected.to validate_presence_of(:consumer_dept) }
+    #   end
+
+    #   context 'and when status is not done' do
+    #     subject { build(:order, operation: :in, status: :processing) }
+
+    #     it { is_expected.not_to validate_presence_of(:consumer_dept) }
+    #   end
+    # end
 
     describe '#any_inv_item_to_operation?' do
       context 'when operation has inv_item_to_operations' do
@@ -59,26 +69,26 @@ module Warehouse
       end
     end
 
-    describe '#presence_consumer' do
-      subject { build(:order, operations: operations) }
-      before { subject.valid? }
+    # describe '#presence_consumer' do
+    #   subject { build(:order, operations: operations) }
+    #   before { subject.valid? }
 
-      context 'when one of operations status is done' do
-        let(:operations) { [build(:order_operation, status: :done), build(:order_operation)] }
+    #   context 'when one of operations status is done' do
+    #     let(:operations) { [build(:order_operation, status: :done), build(:order_operation)] }
 
-        it 'adds error :blank to the consumer' do
-          expect(subject.errors.details[:consumer]).to include(error: :blank)
-        end
-      end
+    #     it 'adds error :blank to the consumer' do
+    #       expect(subject.errors.details[:consumer]).to include(error: :blank)
+    #     end
+    #   end
 
-      context 'when all of operations status is processing' do
-        let(:operations) { [build(:order_operation), build(:order_operation)] }
+    #   context 'when all of operations status is processing' do
+    #     let(:operations) { [build(:order_operation), build(:order_operation)] }
 
-        it 'adds error :blank to the consumer' do
-          expect(subject.errors.details[:consumer]).to be_empty
-        end
-      end
-    end
+    #     it 'adds error :blank to the consumer' do
+    #       expect(subject.errors.details[:consumer]).to be_empty
+    #     end
+    #   end
+    # end
 
     describe '#uniqueness_of_workplace' do
       let!(:workplace_1) { create(:workplace_pk, :add_items, items: %i[pc monitor], dept: ***REMOVED***) }
@@ -136,7 +146,6 @@ module Warehouse
         subject { build(:order, status: :done) }
 
         it 'does not change status' do
-          subject.valid?
           expect(subject.done?).to be_truthy
         end
       end
@@ -309,15 +318,26 @@ module Warehouse
       end
     end
 
-    describe '#set_consumer_dept' do
+    describe '#set_consumer_dept_out' do
       let!(:workplace) { create(:workplace_pk, :add_items, items: %i[pc monitor], dept: ***REMOVED***) }
 
       context 'when operation is :in' do
-        subject { build(:order, inv_workplace: workplace, consumer_dept: nil) }
+        context 'and when item with invent_num' do
+          subject { build(:order, inv_workplace: workplace, consumer_dept: nil) }
 
-        it 'does not change :consumer_dept attribute' do
-          subject.valid?
-          expect(subject.consumer_dept).to be_nil
+          it 'gets consumer_dept from WorkplaceCount' do
+            subject.valid?
+            expect(subject.consumer_dept).to eq workplace.division
+          end
+        end
+
+        context 'and when item without invent_num' do
+          subject { build(:order, inv_workplace: nil, consumer_tn: 12321, consumer_dept: nil) }
+
+          it 'gets consumer_dept from UserIss' do
+            subject.valid?
+            expect(subject.consumer_dept).to eq subject.consumer.dept.to_s
+          end
         end
       end
 
@@ -455,32 +475,37 @@ module Warehouse
       end
     end
 
-    describe '#compare_consumer_dept' do
-      context 'when consumer_dept does not match with division of the selected item' do
-        let!(:workplace_***REMOVED***) { create(:workplace_pk, :add_items, items: %i[pc monitor], dept: ***REMOVED***) }
-        let!(:workplace_***REMOVED***) { create(:workplace_pk, :add_items, items: %i[pc monitor], dept: ***REMOVED***) }
-        let(:operations) { [build(:order_operation, inv_items: [workplace_***REMOVED***.items.last])] }
-        subject { build(:order, operations: operations, consumer_dept: ***REMOVED***) }
+    # describe '#compare_consumer_dept' do
+    #   context 'when consumer_dept does not match with division of the selected item' do
+    #     let!(:workplace_***REMOVED***) { create(:workplace_pk, :add_items, items: %i[pc monitor], dept: ***REMOVED***) }
+    #     let!(:workplace_***REMOVED***) { create(:workplace_pk, :add_items, items: %i[pc monitor], dept: ***REMOVED***) }
+    #     let(:operations) {
+    #       [
+    #         build(:order_operation, inv_items: [workplace_***REMOVED***.items.last]),
+    #         build(:order_operation, inv_items: [workplace_***REMOVED***.items.last])
+    #       ]
+    #     }
+    #     subject { build(:order, operations: operations, consumer_dept: ***REMOVED***) }
 
-        it { is_expected.not_to be_valid }
+    #     it { is_expected.not_to be_valid }
 
-        it 'adds :dept_does_not_match error' do
-          subject.valid?
-          expect(subject.errors.details[:base]).to include(error: :dept_does_not_match, dept: subject.consumer_dept)
-        end
-      end
+    #     it 'adds :dept_does_not_match error' do
+    #       subject.valid?
+    #       expect(subject.errors.details[:base]).to include(error: :dept_does_not_match, dept: subject.consumer_dept)
+    #     end
+    #   end
 
-      context 'when inv_item already does not have workplace_id (workplace was removed?)' do
-        let(:item) { create(:item, :with_property_values, type_name: :monitor) }
-        let(:operation) { build(:order_operation, inv_items: [item]) }
-        subject { build(:order, operations: [operation], consumer_dept: ***REMOVED***) }
+    #   context 'when inv_item already does not have workplace_id (workplace was removed?)' do
+    #     let(:item) { create(:item, :with_property_values, type_name: :monitor) }
+    #     let(:operation) { build(:order_operation, inv_items: [item]) }
+    #     subject { build(:order, operations: [operation], consumer_dept: ***REMOVED***) }
 
-        it 'does not add :dept_does_not_match error' do
-          subject.valid?
-          expect(subject.errors.details[:base]).not_to include(error: :dept_does_not_match, dept: subject.consumer_dept)
-        end
-      end
-    end
+    #     it 'does not add :dept_does_not_match error' do
+    #       subject.valid?
+    #       expect(subject.errors.details[:base]).not_to include(error: :dept_does_not_match, dept: subject.consumer_dept)
+    #     end
+    #   end
+    # end
 
     describe '#check_operation_shift' do
       context 'when one of operations :shift attribtue is not equal 1' do
@@ -560,7 +585,7 @@ module Warehouse
 
     describe '#prevent_update_attributes' do
       let(:user) { create(:user) }
-      subject { create(:order) }
+      subject { create(:order, consumer_id_tn: user.id_tn) }
       let!(:old_params) do
         {
           invent_workplace_id: subject.invent_workplace_id,
@@ -572,6 +597,7 @@ module Warehouse
       it 'prevents changes of :workplace attribute' do
         subject.invent_workplace_id = 123
         subject.save(validate: false)
+
         expect(subject.reload.invent_workplace_id).to eq old_params[:invent_workplace_id]
         expect(subject.errors.details[:inv_workplace]).to include(error: :cannot_update)
       end
@@ -579,6 +605,7 @@ module Warehouse
       it 'prevents changes of :operation attribute' do
         subject.operation = :out
         subject.save(validate: false)
+
         expect(subject.reload.operation).to eq old_params[:operation]
         expect(subject.errors.details[:operation]).to include(error: :cannot_update)
       end
@@ -586,6 +613,7 @@ module Warehouse
       it 'prevents changes of :consumer_dept attribute' do
         subject.consumer_dept = 123
         subject.save(validate: false)
+
         expect(subject.reload.consumer_dept).to eq old_params[:consumer_dept]
         expect(subject.errors.details[:consumer_dept]).to include(error: :cannot_update)
       end
