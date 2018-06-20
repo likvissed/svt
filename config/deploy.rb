@@ -36,6 +36,7 @@ set :ssh_options, forward_agent: false, user: 'deployer'
 #   keys:               %w(/home/developer/.ssh/id_rsa),
 
 server 'dc', user: 'deployer', roles: %w[web app db]
+set :pty, true
 
 # Repo details
 set :rbenv_ruby, '2.3.1'
@@ -87,5 +88,13 @@ task :recreate_db do
   end
 end
 
+desc 'Restart sidekiq'
+task 'sidekiq:restart' do
+  on roles(:app), in: :sequence, wait: 5 do
+    execute :sudo, :systemctl, :restart, "sidekiq-#{fetch(:rails_env)}"
+  end
+end
+
 after 'deploy', 'deploy:cleanup'
+after 'deploy', 'sidekiq:restart'
 after 'deploy:publishing', 'deploy:restart'
