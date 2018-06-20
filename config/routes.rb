@@ -1,9 +1,15 @@
 Rails.application.routes.draw do
+  require 'sidekiq/web'
+
   devise_for :users, controllers: { omniauth_callbacks: 'users/callbacks' }
 
   authenticated :user do
     # root 'invent/workplaces#index', as: :authenticated_root
     root to: redirect(path: '/invent/workplaces'), as: :authenticated_root
+  end
+
+  authenticate :user, lambda { |u| u.role? :admin } do
+    mount Sidekiq::Web => '/sidekiq'
   end
 
   devise_scope :user do

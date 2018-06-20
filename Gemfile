@@ -13,7 +13,8 @@ gem 'binding_of_caller'
 gem 'responders'
 
 # Background processing
-# gem 'sidekiq'
+gem 'sidekiq'
+gem 'sidekiq-scheduler'
 
 # Authorization
 gem 'devise'

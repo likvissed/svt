@@ -1,7 +1,9 @@
 require 'spec_helper'
+require 'sidekiq/testing'
 
 RSpec.configure do |config|
   Capybara.javascript_driver = :webkit
+  Sidekiq::Testing.inline!
 
   config.include FeatureMacros, type: :feature
 
@@ -29,6 +31,7 @@ RSpec.configure do |config|
   # Перед каждым тестом устанавливаем стратегию transaction. То есть данные не сохраняются в базу. Транзакция очищается
   # после завершения теста.
   config.before(:each) do
+    Sidekiq::Worker.clear_all
     ActiveRecord::Base.establish_connection invent_db
     DatabaseCleaner.strategy = :transaction
     ActiveRecord::Base.establish_connection local_db
