@@ -114,3 +114,5 @@
               - if current_user.one_of_roles? :admin, :manager
                 li.divider role="separator"
                 li= link_to "Пользователи", users_path
+              - if current_user.role? :admin
+                li= link_to "Sidekiq", sidekiq_web_path, target: :_blank
