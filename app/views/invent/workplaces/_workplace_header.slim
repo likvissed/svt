@@ -32,7 +32,7 @@
     .navbar-form.navbar-right
       .btn-group
         = button_tag "Готово", class: "btn-success", "ng-click": "wp.saveWorkplace()"
-        = link_to "Отмена", request.referrer, class: "btn btn-default"
+        = link_to "Отмена", invent_workplaces_path, class: "btn btn-default"
     .divider-vertical.navbar-right
     - if !current_user.role? :***REMOVED***_user
       span.ng-hide ng-show="wp.workplace.workplace_id"

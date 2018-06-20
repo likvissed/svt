@@ -295,6 +295,7 @@
       setTemplate: function(data) {
         templateItem = data;
         templateItem['type'] = selectEqType;
+        templateItem['model'] = null;
       },
       /**
        * Получить шаблонный объект экземпляра техники.

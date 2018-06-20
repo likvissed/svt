@@ -69,6 +69,27 @@ module Warehouse
             expect(new_operations.last.item.count).to eq operation_2[:shift]
           end
         end
+
+        context 'and when item with the same model exist (but with :used type)' do
+          let!(:item) { create(:item, :with_property_values, type_name: :printer, model: model) }
+          let!(:w_item) { create(:used_item, inv_item: item, count_reserved: 1) }
+
+          its(:run) { is_expected.to be_truthy }
+
+          it 'creates operations' do
+            expect { subject.run }.to change(Operation, :count).by(2)
+          end
+
+          it 'creates items' do
+            expect { subject.run }.to change(Item, :count).by(2)
+          end
+
+          it 'sets into the :count attribute value specified in the associated operation' do
+            subject.run
+            expect(Supply.last.items.first.count).to eq operation_1[:shift]
+            expect(Supply.last.items.last.count).to eq operation_2[:shift]
+          end
+        end
       end
 
       context 'when remove existing operation' do

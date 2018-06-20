@@ -13,7 +13,7 @@ module Warehouse
     belongs_to :validator, foreign_key: 'validator_id_tn', class_name: 'UserIss', optional: true
 
     validates :operation, :status, :creator_fio, presence: true
-    validates :consumer_dept, presence: true, if: -> { operation == 'in' }
+    # validates :consumer_dept, presence: true, if: -> { operation == 'in' && done? }
     validates :validator_fio, presence: { message: :empty }, if: -> { operation == 'out' && !skip_validator }
     validates :closed_time, presence: true, if: -> { done? }
     validates :invent_workplace_id, presence: true, if: -> { operation == 'out' }
@@ -25,8 +25,9 @@ module Warehouse
     before_validation :set_consumer, if: -> { consumer_tn.present? || consumer_fio.present? || consumer }
     before_validation :set_closed_time, if: -> { done? && status_changed? }
     before_validation :set_workplace, if: -> { errors.empty? && any_inv_item_to_operation? && new_record? && operation == 'in' }
-    before_validation :set_consumer_dept, if: -> { operation == 'out' }
-    before_save :calculate_status
+    before_validation :set_consumer_dept_out, if: -> { operation == 'out' }
+    before_validation :set_consumer_dept_in, if: -> { operation == 'in' }
+    before_validation :calculate_status, unless: -> { dont_calculate_status }
     before_update :prevent_update_done_order
     before_update :prevent_update_attributes
     before_destroy :prevent_destroy, prepend: true
@@ -39,6 +40,8 @@ module Warehouse
     attr_accessor :consumer_tn
     # Флаг указывает, что расходный ордер валидный без поля validator_fio (нужно в случаях изменения позиций ордера)
     attr_accessor :skip_validator
+    # Флаг указывает, что нужно пропустить вычисление статуса
+    attr_accessor :dont_calculate_status
 
     def set_creator(user)
       self.creator_id_tn = user.id_tn
@@ -84,7 +87,7 @@ module Warehouse
       presence_consumer if operations.any?(&:done?)
       check_operation_list
       uniqueness_of_workplace if any_inv_item_to_operation?
-      compare_consumer_dept if any_inv_item_to_operation? && errors.empty?
+      # compare_consumer_dept if any_inv_item_to_operation? && errors.empty?
       check_operation_shift
 
       # Эта валидация должна быть самой последней
@@ -130,10 +133,14 @@ module Warehouse
       self.invent_workplace_id = operations.find { |op| op.inv_items.any? }.inv_items.first.workplace_id
     end
 
-    def set_consumer_dept
+    def set_consumer_dept_out
       return unless inv_workplace
 
-      self.consumer_dept = inv_workplace.workplace_count.division
+      self.consumer_dept = inv_workplace.division
+    end
+
+    def set_consumer_dept_in
+      self.consumer_dept = inv_workplace.try(:division) || UserIss.where(tn: consumer_tn).or(UserIss.where(fio: consumer_fio)).first.try(:dept)
     end
 
     def check_operation_list
@@ -164,7 +171,7 @@ module Warehouse
       division = operations.first.inv_items.first.try(:workplace).try(:division)
       return if !division || division == consumer_dept
 
-      errors.add(:base, :dept_does_not_match, dept: consumer_dept)
+      errors.add(:base, :dept_does_not_match, dept: consumer_dept) if count > 1
     end
 
     # Для приходящего ордера shift должен быть равен 1
@@ -184,7 +191,7 @@ module Warehouse
     def prevent_update_attributes
       errors.add(:inv_workplace, :cannot_update) if invent_workplace_id_changed?
       errors.add(:operation, :cannot_update) if operation_changed?
-      errors.add(:consumer_dept, :cannot_update) if consumer_dept_changed?
+      errors.add(:consumer_dept, :cannot_update) if consumer_dept_changed? && !consumer_dept_was.nil?
 
       throw(:abort) if errors.any?
     end

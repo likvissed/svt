@@ -1,6 +1,10 @@
 script type="text/ng-template" id="newItem.slim"
   .modal-header
-    h4 Добавить технику
+    .pull-left
+      h4 Добавить технику
+    .pull-right
+      .icon-block
+        = render partial: 'templates/load_spinner'
   .modal-body
     .form-group
       = radio_button_tag :new_item, "new", false, "ng-model": "select.itemType"

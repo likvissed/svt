@@ -41,7 +41,7 @@ module Warehouse
           op['item'] = if item['id']
                          Item.find(item['id'])
                        else
-                         Item.find_by(item_type: item['item_type'], item_model: item['item_model']) || Item.new(item)
+                         Item.find_by(item_type: item['item_type'], item_model: item['item_model'], used: false) || Item.new(item)
                        end
 
           op['item'].used = false

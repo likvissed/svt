@@ -58,7 +58,7 @@ module Warehouse
         end
       end
 
-      context 'when item already exists' do
+      context 'when item already exists (with :new type)' do
         let!(:existing_item_1) { create(:new_item, warehouse_type: :without_invent_num, item_type: 'Мышь', item_model: 'ASUS', count: 5) }
         let!(:existing_item_2) { create(:new_item, warehouse_type: :without_invent_num, item_type: 'Клавиатура', item_model: 'ASUS', count: 7) }
 
@@ -84,6 +84,31 @@ module Warehouse
           subject.run
           expect(Supply.last.items.last.count).to eq operation_1[:shift]
           expect(Supply.last.items.first.count).to eq operation_2[:shift] + existing_item_2.count
+        end
+      end
+
+      context 'and when item with the same model exist (but with :used type)' do
+        let!(:item) { create(:item, :with_property_values, type_name: :monitor, model: model) }
+        let!(:w_item) { create(:used_item, inv_item: item, count_reserved: 1) }
+
+        its(:run) { is_expected.to be_truthy }
+
+        it 'creates supply' do
+          expect { subject.run }.to change(Supply, :count).by(1)
+        end
+
+        it 'creates operations' do
+          expect { subject.run }.to change(Operation, :count).by(2)
+        end
+
+        it 'creates items' do
+          expect { subject.run }.to change(Item, :count).by(2)
+        end
+
+        it 'sets into the :count attribute value specified in the associated operation' do
+          subject.run
+          expect(Supply.last.items.first.count).to eq operation_1[:shift]
+          expect(Supply.last.items.last.count).to eq operation_2[:shift]
         end
       end
     end

@@ -52,14 +52,18 @@ module Invent
         swap = Warehouse::Orders::Swap.new(@current_user, @workplace.workplace_id, @swap)
         return true if swap.run
 
-        errors.add(:base, swap.error[:full_message])
+        # errors.add(:base, swap.error[:full_message])
+        @error = swap.error
         raise 'Не удалось перенести технику'
       end
 
       # Отфильтровать полученные данные
       def run_filters
         @workplaces = @workplaces.left_outer_joins(:user_iss).where('fio LIKE ?', "%#{@conditions['fullname']}%") if @conditions['fullname'].present?
-        @workplaces = @workplaces.left_outer_joins(:items).where('invent_num LIKE ?', "%#{@conditions['invent_num']}%") if @conditions['invent_num'].present?
+        if @conditions['invent_num'].present?
+          items = Invent::Item.where('invent_item.invent_num LIKE ?', "%#{@conditions['invent_num']}%")
+          @workplaces = @workplaces.where(items: items)
+        end
         @workplaces = @workplaces.where(workplace_count_id: @conditions['workplace_count_id']) unless @conditions['workplace_count_id'].to_i.zero?
         @workplaces = @workplaces.where(status: @conditions['status']) if @conditions.has_key?('status') && @conditions['status'] != 'all'
         @workplaces = @workplaces.where(workplace_type_id: @conditions['workplace_type_id']) unless @conditions['workplace_type_id'].to_i.zero?
