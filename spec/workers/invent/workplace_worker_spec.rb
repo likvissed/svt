@@ -12,7 +12,8 @@ module Invent
           let!(:workplace) { create(:workplace_pk, :add_items, items: [:pc, :monitor], status: status) }
 
           it 'does not change workplace status' do
-            expect { subject.perform }.not_to change(workplace, :status)
+            subject.perform
+            expect(workplace.reload.status).to eq status.to_s
           end
         end
       end
@@ -27,7 +28,8 @@ module Invent
 
     context 'when workplace has responsible user' do
       it 'does not change workplace status' do
-        expect { subject.perform }.not_to change(workplace, :status)
+        subject.perform
+        expect(workplace.reload.status).to eq 'confirmed'
       end
     end
 
