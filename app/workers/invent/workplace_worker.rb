@@ -8,6 +8,6 @@ class Invent::WorkplaceWorker
       wp.workplace_id
     end.compact
 
-    Invent::Workplace.where(workplace_id: ids).update_all(status: :freezed)
+    Invent::Workplace.where(workplace_id: ids).update_all(status: :freezed) if ids.any?
   end
 end
