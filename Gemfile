@@ -39,7 +39,7 @@ gem 'rubocop', require: false
 gem 'safe_attributes'
 gem 'simple_form'
 gem 'slim'
-gem 'webpacker', '~> 3.0'
+gem 'webpacker'
 
 # Bundle edge Rails instead: gem 'rails', github: 'rails/rails'
 gem 'rails', '~> 5.1.1'

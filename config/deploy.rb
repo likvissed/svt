@@ -62,6 +62,15 @@ namespace :deploy do
       execute :touch, release_path.join('tmp/restart.txt')
     end
   end
+
+  desc 'Run rake yarn:install'
+  task :yarn_install do
+    on roles(:web) do
+      within release_path do
+        execute("cd #{release_path} && yarn install")
+      end
+    end
+  end
 end
 
 desc 'Add default data to the database'
@@ -95,6 +104,8 @@ task 'sidekiq:restart' do
   end
 end
 
+
+before "deploy:assets:precompile", "deploy:yarn_install"
 after 'deploy', 'deploy:cleanup'
 after 'deploy', 'sidekiq:restart'
 after 'deploy:publishing', 'deploy:restart'

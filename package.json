@@ -7,7 +7,7 @@
   "license": "MIT",
   "private": true,
   "dependencies": {
-    "@rails/webpacker": "^3.0.2",
+    "@rails/webpacker": "3.5",
     "angular": "1.5.x",
     "angular-actioncable": "^1.1.1",
     "angular-animate": "1.5.x",
@@ -24,6 +24,6 @@
     "ui-select": "^0.19.8"
   },
   "devDependencies": {
-    "webpack-dev-server": "^2.9.4"
+    "webpack-dev-server": "2.11.2"
   }
 }
