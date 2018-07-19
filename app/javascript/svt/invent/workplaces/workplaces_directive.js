@@ -1,3 +1,5 @@
+import { app } from '../../app/app';
+
 (function() {
   'use strict';
 

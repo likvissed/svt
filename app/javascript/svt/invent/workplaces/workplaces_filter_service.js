@@ -1,3 +1,5 @@
+import { app } from '../../app/app';
+
 (function () {
   'use strict';
 
@@ -36,7 +38,7 @@
    * Получить выбранные фильтры.
    */
   WorkplacesFilter.prototype.get = function() {
-    var obj = angular.copy(this.selectedTableFilters);
+    let obj = angular.copy(this.selectedTableFilters);
     obj.workplace_count_id = obj.division.workplace_count_id;
     delete(obj.division);
 

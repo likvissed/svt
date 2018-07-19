@@ -1,3 +1,5 @@
+import { app } from '../../app/app';
+
 (function() {
   'use strict';
 
@@ -31,7 +33,7 @@
   }
 
   WorkplaceIndexCtrl.prototype.reloadWorkplaces = function() {
-    var broadcast = this.listType ? 'WorkplaceTableCtrl::reloadWorkplacesList' : 'WorkplaceTableCtrl::reloadWorkplacesTable';
+    let broadcast = this.listType ? 'WorkplaceTableCtrl::reloadWorkplacesList' : 'WorkplaceTableCtrl::reloadWorkplacesTable';
     this.$scope.$broadcast(broadcast, null);
   };
 
@@ -45,8 +47,6 @@
    * Управление таблицей рабочих мест.
    */
   function WorkplaceTableCtrl($scope, Workplaces, ActionCableChannel, TablePaginator, Server, Config, Flash, Error) {
-    var self = this;
-
     this.Workplaces = Workplaces;
     this.ActionCableChannel = ActionCableChannel;
     this.TablePaginator = TablePaginator;
@@ -59,9 +59,7 @@
     this._loadWorkplaces(true);
     this._initActionCable();
 
-    $scope.$on('WorkplaceTableCtrl::reloadWorkplacesTable', function() {
-      self.reloadWorkplaces();
-    });
+    $scope.$on('WorkplaceTableCtrl::reloadWorkplacesTable', () => this.reloadWorkplaces());
 
   // /**
   //  * Заполнить данные фильтров.
@@ -123,12 +121,8 @@
    * @param init
    */
   WorkplaceTableCtrl.prototype._loadWorkplaces = function(init) {
-    var self = this;
-
     this.Workplaces.loadWorkplaces(init).then(
-      function(response) {
-        self.workplaces = self.Workplaces.workplaces;
-      }
+      (response) => this.workplaces = this.Workplaces.workplaces
     );
   };
 
@@ -136,13 +130,9 @@
    * Инициировать подключение к каналу WorkplacesChannel.
    */
   WorkplaceTableCtrl.prototype._initActionCable = function() {
-    var
-      self = this,
-      consumer = new this.ActionCableChannel('Invent::WorkplacesChannel');
+    let consumer = new this.ActionCableChannel('Invent::WorkplacesChannel');
 
-    consumer.subscribe(function() {
-      self._loadWorkplaces();
-    });
+    consumer.subscribe(() => this._loadWorkplaces());
   };
 
   /**
@@ -158,20 +148,15 @@
    * @param id
    */
   WorkplaceTableCtrl.prototype.destroyWp = function(id) {
-    var
-      self = this,
-      confirm_str = "Вы действительно хотите удалить рабочее место \"" + id + "\"?";
+    let confirm_str = "Вы действительно хотите удалить рабочее место \"" + id + "\"?";
 
     if (!confirm(confirm_str)) { return false; }
 
     this.Server.Invent.Workplace.delete(
       { workplace_id: id },
-      function(response) {
-        self.Flash.notice(response.full_message);
-      },
-      function(response, status) {
-        self.Error.response(response, status);
-      });
+      (response) => this.Flash.notice(response.full_message),
+      (response, status) => this.Error.response(response, status)
+    );
   };
 
 // =====================================================================================================================
@@ -182,8 +167,6 @@
    * @class SVT.WorkplaceListCtrl
    */
   function WorkplaceListCtrl($scope, Workplaces, ActionCableChannel, TablePaginator, Server, Config, Flash, Error) {
-    var self = this;
-
     this.Workplaces = Workplaces;
     this.ActionCableChannel = ActionCableChannel;
     this.Server = Server;
@@ -195,9 +178,7 @@
     this._loadWorkplaces();
     this._initActionCable();
 
-    $scope.$on('WorkplaceTableCtrl::reloadWorkplacesList', function() {
-      self.reloadWorkplaces();
-    });
+    $scope.$on('WorkplaceTableCtrl::reloadWorkplacesList', () => this.reloadWorkplaces());
 
     // var checkboxCell = '<input ng-model="wpList.flags.all" ng-click="wpList.toggleAll()" ng-disabled="wpList.isEmptyWorkplace()" type="checkbox">';
 
@@ -235,12 +216,8 @@
    * @param init
    */
   WorkplaceListCtrl.prototype._loadWorkplaces = function(init) {
-    var self = this;
-
     this.Workplaces.loadListWorkplaces().then(
-      function(response) {
-        self.workplaces = self.Workplaces.workplaces;
-      }
+      (response) => this.workplaces = this.Workplaces.workplaces
     );
   };
 
@@ -248,13 +225,9 @@
    * Инициировать подключение к каналу WorkplacesListChannel.
    */
   WorkplaceListCtrl.prototype._initActionCable = function() {
-    var
-      self = this,
-      consumer = new this.ActionCableChannel('Invent::WorkplacesListChannel');
+    let consumer = new this.ActionCableChannel('Invent::WorkplacesListChannel');
 
-    consumer.subscribe(function() {
-      self._loadWorkplaces();
-    });
+    consumer.subscribe(() => this._loadWorkplaces());
   };
 
   /**
@@ -270,20 +243,15 @@
    * @param id
    */
   WorkplaceListCtrl.prototype.destroyWp = function(id) {
-    var
-      self = this,
-      confirm_str = "Вы действительно хотите удалить рабочее место \"" + id + "\"?";
+    let confirm_str = "Вы действительно хотите удалить рабочее место \"" + id + "\"?";
 
     if (!confirm(confirm_str)) { return false; }
 
     this.Server.Invent.Workplace.delete(
       { workplace_id: id },
-      function(response) {
-        self.Flash.notice(response.full_message);
-      },
-      function(response, status) {
-        self.Error.response(response, status);
-      });
+      (response) => this.Flash.notice(response.full_message),
+      (response, status) => this.Error.response(response, status)
+    );
   };
 
   // /**
@@ -423,30 +391,28 @@
   }
 
   WorkplaceEditCtrl.prototype.init = function(id) {
-    var self = this;
+    this.additional = this.Item.getAdditional();
 
-    self.additional = self.Item.getAdditional();
-
-    this.Workplace.init(id).then(function() {
+    this.Workplace.init(id).then(() => {
       // Список типов РМ
-      self.wp_types = self.Workplace.wp_types;
+      this.wp_types = this.Workplace.wp_types;
       // Типы оборудования на РМ с необходимыми для заполнения свойствами
-      self.eq_types = self.Item.getTypes();
+      this.eq_types = this.Item.getTypes();
       // Направления деятельности
-      self.specs = self.Workplace.specs;
+      this.specs = this.Workplace.specs;
       // Список отделов, прикрепленных к пользователю
-      self.divisions = self.Workplace.divisions;
+      this.divisions = this.Workplace.divisions;
       // Список площадок и корпусов
-      self.iss_locations = self.Workplace.iss_locations;
+      this.iss_locations = this.Workplace.iss_locations;
       // Список пользователей отдела
-      self.users = self.Workplace.users;
+      this.users = this.Workplace.users;
       // Список возможных статусов РМ
-      self.statuses = self.Workplace.statuses;
+      this.statuses = this.Workplace.statuses;
 
       // Данные о рабочем месте
-      self.workplace = self.Workplace.workplace;
+      this.workplace = this.Workplace.workplace;
 
-      if (!id) { self.loadUsers(); }
+      if (!id) { this.loadUsers(); }
     });
   };
 
@@ -454,12 +420,8 @@
    * Загрузить список работников отдела.
    */
   WorkplaceEditCtrl.prototype.loadUsers = function() {
-    var self = this;
-
     this.workplace.id_tn = null;
-    this.Workplace.loadUsers().then(function() {
-      self.users = self.Workplace.users;
-    });
+    this.Workplace.loadUsers().then(() => this.users = this.Workplace.users);
   };
 
   /**
@@ -471,7 +433,7 @@
   WorkplaceEditCtrl.prototype.formatLabel = function(id_tn) {
     if (!this.users) { return ''; }
 
-    for (var i = 0; i < this.users.length; i ++) {
+    for (let i = 0; i < this.users.length; i ++) {
       if (id_tn === this.users[i].id_tn) {
         return this.users[i].fio;
       }
@@ -550,9 +512,7 @@
    * Запустить диалоговое окно "Выбор типа устройства".
    */
   WorkplaceEditCtrl.prototype.showSelectItemType = function() {
-    var self = this;
-
-    var modalInstance = this.$uibModal.open({
+    let modalInstance = this.$uibModal.open({
       animation: this.Config.global.modalAnimation,
       templateUrl: 'newItem.slim',
       controller: 'SelectItemTypeCtrl',
@@ -560,25 +520,24 @@
       size: 'md',
       backdrop: 'static',
       resolve: {
-        data: function() {
-          return { eq_types: self.eq_types };
+        data: () => {
+          return { eq_types: this.eq_types };
         }
       }
     });
 
     modalInstance.result.then(
-      function(result) {
+      (result) => {
         if (result.item_id) {
           // Для б/у оборудования с другого РМ
-          self.Workplace.addExistingItem(result);
+          this.Workplace.addExistingItem(result);
         } else {
           // Для нового оборудования
-          self.Workplace.createItem(result);
+          this.Workplace.createItem(result);
         }
       },
-      function() {
-        self.Workplace.setFirstActiveTab()
-      });
+      () => this.Workplace.setFirstActiveTab()
+    );
   };
 
   /**
@@ -600,18 +559,12 @@
    * @param id
    */
   WorkplaceEditCtrl.prototype.destroyItem = function(item) {
-    var
-      self = this,
-      confirm_str = "ВНИМАНИЕ! Техника будет удалена без возможности восстановления! Вы действительно хотите удалить " + item.type.short_description + "?";
+    let confirm_str = "ВНИМАНИЕ! Техника будет удалена без возможности восстановления! Вы действительно хотите удалить " + item.type.short_description + "?";
 
     if (!confirm(confirm_str)) { return false; }
 
     // this.Workplace.destroyWorkplace();
-    this.Item.destroyItem(item).then(
-      function() {
-        self.Workplace.delItem(item);
-      }
-    );
+    this.Item.destroyItem(item).then(() => this.Workplace.delItem(item));
   };
 
   /**
@@ -620,9 +573,7 @@
    * @param id
    */
   WorkplaceEditCtrl.prototype.destroyWp = function() {
-    var
-      self = this,
-      confirm_str = "ВНИМАНИЕ! Вместе с рабочим местом будет удалена вся входящая в него техника! Вы действительно хотите удалить рабочее место?";
+    let confirm_str = "ВНИМАНИЕ! Вместе с рабочим местом будет удалена вся входящая в него техника! Вы действительно хотите удалить рабочее место?";
 
     if (!confirm(confirm_str)) { return false; }
 
@@ -664,8 +615,6 @@
    * @param file
    */
   ManuallyPcDialogCtrl.prototype.setPcFile = function(file) {
-    var self = this;
-
     if (!this.Item.isValidFile(file)) {
       this.Flash.alert('Необходимо загрузить текстовый файл, полученный в результате работы скачанной вами программы');
 
@@ -673,15 +622,15 @@
     }
 
     this.Workplace.matchUploadFile(file).then(
-      function(response) {
-        if (!self.Item.matchDataFromUploadedFile(self.item, response.data)) {
-          self.Flash.alert('Не удалось обработать данные. Убедитесь в том, что вы загружаете файл, созданный скачанной программой. Если ошибка не исчезает, обратитесь к администратору (т.***REMOVED***)');
+      (response) => {
+        if (!this.Item.matchDataFromUploadedFile(this.item, response.data)) {
+          this.Flash.alert('Не удалось обработать данные. Убедитесь в том, что вы загружаете файл, созданный скачанной программой. Если ошибка не исчезает, обратитесь к администратору (т.***REMOVED***)');
 
           return false;
         }
 
-        self.Flash.notice(response.full_message);
-        self.$uibModalInstance.close();
+        this.Flash.notice(response.full_message);
+        this.$uibModalInstance.close();
       }
     );
   };
@@ -689,8 +638,6 @@
 // =====================================================================================================================
 
   function SelectItemTypeCtrl($scope, $uibModalInstance, data, Workplace, Item, Flash) {
-    var self = this;
-
     this.$uibModalInstance = $uibModalInstance;
     this.Flash = Flash;
     // Типы оборудования
@@ -704,23 +651,21 @@
     // Отдел необходим для ограничения выборки техники (в окне поиска техники)
     // $scope.division = this.Workplace.workplace.division.division;
 
-    $scope.$on('removeDuplicateInvItems', function(event, data) {
-      self._removeDuplicateItems(data);
+    $scope.$on('removeDuplicateInvItems', (event, data) => {
+      this._removeDuplicateItems(data);
     });
   }
 
   /**
-   * Из массива self.items удалить технику, которая уже присутствует в составе текущего РМ.
+   * Из массива this.items удалить технику, которая уже присутствует в составе текущего РМ.
    *
    * @param items
    */
   SelectItemTypeCtrl.prototype._removeDuplicateItems = function(items) {
-    var
-      self = this,
-      index;
+    let index;
 
-    self.Workplace.workplace.items_attributes.forEach(function(item) {
-      index = items.findIndex(function(el) { return el.item_id == item.id; });
+    this.Workplace.workplace.items_attributes.forEach((item) => {
+      index = items.findIndex((el) => el.item_id == item.id);
       if (index != -1) {
         items.splice(index, 1);
       }

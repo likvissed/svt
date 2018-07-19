@@ -22,9 +22,3 @@
 // DataTables
 //= require datatables.net/js/jquery.dataTables
 //= require angular-datatables/dist/plugins/bootstrap/angular-datatables.bootstrap
-
-// App
-//= require_tree ./app
-//= require_tree ./invent
-//= require_tree ./warehouse
-//= require_tree ./users

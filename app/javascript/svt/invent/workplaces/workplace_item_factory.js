@@ -1,3 +1,5 @@
+import { app } from '../../app/app';
+
 (function() {
   'use strict';
 
@@ -6,7 +8,7 @@
   WorkplaceItem.$inject = ['$filter', 'PropertyValue', 'Server', 'Flash', 'Error'];
 
   function WorkplaceItem($filter, PropertyValue, Server, Flash, Error) {
-    var
+    let
       // Типы оборудования
       eqTypes,
       // Поле select, предлагающее выбрать тип оборудования
@@ -64,7 +66,7 @@
       item.type.models = templateSelectModel.concat(item.type.models);
 
       if (item.id) {
-        var model = item.type.models.find(function(el) { return el.model_id == item.model_id; });
+        var model = item.type.models.find((el) => el.model_id == item.model_id);
         item.model = model || templateSelectModel[1];
       } else {
         item.model = item.type.models[0];
@@ -80,10 +82,10 @@
       // Объект, содержащий количество значений для каждого свойства.
       // Ключ - property_id свойства
       // Значение - количество вхождений в массив property_values_attributes
-      var counterObj = {};
+      let counterObj = {};
 
       // Заполняем объект counterObj
-      item.property_values_attributes.forEach(function(prop_val_value) {
+      item.property_values_attributes.forEach((prop_val_value) => {
         counterObj[prop_val_value.property_id] = (counterObj[prop_val_value.property_id] || 0) + 1
       });
 
@@ -92,10 +94,10 @@
       angular.forEach(counterObj, function(counter_value, counter_key) {
         if (counter_value <= 1) { return true; }
 
-        for (var i = 1; i < counter_value; i ++) {
-          var
+        for (let i = 1; i < counter_value; i ++) {
+          let
             // Копия объекта с совпадающим property_id
-            tmpProp  = null,
+            tmpProp = null,
             // Индекс в совпавшего элемента массива
             tmpIndex = null;
 
@@ -120,7 +122,7 @@
      * @param item - элемент массива property_values_attributes
      */
     function _clearPropertyValues(item) {
-      var
+      let
         // Объект, необходимый для "запоминания" первого экземпляра свойства с типом multiple = true (Например,
         // первый жесткий диск из списка жестких дисков).
         virtualObj = {
@@ -214,7 +216,7 @@
         return false;
 
       // Массив данных с сервера для конкретного свойства
-      var filteredList = $filter('inventPropList')(prop_value.property_lists, item.model_id);
+      let filteredList = $filter('inventPropList')(prop_value.property_lists, item.model_id);
 
       // Для модели, введенной вручную, позволить пользователю вводить данные свойства вручную.
       if (!item.model_id || item.model_id == -1 || filteredList.length != 1)
@@ -232,7 +234,7 @@
      * @param data - объект данных { cpu: [], hdd: [], mb: [], ... }
      */
     function _setPcProperties(item, data) {
-      var
+      let
         // Индекс объекта prop_obj
         prop_index,
         // Объект массива properties
@@ -244,14 +246,14 @@
       angular.forEach(data, function(audit_arr, key) {
         if (!audit_arr) { return true; }
 
-        prop_index = item.type.properties.findIndex(function(prop) { return !prop._destroy && prop.name == key; })
+        prop_index = item.type.properties.findIndex((prop) => !prop._destroy && prop.name == key)
         prop_obj = item.type.properties[prop_index];
 
         if (!prop_obj) { return true; }
 
         if (prop_obj.multiple) {
           // Запоминаем prop_index, для использования внутри цикла audit_arr
-          var new_index = prop_index;
+          let new_index = prop_index;
 
           audit_arr.forEach(function(audit_value, index) {
             // Для первого элемента просто заполнить поле value
@@ -328,7 +330,7 @@
        * @param item - экземпляр техники
        */
       addProperties: function(item) {
-        var eq_value = eqTypes.find(function(type) { return type.type_id == item.type_id; });
+        let eq_value = eqTypes.find((type) => type.type_id == item.type_id);
 
         if (!eq_value) { return false; }
 
@@ -345,9 +347,7 @@
         _setModel(item);
 
         // Создаем массив filteredList
-        item.type.properties.forEach(function(prop, index) {
-          _createFilteredList(item, index, prop);
-        });
+        item.type.properties.forEach((prop, index) => _createFilteredList(item, index, prop));
       },
       /**
        * Удалить вспомогательные объекты из указанного объекта item.
@@ -358,7 +358,7 @@
         delete(item.type);
         delete(item.model);
 
-        item.property_values_attributes.forEach(function(prop_val) { delete(prop_val.filteredList) });
+        item.property_values_attributes.forEach((prop_val) => delete(prop_val.filteredList));
       },
       /**
        * Создать массив filteredList на основании выбранной модели и типа оборудования.
@@ -404,7 +404,7 @@
        * @param data - данные, прочитанные из файла (их возвращает сервер).
        */
       matchDataFromUploadedFile: function(item, data) {
-        var
+        let
           res,
           error = false,
           matchedObj = {};
@@ -493,12 +493,9 @@
       destroyItem: function(item) {
         return Server.Invent.Item.delete(
           { item_id: item.id },
-          function(response) {
-            Flash.notice(response.full_message);
-          },
-          function(response, status) {
-            Error.response(response, status);
-          }).$promise;
+          (response) => Flash.notice(response.full_message),
+          (response, status) => Error.response(response, status)
+        ).$promise;
       }
     };
   }
