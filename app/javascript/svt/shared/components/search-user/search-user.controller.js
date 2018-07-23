@@ -1,7 +1,6 @@
-import { app } from '../../app/app';
+import { app } from '../../../app/app';
 
-app
-  .controller('SearchUserController', SearchUserController);
+app.controller('SearchUserController', SearchUserController);
 
 SearchUserController.$inject = ['SearchUserService'];
 

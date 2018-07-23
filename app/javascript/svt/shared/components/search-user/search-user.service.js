@@ -1,7 +1,6 @@
-import { app } from '../../app/app';
+import { app } from '../../../app/app';
 
-app
-  .service('SearchUserService', SearchUserService);
+app.service('SearchUserService', SearchUserService);
 
 SearchUserService.$inject = ['Server', 'Flash', 'Error'];
 

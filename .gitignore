@@ -75,3 +75,4 @@ config/secrets.yml
 /public/packs-test
 yarn-debug.log*
 .yarn-integrity
+yarn-error.log

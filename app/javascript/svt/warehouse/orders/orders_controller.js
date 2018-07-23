@@ -1,5 +1,5 @@
 import { app } from '../../app/app';
-import { FormValidationController } from '../../app/app_controller';
+import { FormValidationController } from '../../shared/functions/form-validation';
 
 (function () {
   'use strict';
