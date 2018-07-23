@@ -155,7 +155,7 @@ import { FormValidationController } from '../../app/app_controller';
    */
   EditInOrderController.prototype.reloadOrder = function() {
     this.Order.reloadOrder();
-  }
+  };
 
   /**
    * Открыть форму добавления техники в позицию ордера
@@ -186,9 +186,9 @@ import { FormValidationController } from '../../app/app_controller';
   /**
    * Установить параметры пользователя, сдающего технику
    */
-  EditInOrderController.prototype.changeConsumer = function() {
-    this.Order.setConsumer(this.selectedConsumer);
-  };
+  // EditInOrderController.prototype.changeConsumer = function() {
+  //   this.Order.setConsumer(this.selectedConsumer);
+  // };
 
   /**
    * Функция для исправления бага в компоненте typeahead ui.bootstrap. Она возвращает ФИО выбранного пользователя вместо
@@ -245,7 +245,7 @@ import { FormValidationController } from '../../app/app_controller';
           this.Error.response(response, status);
           this.errorResponse(response);
         }
-      )
+      );
     } else {
       this.Server.Warehouse.Order.saveIn(
         {
@@ -260,7 +260,7 @@ import { FormValidationController } from '../../app/app_controller';
           this.Error.response(response, status);
           this.errorResponse(response);
         }
-      )
+      );
     }
   };
 
@@ -417,25 +417,22 @@ import { FormValidationController } from '../../app/app_controller';
   };
 
   ExecOrderController.prototype.deliveryItems = function() {
-    // if (!confirm('Вы действительно хотите исполнить выбранные позиции? Удалить исполненные позиции или отменить их исполнение невозмозно')) {
-    //   return false;
-    // }
+    this.Order.prepareToDeliver()
+      .then(
+        (response) => {
+          this.clearErrors();
+          let modalInstance = this.$uibModal.open({
+            templateUrl: 'deliveryOfItems.slim',
+            controller: 'DeliveryItemsCtrl',
+            controllerAs: 'delivery',
+            size: 'lg',
+            backdrop: 'static'
+          });
 
-    this.Order.prepareToDeliver().then(
-      (response) => {
-        this.clearErrors();
-        let modalInstance = this.$uibModal.open({
-          templateUrl: 'deliveryOfItems.slim',
-          controller: 'DeliveryItemsCtrl',
-          controllerAs: 'delivery',
-          size: 'lg',
-          backdrop: 'static'
-        });
-
-        modalInstance.result.then(() => this.cancel());
-      },
-      (response) => this.errorResponse(response)
-    );
+          modalInstance.result.then(() => this.cancel());
+        },
+        (response) => this.errorResponse(response)
+      );
   };
 
   /**
@@ -535,7 +532,7 @@ import { FormValidationController } from '../../app/app_controller';
       if (index != -1) {
         items.splice(index, 1);
       }
-    })
+    });
   };
 
   ItemsForOrderController.prototype.ok = function() {
@@ -640,3 +637,4 @@ import { FormValidationController } from '../../app/app_controller';
     }
   }
 })();
+

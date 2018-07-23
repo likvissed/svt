@@ -190,7 +190,10 @@ import { app } from './app';
         }),
         Vendor: $resource('/invent/vendors/:vendor_id.json', {}),
         Model: $resource('/invent/models/:model_id.json', {}, {
-          query: { method: 'GET', isArray: false },
+          query: {
+            method: 'GET',
+            isArray: false
+          },
           newModel: {
             method: 'GET',
             url: '/invent/models/new'
@@ -205,7 +208,7 @@ import { app } from './app';
       /**
        * Ресурс модели работников отдела.
        */
-      UserIss: $resource('', {}, {
+      UserIss: $resource('/user_isses/:id.json', {}, {
         usersFromDivision: {
           method: 'GET',
           url: ' /user_isses/users_from_division/:division',

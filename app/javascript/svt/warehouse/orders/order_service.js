@@ -126,19 +126,6 @@ import { app } from '../../app/app';
     this._initVisibleCount();
   }
 
-  // Order.prototype.loadUsers = function() {
-  //   var self = this;
-  //
-  //   return this.Server.UserIss.usersFromDivision(
-  //     { division: self.order.consumer_dept },
-  //     function(data) {
-  //       self.additional.users = data;
-  //     },
-  //     function(response, status) {
-  //       self.Error.response(response, status);
-  //     }).$promise;
-  // };
-
   WarehouseOrder.prototype.prepareToExec = function() {
     this.order.operations_attributes.forEach((op) => op.status = 'done');
   };
@@ -146,9 +133,10 @@ import { app } from '../../app/app';
   /**
    * Добавить данные по ответственному к объекту order.
    */
-  WarehouseOrder.prototype.setConsumer = function(consumer = {}) {
-    this.order.consumer_id_tn = consumer.id_tn || null;
-    this.order.consumer_fio = consumer.fio || null;
+  WarehouseOrder.prototype._setConsumer = function() {
+    this.order.consumer_id_tn = this.order.consumer ? angular.copy(this.order.consumer.id_tn) : null;
+    this.order.consumer_fio =  this.order.consumer ? angular.copy(this.order.consumer.fio) : null;
+    this.order.consumer_tn =  this.order.consumer ? angular.copy(this.order.consumer.tn) : null;
   };
 
   /**
@@ -182,6 +170,8 @@ import { app } from '../../app/app';
    * Подготовить данные для отправки на сервер.
    */
   WarehouseOrder.prototype.getObjectToSend = function() {
+    this._setConsumer();
+
     let obj = angular.copy(this.order);
 
     obj.operations_attributes.forEach(function(op) {
@@ -195,17 +185,11 @@ import { app } from '../../app/app';
           Object.keys(inv_item).forEach(function(key) {
             if (['id', 'invent_num', 'serial_num'].includes(key)) { return true; }
 
-            delete(inv_item[key])
+            delete(inv_item[key]);
           });
         });
       }
     });
-
-    if (obj.consumer && obj.consumer.match(/^\d+$/)) {
-      obj.consumer_tn = obj.consumer;
-    } else {
-      obj.consumer_fio = obj.consumer;
-    }
 
     delete(obj.consumer);
     delete(obj.selected_op);

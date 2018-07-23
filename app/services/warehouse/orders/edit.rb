@@ -66,8 +66,8 @@ module Warehouse
           op['inv_item_ids'] = op['inv_items'].map { |io| io['item_id'] }
         end
 
-        data[:order]['consumer_obj'] = data[:order]['consumer']
-        data[:order]['consumer'] = data[:order]['consumer_fio']
+        # data[:order]['consumer_obj'] = data[:order]['consumer']
+        # data[:order]['consumer'] = data[:order]['consumer_fio']
       end
 
       def check_hosts

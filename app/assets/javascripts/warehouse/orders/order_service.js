@@ -160,13 +160,10 @@
   /**
    * Добавить данные по ответственному к объекту order.
    */
-  WarehouseOrder.prototype.setConsumer = function(consumer) {
-    if (!consumer) {
-      consumer = {};
-    }
-
-    this.order.consumer_id_tn = consumer.id_tn || null;
-    this.order.consumer_fio = consumer.fio || null;
+  WarehouseOrder.prototype._setConsumer = function() {
+    this.order.consumer_id_tn = angular.copy(this.order.consumer.id_tn) || null;
+    this.order.consumer_fio = angular.copy(this.order.consumer.fio) || null;
+    this.order.consumer_tn = angular.copy(this.order.consumer.tn) || null;
   };
 
   /**
@@ -200,6 +197,8 @@
    * Подготовить данные для отправки на сервер.
    */
   WarehouseOrder.prototype.getObjectToSend = function() {
+    this._setConsumer();
+
     var obj = angular.copy(this.order);
 
     obj.operations_attributes.forEach(function(op) {
@@ -218,12 +217,6 @@
         });
       }
     });
-
-    if (obj.consumer && obj.consumer.match(/^\d+$/)) {
-      obj.consumer_tn = obj.consumer;
-    } else {
-      obj.consumer_fio = obj.consumer;
-    }
 
     delete(obj.consumer);
     delete(obj.selected_op);

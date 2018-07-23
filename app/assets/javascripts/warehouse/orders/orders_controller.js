@@ -169,6 +169,7 @@
     this.order = this.Order.order;
     this.extra = this.Order.additional;
 
+    console.log(this.order);
     // this.selectedConsumer = this.extra.users.find(function(el) { return el.id_tn == self.order.consumer_id_tn; }) || {};
   }
 
@@ -181,7 +182,21 @@
    */
   EditInOrderController.prototype.reloadOrder = function() {
     this.Order.reloadOrder();
-  }
+  };
+
+  EditInOrderController.prototype.searchUsers = function(data) {
+    var self = this;
+
+    this.Server.UserIss.query(
+      { search_key: data },
+      function(response) {
+        self.extra.users = response;
+      },
+      function(response, status) {
+        self.Error.response(response, status);
+      }
+    )
+  };
 
   /**
    * Открыть форму добавления техники в позицию ордера
@@ -214,9 +229,9 @@
   /**
    * Установить параметры пользователя, сдающего технику
    */
-  EditInOrderController.prototype.changeConsumer = function() {
-    this.Order.setConsumer(this.selectedConsumer);
-  };
+  // EditInOrderController.prototype.changeConsumer = function() {
+  //   this.Order.setConsumer(this.selectedConsumer);
+  // };
 
   /**
    * Функция для исправления бага в компоненте typeahead ui.bootstrap. Она возвращает ФИО выбранного пользователя вместо

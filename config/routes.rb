@@ -109,8 +109,10 @@ Rails.application.routes.draw do
   # Получить html-код кнопки "Добавить запись"
   get 'link/new_record', to: 'application#link_to_new_record'
 
-  # Получить список пользователей указанного отдела
-  get 'user_isses/users_from_division/:division', to: 'user_isses#users_from_division'
+  resources :user_isses, only: :index do
+    # Получить список пользователей указанного отдела
+    get 'users_from_division/:division', to: 'user_isses#users_from_division', on: :collection
+  end
 
   mount ActionCable.server, at: '/cable'
 end

@@ -10,24 +10,10 @@ script type="text/ng-template" id="inOrderModal.slim"
           = fa_icon "refresh 2x fw", class: "pointer", "tooltip-placement": "top", "tooltip-append-to-body": true, "uib-tooltip": "Загрузить данные об ордере заново",
             "ng-click": "edit.reloadOrder()"
     .modal-body
-      / .form-group ng-class="edit.errorClass('order[consumer_dept]')"
-        = label_tag "order[consumer_dept]", "Отдел", class: "control-label"
-        = hidden_field_tag "order[consumer_dept]", "", "ng-model": "edit.order.consumer_dept"
-        .ui-select
-          ui-select ng-model="edit.order.consumer_dept" theme="bootstrap"
-            ui-select-match placeholder="Выберите отдел"
-              | {{ $select.selected }}
-            ui-select-choices repeat="division in edit.extra.divisions | filter: $select.search"
-              div ng-bind-html="division | highlight: $select.search"
-        span.help-block ng-show="edit.form['order[consumer_dept]'].$invalid" ng-bind="edit.errorMessage('order[consumer_dept]')"
-
       .form-group ng-class="edit.errorClass('order[consumer]')"
         = label_tag "order[consumer]", "ФИО или таб. № сдающего технику", class: "control-label"
-        = text_field_tag "order[consumer]", "", class: "form-control", autocomplete: "off", "ng-model": "edit.order.consumer"
-        /= text_field_tag "order[consumer]", "", class: "form-control", autocomplete: "off",
-          placeholder: "Введите ФИО", "ng-model": "edit.selectedConsumer", "typeahead-on-select": "edit.changeConsumer()",
-          "uib-typeahead": "user as user.fio for user in edit.extra.users | filter:$viewValue", "typeahead-show-hint": true,
-          "typeahead-min-length": 0, "typeahead-input-formatter": "edit.formatLabel($model)"
+        = hidden_field_tag "order[consumer]", "", "ng-model": "edit.order.consumer"
+        search-user selected-user="edit.order.consumer"
         span.help-block ng-show="edit.form['order[consumer]'].$invalid" ng-bind="edit.errorMessage('order[consumer]')"
 
       .form-group

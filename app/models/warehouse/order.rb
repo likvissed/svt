@@ -22,7 +22,7 @@ module Warehouse
     validate :validate_in_order, if: -> { operation == 'in' }
 
     after_initialize :set_initial_status, if: -> { new_record? }
-    before_validation :set_consumer, if: -> { consumer_tn.present? || consumer_fio.present? || consumer }
+    before_validation :set_consumer, if: -> { consumer_fio.blank? || consumer_id_tn.blank? }
     before_validation :set_closed_time, if: -> { done? && status_changed? }
     before_validation :set_workplace, if: -> { errors.empty? && any_inv_item_to_operation? && new_record? && operation == 'in' }
     before_validation :set_consumer_dept_out, if: -> { operation == 'out' }
@@ -104,15 +104,7 @@ module Warehouse
     end
 
     def set_consumer
-      if consumer_fio_changed? && !consumer_fio_changed?(from: nil, to: '')
-        self.consumer_fio = consumer_fio.split.join(' ')
-        user = UserIss.find_by(fio: consumer_fio)
-        if user
-          self.consumer = user
-        else
-          errors.add(:consumer, :user_by_fio_not_found)
-        end
-      elsif consumer_tn
+      if consumer_tn.present?
         user = UserIss.find_by(tn: consumer_tn)
         if user
           self.consumer_fio = user.fio
@@ -122,6 +114,14 @@ module Warehouse
         end
       elsif consumer
         self.consumer_fio = consumer.fio
+      elsif consumer_fio_changed? && !consumer_fio_changed?(from: nil, to: '')
+        self.consumer_fio = consumer_fio.split.join(' ')
+        user = UserIss.find_by(fio: consumer_fio)
+        if user
+          self.consumer = user
+        else
+          errors.add(:consumer, :user_by_fio_not_found)
+        end
       end
     end
 

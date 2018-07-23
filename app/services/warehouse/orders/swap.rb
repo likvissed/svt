@@ -60,7 +60,7 @@ module Warehouse
       end
 
       def create_in_order(inv_items)
-        init_order(:in, consumer_dept: inv_items.first.workplace.division)
+        init_order(:in)
 
         inv_items.each do |inv_item|
           op = @order.operations.build(

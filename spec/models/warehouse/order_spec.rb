@@ -201,7 +201,7 @@ module Warehouse
           %w[fio id_tn].each do |attr|
             it "sets a new #{attr}" do
               subject.save
-              expect(subject.send("consumer_#{attr}")).to eq new_user.send(attr)
+              expect(subject.send("consumer_#{attr}")).to eq user_iss.send(attr)
             end
           end
         end
@@ -229,14 +229,16 @@ module Warehouse
 
       context 'when exists consumer_fio' do
         let(:fio) { '***REMOVED***' }
-        let(:user) { UserIss.find_by(fio: fio) }
+        let(:tn) { 24_079 }
+        let(:new_user) { UserIss.find_by(fio: fio) }
+        let(:old_user) { UserIss.find_by(tn: tn) }
 
         context 'and when consumer_id_tn already exists' do
-          subject { build(:order, consumer_tn: 24_079, consumer_fio: fio) }
+          subject { build(:order, consumer_tn: tn, consumer_fio: fio) }
 
-          it 'loads a new id_tn from the UserIss table' do
+          it 'does not load a new id_tn from the UserIss table' do
             subject.save
-            expect(subject.consumer_id_tn).to eq user.id_tn
+            expect(subject.consumer_id_tn).to eq old_user.id_tn
           end
         end
 
@@ -245,7 +247,7 @@ module Warehouse
 
           it 'loads id_tn from the UserIss table' do
             subject.save
-            expect(subject.consumer_id_tn).to eq user.id_tn
+            expect(subject.consumer_id_tn).to eq new_user.id_tn
           end
         end
 
@@ -585,7 +587,8 @@ module Warehouse
 
     describe '#prevent_update_attributes' do
       let(:user) { create(:user) }
-      subject { create(:order, consumer_id_tn: user.id_tn) }
+      let(:workplace) { create(:workplace_pk, :add_items, items: %i[monitor pc]) }
+      subject { create(:order, consumer_id_tn: user.id_tn, inv_workplace: workplace) }
       let!(:old_params) do
         {
           invent_workplace_id: subject.invent_workplace_id,

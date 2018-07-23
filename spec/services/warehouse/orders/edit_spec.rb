@@ -15,8 +15,8 @@ module Warehouse
           expect(subject.data).to include(:order, :operation, :divisions, :eq_types)
         end
 
-        it 'adds "operations_attributes", "consumer" and "consumer_obj" fields to order' do
-          expect(subject.data[:order]).to include('operations_attributes', 'consumer_obj')
+        it 'adds "operations_attributes" field to order' do
+          expect(subject.data[:order]).to include('operations_attributes')
         end
 
         it 'loads all operations attributes' do
