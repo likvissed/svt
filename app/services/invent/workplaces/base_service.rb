@@ -59,15 +59,11 @@ module Invent
 
       # Отфильтровать полученные данные
       def run_filters
-        @workplaces = @workplaces.left_outer_joins(:user_iss).where('fio LIKE ?', "%#{@conditions['fullname']}%") if @conditions['fullname'].present?
-        if @conditions['invent_num'].present?
-          items = Invent::Item.where('invent_item.invent_num LIKE ?', "%#{@conditions['invent_num']}%")
-          @workplaces = @workplaces.where(items: items.pluck(:workplace_id))
-        end
-        @workplaces = @workplaces.where(workplace_count_id: @conditions['workplace_count_id']) unless @conditions['workplace_count_id'].to_i.zero?
-        @workplaces = @workplaces.where(status: @conditions['status']) if @conditions.has_key?('status') && @conditions['status'] != 'all'
-        @workplaces = @workplaces.where(workplace_type_id: @conditions['workplace_type_id']) unless @conditions['workplace_type_id'].to_i.zero?
-        @workplaces = @workplaces.where(workplace_id: @conditions['workplace_id']) unless @conditions['workplace_id'].to_i.zero?
+        @workplaces = @workplaces.filter(filtering_params)
+      end
+
+      def filtering_params
+        JSON.parse(params[:filters]).slice('fullname', 'workplace_count_id', 'workplace_id', 'workplace_type_id', 'status', 'invent_num')
       end
 
       def init_workplace_templates

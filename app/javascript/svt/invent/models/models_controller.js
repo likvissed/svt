@@ -130,12 +130,12 @@ import { FormValidationController } from '../../shared/functions/form-validation
     switch(filter_type) {
       case 'vendor':
         delete(this.selectedTableFilters.vendor);
-        this.selectedTableFilters.vendor_id = 0;
+        this.selectedTableFilters.vendor_id = null;
 
         break;
       case 'type':
         delete(this.selectedTableFilters.type);
-        this.selectedTableFilters.type_id = 0;
+        this.selectedTableFilters.type_id = null;
 
         break;
     };

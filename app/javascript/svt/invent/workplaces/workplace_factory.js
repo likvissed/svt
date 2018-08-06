@@ -352,22 +352,22 @@ import { app } from '../../app/app';
       return false;
     }
 
-    if (this.Item.isUniqType(type.name)) {
-      let countPc = 0;
+    // if (this.Item.isUniqType(type.name)) {
+    //   let countPc = 0;
 
-      // Считаем количество СБ/моноблоков/ноутбуков на текущем РМ.
-      this.workplace.items_attributes.forEach((item) => {
-        if (this.Item.isUniqType(item.type.name)) {
-          countPc ++;
-        }
-      });
+    //   // Считаем количество СБ/моноблоков/ноутбуков на текущем РМ.
+    //   this.workplace.items_attributes.forEach((item) => {
+    //     if (this.Item.isUniqType(item.type.name)) {
+    //       countPc ++;
+    //     }
+    //   });
 
-      if (countPc >= 1) {
-        this.Flash.alert('Одно рабочее место может содержать только один из указанных видов техники: системный блок, моноблок, ноутбук, планшет.');
+    //   if (countPc >= 1) {
+    //     this.Flash.alert('Одно рабочее место может содержать только один из указанных видов техники: системный блок, моноблок, ноутбук, планшет.');
 
-        return false;
-      }
-    }
+    //     return false;
+    //   }
+    // }
 
     return true;
   };

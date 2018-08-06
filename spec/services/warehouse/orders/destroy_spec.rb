@@ -37,6 +37,11 @@ module Warehouse
           subject.run
         end
 
+        it 'broadcasts to items' do
+          expect(subject).to receive(:broadcast_items)
+          subject.run
+        end
+
         context 'and when order is not destroyed' do
           before { allow_any_instance_of(Order).to receive(:destroy).and_return(false) }
 

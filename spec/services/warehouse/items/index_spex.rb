@@ -59,7 +59,7 @@ module Warehouse
 
       context 'when :used filter is set' do
         context 'and when is equal "true"' do
-          before { params[:filters] = { used: true }.to_json }
+          before { params[:filters] = { used: 'true' }.to_json }
 
           it 'loads only records where used is true' do
             subject.run
@@ -70,9 +70,9 @@ module Warehouse
         end
 
         context 'and when is equal "false"' do
-          before { params[:filters] = { used: false }.to_json }
+          before { params[:filters] = { used: 'false' }.to_json }
 
-          it 'loads only records where used is true' do
+          it 'loads only records where used is false' do
             subject.run
             subject.data[:data].each do |i|
               expect(i['used']).to be_falsey
@@ -80,8 +80,8 @@ module Warehouse
           end
         end
 
-        context 'and when is equal "all"' do
-          before { params[:filters] = { used: 'all' }.to_json }
+        context 'and when it is empty' do
+          before { params[:filters] = { used: '' }.to_json }
 
           let(:truthy) { subject.data[:data].find_all { |i| i['used'] == true } }
           let(:falsey) { subject.data[:data].find_all { |i| i['used'] == false } }

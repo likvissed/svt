@@ -14,18 +14,7 @@ module Warehouse
           begin
             @order = Order.find(@order_id)
             authorize @order, :destroy?
-
-            case @order.operation
-            when 'in'
-              in_order
-              broadcast_in_orders
-            when 'out'
-              out_order
-              broadcast_items(@order.id)
-              broadcast_out_orders
-            else
-              raise 'Неизвестный тип ордера'
-            end
+            broadcast_data
 
             true
           rescue ActiveRecord::RecordNotSaved, ActiveRecord::RecordInvalid => e
@@ -75,6 +64,21 @@ module Warehouse
 
         error[:full_message] = @order.errors.full_messages.join('. ')
         raise 'Ордер не удален'
+      end
+
+      def broadcast_data
+        case @order.operation
+        when 'in'
+          in_order
+          broadcast_items
+          broadcast_in_orders
+        when 'out'
+          out_order
+          broadcast_items(@order.id)
+          broadcast_out_orders
+        else
+          raise 'Неизвестный тип ордера'
+        end
       end
     end
   end

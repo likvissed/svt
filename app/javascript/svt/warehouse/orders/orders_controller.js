@@ -227,7 +227,7 @@ import { FormValidationController } from '../../shared/functions/form-validation
    * @param done - если true, ордер будет сразу же исполнен
    */
   EditInOrderController.prototype.ok = function(done = false) {
-    let sendData = this.Order.getObjectToSend();
+    let sendData = this.Order.getObjectToSend(done);
 
     if (done && !confirm('Вы действительно хотите создать ордер и сразу же его исполнить? Удалить исполненый ордер или отменить его исполнение невозможно')) {
       return false;

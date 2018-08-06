@@ -3,10 +3,9 @@ module Warehouse
     # Загрузить список склада
     class Index < Warehouse::ApplicationService
       def initialize(params)
+        @params = params
         @start = params[:start].to_i
         @length = params[:length].to_i
-        @init = params[:init_filters] == 'true'
-        @conditions = JSON.parse(params[:filters]) if params[:filters]
         @selected_order_id = params[:selected_order_id]
 
         super
@@ -15,7 +14,7 @@ module Warehouse
       def run
         load_order_items
         load_other_items
-        init_filters if @init
+        init_filters if need_init_filters?
         init_order unless @selected_order_id
         load_orders
         limit_records
@@ -43,15 +42,15 @@ module Warehouse
       def load_other_items
         data[:recordsTotal] = Item.count
         @items = Item.all
-        run_filters if @conditions
+        run_filters if params[:filters]
       end
 
       def run_filters
-        @items = @items.where('count > count_reserved') if @conditions['showOnlyPresence']
-        @items = @items.where('used = ?', @conditions['used'].to_s == 'true') if @conditions.key?('used') && @conditions['used'] != 'all'
-        @items = @items.where('item_type = ?', @conditions['item_type']) if @conditions['item_type'].present?
-        @items = @items.where('barcode = ?', @conditions['barcode']) if @conditions['barcode'].present?
-        @items = @items.where('item_model LIKE ?', "%#{@conditions['item_model']}%") if @conditions['item_model'].present?
+        @items = @items.filter(filtering_params)
+      end
+
+      def filtering_params
+        JSON.parse(params[:filters]).slice('show_only_presence', 'used', 'item_type', 'barcode', 'item_model')
       end
 
       def limit_records

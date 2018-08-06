@@ -15,7 +15,9 @@ module Warehouse
 
         @order = Order.find(@order_id)
         authorize @order, :update_in?
+        @order_state = ProcessingState.new(@order)
         return false unless wrap_order_with_transactions
+
         broadcast_items
         broadcast_in_orders
 

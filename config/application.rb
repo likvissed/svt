@@ -25,6 +25,8 @@ module Inv
 
     # Загрузка всех файлов из
     config.autoload_paths << Rails.root.join('app', 'services').to_s
+    config.autoload_paths << Rails.root.join('app', 'modules').to_s
+    config.autoload_paths << Rails.root.join('app', 'states').to_s
     config.autoload_paths << Rails.root.join('lib', 'validators').to_s
 
     # Provides support for Cross-Origin Resource Sharing (CORS)

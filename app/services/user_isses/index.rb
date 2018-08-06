@@ -19,9 +19,9 @@ module UserIsses
 
     def find_users
       @data = if @search_key.is_integer?
-                UserIss.select(:id_tn, :tn, :fio, :dept).where(tn: @search_key).limit(200)
+                UserIss.select(:id_tn, :tn, :fio, :dept).where(tn: @search_key).limit(UserIss::RECORD_LIMIT)
               else
-                UserIss.select(:id_tn, :tn, :fio, :dept).where('fio LIKE ?', "%#{@search_key}%").limit(200)
+                UserIss.select(:id_tn, :tn, :fio, :dept).where('fio LIKE ?', "%#{@search_key}%").limit(UserIss::RECORD_LIMIT)
               end
     end
   end

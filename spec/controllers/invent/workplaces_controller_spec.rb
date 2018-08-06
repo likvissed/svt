@@ -64,13 +64,13 @@ module Invent
 
     describe 'GET #list_wp' do
       it 'creates instance of the Workplaces::Index' do
-        get :list_wp, format: :json, params: { init_filters: false, filters: false }
+        get :list_wp, format: :json, params: { init_filters: false }
         expect(assigns(:list_wp)).to be_instance_of Workplaces::ListWp
       end
 
       it 'calls :run method' do
         expect_any_instance_of(Workplaces::ListWp).to receive(:run)
-        get :list_wp, format: :json, params: { init_filters: false, filters: false }
+        get :list_wp, format: :json, params: { init_filters: false }
       end
     end
 

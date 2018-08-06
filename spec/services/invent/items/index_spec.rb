@@ -48,7 +48,7 @@ module Invent
 
       context 'with filters' do
         before do
-          params[:filters] = filters.as_json
+          params[:filters] = filters.to_json
           subject.run
         end
 

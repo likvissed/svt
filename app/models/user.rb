@@ -19,7 +19,11 @@ class User < ApplicationRecord
   after_validation :replace_nil
   before_save :truncate_phone
 
-  # Для тестов.
+  scope :fullname, -> (fullname) { where('fullname LIKE ?', "%#{fullname}%") }
+  scope :role_id, -> (role_id) { where(role_id: role_id) }
+  scope :online, -> (_attr) { where('sign_in_count > 0').where('updated_at > ?', online_time) }
+
+  # Для тестов
   attr_accessor :login, :email, :division, :tel
 
   def self.find_for_database_authentication(warden_conditions)

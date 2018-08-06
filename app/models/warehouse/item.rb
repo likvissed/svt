@@ -22,6 +22,12 @@ module Warehouse
     before_validation :set_string_values
     before_destroy :prevent_destroy, prepend: true
 
+    scope :show_only_presence, -> (attr = nil) { where('count > count_reserved') }
+    scope :used, -> (used) { where('used = ?', used.to_s == 'true') }
+    scope :item_type, -> (item_type) { where(item_type: item_type) }
+    scope :barcode, -> (barcode) { where(barcode: barcode) }
+    scope :item_model, -> (item_model) { where('item_model LIKE ?', "%#{item_model}%") }
+
     enum warehouse_type: { without_invent_num: 1, with_invent_num: 2 }
 
     attr_accessor :was_created

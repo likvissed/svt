@@ -3,8 +3,7 @@ module Warehouse
     # Загрузить список склада
     class Index < BaseService
       def initialize(params)
-        @start = params[:start]
-        @length = params[:length]
+        @params = params
 
         super
       end
@@ -31,7 +30,7 @@ module Warehouse
 
       def limit_records
         data[:recordsFiltered] = @supplies.count
-        @supplies = @supplies.order(id: :desc).limit(@length).offset(@start)
+        @supplies = @supplies.order(id: :desc).limit(params[:length]).offset(params[:start])
       end
 
       def prepare_to_render

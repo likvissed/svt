@@ -4,10 +4,7 @@ module Invent
     class Index < BaseService
       def initialize(current_user, params)
         @current_user = current_user
-        @start = params[:start]
-        @length = params[:length]
-        @init_filters = params[:init_filters] == 'true'
-        @conditions = JSON.parse(params[:filters]) if params[:filters]
+        @params = params
 
         super
       end
@@ -16,7 +13,7 @@ module Invent
         load_workplace
         limit_records
         prepare_to_render
-        load_filters if @init_filters
+        load_filters if need_init_filters?
 
         true
       rescue RuntimeError => e
@@ -34,7 +31,7 @@ module Invent
                         .left_outer_joins(:workplace_type)
                         .select('invent_workplace.*, invent_workplace_type.short_description as wp_type')
                         .group(:workplace_id)
-        run_filters if @conditions
+        run_filters if params[:filters]
       end
 
       # Ограничение выборки взависимости от выбранного пользователем номера страницы.
@@ -42,7 +39,7 @@ module Invent
         data[:recordsFiltered] = @workplaces.length
         @workplaces = @workplaces
                         .includes(%i[items iss_reference_site iss_reference_building iss_reference_room user_iss workplace_count])
-                        .order(workplace_id: :desc).limit(@length).offset(@start)
+                        .order(workplace_id: :desc).limit(params[:length]).offset(params[:start])
       end
 
       def prepare_to_render

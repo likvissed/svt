@@ -4,9 +4,7 @@ module Invent
     class ListWp < BaseService
       def initialize(current_user, params)
         @current_user = current_user
-        @start = params[:start]
-        @length = params[:length]
-        @conditions = JSON.parse(params[:filters]) if params[:filters]
+        @params = params
 
         super
       end
@@ -29,7 +27,7 @@ module Invent
       def load_workplace
         data[:recordsTotal] = Workplace.count
         @workplaces = policy_scope(Workplace)
-        run_filters if @conditions
+        run_filters if params[:filters]
       end
 
       def limit_records
@@ -44,7 +42,7 @@ module Invent
                           :iss_reference_building,
                           :iss_reference_room,
                           items: [:type, :model, property_values: %i[property property_list]]
-                        ).order(workplace_id: :desc).limit(@length).offset(@start)
+                        ).order(workplace_id: :desc).limit(params[:length]).offset(params[:start])
       end
 
       def prepare_to_render

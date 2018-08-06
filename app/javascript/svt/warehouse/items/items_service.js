@@ -17,8 +17,8 @@ import { app } from '../../app/app';
     this.Error = Error;
 
     this.selectedTableFilters = {
-      showOnlyPresence: true,
-      used: 'all',
+      show_only_presence: true,
+      used: '',
       item_type: '',
       barcode: ''
     };
@@ -26,7 +26,7 @@ import { app } from '../../app/app';
     this.filters.selUsedFilter = [
       {
         descr: 'Все состояния',
-        value: 'all'
+        value: ''
       },
       {
         descr: 'Б/У',

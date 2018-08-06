@@ -141,7 +141,7 @@ import { app } from '../../app/app';
    * Показать/скрыть технику, у которой разница count-count_reserved=0
    */
   WarehouseItemsCtrl.prototype.showOnlyPresenceFilter = function() {
-    this.selectedFilters.showOnlyPresence = !this.selectedFilters.showOnlyPresence;
+    this.selectedFilters.show_only_presence = !this.selectedFilters.show_only_presence;
     this.reloadItems();
   };
 

@@ -2,17 +2,14 @@ module Users
   class Index < ApplicationService
     def initialize(params)
       @data = {}
-      @start = params[:start]
-      @length = params[:length]
-      @init_filters = params[:init_filters] == 'true'
-      @conditions = JSON.parse(params[:filters]) if params[:filters]
+      @params = params
     end
 
     def run
       load_users
       limit_records
       prepare_to_render
-      load_filters if @init_filters
+      load_filters if need_init_filters?
 
       true
     rescue RuntimeError => e
@@ -27,18 +24,16 @@ module Users
     def load_users
       data[:recordsTotal] = User.count
       @users = User.all
-      run_filters if @conditions
+      run_filters if params[:filters]
     end
 
     def run_filters
-      @users = @users.where('fullname LIKE ?', "%#{@conditions['fullname']}%") if @conditions['fullname'].present?
-      @users = @users.where(role_id: @conditions['role_id']) unless @conditions['role_id'].to_i.zero?
-      @users = @users.where('sign_in_count > 0').where('updated_at > ?', User.online_time) if @conditions['online']
+      @users = @users.filter(filtering_params)
     end
 
     def limit_records
       data[:recordsFiltered] = @users.count
-      @users = @users.includes(:role).order(id: :desc).limit(@length).offset(@start)
+      @users = @users.includes(:role).order(id: :desc).limit(params[:length]).offset(params[:start])
     end
 
     def prepare_to_render
@@ -51,6 +46,10 @@ module Users
     def load_filters
       data[:filters] = {}
       data[:filters][:roles] = Role.all
+    end
+
+    def filtering_params
+      JSON.parse(params[:filters]).slice('fullname', 'role_id', 'online')
     end
   end
 end

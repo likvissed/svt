@@ -1,23 +1,6 @@
 class Invent::ApplicationService < ApplicationService
   protected
 
-  # Разослать сообщение о необходимости обновления списка рабочих мест.
-  def broadcast_workplaces_list
-    ActionCable.server.broadcast 'workplaces_list', nil
-  end
-
-  def broadcast_models
-    ActionCable.server.broadcast 'models', nil
-  end
-
-  def broadcast_vendors
-    ActionCable.server.broadcast 'vendors', nil
-  end
-
-  def broadcast_items
-    ActionCable.server.broadcast 'items', nil
-  end
-
   # Возвращает массив статусов с переведенными на русскую локаль ключами.
   def workplace_statuses
     Invent::Workplace.statuses.map { |key, _val| [key, Invent::Workplace.translate_enum(:status, key)] }.to_h

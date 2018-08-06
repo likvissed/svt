@@ -169,10 +169,15 @@ import { app } from '../../app/app';
   /**
    * Подготовить данные для отправки на сервер.
    */
-  WarehouseOrder.prototype.getObjectToSend = function() {
+  WarehouseOrder.prototype.getObjectToSend = function(done_flag = false) {
     this._setConsumer();
 
     let obj = angular.copy(this.order);
+
+    if (done_flag) {
+      obj.status = 'done';
+      obj.dont_calculate_status = true;
+    }
 
     obj.operations_attributes.forEach(function(op) {
       delete(op.item);

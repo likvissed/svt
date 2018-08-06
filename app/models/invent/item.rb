@@ -24,6 +24,22 @@ module Invent
     before_save :set_default_model
     before_destroy :prevent_destroy, prepend: true, unless: -> { destroy_from_order }
 
+    scope :item_id, -> (item_id) { where(item_id: item_id) }
+    scope :type_id, -> (type_id) { where(type_id: type_id) }
+    scope :invent_num, -> (invent_num) { where('invent_num LIKE ?', "%#{invent_num}%").limit(RECORD_LIMIT) }
+    scope :item_model, -> (item_model) { left_outer_joins(:model).where('invent_model.item_model LIKE :item_model OR invent_item.item_model LIKE :item_model', item_model: "%#{item_model}%") }
+    scope :responsible, -> (responsible) { left_outer_joins(workplace: :user_iss).where('fio LIKE ?', "%#{responsible}%") }
+    scope :status, -> (status) { where(status: status) }
+    scope :properties, -> (prop) do
+      return all if prop['property_id'].to_i.zero? || prop['property_value'].blank?
+
+      if prop['exact']
+        where('invent_item.item_id IN (SELECT item_id FROM invent_property_value AS val LEFT JOIN invent_property_list AS list USING(property_list_id) WHERE val.property_id = :prop_id AND (val.value = :val OR list.short_description = :val))', prop_id: prop['property_id'], val: prop['property_value'])
+      else
+        where('invent_item.item_id IN (SELECT item_id FROM invent_property_value AS val LEFT JOIN invent_property_list AS list USING(property_list_id) WHERE val.property_id = :prop_id AND (val.value LIKE :val OR list.short_description LIKE :val))', prop_id: prop['property_id'], val: "%#{prop['property_value']}%")
+      end
+    end
+
     attr_accessor :disable_filters
     attr_accessor :destroy_from_order
 
@@ -51,11 +67,6 @@ module Invent
     def self.by_division(division)
       return all if division.blank?
       where(workplace: { invent_workplace_count: { division: division } })
-    end
-
-    def self.by_status(status_key)
-      return all if status_key.blank? || status_key == 'all'
-      where(status: status_key)
     end
 
     def model_exists?

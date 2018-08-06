@@ -13,7 +13,7 @@ script type="text/ng-template" id="inOrderModal.slim"
       .form-group ng-class="edit.errorClass('order[consumer]')"
         = label_tag "order[consumer]", "ФИО или таб. № сдающего технику", class: "control-label"
         = hidden_field_tag "order[consumer]", "", "ng-model": "edit.order.consumer"
-        search-user selected-user="edit.order.consumer"
+        search-user.full-width selected-user="edit.order.consumer"
         span.help-block ng-show="edit.form['order[consumer]'].$invalid" ng-bind="edit.errorMessage('order[consumer]')"
 
       .form-group

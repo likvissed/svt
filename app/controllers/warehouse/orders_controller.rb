@@ -56,7 +56,7 @@ module Warehouse
     end
 
     def create_in
-      @create_in = Orders::CreateIn.new(current_user, order_params, params[:done])
+      @create_in = Orders::CreateIn.new(current_user, order_params)
 
       if @create_in.run
         render json: { full_message: I18n.t('controllers.warehouse/order.created_in', count: @create_in.data) }

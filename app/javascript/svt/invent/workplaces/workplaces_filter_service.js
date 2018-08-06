@@ -9,9 +9,9 @@ import { app } from '../../app/app';
 
   function WorkplacesFilter(Server, Config, Flash, Error) {
     this.filters = {
-      statuses: { 'all': 'Все статусы' },
+      statuses: { '': 'Все статусы' },
       types: [{
-        workplace_type_id: 0,
+        workplace_type_id: '',
         short_description: 'Все типы'
       }]
     };
@@ -20,7 +20,7 @@ import { app } from '../../app/app';
       workplace_id: '',
       workplace_type_id: this.filters.types[0].workplace_type_id,
       division: '',
-      status: 'all',
+      status: '',
       fullname: ''
     };
   }

@@ -1,14 +1,6 @@
 module Warehouse
   module Orders
     class BaseService < Warehouse::ApplicationService
-      def broadcast_in_orders
-        ActionCable.server.broadcast 'in_orders', nil
-      end
-
-      def broadcast_out_orders
-        ActionCable.server.broadcast 'out_orders', nil
-      end
-
       protected
 
       def order_out?
@@ -28,10 +20,7 @@ module Warehouse
             w_item.warehouse_type = :with_invent_num
             w_item.used = true
 
-            if @done_flag
-              w_item.count = 1
-              w_item.count_reserved = 0
-            end
+            @order_state.edit_warehouse_item(w_item)
 
             w_item.was_created = true
           end
@@ -39,13 +28,7 @@ module Warehouse
           item = Item.find(io[:invent_item_id])
         end
 
-        unless item.was_created
-          if @done_flag
-            item.update!(item_model: inv_item.get_item_model, count: 1, count_reserved: 0)
-          else
-            item.update!(item_model: inv_item.get_item_model)
-          end
-        end
+        @order_state.update_warehouse_item(item, inv_item) unless item.was_created
 
         @order.operations.select { |op| op.inv_item_ids.first == inv_item.item_id }.each do |op|
           op.item = item

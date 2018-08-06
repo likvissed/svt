@@ -57,7 +57,6 @@ module Warehouse
 
             raise ActiveRecord::Rollback
           rescue ActiveRecord::RecordNotDestroyed
-
             raise ActiveRecord::Rollback
           rescue RuntimeError => e
             Rails.logger.error e.inspect.red

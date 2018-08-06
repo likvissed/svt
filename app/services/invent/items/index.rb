@@ -3,21 +3,16 @@ module Invent
     # Загрузить список техники, которая находится в работе в текущий момент.
     class Index < Invent::ApplicationService
       def initialize(params)
-        @current_user = current_user
-        @start = params[:start]
-        @length = params[:length]
-        @init_filters = params[:init_filters]
-        @filters = params[:filters].class.name == 'String' ? JSON.parse(params[:filters]) : params[:filters]
+        @params = params
 
         super
       end
 
       def run
         load_items
-        run_filters if @filters
         limit_records
         prepare_to_render
-        load_filters if @init_filters == 'true'
+        load_filters if need_init_filters?
 
         true
       rescue RuntimeError => e
@@ -32,26 +27,15 @@ module Invent
       def load_items
         data[:recordsTotal] = Item.count
         @items = Item.all
+        run_filters if params[:filters]
       end
 
       def run_filters
-        @items = @items.where(item_id: @filters['item_id']) unless @filters['item_id'].to_i.zero?
-        @items = @items.where(type_id: @filters['type_id']) unless @filters['type_id'].to_i.zero?
-        @items = @items.where('invent_num LIKE ?', "%#{@filters['invent_num']}%") if @filters['invent_num'].present?
-        @items = @items.left_outer_joins(:model).where('invent_model.item_model LIKE :item_model OR invent_item.item_model LIKE :item_model', item_model: "%#{@filters['item_model']}%") if @filters['item_model'].present?
-        @items = @items.left_outer_joins(workplace: :user_iss).where('fio LIKE ?', "%#{@filters['responsible']}%") if @filters['responsible'].present?
-        @items = @items.by_status(@filters['status'])
+        @items = @items.filter(filtering_params)
+      end
 
-        return unless @filters['properties']&.any?
-        @filters['properties'].each do |prop|
-          next if prop['property_id'].to_i.zero? || prop['property_value'].blank?
-
-          @items = if prop['exact']
-                     @items.where('invent_item.item_id IN (SELECT item_id FROM invent_property_value AS val LEFT JOIN invent_property_list AS list USING(property_list_id) WHERE val.property_id = :prop_id AND (val.value = :val OR list.short_description = :val))', prop_id: prop['property_id'], val: prop['property_value'])
-                   else
-                     @items.where('invent_item.item_id IN (SELECT item_id FROM invent_property_value AS val LEFT JOIN invent_property_list AS list USING(property_list_id) WHERE val.property_id = :prop_id AND (val.value LIKE :val OR list.short_description LIKE :val))', prop_id: prop['property_id'], val: "%#{prop['property_value']}%")
-                   end
-        end
+      def filtering_params
+        JSON.parse(params[:filters]).slice('item_id', 'type_id', 'invent_num', 'item_model', 'responsible', 'status', 'properties')
       end
 
       def limit_records
@@ -62,7 +46,7 @@ module Invent
                      :model,
                      { property_values: %i[property property_list] },
                      workplace: :user_iss
-                   ).order(item_id: :desc).limit(@length).offset(@start)
+                   ).order(item_id: :desc).limit(params[:length]).offset(params[:start])
       end
 
       def prepare_to_render
@@ -89,16 +73,16 @@ module Invent
       end
 
       def label_status(item, text)
-        case item['status']
-        when 'waiting_take'
-          label_class = 'label-primary'
-        when 'waiting_bring'
-          label_class = 'label-warning'
-        when 'in_stock'
-          label_class = 'label-info'
-        else
-          label_class = 'label-default'
-        end
+        label_class = case item['status']
+                      when 'waiting_take'
+                        'label-primary'
+                      when 'waiting_bring'
+                        'label-warning'
+                      when 'in_stock'
+                        'label-info'
+                      else
+                        'label-default'
+                      end
 
         "<span class='label #{label_class}'>#{text}</span>"
       end

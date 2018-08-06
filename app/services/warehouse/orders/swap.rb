@@ -6,7 +6,6 @@ module Warehouse
         @current_user = current_user
         @new_workplace_id = new_workplace_id
         @inv_item_ids = inv_item_ids
-        @done_flag = true
 
         super
       end
@@ -126,15 +125,15 @@ module Warehouse
         end
       end
 
-      def init_order(operation, **params)
+      def init_order(operation)
         @order = Order.new(
           inv_workplace: @workplace,
           consumer: @workplace.user_iss,
           operation: operation,
-          # consumer_dept: params[:consumer_dept] || @workplace.division,
           skip_validator: true
         )
         @order.set_creator(current_user)
+        @order_state = DoneState.new(@order)
       end
     end
   end

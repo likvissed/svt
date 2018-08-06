@@ -62,6 +62,7 @@ module Warehouse
           :validator_fio,
           :consumer_dept,
           :comment,
+          :dont_calculate_status,
           operations_attributes: [
             :id,
             :item_id,
@@ -99,6 +100,7 @@ module Warehouse
           :consumer_fio,
           :consumer_dept,
           :comment,
+          :dont_calculate_status,
           operations_attributes: [
             :id,
             :item_id,

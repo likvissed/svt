@@ -3,8 +3,7 @@ module Warehouse
     # Загрузить список ордеров
     class Index < BaseService
       def initialize(params, **order_conditions)
-        @start = params[:start]
-        @length = params[:length]
+        @params = params
         @order_conditions = order_conditions
 
         super
@@ -32,7 +31,9 @@ module Warehouse
 
       def limit_records
         data[:recordsFiltered] = @orders.count
-        @orders = @orders.includes(:operations, :creator, :consumer, :validator).order(id: :desc).limit(@length).offset(@start)
+        @orders = @orders
+                    .includes(:operations, :creator, :consumer, :validator)
+                    .order(id: :desc).limit(params[:length]).offset(params[:start])
       end
 
       def prepare_to_render

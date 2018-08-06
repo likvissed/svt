@@ -14,6 +14,10 @@ module Invent
 
     validates :type, :vendor, :item_model, presence: true, reduce: true
 
+    scope :vendor_id, -> (vendor_id) { where(vendor_id: vendor_id) }
+    scope :type_id, -> (type_id) { where(type_id: type_id) }
+    scope :item_model, -> (item_model) { where('item_model LIKE ?', "%#{item_model}%") }
+
     accepts_nested_attributes_for :model_property_lists, reject_if: proc { |attr| attr['property_id'].to_i.zero? || attr['property_list_id'].to_i.zero? }
 
     def property_list_for(prop)

@@ -1,5 +1,9 @@
 class ApplicationRecord < ActiveRecord::Base
+  extend Filter
+
   self.abstract_class = true
+
+  RECORD_LIMIT = 400
 
   # Перевести указанный ключ enum.
   # type - имя переводимого поля (в ед. числе)

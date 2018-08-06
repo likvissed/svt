@@ -15,7 +15,7 @@ import { app } from '../../app/app';
       _filters = {
         types: [
           {
-            type_id: 0,
+            type_id: '',
             short_description: 'Все типы'
           }
         ],
@@ -25,7 +25,7 @@ import { app } from '../../app/app';
             long_description: 'Выберите свойство'
           }
         ],
-        statuses: { all: 'Все статусы' }
+        statuses: { '': 'Все статусы' }
       },
       // Данные, которые будут отправлены на сервер
       _selected = {

@@ -18,9 +18,9 @@
         = fa_icon "trash", class: "text-danger"
 .col-sm-6.col-md-5.col-lg-4.col-xlg-4.col-fhd-3.col-fhd-offset-1.multiline-buffer
   = button_tag type: :button, class: "btn btn-default btn-block btn-sm", "ng-click": "table.showOnlyPresenceFilter()" do
-    span ng-if="!table.selectedFilters.showOnlyPresence"
+    span ng-if="!table.selectedFilters.show_only_presence"
       = fa_icon "toggle-on lg", class: "text-success"
-    span ng-if="table.selectedFilters.showOnlyPresence"
+    span ng-if="table.selectedFilters.show_only_presence"
       = fa_icon "toggle-off lg", class: "text-danger"
     |  Показать отсутствующие
 .col-sm-5.col-lg-3.col-fhd-2.multiline-buffer

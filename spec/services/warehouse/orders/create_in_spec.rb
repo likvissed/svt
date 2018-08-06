@@ -112,7 +112,7 @@ module Warehouse
       end
 
       it 'broadcasts to in_orders' do
-        expect(subject).to receive(:broadcast_in_orders)
+        expect_any_instance_of(AbstractState).to receive(:broadcast_in_orders)
         subject.run
       end
 
@@ -176,9 +176,11 @@ module Warehouse
           # Операции без инв. номера
           order[:operations_attributes] << operation_3
 
+          order['status'] = 'done'
+          order['dont_calculate_status'] = true
           order
         end
-        subject { CreateIn.new(current_user, order_params.as_json, true) }
+        subject { CreateIn.new(current_user, order_params.as_json) }
 
         its(:run) { is_expected.to be_truthy }
 
@@ -248,7 +250,7 @@ module Warehouse
         end
 
         it 'broadcasts to archive_orders' do
-          expect(subject).to receive(:broadcast_archive_orders)
+          expect_any_instance_of(AbstractState).to receive(:broadcast_archive_orders)
           subject.run
         end
       end
