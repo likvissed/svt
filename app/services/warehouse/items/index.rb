@@ -50,7 +50,7 @@ module Warehouse
       end
 
       def filtering_params
-        JSON.parse(params[:filters]).slice('show_only_presence', 'used', 'item_type', 'barcode', 'item_model')
+        JSON.parse(params[:filters]).slice('show_only_presence', 'used', 'item_type', 'barcode', 'item_model', 'invent_num', 'invent_item_id')
       end
 
       def limit_records

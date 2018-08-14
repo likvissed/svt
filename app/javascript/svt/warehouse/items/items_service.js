@@ -20,7 +20,9 @@ import { app } from '../../app/app';
       show_only_presence: true,
       used: '',
       item_type: '',
-      barcode: ''
+      barcode: '',
+      invent_num: '',
+      invent_item_id: ''
     };
     this.filters = {};
     this.filters.selUsedFilter = [

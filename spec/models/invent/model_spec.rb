@@ -36,34 +36,40 @@ module Invent
     end
 
     describe '#fill_item_model' do
-      let(:vendor) { Vendor.first }
-      before do
-        subject.vendor = vendor
-        subject.item_model = 'test model'
-      end
-
-      context 'when it is a new model' do
-        it 'combines the vendor_name with item_model' do
-          expect(subject.fill_item_model).to eq "#{vendor.vendor_name} test model"
-        end
-      end
-
-      context 'when it is an existing model' do
-        let(:new_vendor) { Vendor.last }
-        subject do
-          m = build(:model, vendor: vendor)
-          m.fill_item_model
-          m.save
-          m
-        end
+      context 'when vendor is set' do
+        let(:vendor) { Vendor.first }
         before do
-          subject.vendor_id = new_vendor.vendor_id
-          subject.item_model = "#{vendor.vendor_name} Updated model"
+          subject.vendor = vendor
+          subject.item_model = 'test model'
         end
 
-        it 'sets a new vendor_name value' do
-          expect(subject.fill_item_model).to eq "#{new_vendor.vendor_name} Updated model"
+        context 'when it is a new model' do
+          it 'combines the vendor_name with item_model' do
+            expect(subject.fill_item_model).to eq "#{vendor.vendor_name} test model"
+          end
         end
+
+        context 'when it is an existing model' do
+          let(:new_vendor) { Vendor.last }
+          subject do
+            m = build(:model, vendor: vendor)
+            m.fill_item_model
+            m.save
+            m
+          end
+          before do
+            subject.vendor_id = new_vendor.vendor_id
+            subject.item_model = "#{vendor.vendor_name} Updated model"
+          end
+
+          it 'sets a new vendor_name value' do
+            expect(subject.fill_item_model).to eq "#{new_vendor.vendor_name} Updated model"
+          end
+        end
+      end
+
+      context 'when vendor is not set' do
+        its(:fill_item_model) { is_expected.to be_falsey }
       end
     end
   end

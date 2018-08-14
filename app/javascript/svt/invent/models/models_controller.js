@@ -33,17 +33,13 @@ import { FormValidationController } from '../../shared/functions/form-validation
    * Инициировать подключение к каналу ModelsChannel
    */
   ModelsCtrl.prototype._initActionCable = function() {
-    var
-      self = this,
-      consumer = new this.ActionCableChannel('Invent::ModelsChannel');
+    let consumer = new this.ActionCableChannel('Invent::ModelsChannel');
 
-    consumer.subscribe(function() {
-      self._loadModels();
-    });
+    consumer.subscribe(() => this._loadModels());
 
-    this.$rootScope.$on('ModelsCtrl::UpdateTableFilters', function(event, vendors) {
-      self.filters.vendors = vendors;
-      self._checkCurrentVendorFilter();
+    this.$rootScope.$on('ModelsCtrl::UpdateTableFilters', (event, vendors) => {
+      this.filters.vendors = vendors;
+      this._checkCurrentVendorFilter();
     });
   };
 
@@ -51,11 +47,9 @@ import { FormValidationController } from '../../shared/functions/form-validation
    * Проверить, нужно ли сбросить фильтр. Нужно в том случае, если выбран фильтр по вендору, но после этого выбранный вендор был удален.
    */
   ModelsCtrl.prototype._checkCurrentVendorFilter = function() {
-    var self = this;
-
     // Выходим из функции, если фильтр не выбран или если после удаления вендора текущий фильтр до сих пор находится в списке существующих
     // вендоров (значит был удален вендор, который не был в активном фильтре)
-    if (!this.selectedTableFilters.vendor || this.filters.vendors.find(function(el) { return self.selectedTableFilters.vendor.vendor_id == el.vendor_id; })) {
+    if (!this.selectedTableFilters.vendor || this.filters.vendors.find((el) => this.selectedTableFilters.vendor.vendor_id == el.vendor_id)) {
       return true;
     }
 
@@ -64,7 +58,7 @@ import { FormValidationController } from '../../shared/functions/form-validation
   };
 
   ModelsCtrl.prototype._getFiltersToSend = function() {
-    var obj = angular.copy(this.selectedTableFilters);
+    let obj = angular.copy(this.selectedTableFilters);
 
     if (obj.type) {
       obj.type_id = obj.type.type_id;
@@ -84,8 +78,6 @@ import { FormValidationController } from '../../shared/functions/form-validation
    * @param init - определяет, нужно ли загружать данные для инициализации фильтров
    */
   ModelsCtrl.prototype._loadModels = function(init) {
-    var self = this;
-
     this.Server.Invent.Model.query(
       {
         start: this.TablePaginator.startNum(),
@@ -93,17 +85,17 @@ import { FormValidationController } from '../../shared/functions/form-validation
         init_filters: init,
         filters: this._getFiltersToSend()
       },
-      function(response) {
-        self.models = response.data;
+      (response) => {
+        this.models = response.data;
         // Данные для составления нумерации страниц
-        self.TablePaginator.setData(response);
+        this.TablePaginator.setData(response);
 
         if (init) {
-          self.filters = response.filters;
+          this.filters = response.filters;
         }
       },
-      function(response, status) {
-        self.Error.response(response, status);
+      (response, status) => {
+        this.Error.response(response, status);
       }
     )
   };
@@ -154,15 +146,13 @@ import { FormValidationController } from '../../shared/functions/form-validation
    * Открыть форму создания модели.
    */
   ModelsCtrl.prototype.newModel = function() {
-    var self = this;
-
     this.Server.Invent.Model.newModel(
-      function(response) {
-        self.Model.initData(response);
-        self._openEditModal();
+      (response) => {
+        this.Model.initData(response);
+        this._openEditModal();
       },
-      function(response, status) {
-        self.Error.response(response, status);
+      (response, status) => {
+        this.Error.response(response, status);
       }
     );
   };
@@ -173,16 +163,14 @@ import { FormValidationController } from '../../shared/functions/form-validation
    * @param model
    */
   ModelsCtrl.prototype.editModel = function(model) {
-    var self = this;
-
     this.Server.Invent.Model.edit(
       { model_id: model.model_id },
-      function (response) {
-        self.Model.initData(response);
-        self._openEditModal();
+      (response) => {
+        this.Model.initData(response);
+        this._openEditModal();
       },
-      function (response, status) {
-        self.Error.response(response, status);
+      (response, status) => {
+        this.Error.response(response, status);
       }
     );
   };
@@ -193,19 +181,17 @@ import { FormValidationController } from '../../shared/functions/form-validation
    * @param model
    */
   ModelsCtrl.prototype.destroyModel = function(model) {
-    var
-      self = this,
-      confirm_str = "Вы действительно хотите удалить модель \"" + model.item_model + "\"?";
+    let confirm_str = "Вы действительно хотите удалить модель \"" + model.item_model + "\"?";
 
     if (!confirm(confirm_str)) { return false; }
 
     this.Server.Invent.Model.delete(
       { model_id: model.model_id },
-      function(response) {
-        self.Flash.notice(response.full_message);
+      (response) => {
+        this.Flash.notice(response.full_message);
       },
-      function(response, status) {
-        self.Error.response(response, status);
+      (response, status) => {
+        this.Error.response(response, status);
       });
   };
 
@@ -233,13 +219,11 @@ import { FormValidationController } from '../../shared/functions/form-validation
   EditModelCtrl.prototype.constructor = EditModelCtrl;
 
   EditModelCtrl.prototype._createModelPropertyListGetterSetter = function() {
-    var
-      self = this,
-      model_prop_list;
+    let model_prop_list;
 
-    this.model.createModelPropertyListGetterSetter = function(property) {
-      property.modelPropertyListGetterSetter = function(property_list_id) {
-        model_prop_list = self.model.model_property_lists_attributes.find(function(attr) {
+    this.model.createModelPropertyListGetterSetter = (property) => {
+      property.modelPropertyListGetterSetter = (property_list_id) => {
+        model_prop_list = this.model.model_property_lists_attributes.find((attr) => {
           return attr.property_id == property.property_id;
         });
 
@@ -258,18 +242,16 @@ import { FormValidationController } from '../../shared/functions/form-validation
    * Установить начальные значения на списки.
    */
   EditModelCtrl.prototype._addInitialValues = function() {
-    var self = this;
-
     this.types.unshift(angular.copy(this.Model.toSelect.type));
     this.vendors.unshift(this.Model.toSelect.vendor);
 
-    this.types.forEach(function(type) {
+    this.types.forEach((type) => {
       if (!type.properties) { return true; }
 
-      type.properties.forEach(function(prop) {
+      type.properties.forEach((prop) => {
         if (!prop.property_lists) { return true; }
 
-        prop.property_lists.unshift(angular.copy(self.Model.toSelect.attr));
+        prop.property_lists.unshift(angular.copy(this.Model.toSelect.attr));
       });
     });
   };
@@ -286,33 +268,31 @@ import { FormValidationController } from '../../shared/functions/form-validation
    * Создать модель.
    */
   EditModelCtrl.prototype.ok = function() {
-    var
-      self = this,
-      model = this.Model.getObjectToSend();
+    let model = this.Model.getObjectToSend();
 
     if (this.model.model_id) {
       this.Server.Invent.Model.update(
         { model_id: this.model.model_id },
         { model: model },
-        function success(response) {
-          self.Flash.notice(response.full_message);
-          self.$uibModalInstance.close();
+        (response) => {
+          this.Flash.notice(response.full_message);
+          this.$uibModalInstance.close();
         },
-        function error(response, status) {
-          self.Error.response(response, status);
-          self.errorResponse(response);
+        (response, status) => {
+          this.Error.response(response, status);
+          this.errorResponse(response);
         }
       )
     } else {
       this.Server.Invent.Model.save(
         { model: model },
-        function success(response) {
-          self.Flash.notice(response.full_message);
-          self.$uibModalInstance.close();
+        (response) => {
+          this.Flash.notice(response.full_message);
+          this.$uibModalInstance.close();
         },
-        function error(response, status) {
-          self.Error.response(response, status);
-          self.errorResponse(response);
+        (response, status) => {
+          this.Error.response(response, status);
+          this.errorResponse(response);
         }
       );
     }

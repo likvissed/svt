@@ -25,6 +25,8 @@ module Invent
     end
 
     def fill_item_model
+      return unless vendor
+
       if new_record?
         self.item_model = "#{vendor.vendor_name} #{item_model}"
       elsif vendor_id_changed?

@@ -126,6 +126,28 @@ module Warehouse
         end
       end
 
+      context 'when invent_num filter is set' do
+        before { params[:filters] = { invent_num: '76' }.to_json }
+
+        it 'loads only records with specified barcode' do
+          subject.run
+          subject.data[:data].each do |i|
+            expect(i['inv_item']['invent_num']).to match(/76/)
+          end
+        end
+      end
+
+      context 'when invent_item_id filter is set' do
+        before { params[:filters] = { invent_item_id: item_1.invent_item_id }.to_json }
+
+        it 'loads only records with specified barcode' do
+          subject.run
+          subject.data[:data].each do |i|
+            expect(i['invent_item_id']).to eq item_1.invent_item_id
+          end
+        end
+      end
+
       context 'when :selected_order_id is set' do
         context 'and when params[:start] is equal 0' do
           context 'and when items count of selected order more than params[:length] attribute' do

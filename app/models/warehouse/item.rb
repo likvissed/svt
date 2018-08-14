@@ -27,6 +27,10 @@ module Warehouse
     scope :item_type, -> (item_type) { where(item_type: item_type) }
     scope :barcode, -> (barcode) { where(barcode: barcode) }
     scope :item_model, -> (item_model) { where('item_model LIKE ?', "%#{item_model}%") }
+    scope :invent_num, -> (invent_num) do
+      left_outer_joins(:inv_item).where('invent_item.invent_num LIKE ?', "%#{invent_num}%").limit(RECORD_LIMIT)
+    end
+    scope :invent_item_id, -> (invent_item_id) { where(invent_item_id: invent_item_id) }
 
     enum warehouse_type: { without_invent_num: 1, with_invent_num: 2 }
 
