@@ -42,11 +42,11 @@ module Warehouse
         InvItemToOperation.transaction(requires_new: true) do
           @order.operations.each do |op|
             op.inv_items.each do |inv_item|
-              inv_item.destroy_from_order = true
-              next if inv_item.destroy
-
-              Rails.logger.info "Ошибка удаления Invent::Item: #{inv_item.errors.full_messages.join('. ')}"
-              raise "Ошибка удаления Invent::Item #{inv_item.item_id}"
+              if !inv_item.warehouse_item
+                destroy_item(inv_item)
+              else
+                inv_item.update(status: :in_stock)
+              end
             end
           end
 
@@ -57,6 +57,15 @@ module Warehouse
             destroy_order
           end
         end
+      end
+
+      def destroy_item(inv_item)
+        inv_item.destroy_from_order = true
+
+        return if inv_item.destroy
+
+        Rails.logger.info "Ошибка удаления Invent::Item: #{inv_item.errors.full_messages.join('. ')}"
+        raise "Ошибка удаления Invent::Item #{inv_item.item_id}"
       end
 
       def destroy_order

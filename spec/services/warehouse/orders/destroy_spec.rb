@@ -61,63 +61,97 @@ module Warehouse
       end
 
       context 'when operation is :out' do
-        let(:inv_item_1) { create(:item, :with_property_values, type_name: :pc, status: :waiting_take) }
-        let(:inv_item_2) { create(:item, :with_property_values, type_name: :monitor, status: :waiting_take) }
-        let(:inv_item_3) { create(:item, :with_property_values, type_name: :monitor, status: nil) }
-        let(:new_items) { [item_1, item_2] }
-        let(:item_1) { create(:new_item, inv_type: inv_item_1.type, inv_model: nil, item_model: 'Unit', count: 10, count_reserved: 1) }
-        let(:item_2) { create(:new_item, inv_type: inv_item_2.type, inv_model: inv_item_2.model, count: 8, count_reserved: 1) }
-        let(:workplace) do
-          w = build(:workplace_pk, items: [inv_item_1, inv_item_2, inv_item_3])
-          w.save(validate: false)
-          w
-        end
-        let(:operations) do
-          [
-            build(:order_operation, item: item_1, inv_item_ids: [inv_item_1.item_id], shift: -1),
-            build(:order_operation, item: item_2, inv_item_ids: [inv_item_2.item_id], shift: -1)
-          ]
-        end
-        let!(:order) { create(:order, operation: :out, inv_workplace: workplace, operations: operations) }
+        context 'and when invent_item already used' do
+          let(:inv_item_1) { create(:item, :with_property_values, type_name: :pc, status: :waiting_take) }
+          let(:inv_item_2) { create(:item, :with_property_values, type_name: :monitor, status: :waiting_take) }
+          let(:inv_item_3) { create(:item, :with_property_values, type_name: :monitor, status: :in_workplace) }
+          let(:item_1) { create(:used_item, inv_item: inv_item_1, count_reserved: 1) }
+          let(:item_2) { create(:used_item, inv_item: inv_item_2, count_reserved: 1) }
+          let(:workplace) do
+            w = build(:workplace_pk, items: [inv_item_1, inv_item_2, inv_item_3])
+            w.save(validate: false)
+            w
+          end
+          let(:operations) do
+            [
+              build(:order_operation, item: item_1, inv_item_ids: [inv_item_1.item_id], shift: -1),
+              build(:order_operation, item: item_2, inv_item_ids: [inv_item_2.item_id], shift: -1)
+            ]
+          end
+          let!(:order) { create(:order, operation: :out, inv_workplace: workplace, operations: operations) }
 
-        include_examples 'destroys order with nested models'
+          it 'does not remove any inv_items' do
+            expect { subject.run }.not_to change(Invent::Item, :count)
+          end
 
-        it 'removes inv_items with :waiting_receive status' do
-          expect { subject.run }.to change(Invent::Item, :count).by(-2)
-        end
+          it 'changes status of each inv_item, which belongs to order, to :in_stock' do
+            subject.run
+            [inv_item_1, inv_item_2].each do |inv_item|
+              expect(inv_item.reload.status).to eq 'in_stock'
+            end
 
-        it 'change :count_reserved attribute of Item model' do
-          subject.run
-          expect(item_1.reload.count_reserved).to be_zero
-          expect(item_2.reload.count_reserved).to be_zero
-        end
-
-        it 'broadcasts to items' do
-          expect(subject).to receive(:broadcast_items).with(order.id)
-          subject.run
+            expect(inv_item_3.status).to eq 'in_workplace'
+          end
         end
 
-        it 'broadcasts to out_orders' do
-          expect(subject).to receive(:broadcast_out_orders)
-          subject.run
-        end
+        context 'and when invent_item is new' do
+          let(:inv_item_1) { create(:item, :with_property_values, type_name: :pc, status: :waiting_take) }
+          let(:inv_item_2) { create(:item, :with_property_values, type_name: :monitor, status: :waiting_take) }
+          let(:inv_item_3) { create(:item, :with_property_values, type_name: :monitor, status: nil) }
+          let(:item_1) { create(:new_item, inv_type: inv_item_1.type, inv_model: nil, item_model: 'Unit', count: 10, count_reserved: 1) }
+          let(:item_2) { create(:new_item, inv_type: inv_item_2.type, inv_model: inv_item_2.model, count: 8, count_reserved: 1) }
+          let(:workplace) do
+            w = build(:workplace_pk, items: [inv_item_1, inv_item_2, inv_item_3])
+            w.save(validate: false)
+            w
+          end
+          let(:operations) do
+            [
+              build(:order_operation, item: item_1, inv_item_ids: [inv_item_1.item_id], shift: -1),
+              build(:order_operation, item: item_2, inv_item_ids: [inv_item_2.item_id], shift: -1)
+            ]
+          end
+          let!(:order) { create(:order, operation: :out, inv_workplace: workplace, operations: operations) }
 
-        context 'and when order is not destroyed' do
-          before { allow_any_instance_of(Order).to receive(:destroy).and_return(false) }
+          it 'removes inv_items with :waiting_receive status' do
+            expect { subject.run }.to change(Invent::Item, :count).by(-2)
+          end
 
-          include_examples 'failed destroy :out order'
-        end
+          include_examples 'destroys order with nested models'
 
-        context 'and when inv_item is not destroyed' do
-          before { allow_any_instance_of(Invent::Item).to receive(:destroy).and_return(false) }
+          it 'change :count_reserved attribute of Item model' do
+            subject.run
+            expect(item_1.reload.count_reserved).to be_zero
+            expect(item_2.reload.count_reserved).to be_zero
+          end
 
-          include_examples 'failed destroy :out order'
-        end
+          it 'broadcasts to items' do
+            expect(subject).to receive(:broadcast_items).with(order.id)
+            subject.run
+          end
 
-        context 'and when item is not updated' do
-          before { allow_any_instance_of(Item).to receive(:save!).and_raise(ActiveRecord::RecordNotSaved) }
+          it 'broadcasts to out_orders' do
+            expect(subject).to receive(:broadcast_out_orders)
+            subject.run
+          end
 
-          include_examples 'failed destroy :out order'
+          context 'and when order is not destroyed' do
+            before { allow_any_instance_of(Order).to receive(:destroy).and_return(false) }
+
+            include_examples 'failed destroy :out order'
+          end
+
+          context 'and when inv_item is not destroyed' do
+            before { allow_any_instance_of(Invent::Item).to receive(:destroy).and_return(false) }
+
+            include_examples 'failed destroy :out order'
+          end
+
+          context 'and when item is not updated' do
+            before { allow_any_instance_of(Item).to receive(:save!).and_raise(ActiveRecord::RecordNotSaved) }
+
+            include_examples 'failed destroy :out order'
+          end
         end
       end
     end
