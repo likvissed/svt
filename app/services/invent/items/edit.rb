@@ -9,11 +9,11 @@ module Invent
       end
 
       def run
-        show = Show.new(@item_id)
+        show = Show.new({ item_id: @item_id })
 
         raise 'Сервис Show не отработал' unless show.run
 
-        @data = show.data
+        @data = show.data.first
         data['status'] = :prepared_to_swap
         prepare_to_edit_item(data)
 

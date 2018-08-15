@@ -46,7 +46,7 @@ import { app } from '../../app/app';
    *
    * @param type_id - тип загружаемой техники
    * @param invent_num - инвентарный номер
-   * @param id
+   * @param item_id
    * @param division - отдел
    */
   InventItem.prototype.loadBusyItems = function(type_id, invent_num, item_id, division) {

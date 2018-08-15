@@ -28,10 +28,10 @@ module Invent
     end
 
     def show
-      @show = Items::Show.new(params[:item_id])
+      @show = Items::Show.new({ item_id: params[:item_id] })
 
       if @show.run
-        render json: @show.data
+        render json: @show.data.first
       else
         render json: { full_message: @show.error[:full_message] }, status: 422
       end

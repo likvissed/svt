@@ -31,7 +31,7 @@ import { app } from '../../app/app';
       // Заполнить список отделов
       this.additional.divisions = data.divisions;
       // Заполнить список типов оборудования
-      this.additional.eqTypes = [{ type_id: 0, short_description: 'Выберите тип' }].concat(data.eq_types);
+      this.additional.eqTypes = [{ type_id: null, short_description: 'Выберите тип' }].concat(data.eq_types);
 
       this.Operation.setTemplate(data.operation, this.order.operation);
     }

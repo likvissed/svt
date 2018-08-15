@@ -27,6 +27,6 @@ div ng-controller="FindExistingInventItemCtrl as find"
       .form-group
         = label_tag "equipment_type", "Тип техники (необязательно)", class: "control-label"
         = select_tag "equipment_type", "", class: "form-control", "ng-model": "find.selectedType",
-          "ng-options": "type as type.short_description disable when type.type_id == 0 for type in select.eqTypes track by type.type_id",
+          "ng-options": "type as type.short_description disable when !type.type_id for type in select.eqTypes track by type.type_id",
           "ng-change": "select.clearFindedData()"
       = render partial: 'templates/select_item_for_find_existing_inv_item_template'

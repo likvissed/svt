@@ -69,6 +69,11 @@ module Invent
       where(workplace: { invent_workplace_count: { division: division } })
     end
 
+    def self.by_type_id(type_id)
+      return all if type_id.blank?
+      where(type_id: type_id)
+    end
+
     def model_exists?
       model || item_model.present?
     end

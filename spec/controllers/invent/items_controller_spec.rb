@@ -46,7 +46,7 @@ module Invent
     end
 
     describe 'GET #edit' do
-      let(:item) { create(:item, :with_property_values, type_name: :monitor) }
+      let!(:item) { create(:item, :with_property_values, type_name: :monitor) }
       let(:params) { { item_id: item.item_id } }
 
       it 'creates instance of the Items::Edit' do

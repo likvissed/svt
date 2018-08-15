@@ -3,7 +3,7 @@ module Invent
     skip_before_action :authenticate_user!
     skip_before_action :verify_authenticity_token
     # skip_before_action :authorization
-    before_action :check_***REMOVED***_authorization, except: %i[svt_access existing_item]
+    before_action :check_***REMOVED***_authorization, except: %i[svt_access existing_item invent_item]
     # after_action -> { sign_out @***REMOVED***_auth.data }, except: :svt_access
 
     respond_to :json
@@ -132,6 +132,16 @@ module Invent
         render json: @existing_item.data
       else
         render json: { full_message: 'Обратитесь к администратору, т.***REMOVED***' }, status: 422
+      end
+    end
+
+    def invent_item
+      @show = Invent::Items::Show.new({ invent_num: JSON.parse(params[:invent_num]), type_id: JSON.parse(params[:type_id]) })
+
+      if @show.run
+        render json: @show.data
+      else
+        render json: { full_message: @show.error[:full_message] }, status: 422
       end
     end
 

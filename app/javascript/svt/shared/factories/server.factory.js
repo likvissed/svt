@@ -72,7 +72,7 @@ import { app } from '../../app/app';
           },
           busy: {
             method: 'GET',
-            url: '/invent/items/busy/:type_id',
+            url: '/invent/items/busy',
             isArray: true
           },
           avaliable: {
