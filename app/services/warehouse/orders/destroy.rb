@@ -47,6 +47,7 @@ module Warehouse
               else
                 inv_item.update(status: :in_stock)
               end
+              p '1'
             end
           end
 
