@@ -136,7 +136,7 @@ module Invent
     end
 
     def invent_item
-      @show = Invent::Items::Show.new({ invent_num: JSON.parse(params[:invent_num]), type_id: JSON.parse(params[:type_id]) })
+      @show = Invent::Items::Show.new({ invent_num: params[:invent_num], type_id: params[:type_id] })
 
       if @show.run
         render json: @show.data

@@ -172,6 +172,16 @@ module Invent
       end
     end
 
-    # describe 'GET #send_pc_script'
+    describe 'GET invent_item' do
+      it 'create instance of the InvItem::ExistingItem' do
+        get :invent_item, params: { invent_num: '123456' }
+        expect(assigns(:show)).to be_instance_of Items::Show
+      end
+
+      it 'calls :run method' do
+        expect_any_instance_of(Items::Show).to receive(:run)
+        get :invent_item, params: { invent_num: '123456' }
+      end
+    end
   end
 end
