@@ -25,7 +25,7 @@ import { app } from '../../app/app';
         start: this.TablePaginator.startNum(),
         length: this.Config.global.uibPaginationConfig.itemsPerPage,
         init_filters: init,
-        filters: this.Filters.getSelected()
+        filters: this.Filters.getFiltersToSend()
       },
       (response) => {
         // Список всей техники
@@ -34,7 +34,7 @@ import { app } from '../../app/app';
         this.TablePaginator.setData(response);
 
         if (response.filters) {
-          this.Filters.setPossibleValues(response.filters);
+          this.Filters.setPossibleValues(response.filters, true);
         }
       },
       (response, status) => this.Error.response(response, status)
@@ -73,5 +73,24 @@ import { app } from '../../app/app';
       function(response) {},
       (response, status) => this.Error.response(response, status)
     ).$promise;
+  };
+
+  /**
+   * Загрузить комнаты выбранного корпуса.
+   */
+  InventItem.prototype.loadRooms = function() {
+    this.clearRooms();
+    this.Server.Location.rooms(
+      { building_id: this.Filters.getSelected().building.building_id },
+      (data) => this.Filters.setPossibleValues({ rooms: data }),
+      (response, status) => this.Error.response(response, status)
+    );
+  };
+
+  /**
+   * Очистить список комнат.
+   */
+  InventItem.prototype.clearRooms = function() {
+    this.Filters.clearRooms();
   };
 })();

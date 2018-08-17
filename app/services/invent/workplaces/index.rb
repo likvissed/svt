@@ -68,6 +68,9 @@ module Invent
         data[:filters][:divisions] = policy_scope(WorkplaceCount).select(:workplace_count_id, :division).order('CAST(division AS SIGNED)')
         data[:filters][:statuses] = workplace_statuses
         data[:filters][:types] = WorkplaceType.select(:workplace_type_id, :short_description)
+        data[:filters][:buildings] = IssReferenceBuilding
+                                       .select('iss_reference_sites.name as site_name, iss_reference_buildings.*')
+                                       .left_outer_joins(:iss_reference_site)
       end
 
       def label_status(status)

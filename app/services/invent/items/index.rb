@@ -35,7 +35,7 @@ module Invent
       end
 
       def filtering_params
-        JSON.parse(params[:filters]).slice('item_id', 'type_id', 'invent_num', 'item_model', 'responsible', 'status', 'properties')
+        JSON.parse(params[:filters]).slice('item_id', 'type_id', 'invent_num', 'item_model', 'responsible', 'status', 'properties', 'location_building_id', 'location_room_id')
       end
 
       def limit_records
@@ -70,6 +70,9 @@ module Invent
         data[:filters][:types] = Type.where('name != "unknown"')
         data[:filters][:properties] = Property.group(:name)
         data[:filters][:statuses] = item_statuses
+        data[:filters][:buildings] = IssReferenceBuilding
+                                       .select('iss_reference_sites.name as site_name, iss_reference_buildings.*')
+                                       .left_outer_joins(:iss_reference_site)
       end
 
       def label_status(item, text)

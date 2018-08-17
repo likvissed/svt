@@ -198,7 +198,14 @@ import { app } from '../../app/app';
           },
           update: { method: 'PUT' }
         })
-      }
+      },
+      Location: $resource('', {}, {
+        rooms: {
+          method: 'GET',
+          url: ' /locations/load_rooms/:building_id',
+          isArray: true
+        }
+      })
     }
   }
 })();

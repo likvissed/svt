@@ -24,6 +24,7 @@ import { app } from '../../app/app';
   function WorkplaceIndexCtrl($scope, Filter, Cookies) {
     this.$scope = $scope;
     this.Cookies = Cookies;
+    this.Filter = Filter;
 
     Cookies.Workplace.init();
 
@@ -39,6 +40,14 @@ import { app } from '../../app/app';
 
   WorkplaceIndexCtrl.prototype.setFilters = function() {
     this.Cookies.Workplace.set('tableListTypeFilter', this.listType);
+  };
+
+  WorkplaceIndexCtrl.prototype.loadRooms = function() {
+    this.Filter.loadRooms();
+  };
+
+  WorkplaceIndexCtrl.prototype.clearRooms = function() {
+    this.Filter.clearRooms();
   };
 
 // =====================================================================================================================

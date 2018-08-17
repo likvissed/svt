@@ -116,5 +116,7 @@ Rails.application.routes.draw do
     get 'users_from_division/:division', to: 'user_isses#users_from_division', on: :collection
   end
 
+  get 'locations/load_rooms/:building_id', to: 'locations#rooms_for_building'
+
   mount ActionCable.server, at: '/cable'
 end

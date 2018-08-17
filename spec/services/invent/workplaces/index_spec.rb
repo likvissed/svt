@@ -35,8 +35,12 @@ module Invent
           Index.new(user, params)
         end
 
-        it 'assigns %i[divisions statuses types] to the :filters key' do
-          expect(subject.data[:filters]).to include(:divisions, :statuses, :types)
+        it 'assigns %i[divisions statuses types buildings] to the :filters key' do
+          expect(subject.data[:filters]).to include(:divisions, :statuses, :types, :buildings)
+        end
+
+        it 'loads site for corresponding room' do
+          expect(subject.data[:filters][:buildings].first[:site_name]).to eq IssReferenceBuilding.first.iss_reference_site.name
         end
 
         its(:run) { is_expected.to be_truthy }
@@ -112,6 +116,26 @@ module Invent
           it 'returns filtered data' do
             expect(subject.data[:data].count).to eq 1
             expect(subject.data[:data].first['workplace_type_id']).to eq workplace.workplace_type_id
+          end
+        end
+
+        context 'and with :location_building_id filter' do
+          let(:filter) { { location_building_id: workplace.location_building_id }.to_json }
+
+          it 'returns filtered data' do
+            subject.data[:data].each do |el|
+              expect(el['location_building_id']).to eq workplace.location_building_id
+            end
+          end
+        end
+
+        context 'and with :location_room_id filter' do
+          let(:filter) { { location_room_id: workplace.location_room_id }.to_json }
+
+          it 'returns filtered data' do
+            subject.data[:data].each do |el|
+              expect(el['location_room_id']).to eq workplace.location_room_id
+            end
           end
         end
       end

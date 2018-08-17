@@ -39,6 +39,12 @@ module Invent
         where('invent_item.item_id IN (SELECT item_id FROM invent_property_value AS val LEFT JOIN invent_property_list AS list USING(property_list_id) WHERE val.property_id = :prop_id AND (val.value LIKE :val OR list.short_description LIKE :val))', prop_id: prop['property_id'], val: "%#{prop['property_value']}%")
       end
     end
+    scope :location_building_id, -> (building_id) do
+      left_outer_joins(:workplace).where(invent_workplace: { location_building_id: building_id })
+    end
+    scope :location_room_id, -> (room_id) do
+      left_outer_joins(:workplace).where(invent_workplace: { location_room_id: room_id })
+    end
 
     attr_accessor :disable_filters
     attr_accessor :destroy_from_order

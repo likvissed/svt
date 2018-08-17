@@ -25,7 +25,9 @@ import { app } from '../../app/app';
             long_description: 'Выберите свойство'
           }
         ],
-        statuses: { '': 'Все статусы' }
+        statuses: { '': 'Все статусы' },
+        buildings: [],
+        rooms: []
       },
       // Данные, которые будут отправлены на сервер
       _selected = {
@@ -35,6 +37,8 @@ import { app } from '../../app/app';
         responsible: '',
         item_model: '',
         status: Object.keys(_filters.statuses)[0],
+        building: '',
+        room: '',
         properties: []
       };
 
@@ -49,13 +53,30 @@ import { app } from '../../app/app';
       getFilters: function() {
         return _filters;
       },
+      /**
+       * Получить выбранные фильтры
+       */
       getSelected: function() {
         return _selected;
       },
       /**
+       * Получить фильтры для отправки на сервер
+       */
+      getFiltersToSend: function() {
+        let obj = angular.copy(_selected);
+
+        obj.location_building_id = obj.building.building_id;
+        obj.location_room_id = obj.room.room_id;
+
+        delete(obj.building);
+        delete(obj.room);
+
+        return obj;
+      },
+      /**
        * Заполнить фильтры данными
        */
-      setPossibleValues: function(data) {
+      setPossibleValues: function(data, with_properties = false) {
         angular.forEach(_filters, function(arr, key) {
           if (!data.hasOwnProperty(key)) { return true; }
 
@@ -66,7 +87,9 @@ import { app } from '../../app/app';
           }
         }, _filters);
 
-        _addProperty();
+        if (with_properties) {
+          _addProperty();
+        }
       },
       /**
        * Добавить фильтр по типу
@@ -74,6 +97,9 @@ import { app } from '../../app/app';
       addProperty: _addProperty,
       delProperty: function(index) {
         _selected.properties.splice(index, 1);
+      },
+      clearRooms: function() {
+        _filters.rooms = [];
       }
     }
   };

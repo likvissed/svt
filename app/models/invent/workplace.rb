@@ -33,6 +33,8 @@ module Invent
       items = Invent::Item.where('invent_item.invent_num LIKE ?', "%#{invent_num}%").limit(RECORD_LIMIT)
       where(items: items.pluck(:workplace_id))
     end
+    scope :location_building_id, -> (building_id) { where(location_building_id: building_id) }
+    scope :location_room_id, -> (room_id) { where(location_room_id: room_id) }
 
     # Для тестов (от имени пользователя заполняется поле "Комната")
     attr_accessor :location_room_name, :division

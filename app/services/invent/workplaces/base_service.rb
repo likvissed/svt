@@ -63,7 +63,7 @@ module Invent
       end
 
       def filtering_params
-        JSON.parse(params[:filters]).slice('fullname', 'workplace_count_id', 'workplace_id', 'workplace_type_id', 'status', 'invent_num')
+        JSON.parse(params[:filters]).slice('fullname', 'workplace_count_id', 'workplace_id', 'workplace_type_id', 'status', 'invent_num', 'location_building_id', 'location_room_id')
       end
 
       def init_workplace_templates

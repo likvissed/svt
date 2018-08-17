@@ -57,6 +57,20 @@ import { app } from '../../app/app';
   };
 
   /**
+   * Загрузить список комнат.
+   */
+  InventItemsCtrl.prototype.loadRooms = function() {
+    this.Item.loadRooms();
+  };
+
+  /**
+   * Очистить список комнат.
+   */
+  InventItemsCtrl.prototype.clearRooms = function() {
+    this.Item.clearRooms();
+  };
+
+  /**
    * Добавить фильтр по составу техники.
    */
   InventItemsCtrl.prototype.addPropFilter = function() {

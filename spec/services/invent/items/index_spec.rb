@@ -91,6 +91,26 @@ module Invent
           end
         end
 
+        context 'and with location_building_id filter' do
+          let(:filters) { { location_building_id: workplace.location_building_id } }
+
+          it 'returns filtered data' do
+            subject.data[:data].each do |el|
+              expect(el['workplace']['location_building_id']).to eq workplace.location_building_id
+            end
+          end
+        end
+
+        context 'and with location_room_id filter' do
+          let(:filters) { { location_room_id: workplace.location_room_id } }
+
+          it 'returns filtered data' do
+            subject.data[:data].each do |el|
+              expect(el['workplace']['location_room_id']).to eq workplace.location_room_id
+            end
+          end
+        end
+
         context 'and with property_value filter' do
           let(:prop) { Property.find_by(name: :hdd) }
           let(:filters) do
