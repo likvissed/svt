@@ -12,7 +12,7 @@ import { app } from '../../app/app';
       // Типы оборудования
       eqTypes,
       // Поле select, предлагающее выбрать тип оборудования
-      selectEqType = { type_id: 0, short_description: 'Выберите тип' },
+      selectEqType = { type_id: null, short_description: 'Выберите тип' },
       // Шаблон экземпляра техники, добавляемого к РМ
       templateItem = {
         // id: null,

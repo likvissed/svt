@@ -156,7 +156,7 @@ import { app } from '../../app/app';
     this._setDeafultAttrs();
   };
 
-    /**
+  /**
    * Очистить данные поиска
    */
   FindExistingInventItemCtrl.prototype.clearSearchData = function() {

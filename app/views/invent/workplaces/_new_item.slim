@@ -15,7 +15,7 @@ script type="text/ng-template" id="newItem.slim"
 
     .form-group ng-show="select.itemType == 'new'"
       = select_tag "", "", class: "form-control", "ng-model": "select.selectedType",
-        "ng-options": "type as type.short_description disable when type.type_id == 0 for type in select.eqTypes track by type.type_id"
+        "ng-options": "type as type.short_description disable when !type.type_id for type in select.eqTypes track by type.type_id"
 
     div ng-show="select.itemType == 'exist'"
       = render partial: 'templates/find_existing_invent_item'

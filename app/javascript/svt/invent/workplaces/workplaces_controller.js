@@ -660,6 +660,7 @@ import { app } from '../../app/app';
     // Отдел необходим для ограничения выборки техники (в окне поиска техники)
     // $scope.division = this.Workplace.workplace.division.division;
 
+    this.Item.selectedItem = null;
     $scope.$on('removeDuplicateInvItems', (event, data) => {
       this._removeDuplicateItems(data);
     });
