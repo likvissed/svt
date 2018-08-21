@@ -94,6 +94,7 @@ import { app } from '../../app/app';
 
     data.prop_data.iss_locations.forEach((value) => value.iss_reference_buildings.unshift(this.selectIssBuilding));
     this.Item.setTypes(data.prop_data.eq_types);
+    this.Item.setPriorities(data.prop_data.priorities);
 
     // Типы РМ
     this.wp_types = [this.selectWpType].concat(data.prop_data.wp_types);
@@ -269,6 +270,7 @@ import { app } from '../../app/app';
       item = this.workplace.items_attributes[length];
 
     this.Item.setType(item, selectedType);
+    item.priorities = this.Item.getPriorities();
 
     if (item.type_id != 0) {
       this.Item.setModel(item);
@@ -305,6 +307,7 @@ import { app } from '../../app/app';
 
         this.Item.addProperties(response);
         this.Item.setItemAttributes(item, response, this.workplace.workplace_id);
+        item.priorities = this.Item.getPriorities();
 
         // Сделать созданный элемент активным в табах.
         this._setActiveTab(length);

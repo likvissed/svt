@@ -59,6 +59,9 @@ ru:
           prepared_to_swap: 'Подготовлен к переводу на другое РМ'
           in_stock: 'На складе'
           in_workplace: 'На РМ'
+        priorities:
+          default: 'Стандартный'
+          high: 'Высокий'
 
       invent/item/property_values:
         base: ''

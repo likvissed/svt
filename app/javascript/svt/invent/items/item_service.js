@@ -93,4 +93,8 @@ import { app } from '../../app/app';
   InventItem.prototype.clearRooms = function() {
     this.Filters.clearRooms();
   };
+
+  InventItem.prototype.clearSelectedItem = function() {
+    this.selectedItem = null;
+  }
 })();

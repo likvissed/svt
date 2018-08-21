@@ -21,6 +21,7 @@ module Invent
     validates :invent_num, presence: true, unless: -> { status == 'waiting_take' }
     validate :presence_model, :check_mandatory, if: -> { errors.details[:type].empty? && !disable_filters }
 
+    after_initialize :set_default_values
     before_save :set_default_model
     before_destroy :prevent_destroy, prepend: true, unless: -> { destroy_from_order }
 
@@ -45,6 +46,7 @@ module Invent
     scope :location_room_id, -> (room_id) do
       left_outer_joins(:workplace).where(invent_workplace: { location_room_id: room_id })
     end
+    scope :priority, -> (priority) { where(priority: priority) }
 
     attr_accessor :disable_filters
     attr_accessor :destroy_from_order
@@ -54,6 +56,7 @@ module Invent
     accepts_nested_attributes_for :property_values, allow_destroy: true
 
     enum status: { waiting_take: 1, waiting_bring: 2, prepared_to_swap: 3, in_stock: 4, in_workplace: 5 }
+    enum priority: { default: 1, high: 2 }
 
     def self.by_invent_num(invent_num)
       return all if invent_num.blank?
@@ -147,6 +150,10 @@ module Invent
     # Проверка наличия модели.
     def presence_model
       errors.add(:model, :blank) if !model && item_model.blank? && !Type::PRESENCE_MODEL_EXCEPT.include?(type.name)
+    end
+
+    def set_default_values
+      self.priority ||= :default
     end
 
     def set_default_model

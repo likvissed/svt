@@ -6,6 +6,10 @@ class Invent::ApplicationService < ApplicationService
     Invent::Workplace.statuses.map { |key, _val| [key, Invent::Workplace.translate_enum(:status, key)] }.to_h
   end
 
+  def item_priorities
+    Invent::Item.priorities.map { |key, _val| [key, Invent::Item.translate_enum(:priority, key)] }.to_h
+  end
+
   def prepare_to_***REMOVED***_table(wp)
     wp['short_description'] = wp['workplace_type']['short_description'] if wp['workplace_type']
     wp['fio'] = wp['user_iss'] ? wp['user_iss']['fio_initials'] : 'Ответственный не найден'

@@ -70,3 +70,6 @@
       = button_tag type: :button, class: "btn-default", "ng-click": "table.selected.room = ''; table.changeFilter()",
         "uib-tooltip": "Очистить", "tooltip-append-to-body": true, "ng-disabled": "!table.selected.room" do
         = fa_icon "times"
+.col-sm-5.col-md-5.col-lg-3.col-xlg-3.col-fhd-3.multiline-buffer
+  = select_tag "", "", class: "form-control input-sm", "ng-model": "table.selected.priority", "ng-change": "table.changeFilter()",
+    "ng-options": "priority as translated for (priority, translated) in table.filters.priorities"

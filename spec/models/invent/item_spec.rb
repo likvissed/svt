@@ -305,5 +305,25 @@ module Invent
         end
       end
     end
+
+    describe '#set_default_values' do
+      context 'when priority already exists' do
+        subject { build(:item, :with_property_values, type_name: :monitor, priority: :high) }
+
+        it 'does not change priority' do
+          subject.save
+          expect(subject.reload.priority).to eq 'high'
+        end
+      end
+
+      context 'when priority is not exist' do
+        subject { build(:item, :with_property_values, type_name: :monitor) }
+
+        it 'sets default priority' do
+          subject.save
+          expect(subject.reload.priority).to eq 'default'
+        end
+      end
+    end
   end
 end

@@ -35,7 +35,7 @@ module Invent
       end
 
       def filtering_params
-        JSON.parse(params[:filters]).slice('item_id', 'type_id', 'invent_num', 'item_model', 'responsible', 'status', 'properties', 'location_building_id', 'location_room_id')
+        JSON.parse(params[:filters]).slice('item_id', 'type_id', 'invent_num', 'item_model', 'responsible', 'status', 'properties', 'location_building_id', 'location_room_id', 'priority')
       end
 
       def limit_records
@@ -61,6 +61,7 @@ module Invent
           item['model'] = item['model'].nil? ? item['item_model'] : item['model']['item_model']
           item['description'] = item['property_values'].map { |prop_val| property_value_info(prop_val) }.join('; ')
           item['translated_status'] = (str = Item.translate_enum(:status, item['status'])).is_a?(String) ? str : ''
+          item['translated_priority'] = Item.translate_enum(:priority, item['priority'])
           item['label_status'] = label_status(item, item['translated_status'])
         end
       end
@@ -73,6 +74,7 @@ module Invent
         data[:filters][:buildings] = IssReferenceBuilding
                                        .select('iss_reference_sites.name as site_name, iss_reference_buildings.*')
                                        .left_outer_joins(:iss_reference_site)
+        data[:filters][:priorities] = item_priorities
       end
 
       def label_status(item, text)

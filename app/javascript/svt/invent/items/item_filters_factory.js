@@ -26,6 +26,7 @@ import { app } from '../../app/app';
           }
         ],
         statuses: { '': 'Все статусы' },
+        priorities: { '': 'Все приоритеты' },
         buildings: [],
         rooms: []
       },
@@ -37,6 +38,7 @@ import { app } from '../../app/app';
         responsible: '',
         item_model: '',
         status: Object.keys(_filters.statuses)[0],
+        priority: Object.keys(_filters.priorities)[0],
         building: '',
         room: '',
         properties: []

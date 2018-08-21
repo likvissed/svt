@@ -21,6 +21,7 @@ module Invent
         load_users if @division
         load_constants
         prepare_eq_types_to_render
+        load_priorities
 
         true
       rescue Pundit::NotAuthorizedError
@@ -88,6 +89,10 @@ module Invent
       # Получить список возможных статусов РМ.
       def load_statuses
         data[:statuses] = workplace_statuses
+      end
+
+      def load_priorities
+        data[:priorities] = item_priorities
       end
 
       # Получить различные константы, необходимые для работы

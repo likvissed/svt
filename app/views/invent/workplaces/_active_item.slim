@@ -40,6 +40,16 @@ fieldset.ng-hide ng-show="item" ng-disabled="item.status == 'prepared_to_swap'"
           = text_field_tag "workplace[items][][invent_num]", "", class: "form-control", "ng-model": "item.invent_num",
             "ng-blur": "wp.checkPcInvnum(item)"
 
+    - if !current_user.role? :***REMOVED***_user
+      .col-md-9.col-lg-10.col-xlg-9
+        .form-group
+          = label_tag :workplace_items__priority, "Приоритет обслуживания", class: "control-label"
+      .col-md-15.col-lg-14.col-xlg-15
+        .form-group
+          = select_tag "workplace[items][][priority]", "", class: "form-control",
+            "ng-change": "wp.changeItemModel(item)", "ng-model": "item.priority",
+            "ng-options": "priority as translated for (priority, translated) in item.priorities"
+
     .col-md-9.col-lg-10.col-xlg-9
       .form-group
         = label_tag :workplace_items__serial_num, "Серийный номер", class: "control-label"

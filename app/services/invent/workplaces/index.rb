@@ -71,6 +71,7 @@ module Invent
         data[:filters][:buildings] = IssReferenceBuilding
                                        .select('iss_reference_sites.name as site_name, iss_reference_buildings.*')
                                        .left_outer_joins(:iss_reference_site)
+        data[:filters][:priorities] = item_priorities
       end
 
       def label_status(status)

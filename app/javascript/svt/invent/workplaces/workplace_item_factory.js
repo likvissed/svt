@@ -13,6 +13,10 @@ import { app } from '../../app/app';
       eqTypes,
       // Поле select, предлагающее выбрать тип оборудования
       selectEqType = { type_id: null, short_description: 'Выберите тип' },
+      // Приоритет
+      priorities = {
+        // '': 'Выберите приоритет'
+      },
       // Шаблон экземпляра техники, добавляемого к РМ
       templateItem = {
         // id: null,
@@ -325,6 +329,14 @@ import { app } from '../../app/app';
        */
       getTypes: function() { return eqTypes },
       /**
+       * Записать объект с приоритетами исполнения техники
+       */
+      setPriorities: function(data) { angular.extend(priorities, data); },
+      /**
+       * Получить объект с приоритетами исполнения техники
+       */
+      getPriorities: function() { return priorities; },
+      /**
        * Добавить вспомогательные объекты к указанному объекту item.
        *
        * @param item - экземпляр техники
@@ -334,6 +346,7 @@ import { app } from '../../app/app';
 
         if (!eq_value) { return false; }
 
+        item.priorities = this.getPriorities();
         item.type = angular.copy(eq_value);
         // Если длина массивов property_values_attributes и properties отличается, значит текущий
         // экземпляр техники имеет несколько значений для некоторых свойств (например, несколько жестких
