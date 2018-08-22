@@ -23,6 +23,19 @@ module Warehouse
           it 'adds %w[status_translated operation_translated operations_to_string] fields' do
             expect(subject.data[:data].first).to include('status_translated', 'operation_translated', 'operations_to_string')
           end
+
+          context 'with init_filters' do
+            subject do
+              params[:init_filters] = 'true'
+              Index.new(params, operation: operation)
+            end
+
+            it 'assigns %i[divisions operations] to the :filters key' do
+              expect(subject.data[:filters]).to include(:divisions, :operations)
+            end
+
+            its(:run) { is_expected.to be_truthy }
+          end
         end
       end
     end

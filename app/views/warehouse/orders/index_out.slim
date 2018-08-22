@@ -47,7 +47,7 @@
           .animate-show ng-table-info="" info-attrs="table.pagination" ng-if="table.orders"
         .col-sm-12
           ul{ uib-pagination="true" total-items="table.pagination.filteredRecords" ng-model="table.pagination.currentPage"
-            max-size="table.pagination.maxSize" class="pagination-sm pull-right" ng-change="table.changePage()" }
+            max-size="table.pagination.maxSize" class="pagination-sm pull-right" ng-change="table.reloadOrders()" }
 
 = render partial: 'in_order_modal'
 = render partial: 'out_order_modal'

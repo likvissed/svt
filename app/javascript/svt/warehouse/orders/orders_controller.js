@@ -12,7 +12,7 @@ import { FormValidationController } from '../../shared/functions/form-validation
     .controller('ItemsForOrderController', ItemsForOrderController)
     .controller('DeliveryItemsCtrl', DeliveryItemsCtrl);
 
-  OrdersController.$inject = ['$uibModal', '$scope', 'ActionCableChannel', 'TablePaginator', 'WarehouseOrder', 'Flash', 'Error', 'Server'];
+  OrdersController.$inject = ['$uibModal', '$scope', 'ActionCableChannel', 'TablePaginator', 'WarehouseOrder', 'OrderFilters', 'Flash', 'Error', 'Server'];
   EditInOrderController.$inject = ['$uibModal', '$uibModalInstance', 'WarehouseOrder', 'Flash', 'Error', 'Server'];
   EditOutOrderController.$inject = ['$uibModal', '$uibModalInstance', 'WarehouseOrder', 'WarehouseItems', 'Flash', 'Error', 'Server'];
   ExecOrderController.$inject = ['$uibModal', '$uibModalInstance', 'WarehouseOrder', 'Flash', 'Error', 'Server'];
@@ -21,19 +21,23 @@ import { FormValidationController } from '../../shared/functions/form-validation
 
 // =====================================================================================================================
 
-  function OrdersController($uibModal, $scope, ActionCableChannel, TablePaginator, WarehouseOrder, Flash, Error, Server) {
+  function OrdersController($uibModal, $scope, ActionCableChannel, TablePaginator, WarehouseOrder, OrderFilters, Flash, Error, Server) {
     this.$uibModal = $uibModal;
     this.ActionCableChannel = ActionCableChannel;
     this.Order = WarehouseOrder;
+    this.Filters = OrderFilters;
     this.Flash = Flash;
     this.Error = Error;
     this.Server = Server;
     this.pagination = TablePaginator.config();
 
+    this.filters = this.Filters.getFilters();
+    this.selected= this.Filters.getSelected();
+
     $scope.initOperation = (operation) => {
       this.operation = operation;
 
-      this._loadOrders();
+      this._loadOrders(true);
       this._initActionCable();
     };
   }
@@ -52,8 +56,8 @@ import { FormValidationController } from '../../shared/functions/form-validation
   /**
    * Загрузить список ордеров.
    */
-  OrdersController.prototype._loadOrders = function() {
-    this.Order.loadOrders(this.operation).then(() => this.orders = this.Order.orders);
+  OrdersController.prototype._loadOrders = function(init) {
+    this.Order.loadOrders(this.operation, init).then(() => this.orders = this.Order.orders);
   };
 
   /**
@@ -74,7 +78,7 @@ import { FormValidationController } from '../../shared/functions/form-validation
   /**
    * События изменения страницы.
    */
-  OrdersController.prototype.changePage = function() {
+  OrdersController.prototype.reloadOrders = function() {
     this._loadOrders();
   };
 

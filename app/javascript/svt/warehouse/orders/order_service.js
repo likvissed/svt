@@ -6,10 +6,11 @@ import { app } from '../../app/app';
   app
     .service('WarehouseOrder', WarehouseOrder);
 
-  WarehouseOrder.$inject = ['WarehouseOperation', 'Server', 'TablePaginator', 'Config', 'Flash', 'Error'];
+  WarehouseOrder.$inject = ['WarehouseOperation', 'OrderFilters', 'Server', 'TablePaginator', 'Config', 'Flash', 'Error'];
 
-  function WarehouseOrder(WarehouseOperation, Server, TablePaginator, Config, Flash, Error) {
+  function WarehouseOrder(WarehouseOperation, OrderFilters, Server, TablePaginator, Config, Flash, Error) {
     this.Operation = WarehouseOperation;
+    this.Filters = OrderFilters;
     this.Server = Server;
     this.TablePaginator = TablePaginator;
     this.Config = Config;
@@ -60,19 +61,26 @@ import { app } from '../../app/app';
    * Загрузить список ордеров
    *
    * @params operation
+   * @params init
    */
-  WarehouseOrder.prototype.loadOrders = function(operation) {
+  WarehouseOrder.prototype.loadOrders = function(operation, init = false) {
     return this.Server.Warehouse.Order.query(
       {
         start: this.TablePaginator.startNum(),
         length: this.Config.global.uibPaginationConfig.itemsPerPage,
-        operation: operation
+        operation: operation,
+        init_filters: init,
+        filters: this.Filters.getFiltersToSend()
       },
       (response) => {
         // Список всех ордеров
         this.orders = response.data;
         // Данные для составления нумерации страниц
         this.TablePaginator.setData(response);
+
+        if (init) {
+          this.Filters.set(response.filters);
+        }
       },
       (response, status) => this.Error.response(response, status),
     ).$promise;
