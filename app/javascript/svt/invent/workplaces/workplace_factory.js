@@ -349,7 +349,7 @@ import { app } from '../../app/app';
    */
   Workplace.prototype.validateType = function(type) {
     // Проверка, выбрал ли пользователь тип
-    if (type.type_id == 0) {
+    if (!type.type_id) {
       this.Flash.alert('Необходимо выбрать тип создаваемого устройства.');
 
       return false;
