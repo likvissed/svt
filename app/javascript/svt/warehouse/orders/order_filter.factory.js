@@ -5,7 +5,7 @@ import { app } from '../../app/app';
 
   app.factory('OrderFilters', OrderFilters);
 
-  function OrderFilters(Server, Error) {
+  function OrderFilters() {
     let
       filters = {
         operations: { '': 'Все типы' }
