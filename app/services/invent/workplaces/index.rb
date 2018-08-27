@@ -28,9 +28,14 @@ module Invent
       def load_workplace
         data[:recordsTotal] = Workplace.count
         @workplaces = policy_scope(Workplace)
-                        .left_outer_joins(:workplace_type)
-                        .select('invent_workplace.*, invent_workplace_type.short_description as wp_type')
+                        .left_outer_joins(:workplace_type, :user_iss)
+                        .select('
+                          invent_workplace.*,
+                          invent_workplace_type.short_description as wp_type,
+                          user_iss.fio as responsible
+                        ')
                         .group(:workplace_id)
+
         run_filters if params[:filters]
       end
 
@@ -38,16 +43,26 @@ module Invent
       def limit_records
         data[:recordsFiltered] = @workplaces.length
         @workplaces = @workplaces
-                        .includes(%i[items iss_reference_site iss_reference_building iss_reference_room user_iss workplace_count])
-                        .order(workplace_id: :desc).limit(params[:length]).offset(params[:start])
+                        .includes(%i[items iss_reference_site iss_reference_building iss_reference_room workplace_count])
+                        .limit(params[:length]).offset(params[:start]).order(order_data)
+      end
+
+      def order_data
+        name = %w[workplace_id responsible].find { |el| order['name'] == el }
+        type = order['type'] == 'desc' ? 'desc' : 'asc'
+        "#{name} #{type}"
+      end
+
+      def order
+        JSON.parse(params[:sort])
       end
 
       def prepare_to_render
         data[:data] = @workplaces.as_json(
-          include: %i[items iss_reference_site iss_reference_building iss_reference_room user_iss workplace_count]
+          include: %i[items iss_reference_site iss_reference_building iss_reference_room workplace_count]
         ).each do |wp|
           wp['location'] = wp_location_string(wp)
-          wp['responsible'] = wp['user_iss'] ? wp['user_iss']['fio'] : 'Ответственный не найден'
+          wp['responsible'] ||= 'Ответственный не найден'
           wp['label_status'] = label_status(wp['status'])
           # wp['status'] = Workplace.translate_enum(:status, wp['status'])
           wp['division'] = wp['workplace_count']['division']

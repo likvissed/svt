@@ -8,6 +8,12 @@ module Invent
       let(:workplace_count_***REMOVED***) { create(:active_workplace_count, division: ***REMOVED***, users: [user]) }
       let!(:workplace) { create(:workplace_pk, :add_items, items: %i[pc monitor], workplace_count: workplace_count) }
       let!(:workplace_***REMOVED***) { create(:workplace_mob, :add_items, items: %i[notebook], status: :confirmed, workplace_count: workplace_count_***REMOVED***) }
+      let(:sort) do
+        {
+          name: :workplace_id,
+          type: :desc
+        }
+      end
       let(:params) do
         {
           draw: 1,
@@ -15,7 +21,8 @@ module Invent
           length: 25,
           search: { value: '', regex: '' },
           init_filters: false,
-          filters: false
+          filters: false,
+          sort: sort.to_json
         }
       end
       subject { Index.new(user, params) }

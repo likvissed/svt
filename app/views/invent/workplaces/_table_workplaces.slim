@@ -3,10 +3,14 @@
     table.table.table-striped.table-condensed
       thead
         tr
-          th ID
+          th ng-class="{ 'text-primary': table.sort.name == 'workplace_id' }"
+            ' ID
+            sort-column sort-name="workplace_id" on-sort="table.reloadWorkplaces()"
           th Отдел
           th Тип
-          th Ответственный
+          th ng-class="{ 'text-primary': table.sort.name == 'responsible' }"
+            ' Ответственный
+            sort-column sort-name="responsible" on-sort="table.reloadWorkplaces()"
           th Расположение
           th Кол-во техники
           th Статус

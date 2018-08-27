@@ -14,6 +14,11 @@ import { app } from '../../app/app';
     this.Config = Config;
     this.Flash = Flash;
     this.Error = Error;
+
+    this.sorting = {
+      name: 'workplace_id',
+      type: 'desc'
+    };
   }
 
   Workplaces.prototype.loadWorkplaces = function(init) {
@@ -22,7 +27,8 @@ import { app } from '../../app/app';
         start: this.TablePaginator.startNum(),
         length: this.Config.global.uibPaginationConfig.itemsPerPage,
         init_filters: init,
-        filters: this.Filter.get()
+        filters: this.Filter.get(),
+        sort: this.sorting
       },
       (response) => {
         // Список РМ

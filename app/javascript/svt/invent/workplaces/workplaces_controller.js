@@ -64,6 +64,7 @@ import { app } from '../../app/app';
     this.Flash = Flash;
     this.Error = Error;
     this.pagination = TablePaginator.config();
+    this.sort = Workplaces.sorting;
 
     this._loadWorkplaces(true);
     this._initActionCable();
