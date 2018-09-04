@@ -38,12 +38,22 @@ module Invent
     end
 
     def edit
-      @edit = Items::Edit.new(params[:item_id])
+      @edit = Items::Edit.new(params[:item_id], params[:with_init_props])
 
       if @edit.run
         render json: @edit.data
       else
         render json: { full_message: @edit.error[:full_message] }, status: 422
+      end
+    end
+
+    def update
+      @update = Items::Update.new(current_user, params[:item_id], item_params)
+
+      if @update.run
+        render json: { full_message: I18n.t('controllers.invent/item.updated', item_id: params[:id]) }
+      else
+        render json: @update.error, status: 422
       end
     end
 
@@ -67,10 +77,34 @@ module Invent
       end
     end
 
+    def pc_config_from_audit
+      @pc_config = Items::PcConfigFromAudit.new(params[:invent_num])
+
+      if @pc_config.run
+        render json: @pc_config.data
+      else
+        render json: { full_message: @pc_config.errors.full_messages.join('. ') }, status: 422
+      end
+    end
+
+    def pc_config_from_user
+      @pc_file = Items::PcConfigFromUser.new(params[:pc_file])
+
+      if @pc_file.run
+        render json: { data: @pc_file.data, full_message: I18n.t('controllers.invent/workplace.pc_config_processed') }
+      else
+        render json: { full_message: @pc_file.error[:full_message] }, status: 422
+      end
+    end
+
     protected
 
     def check_access
       authorize [:invent, :item], :ctrl_access?
+    end
+
+    def item_params
+      params.require(:item).permit(policy(Item).permitted_attributes)
     end
   end
 end

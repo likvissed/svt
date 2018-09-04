@@ -35,16 +35,6 @@ import { app } from '../../app/app';
             url: '/invent/workplaces/:id/edit.json'
           },
           update: { method: 'PUT' },
-          pcConfigFromAudit: {
-            method: 'GET',
-            url: '/invent/workplaces/pc_config_from_audit/:invent_num'
-          },
-          pcConfigFromUser: {
-            method: 'POST',
-            url: '/invent/workplaces/pc_config_from_user.json',
-            headers: { 'Content-Type': undefined },
-            transformRequest: angular.identity
-          },
           confirm: {
             method: 'PUT',
             url: '/invent/workplaces/confirm'
@@ -79,7 +69,18 @@ import { app } from '../../app/app';
             method: 'GET',
             url: '/invent/items/avaliable/:type_id',
             isArray: true
-          }
+          },
+          pcConfigFromAudit: {
+            method: 'GET',
+            url: '/invent/items/pc_config_from_audit/:invent_num'
+          },
+          pcConfigFromUser: {
+            method: 'POST',
+            url: '/invent/items/pc_config_from_user.json',
+            headers: { 'Content-Type': undefined },
+            transformRequest: angular.identity
+          },
+          update: { method: 'PUT' }
         }),
         Vendor: $resource('/invent/vendors/:vendor_id.json', {}),
         Model: $resource('/invent/models/:model_id.json', {}, {

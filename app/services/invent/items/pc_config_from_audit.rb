@@ -1,7 +1,7 @@
 module Invent
-  module Workplaces
+  module Items
     # Получить данные о конфигурации ПК от системы Аудит.
-    class PcConfigFromAudit < BaseService
+    class PcConfigFromAudit < Invent::ApplicationService
       attr_reader :host
       attr_accessor :inv_num
 

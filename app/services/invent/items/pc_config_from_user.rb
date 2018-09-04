@@ -1,7 +1,7 @@
 module Invent
-  module Workplaces
+  module Items
     # Декодировать данные, полученные программой SysInfo
-    class PcConfigFromUser < BaseService
+    class PcConfigFromUser < Invent::ApplicationService
       def initialize(file)
         @file = file
 

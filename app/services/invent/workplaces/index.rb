@@ -103,6 +103,13 @@ module Invent
 
         "<span class='label #{label_class}'>#{Workplace.translate_enum(:status, status)}</span>"
       end
+
+      def load_properties
+        properties = LkInvents::InitProperties.new(@current_user)
+        return data[:prop_data] = properties.data if properties.run
+
+        raise 'Ошибка сервиса LkInvents::InitProperties'
+      end
     end
   end
 end

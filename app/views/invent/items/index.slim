@@ -1,6 +1,6 @@
 = title "Список техники"
 
-#index_item.container ng-controller="InventItemsCtrl as table"
+#index_item.container ng-controller="InventItemsTableCtrl as table"
   .well
     .table-block
       .row
@@ -25,9 +25,11 @@
               tr ng-repeat="item in table.items"
                 td ng-class="item.priority == 'high' ? 'text-danger' : 'text-muted'"
                   = fa_icon "circle", "uib-tooltip": "{{item.translated_priority}} приоритет"
-                td
+                td.col-sm-1
                   a ng-href="/invent/workplaces/{{item.workplace.workplace_id}}/edit" class="default-color" target="_blank" ng-show="item.workplace"
                     = fa_icon "external-link fw", class: "pointer", "uib-tooltip": "Перейти к рабочему месту", "tooltip-append-to-body": "true"
+                  = fa_icon "pencil-square-o fw", class: "pointer", "ng-click": "table.editItem(item)", "uib-tooltip": "Редактировать состав техники",
+                    "tooltip-append-to-body": "true"
                 td.col-sm-1 ng-bind="item.item_id"
                 td.col-sm-2 ng-bind="item.type.short_description"
                 td.col-sm-3 ng-bind="item.model"
@@ -35,7 +37,7 @@
                 td.col-sm-1 ng-bind="item.workplace.workplace_id"
                 td.col-sm-4 ng-bind="item.workplace.user_iss.fio"
                 td.col-sm-2 ng-bind-html="item.label_status"
-                td.col-sm-10 ng-bind-html="item.description"
+                td.col-sm-9 ng-bind-html="item.description"
                 td.text-center
                   = fa_icon "trash-o fw", class: "text-danger pointer", "uib-tooltip": "Удалить технику",
                     "tooltip-append-to-body": true, "ng-click": "table.destroyItem(item)"
@@ -45,3 +47,6 @@
         .col-xs-12
           ul{ uib-pagination="true" total-items="table.pagination.filteredRecords" ng-model="table.pagination.currentPage"
             max-size="table.pagination.maxSize" class="pagination-sm pull-right" ng-change="table.changePage()" }
+
+= render partial: 'edit_modal'
+= render partial: 'invent/workplaces/manually_pc_modal'

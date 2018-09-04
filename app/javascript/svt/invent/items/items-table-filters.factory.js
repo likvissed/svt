@@ -2,9 +2,9 @@ import { app } from '../../app/app';
 
 (function() {
   app
-    .service('InventItemFiltersFactory', InventItemFiltersFactory);
+    .service('InventItemsTableFiltersFactory', InventItemsTableFiltersFactory);
 
-  function InventItemFiltersFactory() {
+  function InventItemsTableFiltersFactory() {
     let
       _propertyTemplate = {
         property_id: 0,

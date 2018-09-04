@@ -41,7 +41,7 @@ module Invent
     end
 
     def pc_config_from_audit
-      @pc_config = Workplaces::PcConfigFromAudit.new(params[:invent_num])
+      @pc_config = Items::PcConfigFromAudit.new(params[:invent_num])
 
       if @pc_config.run
         render json: @pc_config.data
@@ -51,7 +51,7 @@ module Invent
     end
 
     def pc_config_from_user
-      @pc_file = Workplaces::PcConfigFromUser.new(params[:pc_file])
+      @pc_file = Items::PcConfigFromUser.new(params[:pc_file])
 
       if @pc_file.run
         render json: { data: @pc_file.data, full_message: I18n.t('controllers.***REMOVED***_invents.file_added') }

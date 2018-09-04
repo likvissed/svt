@@ -1,14 +1,14 @@
 ru:
   activemodel:
     attributes:
-      invent/workplaces/pc_config_from_audit:
+      invent/items/pc_config_from_audit:
         base: ''
         inv_num: 'Инвентарный номер'
         host: 'ПК'
 
     errors:
       models:
-        invent/workplaces/pc_config_from_audit:
+        invent/items/pc_config_from_audit:
           not_found: 'с указанным инвентарным номером не найден. Проверьте корректность введенного инвентарного номера,
            либо, если номер введен верно, нажмите "Ввод данных вручную"'
           not_responded: 'Получить данные автоматически не удалось, вам необходимо ввести их вручную. Для этого нажмите

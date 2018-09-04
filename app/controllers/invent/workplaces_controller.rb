@@ -58,26 +58,6 @@ module Invent
       end
     end
 
-    def pc_config_from_audit
-      @pc_config = Workplaces::PcConfigFromAudit.new(params[:invent_num])
-
-      if @pc_config.run
-        render json: @pc_config.data
-      else
-        render json: { full_message: @pc_config.errors.full_messages.join('. ') }, status: 422
-      end
-    end
-
-    def pc_config_from_user
-      @pc_file = Workplaces::PcConfigFromUser.new(params[:pc_file])
-
-      if @pc_file.run
-        render json: { data: @pc_file.data, full_message: I18n.t('controllers.invent/workplace.pc_config_processed') }
-      else
-        render json: { full_message: @pc_file.error[:full_message] }, status: 422
-      end
-    end
-
     def edit
       @edit = Workplaces::Edit.new(current_user, params[:workplace_id])
 
@@ -147,35 +127,6 @@ module Invent
 
     def workplace_params
       params.require(:workplace).permit(policy(Workplace).permitted_attributes)
-      # params.require(:workplace).permit(
-      #   :workplace_id,
-      #   :enabled_filters,
-      #   :workplace_count_id,
-      #   :workplace_type_id,
-      #   :workplace_specialization_id,
-      #   :id_tn,
-      #   :location_site_id,
-      #   :location_building_id,
-      #   :location_room_name,
-      #   :location_room_id,
-      #   :comment,
-      #   :status,
-      #   item_ids: [],
-      #   items_attributes: [
-      #     :id,
-      #     :parent_id,
-      #     :type_id,
-      #     :model_id,
-      #     :item_model,
-      #     :workplace_id,
-      #     :location,
-      #     :invent_num,
-      #     :serial_num,
-      #     :status,
-      #     :_destroy,
-      #     property_values_attributes: %i[id property_id item_id property_list_id value _destroy]
-      #   ]
-      # )
     end
 
     def check_access

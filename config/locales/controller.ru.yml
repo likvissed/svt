@@ -17,6 +17,7 @@ ru:
       updated: 'Данные одела %{dept} обновлены'
       destroyed: 'Отдел удален'
     invent/item:
+      updated: 'Техника №%{item_id} обновлена'
       destroyed: 'Техника удалена'
     invent/model:
       created: 'Модель создана'

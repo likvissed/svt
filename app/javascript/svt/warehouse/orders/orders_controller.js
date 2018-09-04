@@ -16,7 +16,7 @@ import { FormValidationController } from '../../shared/functions/form-validation
   EditInOrderController.$inject = ['$uibModal', '$uibModalInstance', 'WarehouseOrder', 'Flash', 'Error', 'Server'];
   EditOutOrderController.$inject = ['$uibModal', '$uibModalInstance', 'WarehouseOrder', 'WarehouseItems', 'Flash', 'Error', 'Server'];
   ExecOrderController.$inject = ['$uibModal', '$uibModalInstance', 'WarehouseOrder', 'Flash', 'Error', 'Server'];
-  ItemsForOrderController.$inject = ['$scope', '$uibModalInstance', 'InventItem', 'WarehouseOrder', 'Flash'];
+  ItemsForOrderController.$inject = ['$scope', '$uibModalInstance', 'WarehouseOrder', 'FindExistingItemService', 'Flash'];
   DeliveryItemsCtrl.$inject = ['$uibModal', '$uibModalInstance', 'WarehouseOrder', 'Flash', 'Error', 'Server'];
 
 // =====================================================================================================================
@@ -501,10 +501,10 @@ import { FormValidationController } from '../../shared/functions/form-validation
 
 // =====================================================================================================================
 
-  function ItemsForOrderController($scope, $uibModalInstance, InventItem, WarehouseOrder, Flash) {
+  function ItemsForOrderController($scope, $uibModalInstance, WarehouseOrder, FindExistingItemService, Flash) {
     this.$uibModalInstance = $uibModalInstance;
     this.Order = WarehouseOrder;
-    this.InventItem = InventItem;
+    this.FindExistingItemService = FindExistingItemService;
     this.Flash = Flash;
 
     this.eqTypes = WarehouseOrder.additional.eqTypes;
@@ -518,7 +518,7 @@ import { FormValidationController } from '../../shared/functions/form-validation
     // Отдел необходим для ограничения выборки техники (в окне поиска техники)
     $scope.division = this.Order.order.consumer_dept;
     // Обязательно необходимо сбросить объект selectedItem
-    this.InventItem.selectedItem = null;
+    this.FindExistingItemService.selectedItem = null;
 
     $scope.$on('removeDuplicateInvItems', (event, data) => this._removeDuplicateItems(data));
   }
@@ -540,8 +540,8 @@ import { FormValidationController } from '../../shared/functions/form-validation
   };
 
   ItemsForOrderController.prototype.ok = function() {
-    if (this.warehouseType == 'with_invent_num' && !this.InventItem.selectedItem) {
-      this.Flash.alert('Необходимо указать инвентарный номер и выбрать технику');
+    if (this.warehouseType == 'with_invent_num' && !this.FindExistingItemService.selectedItem) {
+      this.Flash.alert('Необходимо указать инвентарный номер (или ID) и выбрать технику');
       return false;
     }
 
@@ -552,7 +552,7 @@ import { FormValidationController } from '../../shared/functions/form-validation
 
     let result = {
       warehouseType: this.warehouseType,
-      item: this.warehouseType == 'with_invent_num' ? this.InventItem.selectedItem : this.manuallyItem
+      item: this.warehouseType == 'with_invent_num' ? this.FindExistingItemService.selectedItem : this.manuallyItem
     };
 
     this.$uibModalInstance.close(result);

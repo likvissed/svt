@@ -9,20 +9,12 @@ import { app } from '../../app/app';
   function PropertyValue() {
     let
       // Шаблон объекта значения свойства выбранного экземпляра техники
-      templatePropertyValue = {
-        // id: null,
-        // property_id: 0,
-        // item_id: 0,
-        // property_list_id: 0,
-        // value: '',
-        // // Массив возможных значений отфильтрованных по модели и свойству
-        // filteredList: []
-      },
+      templatePropertyValue = {},
       templateSelectProp = [
         // Для строки "Выберите тип"
         { property_list_id: -1, short_description: ''},
         // Для строки "Ввести вручную..."
-        { property_list_id: 0, short_description: ''}
+        { property_list_id: null, short_description: ''}
       ];
 
     return {
@@ -78,7 +70,7 @@ import { app } from '../../app/app';
        * @param listFlag - необязательный параметр. Устанавливать true для типов list_plus
        */
       getTemplateSelectProp: function(name, listFlag) {
-        var arr = angular.copy(templateSelectProp);
+        let arr = angular.copy(templateSelectProp);
 
         // arr[0].short_description = 'Выберите ' + name.toLowerCase();
         arr[0].short_description = 'Выбрать из списка';

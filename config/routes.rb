@@ -31,10 +31,6 @@ Rails.application.routes.draw do
         get 'list_wp', to: 'workplaces#list_wp'
         # Подтвердить/отклонить конфигурацию РМ
         put 'confirm', to: 'workplaces#confirm'
-        # Получить данные о системном блоке из аудита
-        get 'pc_config_from_audit/:invent_num', to: 'workplaces#pc_config_from_audit', constraints: { invent_num: /.*/ }
-        # Расшифровать файл конфигурации ПК, загруженный пользователем.
-        post 'pc_config_from_user', to: 'workplaces#pc_config_from_user'
         # Скачать скрипт для генерации файла конфигурации ПК
         get 'pc_script', to: 'workplaces#send_pc_script'
       end
@@ -72,10 +68,14 @@ Rails.application.routes.draw do
     # Показать данные по указанной технике
     get '***REMOVED***_invents/invent_item', to: '***REMOVED***_invents#invent_item'
 
-    resources :items, only: [:index, :show, :edit, :destroy], param: :item_id do
+    resources :items, except: [:new, :create], param: :item_id do
       collection do
         get 'avaliable/:type_id', to: 'items#avaliable', constraints: { type_id: /\d+/ }
         get 'busy', to: 'items#busy'
+        # Получить данные о системном блоке из аудита
+        get 'pc_config_from_audit/:invent_num', to: 'items#pc_config_from_audit', constraints: { invent_num: /.*/ }
+        # Расшифровать файл конфигурации ПК, загруженный пользователем.
+        post 'pc_config_from_user', to: 'items#pc_config_from_user'
       end
     end
 

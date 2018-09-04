@@ -51,11 +51,11 @@ module Invent
     describe 'GET #pc_config_from_audit' do
       it 'creates instance of the Workplaces::PcConfigFromAudit' do
         get :pc_config_from_audit, params: { invent_num: 111_222 }
-        expect(assigns(:pc_config)).to be_instance_of Workplaces::PcConfigFromAudit
+        expect(assigns(:pc_config)).to be_instance_of Items::PcConfigFromAudit
       end
 
       it 'calls :run method' do
-        expect_any_instance_of(Workplaces::PcConfigFromAudit).to receive(:run)
+        expect_any_instance_of(Items::PcConfigFromAudit).to receive(:run)
         get :pc_config_from_audit, params: { invent_num: 111_222 }
       end
     end
@@ -72,7 +72,7 @@ module Invent
       # end
 
       it 'calls :run method' do
-        expect_any_instance_of(Workplaces::PcConfigFromUser).to receive(:run)
+        expect_any_instance_of(Items::PcConfigFromUser).to receive(:run)
         post :pc_config_from_user, params: { pc_file: file }
       end
     end

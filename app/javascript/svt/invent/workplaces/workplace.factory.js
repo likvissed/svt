@@ -6,14 +6,14 @@ import { app } from '../../app/app';
   app
     .service('Workplace', Workplace);
 
-  Workplace.$inject = ['$window', '$http', '$timeout', 'Server', 'Flash', 'Error', 'WorkplaceItem', 'PropertyValue'];
+  Workplace.$inject = ['$window', '$http', '$timeout', 'Server', 'Flash', 'Error', 'WorkplaceItem', 'PropertyValue', 'InventItem'];
 
   /**
    * Сервис для редактирования(подтверждения или отклонения) РМ.
    *
    * @class SVT.Workplace
    */
-  function Workplace($window, $http, $timeout, Server, Flash, Error, WorkplaceItem, PropertyValue) {
+  function Workplace($window, $http, $timeout, Server, Flash, Error, WorkplaceItem, PropertyValue, InventItem) {
     this.$window = $window;
     this.$http = $http;
     this.$timeout = $timeout;
@@ -21,6 +21,7 @@ import { app } from '../../app/app';
     this.Flash = Flash;
     this.Error = Error;
     this.Item = WorkplaceItem;
+    this.InventItem = InventItem;
     this.PropertyValue = PropertyValue;
 
     // Поле select, предлагающее выбрать тип оборудования
@@ -106,10 +107,14 @@ import { app } from '../../app/app';
     this.statuses = data.prop_data.statuses;
     this.divisions = data.prop_data.divisions;
 
-    this.additional.pcAttrs = data.prop_data.file_depending;
-    this.additional.singleItems = data.prop_data.single_pc_items;
-    this.additional.pcTypes = data.prop_data.type_with_files;
-    this.additional.secretExceptions = data.prop_data.secret_exceptions;
+    // this.additional.pcAttrs = data.prop_data.file_depending;
+    // this.additional.singleItems = data.prop_data.single_pc_items;
+    // this.additional.pcTypes = data.prop_data.type_with_files;
+    // this.additional.secretExceptions = data.prop_data.secret_exceptions;
+    this.Item.setAdditional('pcAttrs', data.prop_data.file_depending);
+    this.Item.setAdditional('singleItems', data.prop_data.single_pc_items);
+    this.Item.setAdditional('pcTypes', data.prop_data.type_with_files);
+    this.Item.setAdditional('secretExceptions', data.prop_data.secret_exceptions);
   };
 
   /**
@@ -193,36 +198,6 @@ import { app } from '../../app/app';
   };
 
   /**
-   * Получить данные от системы Аудит по указанному инвентарному номеру.
-   *
-   * @param item
-   */
-  Workplace.prototype.getAuditData = function(item) {
-    this.Server.Invent.Workplace.pcConfigFromAudit(
-      { invent_num: item.invent_num },
-      (data) => this.Item.setPcProperties(item, data),
-      (response, status) => this.Error.response(response, status)
-    );
-  };
-
-  /**
-   * Отправить файл на сервер для расшифровки. Возвращает расшифрованные данные в виде строки.
-   *
-   * @param file - загружаемый файл
-   */
-  Workplace.prototype.matchUploadFile = function(file) {
-    let formData = new FormData();
-
-    formData.append('pc_file', file);
-
-    return this.Server.Invent.Workplace.pcConfigFromUser(
-      formData,
-      (response) => {},
-      (response, status) => this.Error.response(response, status)
-    ).$promise;
-  };
-
-  /**
    * Сохранить данные о РМ на сервере.
    */
   Workplace.prototype.saveWorkplace = function() {
@@ -284,6 +259,7 @@ import { app } from '../../app/app';
       });
     }
 
+    this.InventItem.setItem(item);
     // Сделать созданный элемент активным в табах.
     this._setActiveTab(length);
   };
@@ -305,10 +281,12 @@ import { app } from '../../app/app';
           // Созданный элемент
           item = this.workplace.items_attributes[length];
 
-        this.Item.addProperties(response);
-        this.Item.setItemAttributes(item, response, this.workplace.workplace_id);
+        this.Item.addProperties(response.item);
+        this.Item.setItemAttributes(item, response.item, this.workplace.workplace_id);
         item.priorities = this.Item.getPriorities();
+        item.status = 'prepared_to_swap';
 
+        this.InventItem.setItem(item);
         // Сделать созданный элемент активным в табах.
         this._setActiveTab(length);
       },

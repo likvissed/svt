@@ -4,6 +4,12 @@ module Invent
   RSpec.describe WorkplacesController, type: :controller do
     sign_in_user
     let!(:workplace_count) { create(:active_workplace_count, users: [@user]) }
+    let(:order) do
+      {
+        name: :workplace_id,
+        type: :desc
+      }
+    end
 
     describe 'GET #index' do
       context 'when html request' do
@@ -15,7 +21,7 @@ module Invent
 
       context 'when json request' do
         it 'creates instance of the Workplaces::Index' do
-          get :index, format: :json, params: { search: { value: '', regex: 'false' }, draw: 1, start: 0, length: 25 }
+          get :index, format: :json, params: { sort: order.to_json, search: { value: '', regex: 'false' }, draw: 1, start: 0, length: 25 }
           expect(assigns(:index)).to be_instance_of Workplaces::Index
         end
 
@@ -71,34 +77,6 @@ module Invent
       it 'calls :run method' do
         expect_any_instance_of(Workplaces::ListWp).to receive(:run)
         get :list_wp, format: :json, params: { init_filters: false }
-      end
-    end
-
-    describe 'GET #pc_config_from_audit' do
-      it 'creates instance of the LkInvents::PcConfigFromAudit' do
-        get :pc_config_from_audit, params: { invent_num: 111_222 }
-        expect(assigns(:pc_config)).to be_instance_of Workplaces::PcConfigFromAudit
-      end
-
-      it 'calls :run method' do
-        expect_any_instance_of(Workplaces::PcConfigFromAudit).to receive(:run)
-        get :pc_config_from_audit, params: { invent_num: 111_222 }
-      end
-    end
-
-    describe 'GET #pc_config_from_user' do
-      let(:file) do
-        Rack::Test::UploadedFile.new(Rails.root.join('spec', 'files', 'old_pc_config.txt'), 'text/plain')
-      end
-
-      # it 'creates instance of the LkInvents::PcConfigFromUser' do
-      #   get :pc_config_from_user, params: { pc_file: file }
-      #   expect(assigns(:pc_file)).to be_instance_of LkInvents::PcConfigFromUser
-      # end
-
-      it 'calls :run method' do
-        expect_any_instance_of(Workplaces::PcConfigFromUser).to receive(:run)
-        post :pc_config_from_user, params: { pc_file: file }
       end
     end
 

@@ -14,31 +14,13 @@ import { app } from '../../app/app';
       // Поле select, предлагающее выбрать тип оборудования
       selectEqType = { type_id: null, short_description: 'Выберите тип' },
       // Приоритет
-      priorities = {
-        // '': 'Выберите приоритет'
-      },
+      priorities = {},
       // Шаблон экземпляра техники, добавляемого к РМ
-      templateItem = {
-        // id: null,
-        // // item_id: null,
-        // type_id: 0,
-        // workplace_id: 0,
-        // location: '',
-        // invent_num: '',
-        // serial_num: '',
-        // model_id: 0,
-        // item_model: '',
-        // property_values_attributes: [],
-        // // По умолчанию показать пользователю "Выберите тип"
-        // type: selectEqType,
-        // // Выбранная модель
-        // model: null,
-        // status: 'in_workplace'
-      },
+      templateItem = {},
       // Начальные данные для select тэга модели.
       templateSelectModel = [
         { model_id: -1, item_model: 'Выберите модель' },
-        { model_id: 0, item_model: 'Ввести модель вручную...' }
+        { model_id: null, item_model: 'Ввести модель вручную...' }
       ],
       // Дополнительные данные
       additional = {
@@ -70,7 +52,7 @@ import { app } from '../../app/app';
       item.type.models = templateSelectModel.concat(item.type.models);
 
       if (item.id) {
-        var model = item.type.models.find((el) => el.model_id == item.model_id);
+        let model = item.type.models.find((el) => el.model_id == item.model_id);
         item.model = model || templateSelectModel[1];
       } else {
         item.model = item.type.models[0];
@@ -287,10 +269,10 @@ import { app } from '../../app/app';
      * @param prop_index - индекс элемента в массиве property_values_attributes
      */
     function _setInitPropertyListId (item, prop_index) {
-      if (item.property_values_attributes[prop_index].filteredList.length > 0) {
+      if (item.property_values_attributes[prop_index].filteredList && item.property_values_attributes[prop_index].filteredList.length > 0) {
         item.property_values_attributes[prop_index].property_list_id = item.property_values_attributes[prop_index].filteredList[0].property_list_id;
       } else {
-        item.property_values_attributes[prop_index].property_list_id = 0;
+        item.property_values_attributes[prop_index].property_list_id = null;
       }
     }
 
@@ -346,8 +328,8 @@ import { app } from '../../app/app';
 
         if (!eq_value) { return false; }
 
-        item.priorities = this.getPriorities();
         item.type = angular.copy(eq_value);
+        item.priorities = this.getPriorities();
         // Если длина массивов property_values_attributes и properties отличается, значит текущий
         // экземпляр техники имеет несколько значений для некоторых свойств (например, несколько жестких
         // дисков для системного блока). Необходимо создать копии соответсвующих элементов массива
@@ -370,6 +352,7 @@ import { app } from '../../app/app';
       delProperties: function(item) {
         delete(item.type);
         delete(item.model);
+        delete(item.priorities);
 
         item.property_values_attributes.forEach((prop_val) => delete(prop_val.filteredList));
       },

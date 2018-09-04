@@ -1,7 +1,7 @@
 require 'feature_helper'
 
 module Invent
-  module Workplaces
+  module Items
     RSpec.describe PcConfigFromAudit, type: :model do
       let(:host_iss) { build(:host_iss) }
       subject { PcConfigFromAudit.new(host_iss[:id]) }
