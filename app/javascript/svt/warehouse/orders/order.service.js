@@ -232,4 +232,3 @@ import { app } from '../../app/app';
     ).$promise;
   };
 })();
-
