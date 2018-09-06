@@ -57,4 +57,11 @@ import { app } from '../../app/app';
   EditInventItemCtrl.prototype.changeItemModel = function() {
     this.WorkplaceItem.changeModel(this.item_o.item);
   };
+
+  /**
+   * Заполнить конфигурацию ПК дефолтными данными.
+   */
+  EditInventItemCtrl.prototype.FillWithDefaultData = function() {
+    this.Item.FillPcWithDefaultData();
+  };
 })();

@@ -33,6 +33,8 @@
                 "disable-link": true
               li= link_to "Внести вручную", "", "ng-click": "edit.runManuallyPcDialog()",
                 "disable-link": true
+            = button_tag type: :button, class: "btn-default", "ng-click": "edit.FillWithDefaultData()", "uib-tooltip": "Заполнить поля ПК тестовыми данными", "tooltip-append-to-body": "true" do
+              = fa_icon "list"
     div ng-if="!(edit.additional.pcTypes | contains:edit.item_o.item.type.name)"
       .form-group
         = text_field_tag "workplace[items][][invent_num]", "", class: "form-control", "ng-model": "edit.item_o.item.invent_num"

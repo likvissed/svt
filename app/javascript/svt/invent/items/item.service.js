@@ -14,6 +14,7 @@ import { app } from '../../app/app';
     this.Error = Error;
     this.WorkplaceItem = WorkplaceItem;
 
+    this.additional = WorkplaceItem.getAdditional();
     this.data = {};
   }
 
@@ -111,5 +112,17 @@ import { app } from '../../app/app';
         this.errorResponse(response);
       }
     ).$promise;
+  };
+
+  /**
+   * Заполнить конфигурацию ПК дефолтными данными.
+   */
+  InventItem.prototype.FillPcWithDefaultData = function() {
+    let result = this.additional.pcAttrs.reduce((res, el) => {
+      res[el] = ['NO_DATA_MANUAL_INPUT'];
+      return res;
+    }, {});
+
+    this.WorkplaceItem.setPcProperties(this.data.item, result);
   };
 })();
