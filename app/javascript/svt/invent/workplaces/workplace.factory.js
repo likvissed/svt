@@ -72,7 +72,13 @@ import { app } from '../../app/app';
    * Добавить шаблон оборудования к РМ.
    */
   Workplace.prototype._addItemTemplate = function() {
-    this.workplace.items_attributes.push(this.Item.getTemplateItem());
+    let
+      newItem = this.Item.getTemplateItem(),
+      length = this.workplace.items_attributes.length;
+
+    newItem.tabIndex = this.workplace.items_attributes[length-1].tabIndex + 1;
+
+    this.workplace.items_attributes.push(newItem);
   };
 
   /**
@@ -82,6 +88,7 @@ import { app } from '../../app/app';
    */
   Workplace.prototype._setActiveTab = function(index) {
     this.$timeout(() => this.additional.activeTab = index, 0);
+    this.InventItem.setItem(this.workplace.items_attributes[index]);
   };
 
   /**
@@ -107,14 +114,12 @@ import { app } from '../../app/app';
     this.statuses = data.prop_data.statuses;
     this.divisions = data.prop_data.divisions;
 
-    // this.additional.pcAttrs = data.prop_data.file_depending;
-    // this.additional.singleItems = data.prop_data.single_pc_items;
-    // this.additional.pcTypes = data.prop_data.type_with_files;
-    // this.additional.secretExceptions = data.prop_data.secret_exceptions;
     this.Item.setAdditional('pcAttrs', data.prop_data.file_depending);
     this.Item.setAdditional('singleItems', data.prop_data.single_pc_items);
     this.Item.setAdditional('pcTypes', data.prop_data.type_with_files);
     this.Item.setAdditional('secretExceptions', data.prop_data.secret_exceptions);
+
+    this.workplace.items_attributes.forEach((item, index) => item.tabIndex = index);
   };
 
   /**
@@ -259,7 +264,6 @@ import { app } from '../../app/app';
       });
     }
 
-    this.InventItem.setItem(item);
     // Сделать созданный элемент активным в табах.
     this._setActiveTab(length);
   };
@@ -286,7 +290,6 @@ import { app } from '../../app/app';
         item.priorities = this.Item.getPriorities();
         item.status = 'prepared_to_swap';
 
-        this.InventItem.setItem(item);
         // Сделать созданный элемент активным в табах.
         this._setActiveTab(length);
       },
@@ -305,18 +308,20 @@ import { app } from '../../app/app';
   };
 
   /**
-   * Установить новый активный экземпляр техники в табах взависимости от удаляемого элемента.
+   * Установить новый активный экземпляр техники в табах взависимости от удаляемого элемента. Если удаляется активный
+   * таб и он последний в списке техники - установить новый активный таб.
    *
-   * @param item - удаляемый экземпляр техники (необязательный параметр). Если задан - то новый активный элемент будет
-   * установлен только в том случае, если удаляется активный экземпляр техники.
+   * @param item.
    */
   Workplace.prototype.setFirstActiveTab = function(item) {
-    if (item && this.workplace.items_attributes.indexOf(item) != this.additional.activeTab) {
-      return;
-    }
+    // Если удаляется неактивный таб, ничего не делать
+    if (item && item != this.InventItem.data.item) { return false; }
 
-    let index = this.additional.activeTab == 0 ? 1 : 0;
-    this._setActiveTab(index);
+    // Если удаляется активный там и он последний в списке, установить активным первый таб
+    if (this.workplace.items_attributes.slice(-1).pop() == item) {
+      let index = this.workplace.items_attributes[0].tabIndex;
+      this._setActiveTab(index);
+    }
   };
 
   /**
@@ -332,23 +337,6 @@ import { app } from '../../app/app';
 
       return false;
     }
-
-    // if (this.Item.isUniqType(type.name)) {
-    //   let countPc = 0;
-
-    //   // Считаем количество СБ/моноблоков/ноутбуков на текущем РМ.
-    //   this.workplace.items_attributes.forEach((item) => {
-    //     if (this.Item.isUniqType(item.type.name)) {
-    //       countPc ++;
-    //     }
-    //   });
-
-    //   if (countPc >= 1) {
-    //     this.Flash.alert('Одно рабочее место может содержать только один из указанных видов техники: системный блок, моноблок, ноутбук, планшет.');
-
-    //     return false;
-    //   }
-    // }
 
     return true;
   };

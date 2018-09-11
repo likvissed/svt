@@ -12,6 +12,10 @@ module Invent
       for_worker
     end
 
+    def to_stock?
+      for_worker
+    end
+
     def permitted_attributes
       [
         :item_id,

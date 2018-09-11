@@ -51,7 +51,7 @@ module Warehouse
         expect { subject.run }.to change(Item, :count).by(2)
       end
 
-      it 'sets count of items to 1' do
+      it 'sets count of items to 0' do
         subject.run
 
         Order.all.includes(operations: :item).each do |o|

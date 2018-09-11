@@ -18,7 +18,7 @@
 .row#wp_item_list ng-if="wp.workplace"
   .col-sm-24
     uib-tabset active="wp.additional.activeTab"
-      uib-tab.animate-repeat index="$index" ng-repeat="item in wp.workplace.items_attributes" ng-click="wp.selectItem(item)"
+      uib-tab.animate-repeat index="item.tabIndex" ng-repeat="item in wp.workplace.items_attributes" select="wp.selectItem(item)"
         uib-tab-heading ng-class="{'text-danger': item.status == 'waiting_bring', 'text-info': item.status == 'prepared_to_swap' || item.status == 'waiting_take'}"
           span ng-bind="item.type.short_description"
           '
