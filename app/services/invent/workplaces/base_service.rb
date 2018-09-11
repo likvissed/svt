@@ -75,6 +75,18 @@ module Invent
         data[:property_value] = PropertyValue.new.as_json
         data[:property_value]['id'] = nil
       end
+
+      # Загрузить данные для фильтров
+      def load_filters
+        data[:filters] = {}
+        data[:filters][:divisions] = policy_scope(WorkplaceCount).select(:workplace_count_id, :division).order('CAST(division AS SIGNED)')
+        data[:filters][:statuses] = workplace_statuses
+        data[:filters][:types] = WorkplaceType.select(:workplace_type_id, :short_description)
+        data[:filters][:buildings] = IssReferenceBuilding
+                                        .select('iss_reference_sites.name as site_name, iss_reference_buildings.*')
+                                        .left_outer_joins(:iss_reference_site)
+        data[:filters][:priorities] = item_priorities
+      end
     end
   end
 end

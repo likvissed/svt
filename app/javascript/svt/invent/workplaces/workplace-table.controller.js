@@ -13,7 +13,6 @@ import { app } from '../../app/app';
   function WorkplaceTableCtrl($scope, Workplaces, ActionCableChannel, TablePaginator, Server, Config, Flash, Error) {
     this.Workplaces = Workplaces;
     this.ActionCableChannel = ActionCableChannel;
-    this.TablePaginator = TablePaginator;
     this.Server = Server;
     this.Config = Config;
     this.Flash = Flash;

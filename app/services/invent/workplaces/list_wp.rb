@@ -13,6 +13,7 @@ module Invent
         load_workplace
         limit_records
         prepare_to_render
+        load_filters if need_init_filters?
 
         true
       rescue RuntimeError => e

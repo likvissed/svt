@@ -21,7 +21,7 @@ module Invent
 
       it { is_expected.to be_truthy }
 
-      context '' do
+      context 'when there are many workplaces' do
         let!(:workplace_***REMOVED***) { create_list(:workplace_mob, 30, :add_items, items: %i[notebook], status: :confirmed, workplace_count: workplace_count_***REMOVED***) }
 
         it 'loads workplaces specified into length param' do
@@ -31,6 +31,23 @@ module Invent
 
       it 'adds %i[workplace_id workplace items] fields' do
         expect(subject.data[:data].first).to include(:workplace_id, :workplace, :items)
+      end
+
+      context 'with init_filters' do
+        subject do
+          params[:init_filters] = 'true'
+          ListWp.new(user, params)
+        end
+
+        it 'assigns %i[divisions statuses types buildings] to the :filters key' do
+          expect(subject.data[:filters]).to include(:divisions, :statuses, :types, :buildings)
+        end
+
+        it 'loads site for corresponding room' do
+          expect(subject.data[:filters][:buildings].first[:site_name]).to eq IssReferenceBuilding.first.iss_reference_site.name
+        end
+
+        its(:run) { is_expected.to be_truthy }
       end
 
       # it 'wraps the values entered manually with <span class=\'manually\'></span> tag' do

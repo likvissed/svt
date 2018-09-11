@@ -11,6 +11,8 @@ import { app } from '../../app/app';
     this.Server = Server;
     this.Error = Error;
     this.filters = {
+      // флаг указывает, инициализированы ли фильтры
+      init: false,
       statuses: { '': 'Все статусы' },
       types: [{
         workplace_type_id: '',
@@ -37,6 +39,7 @@ import { app } from '../../app/app';
     Object.assign(this.filters.statuses, data.statuses);
     this.filters.types = this.filters.types.concat(data.types);
     this.filters.buildings = data.buildings;
+    this.filters.init = true;
   };
 
   /**
@@ -44,6 +47,7 @@ import { app } from '../../app/app';
    */
   WorkplacesFilter.prototype.get = function() {
     let obj = angular.copy(this.selectedTableFilters);
+
     obj.workplace_count_id = obj.division.workplace_count_id;
     obj.location_building_id = obj.building.building_id;
     obj.location_room_id = obj.room.room_id;

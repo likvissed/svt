@@ -21,12 +21,19 @@ import { app } from '../../app/app';
     };
   }
 
+  /**
+   * Проверяет, нужно ли инициировать фильтры.
+   */
+  Workplaces.prototype._isNeedToInitFilters = function(init) {
+    return init && !this.Filter.filters.init;
+  }
+
   Workplaces.prototype.loadWorkplaces = function(init) {
     return this.Server.Invent.Workplace.query(
       {
         start: this.TablePaginator.startNum(),
         length: this.Config.global.uibPaginationConfig.itemsPerPage,
-        init_filters: init,
+        init_filters: this._isNeedToInitFilters(init),
         filters: this.Filter.get(),
         sort: this.sorting
       },
@@ -36,7 +43,7 @@ import { app } from '../../app/app';
         // Данные для составления нумерации страниц
         this.TablePaginator.setData(response);
 
-        if (init) {
+        if (this._isNeedToInitFilters(init)) {
           this.Filter.set(response.filters);
         }
       },
@@ -44,20 +51,24 @@ import { app } from '../../app/app';
     ).$promise;
   };
 
-  Workplaces.prototype.loadListWorkplaces = function() {
+  Workplaces.prototype.loadListWorkplaces = function(init) {
     return this.Server.Invent.Workplace.list(
       {
         start: this.TablePaginator.startNum(),
         length: this.Config.global.uibPaginationConfig.itemsPerPage,
+        init_filters: this._isNeedToInitFilters(init),
         filters: this.Filter.get()
       },
       (response) => {
         // Список РМ
         this.workplaces = response.data;
         this._prepareWorkplaceToRender();
-
         // Данные для составления нумерации страниц
         this.TablePaginator.setData(response);
+
+        if (this._isNeedToInitFilters(init)) {
+          this.Filter.set(response.filters);
+        }
       },
       (response, status) => {
         this.Error.response(response, status);

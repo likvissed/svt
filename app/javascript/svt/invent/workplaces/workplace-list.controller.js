@@ -9,8 +9,6 @@ import { app } from '../../app/app';
 
   /**
    * Управление общей таблицей рабочих мест.
-   *
-   * @class SVT.WorkplaceListCtrl
    */
   function WorkplaceListCtrl($scope, Workplaces, ActionCableChannel, TablePaginator, Server, Config, Flash, Error) {
     this.Workplaces = Workplaces;
@@ -21,7 +19,7 @@ import { app } from '../../app/app';
     this.Error = Error;
     this.pagination = TablePaginator.config();
 
-    this._loadWorkplaces();
+    this._loadWorkplaces(true);
     this._initActionCable();
 
     $scope.$on('WorkplaceTableCtrl::reloadWorkplacesList', () => this.reloadWorkplaces());
@@ -33,7 +31,7 @@ import { app } from '../../app/app';
    * @param init
    */
   WorkplaceListCtrl.prototype._loadWorkplaces = function(init) {
-    this.Workplaces.loadListWorkplaces().then(
+    this.Workplaces.loadListWorkplaces(init).then(
       (response) => this.workplaces = this.Workplaces.workplaces
     );
   };
