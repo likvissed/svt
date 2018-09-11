@@ -97,6 +97,16 @@ module Invent
       end
     end
 
+    def to_stock
+      @to_stock = Items::ToStock.new(current_user, params[:item_id])
+
+      if @to_stock.run
+        render json: { full_message: I18n.t('controllers.invent/item.sended_to_stock', item_id: params[:id]) }
+      else
+        render json: @to_stock.error, status: 422
+      end
+    end
+
     protected
 
     def check_access

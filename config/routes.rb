@@ -76,6 +76,8 @@ Rails.application.routes.draw do
         get 'pc_config_from_audit/:invent_num', to: 'items#pc_config_from_audit', constraints: { invent_num: /.*/ }
         # Расшифровать файл конфигурации ПК, загруженный пользователем.
         post 'pc_config_from_user', to: 'items#pc_config_from_user'
+        # Отправить технику на склад
+        post 'to_stock', to: 'items#to_stock'
       end
     end
 

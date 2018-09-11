@@ -19,6 +19,7 @@ ru:
     invent/item:
       updated: 'Техника №%{item_id} обновлена'
       destroyed: 'Техника удалена'
+      sended_to_stock: 'Техника №%{item_id} отправлена на склад'
     invent/model:
       created: 'Модель создана'
       updated: 'Модель обновлена'

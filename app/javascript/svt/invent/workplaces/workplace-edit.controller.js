@@ -157,14 +157,13 @@ import { app } from '../../app/app';
   /**
    * Удалить технику из БД.
    *
-   * @param id
+   * @param item
    */
   WorkplaceEditCtrl.prototype.destroyItem = function(item) {
     let confirm_str = "ВНИМАНИЕ! Техника будет удалена без возможности восстановления! Вы действительно хотите удалить " + item.type.short_description + "?";
 
     if (!confirm(confirm_str)) { return false; }
 
-    // this.Workplace.destroyWorkplace();
     this.WorkplaceItem.destroyItem(item).then(() => this.Workplace.delItem(item));
   };
 
@@ -179,5 +178,18 @@ import { app } from '../../app/app';
     if (!confirm(confirm_str)) { return false; }
 
     this.Workplace.destroyWorkplace();
+  };
+
+  /**
+   * Отправить технику на склад
+   *
+   * @param item
+   */
+  WorkplaceEditCtrl.prototype.sendItemToStock = function(item, index) {
+    let confirm_str = "ВНИМАНИЕ! Техника будет перемещена на склад! Вы действительно хотите переместить на склад " + item.type.short_description + "?";
+
+    if (!confirm(confirm_str)) { return false; }
+
+    this.InventItem.sendToStock().then(() => this.Workplace.delItem(item));
   };
 })();

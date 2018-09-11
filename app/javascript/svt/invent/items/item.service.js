@@ -125,4 +125,18 @@ import { app } from '../../app/app';
 
     this.WorkplaceItem.setPcProperties(this.data.item, result);
   };
+
+  /**
+   * Отправить технику на склад
+   */
+  InventItem.prototype.sendToStock = function() {
+    return this.Server.Invent.Item.toStock(
+      { item_id: this.data.item.id },
+      (response) => this.Flash.notice(response.full_message),
+      (response, status) => {
+        this.Error.response(response, status);
+        this.errorResponse(response);
+      }
+    ).$promise;
+  }
 })();

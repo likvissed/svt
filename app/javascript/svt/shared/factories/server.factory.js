@@ -80,6 +80,10 @@ import { app } from '../../app/app';
             headers: { 'Content-Type': undefined },
             transformRequest: angular.identity
           },
+          toStock: {
+            method: 'POST',
+            url: '/invent/items/to_stock'
+          },
           update: { method: 'PUT' }
         }),
         Vendor: $resource('/invent/vendors/:vendor_id.json', {}),

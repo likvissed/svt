@@ -20,5 +20,11 @@ module Invent
 
       include_examples 'policy for worker'
     end
+
+    permissions :to_stock? do
+      let(:model) { Item.first }
+
+      include_examples 'policy for worker'
+    end
   end
 end

@@ -3,5 +3,8 @@ fieldset.ng-hide ng-show="item" ng-disabled="item.status == 'prepared_to_swap'"
     = render partial: 'invent/items/item'
 
   - if !current_user.role? :***REMOVED***_user
-    .col-sm-10.col-xlg-6.col-sm-offset-7.col-xlg-offset-11 ng-if="!(wp.additional.statusesForChangeItem | contains:item.status) && item.id"
-      = button_tag "Удалить технику, как дубликат", class: "btn-danger btn-block", "ng-click": "wp.destroyItem(item)"
+    div ng-if="!(wp.additional.statusesForChangeItem | contains:item.status) && item.id"
+      .col-sm-10.col-lg-8.col-xlg-6.col-sm-offset-2.col-lg-offset-4.col-xlg-offset-6
+        = button_tag "Удалить технику, как дубликат", class: "btn-danger btn-block", "ng-click": "wp.destroyItem(item)"
+      .col-sm-10.col-lg-8.col-xlg-6
+        = button_tag "На склад", class: "btn-default btn-block", "ng-click": "wp.sendItemToStock(item, $index)"
