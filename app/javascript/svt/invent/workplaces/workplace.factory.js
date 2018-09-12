@@ -74,9 +74,10 @@ import { app } from '../../app/app';
   Workplace.prototype._addItemTemplate = function() {
     let
       newItem = this.Item.getTemplateItem(),
-      length = this.workplace.items_attributes.length;
+      length = this.workplace.items_attributes.length,
+      lastEl = this.workplace.items_attributes[length-1];
 
-    newItem.tabIndex = this.workplace.items_attributes[length-1].tabIndex + 1;
+    newItem.tabIndex = lastEl ? lastEl.tabIndex + 1 : 0;
 
     this.workplace.items_attributes.push(newItem);
   };
