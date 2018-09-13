@@ -247,7 +247,6 @@ ru:
             base:
               pc_data_not_received: 'Сначала необходимо нажать кнопку "Получить данные автоматически" или "Ввод данных
                вручную"'
-              field_is_empty: 'Не заполнено поле "%{empty_field}"'
               property_not_filled: 'Не указано свойство "%{empty_prop}"'
               cannot_destroy_with_processing_operation: 'Невозможно удалить технику, т.к. она используется в незакрытых позициях ордера №%{order_id}'
             type_id:

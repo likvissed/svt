@@ -136,5 +136,20 @@ module Invent
         post :pc_config_from_user, params: { pc_file: file }
       end
     end
+
+    describe 'POST #to_stock' do
+      let(:workplace) { create(:workplace_pk, :add_items, items: [:pc, :monitor]) }
+      let(:params) { { item_id: workplace.items.first.item_id } }
+
+      it 'creates instance of the Items::ToStock' do
+        post :to_stock, params: params, format: :json
+        expect(assigns(:to_stock)).to be_instance_of Items::ToStock
+      end
+
+      it 'calls :run method' do
+        expect_any_instance_of(Items::ToStock).to receive(:run)
+        post :to_stock, params: params, format: :json
+      end
+    end
   end
 end

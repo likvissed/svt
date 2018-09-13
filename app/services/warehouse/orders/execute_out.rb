@@ -74,7 +74,10 @@ module Warehouse
           op.set_stockman(current_user)
           op.item.count = op.item.count + op.shift.to_i
           op.item.count_reserved = op.item.count_reserved + op.shift.to_i
-          op.inv_items.each { |inv_item| inv_item.status = :in_workplace }
+          op.inv_items.each do |inv_item|
+            inv_item.validate_prop_values = true
+            inv_item.status = :in_workplace
+          end
           op.item_id
         end.compact
 

@@ -20,6 +20,7 @@ module Invent
 
     validates :invent_num, presence: true, unless: -> { status == 'waiting_take' }
     validate :presence_model, :check_mandatory, if: -> { errors.details[:type].empty? && !disable_filters }
+    validate :property_values_validation, if: -> { validate_prop_values }
 
     after_initialize :set_default_values
     before_save :set_default_model
@@ -54,6 +55,8 @@ module Invent
     delegate :properties, to: :type
 
     accepts_nested_attributes_for :property_values, allow_destroy: true
+
+    attr_accessor :validate_prop_values
 
     enum status: { waiting_take: 1, waiting_bring: 2, prepared_to_swap: 3, in_stock: 4, in_workplace: 5 }
     enum priority: { default: 1, high: 2 }
@@ -165,7 +168,7 @@ module Invent
       @properties ||= type.properties
 
       @properties.where(mandatory: true).find_each do |prop|
-        next if property_values.reject(&:_destroy).find { |prop_val| prop_val[:property_id] == prop.property_id && prop_val.valid? }
+        next if property_values.reject(&:_destroy).find { |prop_val| prop_val[:property_id] == prop.property_id }
 
         errors.add(:base, :property_not_filled, empty_prop: prop.short_description)
       end
@@ -177,6 +180,14 @@ module Invent
 
       errors.add(:base, :cannot_destroy_with_processing_operation, order_id: op.operationable.id)
       throw(:abort)
+    end
+
+    def property_values_validation
+      property_values.each do |prop_val|
+        next if prop_val.valid?
+
+        errors.add(:base, prop_val.errors.full_messages.join('. '))
+      end
     end
   end
 end

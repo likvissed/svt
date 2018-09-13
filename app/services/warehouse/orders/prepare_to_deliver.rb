@@ -27,7 +27,7 @@ module Warehouse
       protected
 
       def find_order
-        @order = Order.find(@order_id)
+        @order = Order.includes(:inv_items).find(@order_id)
         @order.assign_attributes(@order_params)
         authorize @order, :prepare_to_deliver?
       end

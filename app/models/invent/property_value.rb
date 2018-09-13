@@ -12,7 +12,6 @@ module Invent
     validate :presence_val, if: :need_validation?
 
     before_save :set_default_property_list_id_to_nil
-    # after_initialize :set_default_property_list_id_to_zero
 
     def value
       if try(:property).try(:name) == 'ram' && super.present? && !super.match(/.* Гб/)
@@ -69,9 +68,5 @@ module Invent
     def set_default_property_list_id_to_nil
       self.property_list_id = nil if property_list_id.to_i <= 0
     end
-
-    # def set_default_property_list_id_to_zero
-    #   self.property_list_id = 0 if property_list_id.nil?
-    # end
   end
 end

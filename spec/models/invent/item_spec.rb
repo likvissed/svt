@@ -88,8 +88,8 @@ module Invent
 
         it 'includes the { base: :property_not_filled error } error for each property_value with mandatory flag' do
           subject.valid?
-          subject.properties.where(mandatory: true) do |prop|
-            expect(item.errors.details[:base]).to include(error: :property_not_filled, empty_field: prop.short_description)
+          subject.properties.where(mandatory: true).find_each do |prop|
+            expect(subject.errors.details[:base]).to include(error: :property_not_filled, empty_prop: prop.short_description)
           end
         end
 
@@ -97,6 +97,22 @@ module Invent
           before { subject.disable_filters = true }
 
           it { is_expected.to be_valid }
+        end
+      end
+
+      context 'when all properties with mandatory flag exists but not filled' do
+        subject do
+          item = build(:item, :with_property_values, type_name: :printer)
+          item.property_values.first.property_list_id = 0
+          item
+        end
+
+        it 'does not add :property_not_filled error' do
+          subject.valid?
+
+          subject.properties.where(mandatory: true).find_each do |prop|
+            expect(subject.errors.details[:base]).not_to include(error: :property_not_filled, empty_prop: prop.short_description)
+          end
         end
       end
     end
