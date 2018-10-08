@@ -46,7 +46,9 @@ import { app } from '../../app/app';
 
     if (operation) {
       this.result.warehouseType = operation.item.warehouse_type;
-      this.result.barcode = operation.item.barcode
+      this.result.barcode = operation.item.barcode;
+      this.result.inventNumStart = operation.item.invent_num_start;
+      this.result.inventNumEnd = operation.item.invent_num_end;
       this.loadModels();
     }
   };

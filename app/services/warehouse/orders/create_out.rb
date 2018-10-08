@@ -14,9 +14,11 @@ module Warehouse
 
         init_order
         return false unless wrap_order
+
         broadcast_out_orders
         broadcast_items
         broadcast_workplaces
+        broadcast_workplaces_list
 
         true
       rescue RuntimeError => e

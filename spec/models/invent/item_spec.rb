@@ -341,5 +341,64 @@ module Invent
         end
       end
     end
+
+    describe '#invent_num_from_allowed_pool_of_numbers' do
+      context 'when item is new' do
+        subject { build(:item, :with_property_values, type_name: :monitor, priority: :high) }
+
+        it { is_expected.to be_valid }
+      end
+
+      context 'when item from supply' do
+        let(:workplace) { create(:workplace_pk, :add_items, items: %i[pc monitor]) }
+        let!(:new_item) { create(:new_item, count: 4, inv_type: Invent::Type.find_by(name: :pc), item_model: 'UNIT') }
+        let(:operation) { attributes_for(:order_operation, item_id: new_item.id, shift: -1) }
+        before do
+          order_params = attributes_for(:order, operation: :out, invent_workplace_id: workplace.workplace_id)
+          order_params[:operations_attributes] = [operation]
+          Warehouse::Orders::CreateOut.new(create(:***REMOVED***_user), order_params).run
+        end
+
+        context 'and when invent_num from allowed pool' do
+          subject { Item.last }
+
+          it { is_expected.to be_valid }
+        end
+
+        context 'and when invent_num not from allowed pool' do
+          context 'and when invent_num was changed' do
+            subject do
+              item = Item.last
+              item.invent_num = '333'
+              item
+            end
+
+            it 'adds :not_from_allowed_pool error' do
+              subject.valid?
+              expect(subject.errors.details[:invent_num]).to include(error: :not_from_allowed_pool, start_num: new_item.invent_num_start, end_num: new_item.invent_num_end)
+            end
+          end
+
+          context 'and when invent_num not was changed' do
+            subject do
+              item = Item.last
+              item.invent_num = '333'
+              item.save(validate: false)
+              item
+            end
+
+            it { is_expected.to be_valid }
+          end
+        end
+      end
+
+      context 'when item without supply' do
+        let!(:workplace) { create(:workplace_pk, :add_items, items: [:pc, :monitor]) }
+        subject { workplace.items.first }
+        before { subject.invent_num = 'new_num' }
+
+        it { is_expected.to be_valid }
+      end
+    end
   end
 end

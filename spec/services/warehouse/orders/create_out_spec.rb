@@ -160,6 +160,26 @@ module Warehouse
           expect(item_5.reload.count_reserved).to eq 2
         end
 
+        it 'broadcasts to out_orders' do
+          expect(subject).to receive(:broadcast_out_orders)
+          subject.run
+        end
+
+        it 'broadcasts to items' do
+          expect(subject).to receive(:broadcast_items)
+          subject.run
+        end
+
+        it 'broadcasts to workplaces' do
+          expect(subject).to receive(:broadcast_workplaces)
+          subject.run
+        end
+
+        it 'broadcasts to workplaces_list' do
+          expect(subject).to receive(:broadcast_workplaces_list)
+          subject.run
+        end
+
         context 'and when order was not created' do
           before { allow_any_instance_of(Order).to receive(:save).and_return(false) }
 

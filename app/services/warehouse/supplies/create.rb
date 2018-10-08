@@ -30,7 +30,7 @@ module Warehouse
       def init_items
         @supply_params[:operations_attributes] ||= []
         @supply_params[:operations_attributes].each do |op|
-          op[:item] = Item.find_by(item_type: op[:item][:item_type], item_model: op[:item][:item_model], used: false) || Item.new(op[:item])
+          op[:item] = find_or_generate_item(op)
           op[:item].used = false
         end
       end
@@ -43,6 +43,7 @@ module Warehouse
           op.item_type = op.item.item_type
           op.item_model = op.item.item_model
           op.calculate_item_count
+          op.calculate_item_invent_num_end
         end
       end
     end

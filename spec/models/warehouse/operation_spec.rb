@@ -57,17 +57,42 @@ module Warehouse
       end
 
       context 'when :warehouse_type attribute of item has :with_invent_num value' do
-        let(:workplace) { create(:workplace_pk, :add_items, items: [:pc, :monitor]) }
-        let(:item) { create(:new_item) }
+        context 'and when inv_item exists' do
+          let!(:workplace_1) { create(:workplace_pk, :add_items, items: [:pc, :monitor]) }
+          let!(:workplace_2) { create(:workplace_pk, :add_items, items: [:pc, :monitor]) }
+          let!(:item) { create(:used_item, inv_item: workplace_1.items.first) }
 
-        it 'builds inv_items' do
-          subject.build_inv_items(subject.shift.abs, workplace: workplace)
+          it 'change inv_item params' do
+            subject.build_inv_items(subject.shift.abs, workplace: workplace_2)
 
-          expect(subject.inv_items.size).to eq subject.shift.abs
-          subject.inv_items.each do |inv_item|
-            expect(inv_item.type).to eq item.inv_type
-            expect(inv_item.property_values.size).to eq item.inv_type.properties.size
+            subject.inv_items.each do |inv_item|
+              expect(inv_item.workplace).to eq workplace_2
+              expect(inv_item.status).to eq 'waiting_take'
+            end
           end
+        end
+
+        context 'and when inv_item is not exist' do
+          let(:workplace) { create(:workplace_pk, :add_items, items: [:pc, :monitor]) }
+          let(:type) { Invent::Type.find_by(name: :monitor) }
+          let(:item) { create(:new_item, inv_type: type, inv_model: type.models.first, count: 2, invent_num_end: 112) }
+          before { subject.build_inv_items(subject.shift.abs, workplace: workplace) }
+
+          it 'builds inv_items' do
+            expect(subject.inv_items.size).to eq subject.shift.abs
+            subject.inv_items.each_with_index do |inv_item, index|
+              expect(inv_item.type).to eq item.inv_type
+              expect(inv_item.workplace).to eq workplace
+              expect(inv_item.model).to eq item.inv_model
+              expect(inv_item.invent_num.to_i).to eq item.invent_num_start + index
+              expect(inv_item.status).to eq 'waiting_take'
+              expect(inv_item.property_values.size).to eq item.inv_type.properties.size
+            end
+          end
+
+          # it 'builds invent_nums' do
+          #   expect(subject.item.invent_nums.size).to eq subject.inv_items.size
+          # end
         end
       end
     end
@@ -157,6 +182,69 @@ module Warehouse
             subject.calculate_item_count
             expect(item.count).to eq 18
           end
+        end
+      end
+    end
+
+    describe '#calculate_item_invent_num_end' do
+      let!(:item) { build(:new_item, warehouse_type: :with_invent_num, count: 0, invent_num_start: 765100) }
+
+      context 'when operation is a new record' do
+        subject { build(:supply_operation, item: item, shift: 25) }
+
+        it 'calculate :invent_num_end attribute' do
+          subject.calculate_item_invent_num_end
+          expect(item.invent_num_end).to eq 765124
+        end
+      end
+
+      context 'when operation already exists' do
+        subject { create(:supply_operation, item: item, shift: 4) }
+
+        context 'and when operation marked for destruction' do
+          before { subject.mark_for_destruction }
+
+          it 'reduced :invent_num_end attribute' do
+            subject.calculate_item_invent_num_end
+            expect(item.invent_num_end).to eq 765100
+          end
+        end
+
+        context 'and when :shift attribute is increased' do
+          before { subject.shift = 6 }
+
+          it 'reduced :invent_num_end attribute' do
+            subject.calculate_item_invent_num_end
+            expect(item.invent_num_end).to eq 765105
+          end
+        end
+
+        context 'and when :shift attribute is reduced' do
+          before { subject.shift = 2 }
+
+          it 'increased :invent_num_end attribute' do
+            subject.calculate_item_invent_num_end
+            expect(item.invent_num_end).to eq 765101
+          end
+        end
+      end
+
+      context 'when invent_num_start was changed' do
+        let!(:item) do
+          i = build(:new_item, warehouse_type: :with_invent_num, count: 0, invent_num_start: nil, invent_num_end: nil)
+          i.save(validate: false)
+          i
+        end
+        subject do
+          s = build(:supply_operation, item_id: item.id, shift: 25, skip_calculate_invent_nums: true)
+          s.save(validate: false)
+          s
+        end
+        before { subject.item.invent_num_start = 101 }
+
+        it 'calculates a new :invent_num_end attribute' do
+          subject.calculate_item_invent_num_end
+          expect(subject.item.invent_num_end).to eq 125
         end
       end
     end

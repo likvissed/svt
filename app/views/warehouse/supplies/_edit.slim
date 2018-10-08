@@ -17,13 +17,13 @@ script type="text/ng-template" id="editSupplyModal.slim"
             = text_field_tag "supply[name]", "", class: "form-control", "ng-model": "edit.supply.name"
             span.help-block ng-show="edit.form['supply[name]'].$invalid" ng-bind="edit.errorMessage('supply[name]')"
         .col-lg-12
-          .form-group ng-class="edit.errorClass('supply[name]')"
+          .form-group ng-class="edit.errorClass('supply[date]')"
             = label_tag "supply[date]", "Дата поставки", class: "control-label"
-            = text_field_tag "workplace_count[time_end]", "edit.supply.date", class: "form-control",
+            = text_field_tag "supply[date]", "edit.supply.date", class: "form-control",
               "ng-model": "edit.supply.date", "uib-datepicker-popup": "", "ng-model-options": "{ timezone: 'utc' }",
               "ng-focus": "edit.openDatePicker()", "is-open": "edit.date.openDatePicker",
               "popup-placement": "bottom-left", "show-button-bar": false
-            span.help-block ng-show="edit.form['supply[name]'].$invalid" ng-bind="edit.errorMessage('supply[name]')"
+            span.help-block ng-show="edit.form['supply[date]'].$invalid" ng-bind="edit.errorMessage('supply[date]')"
       .form-group
         = label_tag "supply[supplyer]", "Поставщик", class: "control-label"
         = text_field_tag "supply[supplyer]", "", class: "form-control", "ng-model": "edit.supply.supplyer"

@@ -10,7 +10,7 @@ module Warehouse
       let(:operation_1) { attributes_for(:supply_operation, item: item_1_attr, shift: 10) }
       let(:item_2_attr) { attributes_for(:new_item, warehouse_type: :without_invent_num, item_type: 'Клавиатура', item_model: 'ASUS', count: 0) }
       let(:operation_2) { attributes_for(:supply_operation, item: item_2_attr, shift: 20) }
-      let(:allowed_item_keys) { %i[invent_type_id invent_model_id warehouse_type item_type item_model barcode] }
+      let(:allowed_item_keys) { %i[invent_type_id invent_model_id warehouse_type item_type item_model barcode invent_num_start invent_num_end] }
       let(:supply_params) do
         supply = attributes_for(:supply)
         # Оставляем в item только параметры, разрешенные в strong_params
@@ -58,57 +58,107 @@ module Warehouse
         end
       end
 
-      context 'when item already exists (with :new type)' do
-        let!(:existing_item_1) { create(:new_item, warehouse_type: :without_invent_num, item_type: 'Мышь', item_model: 'ASUS', count: 5) }
-        let!(:existing_item_2) { create(:new_item, warehouse_type: :without_invent_num, item_type: 'Клавиатура', item_model: 'ASUS', count: 7) }
+      context 'when item with the same model already exists (and item is new)' do
+        context 'and when item has :with_invent_num type' do
+          let!(:existing_item) { create(:new_item, inv_type: type, inv_model: model, count: 5) }
 
-        its(:run) { is_expected.to be_truthy }
+          its(:run) { is_expected.to be_truthy }
 
-        it 'creates supply' do
-          expect { subject.run }.to change(Supply, :count).by(1)
+          it 'creates supply' do
+            expect { subject.run }.to change(Supply, :count).by(1)
+          end
+
+          it 'creates operations' do
+            expect { subject.run }.to change(Operation, :count).by(2)
+          end
+
+          it 'creates all items' do
+            expect { subject.run }.to change(Item, :count).by(2)
+          end
+
+          it 'does not change :count attribute of existing item' do
+            expect { subject.run }.not_to change { existing_item.reload.count }
+          end
         end
 
-        it 'creates operations' do
-          expect { subject.run }.to change(Operation, :count).by(2)
-        end
+        context 'and when item has :without_invent_num type' do
+          let!(:existing_item_1) { create(:new_item, warehouse_type: :without_invent_num, item_type: 'Мышь', item_model: 'ASUS', count: 5) }
+          let!(:existing_item_2) { create(:new_item, warehouse_type: :without_invent_num, item_type: 'Клавиатура', item_model: 'ASUS', count: 7) }
 
-        it 'creates only one item' do
-          expect { subject.run }.to change(Item, :count).by(1)
-        end
+          its(:run) { is_expected.to be_truthy }
 
-        it 'does not change first item' do
-          expect { subject.run }.not_to change { existing_item_1.reload.count }
-        end
+          it 'creates supply' do
+            expect { subject.run }.to change(Supply, :count).by(1)
+          end
 
-        it 'changes :count attribute of existing item and sets a new value for new item' do
-          subject.run
-          expect(Supply.last.items.last.count).to eq operation_1[:shift]
-          expect(Supply.last.items.first.count).to eq operation_2[:shift] + existing_item_2.count
+          it 'creates operations' do
+            expect { subject.run }.to change(Operation, :count).by(2)
+          end
+
+          it 'creates only one item' do
+            expect { subject.run }.to change(Item, :count).by(1)
+          end
+
+          it 'does not change first item' do
+            expect { subject.run }.not_to change { existing_item_1.reload.count }
+          end
+
+          it 'changes :count attribute of existing item and sets a new value for new item' do
+            subject.run
+            expect(Supply.last.items.last.count).to eq operation_1[:shift]
+            expect(Supply.last.items.first.count).to eq operation_2[:shift] + existing_item_2.count
+          end
         end
       end
 
-      context 'and when item with the same model exist (but with :used type)' do
-        let!(:item) { create(:item, :with_property_values, type_name: :monitor, model: model) }
-        let!(:w_item) { create(:used_item, inv_item: item, count_reserved: 1) }
+      context 'and when item with the same model exist (and item is used)' do
+        context 'and when item has :with_invent_num type' do
+          let!(:item) { create(:item, :with_property_values, type_name: :monitor, model: model) }
+          let!(:w_item) { create(:used_item, inv_item: item, count_reserved: 1) }
 
-        its(:run) { is_expected.to be_truthy }
+          its(:run) { is_expected.to be_truthy }
 
-        it 'creates supply' do
-          expect { subject.run }.to change(Supply, :count).by(1)
+          it 'creates supply' do
+            expect { subject.run }.to change(Supply, :count).by(1)
+          end
+
+          it 'creates operations' do
+            expect { subject.run }.to change(Operation, :count).by(2)
+          end
+
+          it 'creates all items' do
+            expect { subject.run }.to change(Item, :count).by(2)
+          end
+
+          it 'sets into the :count attribute value specified in the associated operation' do
+            subject.run
+            expect(Supply.last.items.first.count).to eq operation_1[:shift]
+            expect(Supply.last.items.last.count).to eq operation_2[:shift]
+          end
         end
 
-        it 'creates operations' do
-          expect { subject.run }.to change(Operation, :count).by(2)
-        end
+        context 'and when item has :without_invent_num type' do
+          let!(:existing_item) { create(:used_item, warehouse_type: :without_invent_num, item_type: 'Мышь', item_model: 'ASUS', count: 1) }
 
-        it 'creates items' do
-          expect { subject.run }.to change(Item, :count).by(2)
-        end
+          its(:run) { is_expected.to be_truthy }
 
-        it 'sets into the :count attribute value specified in the associated operation' do
-          subject.run
-          expect(Supply.last.items.first.count).to eq operation_1[:shift]
-          expect(Supply.last.items.last.count).to eq operation_2[:shift]
+          it 'creates supply' do
+            expect { subject.run }.to change(Supply, :count).by(1)
+          end
+
+          it 'creates operations' do
+            expect { subject.run }.to change(Operation, :count).by(2)
+          end
+
+          it 'creates all items' do
+            expect { subject.run }.to change(Item, :count).by(2)
+          end
+
+          it 'sets into the :count attribute value specified in the associated operation' do
+            subject.run
+            expect(Supply.last.items.first.count).to eq operation_1[:shift]
+            expect(Supply.last.items.last.count).to eq operation_2[:shift]
+          end
         end
       end
     end

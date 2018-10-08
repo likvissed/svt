@@ -79,7 +79,7 @@ module Warehouse
                 op['inv_items_attributes'] = [{
                   id: sec_inv_item.item_id,
                   serial_num: '111111',
-                  invent_num: '234234'
+                  invent_num: sec_item.generate_invent_num
                 }]
               end
             end
@@ -136,7 +136,7 @@ module Warehouse
           it 'sets invent_num to the each selected item' do
             subject.run
 
-            expect(sec_inv_item.reload.invent_num).to eq '234234'
+            expect(sec_inv_item.reload.invent_num).to eq sec_item.invent_num_start.to_s
           end
         end
 

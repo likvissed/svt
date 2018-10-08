@@ -13,8 +13,23 @@ module Warehouse
     it { is_expected.to validate_presence_of(:item_model) }
     it { is_expected.to validate_presence_of(:count) }
     it { is_expected.to validate_presence_of(:count_reserved) }
+
     it { is_expected.to validate_numericality_of(:count).is_greater_than_or_equal_to(0) }
     it { is_expected.to validate_numericality_of(:count_reserved).is_greater_than_or_equal_to(0) }
+
+
+    context 'when warehouse_type is :with_invent_num' do
+      subject { build(:new_item, count: 4, inv_type: Invent::Type.find_by(name: :pc), item_model: 'UNIT') }
+
+      it { is_expected.to validate_presence_of(:invent_num_start) }
+      it { is_expected.to validate_numericality_of(:invent_num_start).is_greater_than_or_equal_to(0) }
+    end
+
+    context 'when warehouse_type is :without_invent_num' do
+      subject { build(:new_item, warehouse_type: :without_invent_num, invent_num_start: nil) }
+
+      it { is_expected.to be_valid }
+    end
 
     context 'when inv_item already exists' do
       let(:inv_item) { create(:item, :with_property_values, type_name: :monitor) }
@@ -40,6 +55,16 @@ module Warehouse
       it 'sets :processing status after initialize object' do
         expect(subject.count).to be_zero
         expect(subject.count_reserved).to be_zero
+      end
+    end
+
+    describe '#generate_invent_num' do
+      subject { create(:new_item, count: 4, inv_type: Invent::Type.find_by(name: :pc), item_model: 'UNIT', invent_num_end: 114) }
+
+      before { allow(subject).to receive_message_chain(:inv_items, :pluck).and_return(['111', '113']) }
+
+      it 'generates an invent_num excluding existing' do
+        expect(subject.generate_invent_num).to eq 112
       end
     end
 
@@ -72,44 +97,6 @@ module Warehouse
           subject.valid?
           expect(subject.item_model).to eq model.item_model
         end
-      end
-    end
-
-    describe '#uniq_item_model' do
-      let(:inv_item) { create(:item, :with_property_values, type_name: :monitor, item_model: 'model 1') }
-      let!(:item) { create(:used_item, inv_item: inv_item) }
-
-      context 'when :used is true' do
-        let!(:item) { create(:used_item, inv_item: inv_item) }
-        subject { build(:used_item, inv_item: inv_item) }
-
-        it 'does not have :taken error' do
-          subject.valid?
-          expect(subject.errors.details[:item_model]).not_to include(error: :taken)
-        end
-      end
-
-      context 'when item_model exists' do
-        let(:inv_item_2) { create(:item, :with_property_values, type_name: :monitor, item_model: 'model 1') }
-        subject { build(:used_item, inv_item: inv_item_2, used: false) }
-
-        it { is_expected.to be_valid }
-
-        context 'and when :used was false' do
-          let!(:item) { create(:used_item, inv_item: inv_item, used: false) }
-
-          it 'has :taken error' do
-            subject.valid?
-            expect(subject.errors.details[:item_model]).to include(error: :taken)
-          end
-        end
-      end
-
-      context 'when changed only register' do
-        subject { create(:used_item, item_type: 'type_1', item_model: 'model_1', used: false) }
-        before { subject.item_model = 'Model_1' }
-
-        it { is_expected.to be_valid }
       end
     end
 
@@ -190,6 +177,39 @@ module Warehouse
           item.destroy
           expect(item.errors.details[:base]).to include(error: :cannot_destroy_with_count_reserved)
         end
+      end
+    end
+
+    describe '#compare_invent_nums_with_reserved' do
+      let(:workplace) { create(:workplace_pk, :add_items, items: %i[pc monitor]) }
+      let!(:new_item) { create(:new_item, count: 4, count_reserved: 2, inv_type: Invent::Type.find_by(name: :pc), item_model: 'UNIT', invent_num_end: 114) }
+      let(:operation) { attributes_for(:order_operation, item_id: new_item.id, shift: -2) }
+      subject { new_item }
+      context 'when one of invent_num not includes into pool' do
+        before do
+          order_params = attributes_for(:order, operation: :out, invent_workplace_id: workplace.workplace_id)
+          order_params[:operations_attributes] = [operation]
+          Warehouse::Orders::CreateOut.new(create(:***REMOVED***_user), order_params).run
+          Invent::Item.last.update_attribute(:invent_num, '114')
+        end
+
+        it 'adds :invent_num_pool_is_too_small error' do
+          subject.count = 2
+          subject.invent_num_end = 112
+          subject.valid?
+          expect(subject.errors.details[:base]).to include(error: :invent_num_pool_is_too_small, model: subject.item_model)
+        end
+      end
+
+      context 'when all invent_nums includes into pool' do
+        before do
+          order_params = attributes_for(:order, operation: :out, invent_workplace_id: workplace.workplace_id)
+          order_params[:operations_attributes] = [operation]
+          Warehouse::Orders::CreateOut.new(create(:***REMOVED***_user), order_params).run
+          subject.count = 3
+        end
+
+        it { is_expected.to be_valid }
       end
     end
   end

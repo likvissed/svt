@@ -28,6 +28,10 @@ script type="text/ng-template" id="editSupplyOperation.slim"
         .form-group
           = label_tag "model", "Модель", class: "control-label"
           = text_field_tag "model", "", class: "form-control", "ng-model": "op.result.model.item_model"
+      .form-group
+        = label_tag "invent_num_start", "Начальный инвентарный номер"
+        .form-group
+          = text_field_tag "invent_num_start", "", type: :number, class: "form-control", "ng-model": "op.result.inventNumStart"
 
     div ng-if="op.result.warehouseType == 'without_invent_num'"
       .form-group
@@ -39,7 +43,7 @@ script type="text/ng-template" id="editSupplyOperation.slim"
 
     .form-group
       = label_tag "shift", "Количество", class: "control-label"
-      = text_field_tag "shift", "", class: "form-control", "ng-model": "op.result.shiftGetterSetter",
+      = text_field_tag "shift", "", type: :number, class: "form-control", "ng-model": "op.result.shiftGetterSetter",
         "ng-model-options": "{ getterSetter: true }"
     .form-group
       = label_tag "barcode", "Штрих-код производителя", class: "control-label"

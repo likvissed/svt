@@ -78,6 +78,7 @@ module Warehouse
                      end
 
         data[:data] = result_arr.as_json(include: %i[inv_item supplies]).each do |item|
+          item['range_inv_nums'] = item['invent_num_start'] ? "#{item['invent_num_start']} - #{item['invent_num_end']}" : ''
           item['translated_used'] = item['used'] ? '<span class="label label-warning">Б/У</span>' : '<span class="label label-success">Новое</span>'
           item['supplies'].each { |supply| supply['date'] = supply['date'].strftime('%d-%m-%Y') }
         end

@@ -110,6 +110,8 @@ ru:
         base: ''
         count: 'Доступное количество техники на складе'
         count_reserved: 'Зарезервированное количество техники на складе'
+        invent_num_start: 'Начальный инвентарный номер'
+        invent_num_end: 'Конечный инвентарный номер'
 
       warehouse/order/operations/inv_item_to_operations:
         inv_item: ''
@@ -135,6 +137,8 @@ ru:
         base: ''
         item_model: 'Модель (опред. авт.)'
         item_type: 'Тип техники (опред. авт.)'
+        invent_num_start: 'Начальный инвентарный номер'
+        invent_num_end: 'Конечный инвентарный номер'
         count: 'Количество на складе'
         warehouse_type: 'Тип (с инв. номером или без)'
         used: 'Тип (новая или б/у)'
@@ -149,6 +153,8 @@ ru:
         used: 'Тип (новая или б/у)'
         count: 'Количество на складе'
         count_reserved: 'Зарезервированное количество'
+        invent_num_start: 'Начальный инвентарный номер'
+        invent_num_end: 'Конечный инвентарный номер'
         warehouse_types:
           without_invent_num: 'Без инв. №'
           with_invent_num: 'С инв. №'
@@ -250,9 +256,11 @@ ru:
               property_not_filled: 'Не указано свойство "%{empty_prop}"'
               cannot_destroy_with_processing_operation: 'Невозможно удалить технику, т.к. она используется в незакрытых позициях ордера №%{order_id}'
             type_id:
-             blank: 'не выбран'
+              blank: 'не выбран'
             model_id:
-             blank: 'не указана'
+              blank: 'не указана'
+            invent_num:
+              not_from_allowed_pool: 'должен быть в диапазоне %{start_num} - %{end_num}'
 
         invent/property_value:
           attributes:
@@ -315,6 +323,7 @@ ru:
               out_of_stock: '%{type}: запрашиваемое количество отсутствует на складе'
               cannot_destroy_with_count_reserved: 'Невозможно удалить зарезервированную технику'
               cannot_destroy_with_processing_operation: 'Невозможно удалить технику, т.к. она используется в незакрытых позициях ордера №%{order_id}'
+              invent_num_pool_is_too_small: '%{model}: нельзя установить указанный диапазон инвентарных номеров, т.к. уже была выдана (или подготавливается к выдаче) техника с инв. номером, который не входит в указанный диапазон'
             inv_item:
               taken: 'уже существует на складе'
             item_model:

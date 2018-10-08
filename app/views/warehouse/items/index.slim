@@ -28,7 +28,7 @@
                   ng-warehouse-item-supply-popover
                 td.col-sm-3 ng-bind="item.item_type"
                 td.col-sm-13 ng-bind="item.item_model"
-                td.col-sm-2 ng-bind="item.inv_item.invent_num"
+                td.col-sm-2 ng-bind="item.inv_item.invent_num || item.range_inv_nums"
                 td.col-sm-2 ng-bind-html="item.translated_used"
                 td.col-sm-2 ng-bind="item.count"
                 td.col-sm-2 ng-bind="item.count_reserved"
