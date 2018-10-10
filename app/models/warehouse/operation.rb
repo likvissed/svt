@@ -46,7 +46,7 @@ module Warehouse
     def build_inv_items(count, **params)
       return if item.warehouse_type == 'without_invent_num'
 
-      count.times do
+      count.times do |i|
         if item.inv_item
           item.inv_item.workplace = params[:workplace]
           item.inv_item.status = :waiting_take
@@ -57,9 +57,10 @@ module Warehouse
             workplace: params[:workplace],
             model: item.inv_model,
             item_model: item.item_model,
+            invent_num: item.generate_invent_num(i),
             status: :waiting_take
           )
-          new_inv_item.build_property_values
+          new_inv_item.build_property_values(true)
         end
       end
     end
@@ -83,6 +84,21 @@ module Warehouse
       elsif shift_changed?
         delta = shift - shift_was
         item.count += delta
+      end
+    end
+
+    def calculate_item_invent_num_end
+      return unless item.warehouse_type == 'with_invent_num'
+
+      if new_record?
+        item.invent_num_end = item.invent_num_start + shift - 1
+      elsif marked_for_destruction?
+        item.invent_num_end -= shift - 1
+      elsif shift_changed?
+        delta = shift - shift_was
+        item.invent_num_end += delta
+      elsif item.invent_num_start_changed?
+        item.invent_num_end = item.invent_num_start + shift - 1
       end
     end
 

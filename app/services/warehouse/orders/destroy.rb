@@ -81,10 +81,14 @@ module Warehouse
           in_order
           broadcast_items
           broadcast_in_orders
+          broadcast_workplaces
+          broadcast_workplaces_list
         when 'out'
           out_order
           broadcast_items(@order.id)
           broadcast_out_orders
+          broadcast_workplaces
+          broadcast_workplaces_list
         else
           raise 'Неизвестный тип ордера'
         end

@@ -14,27 +14,47 @@ module Warehouse
     validates :used, inclusion: { in: [true, false] }
     validates :inv_item, uniqueness: true, allow_nil: true
     validates :count, :count_reserved, numericality: { greater_than_or_equal_to: 0 }, presence: true
-    validate :uniq_item_model, if: -> { !used }
+    validates :invent_num_start, :invent_num_end, numericality: { greater_than_or_equal_to: 0 }, presence: true, if: -> { warehouse_type.to_s == 'with_invent_num' && !used }
     validate :max_count, if: -> { inv_item }
     validate :compare_counts, if: -> { count && count_reserved }
+    validate :compare_invent_nums_with_reserved, if: -> { warehouse_type.to_s == 'with_invent_num' && !used }
 
     after_initialize :set_initial_count, if: -> { new_record? }
     before_validation :set_string_values
     before_destroy :prevent_destroy, prepend: true
 
-    scope :show_only_presence, -> (attr = nil) { where('count > count_reserved') }
-    scope :used, -> (used) { where('used = ?', used.to_s == 'true') }
-    scope :item_type, -> (item_type) { where(item_type: item_type) }
-    scope :barcode, -> (barcode) { where(barcode: barcode) }
-    scope :item_model, -> (item_model) { where('item_model LIKE ?', "%#{item_model}%") }
-    scope :invent_num, -> (invent_num) do
+    scope :show_only_presence, ->(_attr = nil) { where('count > count_reserved') }
+    scope :used, ->(used) { where('used = ?', used.to_s == 'true') }
+    scope :item_type, ->(item_type) { where(item_type: item_type) }
+    scope :barcode, ->(barcode) { where(barcode: barcode) }
+    scope :item_model, ->(item_model) { where('item_model LIKE ?', "%#{item_model}%") }
+    scope :invent_num, ->(invent_num) do
       left_outer_joins(:inv_item).where('invent_item.invent_num LIKE ?', "%#{invent_num}%").limit(RECORD_LIMIT)
     end
-    scope :invent_item_id, -> (invent_item_id) { where(invent_item_id: invent_item_id) }
+    scope :invent_item_id, ->(invent_item_id) { where(invent_item_id: invent_item_id) }
 
     enum warehouse_type: { without_invent_num: 1, with_invent_num: 2 }
 
     attr_accessor :was_created
+
+    def order_operations
+      operations.where(operationable_type: 'Warehouse::Order')
+    end
+
+    def supply_operations
+      operations.where(operationable_type: 'Warehouse::Supply')
+    end
+
+    def inv_items
+      Invent::Item.left_outer_joins(:warehouse_inv_item_to_operations).where(warehouse_inv_item_to_operations: { operation: order_operations })
+    end
+
+    def generate_invent_num(index = 0)
+      return unless invent_num_end
+
+      existing_invent_nums = inv_items.pluck(:invent_num)
+      (invent_num_start..invent_num_end).to_a.reject { |el| existing_invent_nums.include?(el.to_s) }[0 + index]
+    end
 
     protected
 
@@ -46,14 +66,6 @@ module Warehouse
     def set_string_values
       self.item_type ||= inv_type.short_description if inv_type
       self.item_model ||= inv_item.try(:get_item_model) || inv_model.try(:item_model) if inv_item || inv_model
-    end
-
-    def uniq_item_model
-      # return if !item_type_changed? && !item_model_changed?
-      return if item_type.to_s.casecmp(item_type_was.to_s).zero? && item_model.to_s.casecmp(item_model_was.to_s).zero?
-      return unless self.class.exists?(item_type: item_type, item_model: item_model, used: used)
-
-      errors.add(:item_model, :taken)
     end
 
     def max_count
@@ -77,6 +89,13 @@ module Warehouse
         errors.add(:base, :cannot_destroy_with_count_reserved)
         throw(:abort)
       end
+    end
+
+    def compare_invent_nums_with_reserved
+      return unless invent_num_end
+      nums = inv_items.pluck(:invent_num)
+      return unless nums.any? { |num| !num.to_i.zero? && !num.to_i.between?(invent_num_start, invent_num_end) }
+      errors.add(:base, :invent_num_pool_is_too_small, model: item_model)
     end
   end
 end

@@ -95,7 +95,9 @@ module Warehouse
             :warehouse_type,
             :item_type,
             :item_model,
-            :barcode
+            :barcode,
+            :invent_num_start,
+            :invent_num_end
           ]
         ]
       )

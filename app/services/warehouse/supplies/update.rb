@@ -4,7 +4,7 @@ module Warehouse
       def initialize(current_user, supply_id, supply_params)
         @current_user = current_user
         @supply_id = supply_id
-        @supply_params = supply_params
+        @supply_params = supply_params.to_h.with_indifferent_access
 
         super
       end
@@ -34,18 +34,18 @@ module Warehouse
       end
 
       def init_items
-        return unless @supply_params['operations_attributes']
+        return unless @supply_params[:operations_attributes]
 
-        @supply_params['operations_attributes'].each do |op|
-          item = op['item']
-          op['item'] = if item['id']
-                         Item.find(item['id'])
-                       else
-                         Item.find_by(item_type: item['item_type'], item_model: item['item_model'], used: false) || Item.new(item)
-                       end
+        @supply_params[:operations_attributes].each do |op|
+          item = op[:item]
+          op[:item] = if item[:id]
+                          Item.find(item[:id])
+                        else
+                          find_or_generate_item(op)
+                        end
 
-          op['item'].used = false
-          op['item'].assign_attributes(item)
+          op[:item].used = false
+          op[:item].assign_attributes(item)
         end
       end
 
@@ -55,6 +55,7 @@ module Warehouse
           op.item_type = op.item.item_type
           op.item_model = op.item.item_model
           op.calculate_item_count
+          op.calculate_item_invent_num_end
         end
       end
 

@@ -5,6 +5,8 @@ module Warehouse
       used true
       count 1
       count_reserved 0
+      invent_num_start 111
+      invent_num_end 111
 
       after(:build) do |item, ev|
         item.item_type = item.inv_type.short_description if item.inv_type

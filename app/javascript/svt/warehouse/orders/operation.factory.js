@@ -22,12 +22,14 @@ import { app } from '../../app/app';
     function _setData(op, data) {
       op.shift = data.shift;
       op.item = op.item || {};
-      op.item.warehouse_type = data.warehouseType
+      op.item.warehouse_type = data.warehouseType;
       op.item.invent_type_id = data.type.type_id || null;
       op.item.invent_model_id = data.model.model_id || null;
       op.item.item_type = data.type.short_description;
       op.item.item_model = data.model.item_model;
       op.item.barcode = data.barcode;
+      op.item.invent_num_start = data.inventNumStart;
+      op.item.invent_num_end = data.inventNumEnd;
     }
 
 

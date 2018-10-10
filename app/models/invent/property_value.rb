@@ -9,9 +9,11 @@ module Invent
     belongs_to :item, optional: false
     belongs_to :property_list, optional: true
 
-    validate :presence_val, if: :need_validation?
+    validate :presence_val, if: -> { need_validation? && !skip_validations }
 
     before_save :set_default_property_list_id_to_nil
+
+    attr_accessor :skip_validations
 
     def value
       if try(:property).try(:name) == 'ram' && super.present? && !super.match(/.* Гб/)

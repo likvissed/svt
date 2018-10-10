@@ -21,6 +21,7 @@ module Invent
     validates :invent_num, presence: true, unless: -> { status == 'waiting_take' }
     validate :presence_model, :check_mandatory, if: -> { errors.details[:type].empty? && !disable_filters }
     validate :property_values_validation, if: -> { validate_prop_values }
+    validate :invent_num_from_allowed_pool_of_numbers, if: -> { invent_num_changed? }
 
     after_initialize :set_default_values
     before_save :set_default_model
@@ -51,12 +52,12 @@ module Invent
 
     attr_accessor :disable_filters
     attr_accessor :destroy_from_order
+    attr_accessor :validate_prop_values
 
     delegate :properties, to: :type
 
     accepts_nested_attributes_for :property_values, allow_destroy: true
 
-    attr_accessor :validate_prop_values
 
     enum status: { waiting_take: 1, waiting_bring: 2, prepared_to_swap: 3, in_stock: 4, in_workplace: 5 }
     enum priority: { default: 1, high: 2 }
@@ -130,7 +131,7 @@ module Invent
       end
     end
 
-    def build_property_values
+    def build_property_values(skip_validations = false)
       return unless type
 
       self.property_values = type.properties.map do |prop|
@@ -143,7 +144,8 @@ module Invent
         PropertyValue.new(
           property: prop,
           property_list: prop_list,
-          value: ''
+          value: '',
+          skip_validations: skip_validations
         )
       end
     end
@@ -188,6 +190,15 @@ module Invent
 
         errors.add(:base, prop_val.errors.full_messages.join('. '))
       end
+    end
+
+    def invent_num_from_allowed_pool_of_numbers
+      w_item = warehouse_operations.last.try(:item)
+
+      return unless w_item
+      return if invent_num.to_i.between?(w_item.invent_num_start, w_item.invent_num_end)
+
+      errors.add(:invent_num, :not_from_allowed_pool, start_num: w_item.invent_num_start, end_num: w_item.invent_num_end)
     end
   end
 end

@@ -14,7 +14,7 @@ module Warehouse
         let(:operation_1) { attributes_for(:supply_operation, item: item_1_attr, shift: 20) }
         let(:item_2_attr) { attributes_for(:new_item, invent_type_id: type.type_id, invent_model_id: model.model_id, item_type: type.short_description, item_model: model.item_model, count: 0) }
         let(:operation_2) { attributes_for(:supply_operation, item: item_2_attr, shift: 10) }
-        let(:allowed_item_keys) { %i[invent_type_id invent_model_id warehouse_type item_type item_model barcode] }
+        let(:allowed_item_keys) { %i[invent_type_id invent_model_id warehouse_type invent_num_start item_type item_model barcode] }
         let(:supply_params) do
           edit = Edit.new(user, supply.id)
           edit.run
@@ -57,6 +57,10 @@ module Warehouse
           it 'creates only one item' do
             expect { subject.run }.to change(Item, :count).by(1)
           end
+
+          # it 'creates items' do
+          #   expect { subject.run }.to change(Item, :count).by(2)
+          # end
 
           it 'does not change first item' do
             expect { subject.run }.not_to change { existing_item_1.reload.count }
@@ -189,6 +193,26 @@ module Warehouse
           before { Item.first.update(count_reserved: 19) }
 
           its(:run) { is_expected.to be_falsey }
+        end
+      end
+
+      context 'when item was created without invent_num_start and now there is invent_num_start' do
+        let(:supply_params) do
+          edit = Edit.new(user, supply.id)
+          edit.run
+          edit.data[:supply]['operations_attributes'].find { |op| op['item']['warehouse_type'] == 'with_invent_num' }['item']['invent_num_start'] = 765100
+          edit.data[:supply].as_json
+        end
+        before do
+          i = supply.items.find_by(warehouse_type: 'with_invent_num')
+          i.invent_num_start = nil
+          i.invent_num_end = nil
+          i.save(validate: false)
+        end
+
+        it 'calculates invent_num_end' do
+          subject.run
+          p subject.error
         end
       end
     end

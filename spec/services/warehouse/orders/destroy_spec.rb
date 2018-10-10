@@ -42,6 +42,16 @@ module Warehouse
           subject.run
         end
 
+        it 'broadcasts to workplaces' do
+          expect(subject).to receive(:broadcast_workplaces)
+          subject.run
+        end
+
+        it 'broadcasts to workplaces_list' do
+          expect(subject).to receive(:broadcast_workplaces_list)
+          subject.run
+        end
+
         context 'and when order is not destroyed' do
           before { allow_any_instance_of(Order).to receive(:destroy).and_return(false) }
 
@@ -132,6 +142,16 @@ module Warehouse
 
           it 'broadcasts to out_orders' do
             expect(subject).to receive(:broadcast_out_orders)
+            subject.run
+          end
+
+          it 'broadcasts to workplaces' do
+            expect(subject).to receive(:broadcast_workplaces)
+            subject.run
+          end
+
+          it 'broadcasts to workplaces_list' do
+            expect(subject).to receive(:broadcast_workplaces_list)
             subject.run
           end
 

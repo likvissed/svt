@@ -22,8 +22,15 @@ module Warehouse
       item_type { item.try(:item_type) || 'Test type' }
       item_model { item.try(:item_model) || 'Test model' }
 
+      transient do
+        skip_calculate_invent_nums false
+      end
+
       after(:build) do |op|
         op.stockman_fio = op.stockman_id_tn ? UserIss.find(op.stockman_id_tn).fio : nil
+      end
+      before(:create) do |op, ev|
+        op.calculate_item_invent_num_end if op.item && op.item.warehouse_type == 'with_invent_num' && !ev.skip_calculate_invent_nums
       end
     end
   end

@@ -3,6 +3,14 @@ module Warehouse
     class BaseService < Warehouse::ApplicationService
       protected
 
+      def find_or_generate_item(op)
+        if op[:item][:warehouse_type].to_s == 'without_invent_num'
+          Item.find_by(item_type: op[:item][:item_type], item_model: op[:item][:item_model], used: false) || Item.new(op[:item])
+        else
+          Item.new(op[:item])
+        end
+      end
+
       def save_supply
         return true if @supply.save
 
