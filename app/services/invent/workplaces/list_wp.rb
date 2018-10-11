@@ -87,8 +87,8 @@ module Invent
       def item_info(item)
         model = item['short_item_model'].blank? ? 'не указана' : item['short_item_model']
         property_values = item['property_values'].map { |prop_val| property_value_info(prop_val) }
-
-        "#{item['type']['short_description']}: Инв №: #{item['invent_num']}; Модель: #{model}; Конфигурация:
+        status = " (#{wrap_problem_string(Item.translate_enum(:status, item['status']))})" unless item['status'] == 'in_workplace'
+        "#{item['type']['short_description']}#{status}: Инв №: #{item['invent_num']}; Модель: #{model}; Конфигурация:
  #{property_values.join('; ')}"
       end
 

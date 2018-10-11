@@ -101,6 +101,11 @@ module Warehouse
             subject.run
           end
 
+          it 'broadcasts to workplaces_list' do
+            expect(subject).to receive(:broadcast_workplaces_list)
+            subject.run
+          end
+
           include_examples 'execute_out specs'
 
           it 'does not change count of non-selected items' do

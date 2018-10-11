@@ -11,6 +11,7 @@ import { app } from '../../app/app';
         operations: { '': 'Все типы' }
       },
       selected = {
+        id: '',
         division: '',
         operation: '',
         creator_fio: '',

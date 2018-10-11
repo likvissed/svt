@@ -19,6 +19,7 @@ module Warehouse
         broadcast_out_orders
         broadcast_archive_orders
         broadcast_items
+        broadcast_workplaces_list
 
         true
       rescue RuntimeError => e

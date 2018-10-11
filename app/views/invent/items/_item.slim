@@ -2,11 +2,11 @@
   .form-group ng-if="edit.additional.statusesForChangeItem | contains:edit.item_o.item.status"
     p.info-block.bg-warning
       span ng-if="edit.item_o.item.status == 'prepared_to_swap'"
-        | {{ edit.item.item.type.short_description }} будет перемещен в текущее рабочее место
+        | {{ edit.item_o.item.type.short_description }} будет перемещен в текущее рабочее место
       span ng-if="edit.item_o.item.status == 'waiting_bring'"
-        | Данный {{ edit.item.item.type.short_description | lowercase }} пользователь должен сдать в УИВТ
+        | Данный {{ edit.item_o.item.type.short_description | lowercase }} пользователь должен сдать в УИВТ
       span ng-if="edit.item_o.item.status == 'waiting_take'"
-        | Данный {{ edit.item.item.type.short_description | lowercase }} пользователь должен получить в УИВТ
+        | Данный {{ edit.item_o.item.type.short_description | lowercase }} пользователь должен получить в УИВТ
 
   -# Постоянные параметры.
   .col-md-9.col-lg-10.col-xlg-9

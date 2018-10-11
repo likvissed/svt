@@ -32,10 +32,11 @@ module Warehouse
     before_update :prevent_update_attributes
     before_destroy :prevent_destroy, prepend: true
 
-    scope :consumer_dept, -> (dept) { where(consumer_dept: dept) }
-    scope :operation, -> (op) { where(operation: op) }
-    scope :creator_fio, -> (creator_fio) { where('creator_fio LIKE ?', "%#{creator_fio}%") }
-    scope :consumer_fio, -> (consumer_fio) { where('consumer_fio LIKE ?', "%#{consumer_fio}%") }
+    scope :id, ->(id) { where(id: id) }
+    scope :consumer_dept, ->(dept) { where(consumer_dept: dept) }
+    scope :operation, ->(op) { where(operation: op) }
+    scope :creator_fio, ->(creator_fio) { where('creator_fio LIKE ?', "%#{creator_fio}%") }
+    scope :consumer_fio, ->(consumer_fio) { where('consumer_fio LIKE ?', "%#{consumer_fio}%") }
 
     # discard: 3 - добавить новый тип ордера (на списание)
     enum operation: { out: 1, in: 2 }
