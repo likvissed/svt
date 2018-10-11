@@ -247,6 +247,20 @@ module Warehouse
           expect(subject.item.invent_num_end).to eq 125
         end
       end
+
+      context 'when invent_num_start is null' do
+        let!(:item) do
+          i = build(:new_item, warehouse_type: :with_invent_num, count: 0, invent_num_start: nil, invent_num_end: nil)
+          i.save(validate: false)
+          i
+        end
+        subject { build(:supply_operation, item_id: item.id, shift: 25) }
+
+        it 'does not calculate invent_num_end' do
+          subject.calculate_item_invent_num_end
+          expect(subject.item.invent_num_end).to be_nil
+        end
+      end
     end
 
     describe '#set_initial_status' do

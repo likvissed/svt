@@ -88,7 +88,7 @@ module Warehouse
     end
 
     def calculate_item_invent_num_end
-      return unless item.warehouse_type == 'with_invent_num'
+      return if item.warehouse_type != 'with_invent_num' || item.invent_num_start.nil?
 
       if new_record?
         item.invent_num_end = item.invent_num_start + shift - 1
