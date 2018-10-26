@@ -1,6 +1,6 @@
 module Invent
   class ItemsController < ApplicationController
-    before_action :check_access
+    before_action :check_access, except: [:pc_config_from_audit, :pc_config_from_user]
 
     def index
       respond_to do |format|
