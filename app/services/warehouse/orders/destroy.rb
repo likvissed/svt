@@ -52,7 +52,9 @@ module Warehouse
 
           Item.transaction(requires_new: true) do
             @order.operations.each do |op|
-              op.item.tap { |i| i.count_reserved -= op.shift.abs }.save!(validate: false)
+              op.mark_for_destruction
+              op.calculate_item_count_reserved
+              op.item.save!
             end
             destroy_order
           end
