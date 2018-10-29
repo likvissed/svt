@@ -87,7 +87,7 @@ module Invent
       def item_info(item)
         model = item['short_item_model'].blank? ? 'не указана' : item['short_item_model']
         property_values = item['property_values'].map { |prop_val| property_value_info(prop_val) }
-        status = " (#{wrap_problem_string(Item.translate_enum(:status, item['status']))})" unless item['status'] == 'in_workplace'
+        status = item['status'] == 'in_workplace' ? '' : get_status(item['status'])
         "#{item['type']['short_description']}#{status}: Инв №: #{item['invent_num']}; Модель: #{model}; Конфигурация:
  #{property_values.join('; ')}"
       end
@@ -95,6 +95,11 @@ module Invent
       # Обернуть строку в тег <span class='manually'>
       def wrap_problem_string(string)
         "<span class='manually-val'>#{string}</span>"
+      end
+
+      def get_status(status)
+        t_status = Item.translate_enum(:status, status)
+        " (#{wrap_problem_string(t_status.class.name == 'String' ? t_status : 'Неопределен')})"
       end
     end
   end
