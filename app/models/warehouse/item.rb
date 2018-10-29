@@ -52,7 +52,7 @@ module Warehouse
     def generate_invent_num(index = 0)
       return unless invent_num_end
 
-      existing_invent_nums = inv_items.pluck(:invent_num)
+      existing_invent_nums = Invent::Item.pluck(:invent_num)
       (invent_num_start..invent_num_end).to_a.reject { |el| existing_invent_nums.include?(el.to_s) }[0 + index]
     end
 

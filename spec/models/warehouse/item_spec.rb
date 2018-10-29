@@ -61,10 +61,20 @@ module Warehouse
     describe '#generate_invent_num' do
       subject { create(:new_item, count: 4, inv_type: Invent::Type.find_by(name: :pc), item_model: 'UNIT', invent_num_end: 114) }
 
-      before { allow(subject).to receive_message_chain(:inv_items, :pluck).and_return(['111', '113']) }
+      context 'when not all invent_nums is busy' do
+        before { allow(Invent::Item).to receive_message_chain(:pluck).and_return(['111', '113']) }
 
-      it 'generates an invent_num excluding existing' do
-        expect(subject.generate_invent_num).to eq 112
+        it 'generates an invent_num excluding existing' do
+          expect(subject.generate_invent_num).to eq 112
+        end
+      end
+
+      context 'when all invent_nums is busy' do
+        before { allow(Invent::Item).to receive_message_chain(:pluck).and_return(['111', '112', '113', '114']) }
+
+        it 'generates an invent_num excluding existing' do
+          expect(subject.generate_invent_num).to be_nil
+        end
       end
     end
 
