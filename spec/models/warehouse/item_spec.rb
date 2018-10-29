@@ -207,6 +207,7 @@ module Warehouse
           subject.count = 2
           subject.invent_num_end = 112
           subject.valid?
+
           expect(subject.errors.details[:base]).to include(error: :invent_num_pool_is_too_small, model: subject.item_model)
         end
       end
@@ -217,6 +218,15 @@ module Warehouse
           order_params[:operations_attributes] = [operation]
           Warehouse::Orders::CreateOut.new(create(:***REMOVED***_user), order_params).run
           subject.count = 3
+        end
+
+        it { is_expected.to be_valid }
+      end
+
+      context 'when invent_num_start was not changed' do
+        before do
+          subject.item_model = 'changed model'
+          subject.valid?
         end
 
         it { is_expected.to be_valid }
