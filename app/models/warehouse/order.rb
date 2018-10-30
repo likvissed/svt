@@ -33,10 +33,12 @@ module Warehouse
     before_destroy :prevent_destroy, prepend: true
 
     scope :id, ->(id) { where(id: id) }
+    scope :invent_workplace_id, ->(invent_workplace_id) { where(invent_workplace_id: invent_workplace_id) }
     scope :consumer_dept, ->(dept) { where(consumer_dept: dept) }
     scope :operation, ->(op) { where(operation: op) }
     scope :creator_fio, ->(creator_fio) { where('creator_fio LIKE ?', "%#{creator_fio}%") }
     scope :consumer_fio, ->(consumer_fio) { where('consumer_fio LIKE ?', "%#{consumer_fio}%") }
+    scope :invent_num, ->(invent_num) { joins(:inv_items).where(invent_item: { invent_num: invent_num }) }
 
     # discard: 3 - добавить новый тип ордера (на списание)
     enum operation: { out: 1, in: 2 }

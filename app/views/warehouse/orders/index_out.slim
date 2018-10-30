@@ -8,6 +8,8 @@
           = fa_icon "exclamation-triangle"
           '  Для изменения ордера перейдите в раздел "Склад"
       .row
+        = render partial: 'filters'
+      .row
         .col-sm-24
           table.table.table-striped.table-condensed
             thead
@@ -16,7 +18,6 @@
                 th №
                 th Отдел
                 th ID РМ
-                / th Тип
                 th Позиции ордера
                 th Кем создан
                 th Кем утвержден
@@ -30,7 +31,6 @@
                 td.col-sm-1 ng-bind="order.id"
                 td.col-sm-1 ng-bind="order.consumer_dept"
                 td.col-sm-1 ng-bind="order.invent_workplace_id"
-                / td.col-sm-2 ng-bind="order.operation_translated"
                 td.col-sm-8.col-md-9.col-fhd-10 ng-bind="order.operations_to_string"
                 td.col-sm-3 ng-bind="order.creator.fio || order.creator_fio"
                 td.col-sm-3 ng-bind="order.validator.fio || order.validator_fio"

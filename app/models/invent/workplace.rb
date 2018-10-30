@@ -24,12 +24,12 @@ module Invent
     before_destroy :check_items, prepend: true, unless: -> { hard_destroy }
     before_destroy :check_processing_orders, prepend: true
 
-    scope :fullname, -> (fullname) { left_outer_joins(:user_iss).where('fio LIKE ?', "%#{fullname}%") }
-    scope :workplace_count_id, -> (workplace_count_id) { where(workplace_count_id: workplace_count_id) }
-    scope :workplace_id, -> (workplace_id) { where(workplace_id: workplace_id) }
-    scope :workplace_type_id, -> (workplace_type_id) { where(workplace_type_id: workplace_type_id) }
-    scope :status, -> (status) { where(status: status) }
-    scope :invent_num, -> (invent_num) do
+    scope :fullname, ->(fullname) { left_outer_joins(:user_iss).where('fio LIKE ?', "%#{fullname}%") }
+    scope :workplace_count_id, ->(workplace_count_id) { where(workplace_count_id: workplace_count_id) }
+    scope :workplace_id, ->(workplace_id) { where(workplace_id: workplace_id) }
+    scope :workplace_type_id, ->(workplace_type_id) { where(workplace_type_id: workplace_type_id) }
+    scope :status, ->(status) { where(status: status) }
+    scope :invent_num, ->(invent_num) do
       items = Invent::Item.where('invent_item.invent_num LIKE ?', "%#{invent_num}%").limit(RECORD_LIMIT)
       where(items: items.pluck(:workplace_id))
     end

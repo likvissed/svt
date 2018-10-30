@@ -12,6 +12,8 @@ import { app } from '../../app/app';
       },
       selected = {
         id: '',
+        invent_workplace_id: '',
+        invent_num: '',
         division: '',
         operation: '',
         creator_fio: '',

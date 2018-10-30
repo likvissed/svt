@@ -1,8 +1,14 @@
 
-.col-sm-5.col-md-4.col-xlg-3.col-fhd-2.col-md-offset-3.col-lg-offset-5.col-xlg-offset-6.col-fhd-offset-8.multiline-buffer
+.col-sm-4.col-md-4.col-xlg-3.col-fhd-2.col-fhd-offset-4.multiline-buffer
   = text_field_tag "", "", class: "form-control input-sm", placeholder: "№ ордера", "ng-model-options": "{ debounce: 300 }",
     "ng-model": "table.selected.id", "ng-change": "table.reloadOrders()"
-.col-sm-6.col-md-5.col-lg-3.multiline-buffer
+.col-sm-4.col-md-4.col-xlg-3.col-fhd-2.multiline-buffer
+  = text_field_tag "", "", class: "form-control input-sm", placeholder: "ID РМ", "ng-model-options": "{ debounce: 300 }",
+    "ng-model": "table.selected.invent_workplace_id", "ng-change": "table.reloadOrders()"
+.col-sm-5.col-md-4.col-xlg-3.col-fhd-2.multiline-buffer
+  = text_field_tag "", "", class: "form-control input-sm", placeholder: "Инвентарный №", "ng-model-options": "{ debounce: 300 }",
+    "ng-model": "table.selected.invent_num", "ng-change": "table.reloadOrders()"
+.col-sm-5.col-md-4.col-lg-4.col-xlg-3.multiline-buffer
   = select_tag "", "", class: "form-control input-sm", "ng-model": "table.selected.operation", "ng-change": "table.reloadOrders()",
     "ng-options": "operation as translated for (operation, translated) in table.filters.operations"
 .col-sm-6.col-md-4.col-xlg-4.col-fhd-3.multiline-buffer
