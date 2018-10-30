@@ -350,44 +350,67 @@ module Invent
       end
 
       context 'when item from supply' do
-        let(:workplace) { create(:workplace_pk, :add_items, items: %i[pc monitor]) }
-        let!(:new_item) { create(:new_item, count: 4, inv_type: Invent::Type.find_by(name: :pc), item_model: 'UNIT') }
-        let(:operation) { attributes_for(:order_operation, item_id: new_item.id, shift: -1) }
-        before do
-          order_params = attributes_for(:order, operation: :out, invent_workplace_id: workplace.workplace_id)
-          order_params[:operations_attributes] = [operation]
-          Warehouse::Orders::CreateOut.new(create(:***REMOVED***_user), order_params).run
-        end
-
-        context 'and when invent_num from allowed pool' do
-          subject { Item.last }
-
-          it { is_expected.to be_valid }
-        end
-
-        context 'and when invent_num not from allowed pool' do
-          context 'and when invent_num was changed' do
-            subject do
-              item = Item.last
-              item.invent_num = '333'
-              item
-            end
-
-            it 'adds :not_from_allowed_pool error' do
-              subject.valid?
-              expect(subject.errors.details[:invent_num]).to include(error: :not_from_allowed_pool, start_num: new_item.invent_num_start, end_num: new_item.invent_num_end)
-            end
+        context 'and when warehouse_item has invent_num_start' do
+          let(:workplace) { create(:workplace_pk, :add_items, items: %i[pc monitor]) }
+          let!(:new_item) { create(:new_item, count: 4, inv_type: Invent::Type.find_by(name: :pc), item_model: 'UNIT') }
+          let(:operation) { attributes_for(:order_operation, item_id: new_item.id, shift: -1) }
+          before do
+            order_params = attributes_for(:order, operation: :out, invent_workplace_id: workplace.workplace_id)
+            order_params[:operations_attributes] = [operation]
+            Warehouse::Orders::CreateOut.new(create(:***REMOVED***_user), order_params).run
           end
 
-          context 'and when invent_num not was changed' do
-            subject do
-              item = Item.last
-              item.invent_num = '333'
-              item.save(validate: false)
-              item
-            end
+          context 'and when invent_num from allowed pool' do
+            subject { Item.last }
 
             it { is_expected.to be_valid }
+          end
+
+          context 'and when invent_num not from allowed pool' do
+            context 'and when invent_num was changed' do
+              subject do
+                item = Item.last
+                item.invent_num = '333'
+                item
+              end
+
+              it 'adds :not_from_allowed_pool error' do
+                subject.valid?
+                expect(subject.errors.details[:invent_num]).to include(error: :not_from_allowed_pool, start_num: new_item.invent_num_start, end_num: new_item.invent_num_end)
+              end
+            end
+
+            context 'and when invent_num not was changed' do
+              subject do
+                item = Item.last
+                item.invent_num = '333'
+                item.save(validate: false)
+                item
+              end
+
+              it { is_expected.to be_valid }
+            end
+          end
+        end
+
+        context 'and when warehouse_item does not have invent_num_start' do
+          let(:workplace) { create(:workplace_pk, :add_items, items: %i[pc monitor]) }
+          let!(:new_item) do
+            i = build(:new_item, count: 4, inv_type: Invent::Type.find_by(name: :pc), item_model: 'UNIT', invent_num_start: 0, invent_num_end: 0)
+            i.save(validate: false)
+            i
+          end
+          let(:operation) { attributes_for(:order_operation, item_id: new_item.id, shift: -1) }
+          before do
+            order_params = attributes_for(:order, operation: :out, invent_workplace_id: workplace.workplace_id)
+            order_params[:operations_attributes] = [operation]
+            Warehouse::Orders::CreateOut.new(create(:***REMOVED***_user), order_params).run
+          end
+          subject { Item.last }
+
+          it 'allows to set custom invent_num' do
+            subject.invent_num = '333'
+            expect(subject.valid?).to be_truthy
           end
         end
       end
