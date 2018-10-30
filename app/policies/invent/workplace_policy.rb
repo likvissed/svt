@@ -133,6 +133,7 @@ module Invent
             :location,
             :invent_num,
             :serial_num,
+            :status,
             :_destroy,
             property_values_attributes: %i[id property_id item_id property_list_id value _destroy]
           ]
