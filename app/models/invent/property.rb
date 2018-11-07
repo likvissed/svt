@@ -8,6 +8,8 @@ module Invent
     # Свойства, которые не обязательны для заполнения в случае, если для текущего экземпляра техники указан инвентарный
     # номер, который встречается в модели PcException.
     PROP_MANDATORY_EXCEPT = %w[network_connection mb ram video cpu hdd].freeze
+    # Свойства, обозначающие дату
+    DATE_PROPS = %w[date date_month]
 
     has_many :property_to_types, dependent: :destroy
     has_many :types, through: :property_to_types

@@ -37,7 +37,9 @@ import { app } from '../../app/app';
         // Доп. описание модели
         model_descr: 'Под моделью понимается совокупность наименования производителя указанного вами оборудования (обычно самая большая надпись на корпусе), а также наименования конкретного вида оборудования. Например, Zalman Z3, Samsung S23C350 и т.п.',
         // Статусы обозначающие перемещение техники
-        statusesForChangeItem: ['prepared_to_swap', 'waiting_bring', 'waiting_take']
+        statusesForChangeItem: [],
+        // Типы свойств, обозначающие дату
+        dateProperties: []
       };
 
     /**
@@ -194,20 +196,20 @@ import { app } from '../../app/app';
      * значений для конкретного свойства с типом list и list_plus.
      *
      * @param item - изменяемый объект массива property_values_attributes
-     * @param prop_index - индекс массива property_list
-     * @param prop_value - элемент массива property_list
+     * @param prop_index - индекс массива property
+     * @param prop - элемент массива property
      */
-    function _createFilteredList(item, prop_index, prop_value) {
-      if (!(PropertyValue.isPropList(prop_value) || PropertyValue.isPropListPlus(prop_value)))
+    function _createFilteredList(item, prop_index, prop) {
+      if (!(PropertyValue.isPropList(prop) || PropertyValue.isPropListPlus(prop)))
         return false;
 
       // Массив данных с сервера для конкретного свойства
-      let filteredList = $filter('inventPropList')(prop_value.property_lists, item.model_id);
+      let filteredList = $filter('inventPropList')(prop.property_lists, item.model_id);
 
       // Для модели, введенной вручную, позволить пользователю вводить данные свойства вручную.
       if (!item.model_id || item.model_id == -1 || filteredList.length != 1)
         filteredList = PropertyValue
-          .getTemplateSelectProp(prop_value.short_description, PropertyValue.isPropListPlus(prop_value))
+          .getTemplateSelectProp(prop.short_description, PropertyValue.isPropListPlus(prop))
           .concat(filteredList);
 
       PropertyValue.setPropertyValue(item, prop_index, 'filteredList', filteredList);
@@ -232,7 +234,7 @@ import { app } from '../../app/app';
       angular.forEach(data, function(audit_arr, key) {
         if (!audit_arr) { return true; }
 
-        prop_index = item.type.properties.findIndex((prop) => !prop._destroy && prop.name == key)
+        prop_index = item.type.properties.findIndex((prop) => !prop._destroy && prop.name == key);
         prop_obj = item.type.properties[prop_index];
 
         if (!prop_obj) { return true; }
@@ -341,8 +343,14 @@ import { app } from '../../app/app';
 
         _setModel(item);
 
-        // Создаем массив filteredList
-        item.type.properties.forEach((prop, index) => _createFilteredList(item, index, prop));
+        item.type.properties.forEach((prop, index) => {
+          // Преобразовать значение свойств даты в объект Date
+          if (additional.dateProperties.includes(prop.property_type)) {
+            PropertyValue.processDatePropVal(item, index, prop);
+          }
+          // Создаем массив filteredList
+          _createFilteredList(item, index, prop)
+        });
       },
       /**
        * Удалить вспомогательные объекты из указанного объекта item.

@@ -22,7 +22,7 @@ module Invent
         false
       end
 
-      private
+      protected
 
       def load_items
         data[:recordsTotal] = Item.count
@@ -56,7 +56,8 @@ module Invent
             :model,
             { property_values: { include: %i[property property_list] } },
             { workplace: { include: :user_iss } }
-          ]
+          ],
+          methods: :need_battery_replacement?
         ).each do |item|
           item['model'] = item['model'].nil? ? item['item_model'] : item['model']['item_model']
           item['description'] = item['property_values'].map { |prop_val| property_value_info(prop_val) }.join('; ')

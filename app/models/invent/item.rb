@@ -3,6 +3,14 @@ module Invent
     self.primary_key = :item_id
     self.table_name = "#{table_name_prefix}item"
 
+    # Содержит уровни критичности для замены батарей
+    LEVELS_BATTERY_REPLACEMENT = {
+      warning: 3,
+      critical: 5
+    }
+    # Статусы, обозначающие перемещение техники
+    MOVE_ITEM_TYPES = %w[prepared_to_swap waiting_bring waiting_take]
+
     has_one :warehouse_item, foreign_key: 'invent_item_id', class_name: 'Warehouse::Item', dependent: :destroy
     has_many :property_values,
              -> { joins('LEFT OUTER JOIN invent_property ON invent_property_value.property_id = invent_property.property_id').order('invent_property.property_order').includes(:property) },
@@ -150,7 +158,40 @@ module Invent
       end
     end
 
+    # Проверяет необходимость замены батарей для ИБП
+    def need_battery_replacement?
+      return false if type.name != 'ups' || priority != 'high'
+
+      replacement_date_ups_prop = Property.find_by(name: :replacement_date)
+      prop_val = get_value(replacement_date_ups_prop)
+      return unless prop_val
+
+      # replacement_date = Date.strptime(prop_val, '%Y-%m')
+      replacement_date = Date.parse(prop_val)
+
+      if battery_difference_in_years(replacement_date, DateTime.now) > LEVELS_BATTERY_REPLACEMENT[:critical]
+        {
+          years: LEVELS_BATTERY_REPLACEMENT[:critical],
+          type: :critical
+        }
+      elsif battery_difference_in_years(replacement_date, DateTime.now) > (LEVELS_BATTERY_REPLACEMENT[:warning])
+        {
+          years: LEVELS_BATTERY_REPLACEMENT[:warning],
+          type: :warning
+        }
+      else
+        false
+      end
+    end
+
     protected
+
+    # Возвращает сколько полных лет назад производилась замена батарей.
+    def battery_difference_in_years(replacement_date, current_date)
+      d = (replacement_date.year - current_date.year).abs
+      d = d - 1 if replacement_date.month > current_date.month
+      d
+    end
 
     # Проверка наличия модели.
     def presence_model

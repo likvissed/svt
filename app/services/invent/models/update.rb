@@ -1,6 +1,6 @@
 module Invent
   module Models
-    class Update < Invent::ApplicationService
+    class Update < BaseService
       def initialize(model_id, model_params)
         @model_id = model_id
         @model_params = model_params

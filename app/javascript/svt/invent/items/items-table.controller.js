@@ -110,7 +110,9 @@ import { app } from '../../app/app';
   };
 
   /**
-   * Редактировать состав техники
+   * Редактировать состав техники.
+   *
+   * @param item
    */
   InventItemsTableCtrl.prototype.editItem = function(item) {
     this.Item.edit(item.item_id).then(
@@ -124,7 +126,21 @@ import { app } from '../../app/app';
           backdrop: 'static'
         });
       }
-    )
-  }
+    );
+  };
 
+  /**
+   * Подсветить ИБП, для которых необходимо заменить батареи.
+   *
+   * @param item
+   */
+  InventItemsTableCtrl.prototype.colorizeUps = function(item) {
+    if (!item['need_battery_replacement?']) { return false; }
+
+    if (item['need_battery_replacement?'].type == 'warning') {
+      return 'warning';
+    } else if (item['need_battery_replacement?'].type == 'critical') {
+      return 'danger';
+    }
+  };
 })();

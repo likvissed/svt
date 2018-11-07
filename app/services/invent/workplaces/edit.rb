@@ -44,6 +44,7 @@ module Invent
         load_workplace
         load_properties
         init_workplace_templates
+        compare_properties_with_property_values
       end
 
       def load_workplace
@@ -56,6 +57,12 @@ module Invent
         properties = LkInvents::InitProperties.new(@current_user, @edit_workplace.workplace.division)
         return data[:prop_data] = properties.data if properties.run
         raise 'LkInvents::InitProperties не отработал'
+      end
+
+      # Проверка, существуют ли свойства, для которых не были заданы значения. Например в базе добавили новое свойство
+      # для какого-либо вида техники, но для самой техники значение нового свойства не было определено.
+      def compare_properties_with_property_values
+        data[:wp_data]['items_attributes'].each { |item| generate_property_values_for_item(item) }
       end
     end
   end

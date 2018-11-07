@@ -1,6 +1,6 @@
 module Invent
   module Models
-    class Destroy < Invent::ApplicationService
+    class Destroy < BaseService
       def initialize(model_id)
         @id = model_id
 

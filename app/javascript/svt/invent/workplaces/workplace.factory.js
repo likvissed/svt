@@ -119,6 +119,8 @@ import { app } from '../../app/app';
     this.Item.setAdditional('singleItems', data.prop_data.single_pc_items);
     this.Item.setAdditional('pcTypes', data.prop_data.type_with_files);
     this.Item.setAdditional('secretExceptions', data.prop_data.secret_exceptions);
+    this.Item.setAdditional('statusesForChangeItem', data.prop_data.move_item_types);
+    this.Item.setAdditional('dateProperties', data.prop_data.date_props);
 
     this.workplace.items_attributes.forEach((item, index) => item.tabIndex = index);
   };
@@ -234,7 +236,7 @@ import { app } from '../../app/app';
       (response) => this.$window.location.href = response.location,
       (response, status) => this.Error.response(response, status)
     );
-  }
+  };
 
   /**
    * Создать новое оборудования, установить начальные значения для данного типа.

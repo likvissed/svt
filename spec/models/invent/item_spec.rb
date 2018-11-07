@@ -300,6 +300,56 @@ module Invent
       end
     end
 
+    describe '#need_battery_replacement?' do
+      Invent::Type.where.not(name: :ups).each do |type|
+        context "when item type is #{type.name}" do
+          subject { build(:item, priority: :high, type: type) }
+
+          its(:need_battery_replacement?) { is_expected.to be_falsey }
+        end
+      end
+
+      context 'when item type is :ups' do
+        let(:prop) { Invent::Property.find_by(name: :replacement_date) }
+        subject { create(:item, :with_property_values, priority: :high, type_name: :ups) }
+        before { subject.property_values.find_by(property_id: prop.property_id).update_attribute(:value, new_date) }
+
+        context 'and when battery was replaced less than 3 years ago' do
+          let(:new_date) { DateTime.now - 2.year }
+
+          its(:need_battery_replacement?) { is_expected.to be_falsey }
+        end
+
+        context 'and when battery was replaced more than 3 years ago' do
+          let(:new_date) { DateTime.now - 4.year }
+          let(:expected) do
+            {
+              type: :warning,
+              years: Item::LEVELS_BATTERY_REPLACEMENT[:warning]
+            }
+          end
+
+          it 'returns object with :warning type and count of years' do
+            expect(subject.need_battery_replacement?).to eq expected
+          end
+        end
+
+        context 'and when battery was replaced more than 5 years ago' do
+          let(:new_date) { DateTime.now - 6.year }
+          let(:expected) do
+            {
+              type: :critical,
+              years: Item::LEVELS_BATTERY_REPLACEMENT[:critical]
+            }
+          end
+
+          it 'returns object with type :critical type and count of years' do
+            expect(subject.need_battery_replacement?).to eq expected
+          end
+        end
+      end
+    end
+
     describe '#prevent_destroy' do
       its(:destroy) { is_expected.to be_truthy }
 
