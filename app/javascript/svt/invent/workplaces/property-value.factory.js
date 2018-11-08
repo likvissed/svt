@@ -94,6 +94,8 @@ import { app } from '../../app/app';
        * @param index
        */
       processDatePropVal: function(item, index) {
+        if (!item.property_values_attributes[index].value) { return false; }
+
         item.property_values_attributes[index].value = new Date(item.property_values_attributes[index].value);
       }
     }
