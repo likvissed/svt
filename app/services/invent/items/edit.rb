@@ -28,7 +28,7 @@ module Invent
       protected
 
       def load_item
-        show = Show.new({ item_id: @item_id })
+        show = Show.new(item_id: @item_id)
 
         raise 'Сервис Show не отработал' unless show.run
 

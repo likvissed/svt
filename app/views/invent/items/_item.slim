@@ -29,10 +29,8 @@
               ' Данные
               span.caret
             ul.dropdown-menu.dropdown-menu-right
-              li= link_to "Получить автоматически", "", "ng-click": "edit.getAuditData()",
-                "disable-link": true
-              li= link_to "Внести вручную", "", "ng-click": "edit.runManuallyPcDialog()",
-                "disable-link": true
+              li= link_to "Получить автоматически", "", "ng-click": "edit.getAuditData()", "disable-link": true
+              li= link_to "Внести вручную", "", "ng-click": "edit.runManuallyPcDialog()", "disable-link": true
             = button_tag type: :button, class: "btn-default", "ng-click": "edit.FillWithDefaultData()", "uib-tooltip": "Заполнить поля ПК тестовыми данными", "tooltip-append-to-body": "true" do
               = fa_icon "list"
     div ng-if="!(edit.additional.pcTypes | contains:edit.item_o.item.type.name)"
@@ -110,5 +108,5 @@
             = text_field_tag "", "", class: "form-control", "ng-model": "edit.item_o.item.property_values_attributes[$index].value",
               "uib-datepicker-popup": "MM.yyyy", "ng-model-options": "{ timezone: 'utc' }",
               "ng-focus": "edit.openDatePropVal = true", "is-open": "edit.openDatePropVal",
-              "popup-placement": "bottom-left", "show-button-bar": false,
-              "datepicker-options": "{minMode: 'month'}", "datepicker-mode": "'month'"
+              "popup-placement": "bottom-left", "show-button-bar": false, "datepicker-options": "{minMode: 'month'}",
+               "datepicker-mode": "'month'"
