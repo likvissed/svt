@@ -22,6 +22,7 @@ module Warehouse
     after_initialize :set_initial_count, if: -> { new_record? }
     before_validation :set_string_values
     before_destroy :prevent_destroy, prepend: true
+    before_update :prevent_update, if: -> { warehouse_type.to_s == 'with_invent_num' }, prepend: true
 
     scope :show_only_presence, ->(_attr = nil) { where('count > count_reserved') }
     scope :used, ->(used) { where('used = ?', used.to_s == 'true') }
@@ -96,6 +97,15 @@ module Warehouse
       nums = inv_items.pluck(:invent_num)
       return unless nums.any? { |num| !num.to_i.zero? && !num.to_i.between?(invent_num_start, invent_num_end) }
       errors.add(:base, :invent_num_pool_is_too_small, model: item_model)
+    end
+
+    def prevent_update
+      return if orders.empty?
+
+      if invent_type_id_changed? || item_type_changed? || invent_model_id_changed? || item_model_changed?
+        errors.add(:base, :cannot_update_with_orders)
+        throw(:abort)
+      end
     end
   end
 end
