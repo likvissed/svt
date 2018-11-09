@@ -39,7 +39,7 @@ class Invent::ApplicationService < ApplicationService
 
       # Для пустых значений с типом list и list_plus установить значение = -1 (Это автоматически выберет строчку
       # "Выбрать из списка")
-      if %w[list list_plus].include?(prop_val['property']['property_type']) && prop_val['property_list_id'].nil? && prop_val['value'].blank?
+      if Invent::Property::LIST_PROPS.include?(prop_val['property']['property_type']) && prop_val['property_list_id'].nil? && prop_val['value'].blank?
         prop_val['property_list_id'] = -1
       end
 
@@ -80,7 +80,7 @@ class Invent::ApplicationService < ApplicationService
       next if item['property_values_attributes'].find { |prop_val| prop_val['property_id'] == prop['property_id'] }
 
       new_prop_val = Invent::PropertyValue.new
-      if %w[list list_plus].include?(prop['property_type'])
+      if Invent::Property::LIST_PROPS.include?(prop['property_type'])
         prop['property_lists'].each do |prop_list|
           new_prop_val['property_list_id'] = prop_list['property_list_id'] if prop_list['model_property_lists'].find { |m_prop_list| m_prop_list['model_id'] == item['model_id'] && m_prop_list['property_id'] == prop_list['property_id'] }
         end

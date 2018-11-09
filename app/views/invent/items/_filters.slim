@@ -8,7 +8,7 @@
       div ng-if="table.selected.properties[$index].property"
         div ng-switch=true on="table.selected.properties[$index].property.property_type"
           div ng-switch-when="string"
-            = text_field_tag "", "", class: "form-control input-sm", placeholder: "Значение",
+            = text_field_tag "", "", class: "form-control input-sm", placeholder: "Введите значение",
               "ng-model": "table.selected.properties[$index].property_value", "ng-change": "table.changeFilter()",
               "ng-model-options": "{ debounce: 300 }"
 
@@ -37,11 +37,19 @@
                   = fa_icon "list", "uib-tooltip": "Выбрать из списка", "tooltip-append-to-body": "true"
 
           div ng-switch-when="date_month"
-            = text_field_tag "", "", class: "form-control input-sm", "ng-model": "table.selected.properties[$index].property_value",
+            = text_field_tag "", "", class: "form-control input-sm", placeholder: "Выберите месяц",
+              "ng-model": "table.selected.properties[$index].property_value",
               "uib-datepicker-popup": "MM.yyyy", "ng-model-options": "{ timezone: 'utc', debounce: 300 }",
-              "ng-focus": "edit.openDatePropVal = true", "is-open": "edit.openDatePropVal",
-              "popup-placement": "bottom-left", "show-button-bar": false, "datepicker-options": "{minMode: 'month'}",
+              "ng-focus": "edit.openDateMonthPropVal = true", "is-open": "edit.openDateMonthPropVal",
+              "popup-placement": "bottom-left", "show-button-bar": false, "datepicker-options": "{ minMode: 'month' }",
               "datepicker-mode": "'month'", "ng-change": "table.changeFilter()"
+
+          div ng-switch-when="date"
+            = text_field_tag "", "", class: "form-control input-sm", placeholder: "Выберите дату",
+              "ng-model": "table.selected.properties[$index].property_value",
+              "uib-datepicker-popup": "dd.MM.yyyy", "ng-model-options": "{ timezone: 'utc', debounce: 300 }",
+              "ng-focus": "edit.openDatePropVal = true", "is-open": "edit.openDatePropVal",
+              "popup-placement": "bottom-left", "show-button-bar": false, "ng-change": "table.changeFilter()"
 
     .col-sm-3.col-md-3.col-lg-3.col-xlg-3.col-fhd-3
       = button_tag name: "exact_prop_filter[$index]", type: :button,

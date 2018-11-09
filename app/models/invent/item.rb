@@ -177,7 +177,7 @@ module Invent
       return unless type
 
       self.property_values = type.properties.map do |prop|
-        prop_list = model.property_list_for(prop) if model && %w[list list_plus].include?(prop.property_type)
+        prop_list = model.property_list_for(prop) if model && Property::LIST_PROPS.include?(prop.property_type)
 
         PropertyValue.new(
           property: prop,

@@ -12,7 +12,7 @@ import { app } from '../../app/app';
       },
       _defaultPropList = {
         property_list_id: '',
-        short_description: 'Выберите фильтр'
+        short_description: 'Выберите значение'
       },
       _propertyTemplate = {
         property_id: '',
