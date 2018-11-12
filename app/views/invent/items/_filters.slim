@@ -1,12 +1,18 @@
 .col-sm-15.col-md-13.col-lg-11.col-xlg-9.col-fhd-7
   .row.multiline-buffer.filter-block ng-repeat="filter in table.selected.properties track by $index"
     .col-sm-9.col-md-9.col-lg-9.col-xlg-9.col-fhd-9
-      = select_tag "", "", "class": "form-control input-sm", "ng-model": "table.selected.properties[$index].property",
+      / = select_tag "", "", "class": "form-control input-sm", "ng-model": "table.selected.properties[$index].property",
         "ng-options": "prop as prop.long_description for prop in table.filters.properties track by prop.property_id",
         "ng-change": "table.clearPropertyFilter($index)"
+      .form-input-sm.item-table-filter
+        ui-select ng-model="table.selected.properties[$index].property_to_type" on-select="table.clearPropertyFilter($index)" theme="bootstrap"
+          ui-select-match
+            | {{ $select.selected.long_description }}
+          ui-select-choices group-by="'type_description'" repeat="obj in table.filters.properties | filter: $select.search"
+            div ng-bind-html="obj.long_description | highlight: $select.search"
     .col-sm-7.col-md-7.col-lg-7.col-xlg-7.col-fhd-8
-      div ng-if="table.selected.properties[$index].property"
-        div ng-switch=true on="table.selected.properties[$index].property.property_type"
+      div ng-if="table.selected.properties[$index].property_to_type"
+        div ng-switch=true on="table.selected.properties[$index].property_to_type.property_type"
           div ng-switch-when="string"
             = text_field_tag "", "", class: "form-control input-sm", placeholder: "Введите значение",
               "ng-model": "table.selected.properties[$index].property_value", "ng-change": "table.changeFilter()",
@@ -15,21 +21,21 @@
           div ng-switch-when="list"
             = select_tag "", "", class: "form-control input-sm",
               "ng-model": "table.selected.properties[$index].property_list_id", "ng-change": "table.changeFilter()",
-              "ng-options": "prop_list.property_list_id as prop_list.short_description disable when prop_list.property_list_id == -1 for prop_list in table.selected.properties[$index].property.property_lists",
+              "ng-options": "prop_list.property_list_id as prop_list.short_description for prop_list in table.selected.properties[$index].property_to_type.property.property_lists",
               "ng-model-options": "{ debounce: 300 }"
 
           div ng-switch-when="list_plus"
             .input-group ng-if="!table.selected.properties[$index].value_manually"
               = select_tag "", "", class: "form-control input-sm",
                 "ng-model": "table.selected.properties[$index].property_list_id", "ng-change": "table.changeFilter()",
-                "ng-options": "prop_list.property_list_id as prop_list.short_description disable when prop_list.property_list_id == -1 for prop_list in table.selected.properties[$index].property.property_lists",
+                "ng-options": "prop_list.property_list_id as prop_list.short_description for prop_list in table.selected.properties[$index].property_to_type.property.property_lists",
                 "ng-model-options": "{ debounce: 300 }"
               span.input-group-btn
                 = button_tag "", type: :button, class: "btn btn-default btn-sm", "ng-click": "table.changeFilterPropertyType($index)"
                   = fa_icon "pencil", "uib-tooltip": "Ввести вручную", "tooltip-append-to-body": "true"
 
             .input-group ng-if="table.selected.properties[$index].value_manually"
-              = text_field_tag "workplace[items][][property_values][value]", "", class: "form-control input-sm",
+              = text_field_tag "", "", class: "form-control input-sm", placeholder: "Введите значение",
                 "ng-model": "table.selected.properties[$index].property_value", "ng-change": "table.changeFilter()",
                 "ng-model-options": "{ debounce: 300 }"
               span.input-group-btn
@@ -55,7 +61,7 @@
       = button_tag name: "exact_prop_filter[$index]", type: :button,
         class: "btn-default btn-sm btn-block", "uib-tooltip": "Поиск строго по заданному значению",
         "ng-click": "table.selected.properties[$index].exact = !table.selected.properties[$index].exact; table.changeFilter()",
-        "tooltip-append-to-body": "true", "ng-disabled": "table.selected.properties[$index].property.property_type != 'string'" do
+        "tooltip-append-to-body": "true", "ng-disabled": "!table.isAllowExactFilter($index)" do
         = fa_icon "toggle-off lg", "ng-if": "!table.selected.properties[$index].exact",
           class: "text-danger"
         = fa_icon "toggle-on lg", "ng-if": "table.selected.properties[$index].exact",

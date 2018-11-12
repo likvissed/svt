@@ -70,7 +70,15 @@ module Invent
       def load_filters
         data[:filters] = {}
         data[:filters][:types] = Type.where('name != "unknown"')
-        data[:filters][:properties] = Property.group(:name).includes(:property_lists).as_json(include: :property_lists)
+        # data[:filters][:properties] = Property.group(:name).includes(:property_lists).as_json(include: :property_lists)
+        data[:filters][:properties] = PropertyToType
+                                        .select('type_id, property_id, t.short_description as type_description, p.long_description, p.property_type')
+                                        .joins('
+                                          JOIN invent_type AS t USING(type_id)
+                                          JOIN invent_property AS p USING(property_id)
+                                        ')
+                                        .includes(property: :property_lists)
+                                        .as_json(include: { property: { include: :property_lists } })
         data[:filters][:statuses] = item_statuses
         data[:filters][:buildings] = IssReferenceBuilding
                                        .select('iss_reference_sites.name as site_name, iss_reference_buildings.*')

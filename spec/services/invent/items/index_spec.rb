@@ -25,14 +25,14 @@ module Invent
       context 'with init_filters' do
         before { params[:init_filters] = 'true' }
 
-        it 'assigns %i[types properties statuses] to the :filters key' do
+        it 'assigns %i[types properties statuses buildings priorities] to the :filters key' do
           subject.run
-          expect(subject.data[:filters]).to include(:types, :properties, :statuses)
+          expect(subject.data[:filters]).to include(:types, :properties, :statuses, :buildings, :priorities)
         end
 
         it 'loads property_lists for each property' do
           subject.run
-          expect(subject.data[:filters][:properties].first).to include('property_lists')
+          expect(subject.data[:filters][:properties].first['property']).to include('property_lists')
         end
 
         its(:run) { is_expected.to be_truthy }

@@ -19,7 +19,7 @@ import { app } from '../../app/app';
         property_value: '',
         property_list_id: '',
         exact: false,
-        property: _defaultProp
+        property_to_type: _defaultProp
       },
       // Фильтры с вариантом выбора значений
       _filters = {
@@ -55,9 +55,9 @@ import { app } from '../../app/app';
 
     function _setDefaultValueForPropertyList() {
       _filters.properties.forEach((prop) => {
-        if (!prop.property_lists) { return true; }
+        if (!prop.property) { return true; }
 
-        prop.property_lists.unshift(_defaultPropList);
+        prop.property.property_lists.unshift(_defaultPropList);
       });
     }
 
@@ -87,7 +87,7 @@ import { app } from '../../app/app';
         delete obj.room;
 
         obj.properties.forEach((prop) => {
-          prop.property_id = prop.property.property_id;
+          prop.property_id = prop.property_to_type.property_id;
           delete prop.property;
         });
 

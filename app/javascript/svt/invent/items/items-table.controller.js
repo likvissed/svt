@@ -21,7 +21,7 @@ import { app } from '../../app/app';
 
     this.pagination = TablePaginator.config();
     this.filters = this.Filters.getFilters();
-    this.selected= this.Filters.getSelected();
+    this.selected = this.Filters.getSelected();
 
     this._loadItems(true);
     this._initActionCable();
@@ -169,5 +169,18 @@ import { app } from '../../app/app';
   InventItemsTableCtrl.prototype.clearPropertyFilter = function(index) {
     let filter = this.selected.properties[index];
     this.Filters.clearValueForSelectedProperty(filter);
-  }
+  };
+
+  /**
+   * Определяет, разрешить ли фильтр "Exact" для фильтра, указанного по индексу.
+   */
+  InventItemsTableCtrl.prototype.isAllowExactFilter = function(index) {
+    let filter = this.selected.properties[index];
+
+    if (!filter.property_to_type.property) { return false; }
+
+    let prop_type = filter.property_to_type.property.property_type;
+
+    return prop_type == 'string' || prop_type == 'list_plus' && filter.value_manually;
+  };
 })();
