@@ -31,16 +31,18 @@
                 "ng-options": "prop_list.property_list_id as prop_list.short_description for prop_list in table.selected.properties[$index].property_to_type.property.property_lists",
                 "ng-model-options": "{ debounce: 300 }"
               span.input-group-btn
-                = button_tag "", type: :button, class: "btn btn-default btn-sm", "ng-click": "table.changeFilterPropertyType($index)"
-                  = fa_icon "pencil", "uib-tooltip": "Ввести вручную", "tooltip-append-to-body": "true"
+                = button_tag "", type: :button, class: "btn btn-default btn-sm", "ng-click": "table.changeFilterPropertyType($index)",
+                  "uib-tooltip": "Ввести вручную", "tooltip-append-to-body": "true"
+                  = fa_icon "pencil"
 
             .input-group ng-if="table.selected.properties[$index].value_manually"
               = text_field_tag "", "", class: "form-control input-sm", placeholder: "Введите значение",
                 "ng-model": "table.selected.properties[$index].property_value", "ng-change": "table.changeFilter()",
                 "ng-model-options": "{ debounce: 300 }"
               span.input-group-btn
-                = button_tag "", type: :button, class: "btn btn-default btn-sm", "ng-click": "table.changeFilterPropertyType($index)"
-                  = fa_icon "list", "uib-tooltip": "Выбрать из списка", "tooltip-append-to-body": "true"
+                = button_tag "", type: :button, class: "btn btn-default btn-sm", "ng-click": "table.changeFilterPropertyType($index)",
+                  "uib-tooltip": "Выбрать из списка", "tooltip-append-to-body": "true"
+                  = fa_icon "list"
 
           div ng-switch-when="date_month"
             = text_field_tag "", "", class: "form-control input-sm", placeholder: "Выберите месяц",
