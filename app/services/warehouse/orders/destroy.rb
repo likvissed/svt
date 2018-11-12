@@ -45,7 +45,7 @@ module Warehouse
               if !inv_item.warehouse_item
                 destroy_item(inv_item)
               else
-                inv_item.update(status: :in_stock)
+                inv_item.update(status: :in_stock, workplace: nil)
               end
             end
           end

@@ -14,9 +14,7 @@ module Warehouse
           w.save(validate: false)
           w
         end
-        let(:operations) do
-          workplace.items.map { |item| build(:order_operation, inv_item_ids: [item.item_id]) }
-        end
+        let(:operations) { workplace.items.map { |item| build(:order_operation, inv_item_ids: [item.item_id]) } }
         let!(:order) { create(:order, inv_workplace: workplace, operations: operations) }
 
         include_examples 'destroys order with nested models'
@@ -100,7 +98,17 @@ module Warehouse
               expect(inv_item.reload.status).to eq 'in_stock'
             end
 
-            expect(inv_item_3.status).to eq 'in_workplace'
+            expect(inv_item_3.reload.status).to eq 'in_workplace'
+          end
+
+          it 'changes :workplace_id attribute of each item, which belongs to order, to "nil"' do
+            subject.run
+
+            [inv_item_1, inv_item_2].each do |inv_item|
+              expect(inv_item.reload.workplace_id).to be_nil
+            end
+
+            expect(inv_item_3.reload.workplace_id).to eq workplace.workplace_id
           end
         end
 
