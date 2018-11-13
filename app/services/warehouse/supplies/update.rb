@@ -77,6 +77,8 @@ module Warehouse
             Rails.logger.error e.inspect.red
             Rails.logger.error e.backtrace[0..5].inspect
 
+            process_supply_errors
+
             raise ActiveRecord::Rollback
           end
         end

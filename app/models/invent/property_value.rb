@@ -30,7 +30,7 @@ module Invent
       error = true
 
       case property.property_type
-      when 'string'
+      when 'string', 'date', 'date_month'
         error = false if value.present?
       when 'list'
         error = false if property_list

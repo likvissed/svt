@@ -18,6 +18,7 @@ module Invent
         load_workplace_specializations
         load_locations
         load_statuses
+        load_item_move_types
         load_users if @division
         load_constants
         prepare_eq_types_to_render
@@ -91,6 +92,12 @@ module Invent
         data[:statuses] = workplace_statuses
       end
 
+      # Получить список статусов техники, обозначающих перемещение.
+      def load_item_move_types
+        data[:move_item_types] = Item::MOVE_ITEM_TYPES
+      end
+
+      # Получить список приоритетов.
       def load_priorities
         data[:priorities] = item_priorities
       end
@@ -98,6 +105,7 @@ module Invent
       # Получить различные константы, необходимые для работы
       def load_constants
         data[:file_depending] = Property::FILE_DEPENDING
+        data[:date_props] = Property::DATE_PROPS
         data[:single_pc_items] = Type::SINGLE_PC_ITEMS
         data[:type_with_files] = Type::TYPE_WITH_FILES
       end

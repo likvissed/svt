@@ -232,5 +232,95 @@ module Warehouse
         it { is_expected.to be_valid }
       end
     end
+
+    describe '#prevent_update' do
+      subject { new_item }
+
+      context 'when warehouse_type is :with_invent_num' do
+        let(:type) { Invent::Type.find_by(name: :pc) }
+        let(:workplace) { create(:workplace_pk, :add_items, items: %i[pc monitor]) }
+        let(:operation) { attributes_for(:order_operation, item_id: subject.id, shift: -2) }
+        let!(:new_item) { create(:new_item, count: 4, inv_type: type, item_model: 'UNIT', invent_num_end: 114) }
+
+        context 'and when item has any order' do
+          before do
+            order_params = attributes_for(:order, operation: :out, invent_workplace_id: workplace.workplace_id)
+            order_params[:operations_attributes] = [operation]
+            Warehouse::Orders::CreateOut.new(create(:***REMOVED***_user), order_params).run
+          end
+
+          context 'and when invent_type_id was changed' do
+            it 'does not update item' do
+              subject.update(invent_type_id: 123)
+              expect(subject.reload.invent_type_id).to eq type.type_id
+            end
+
+            it 'adds :cannot_update_with_orders error' do
+              subject.update(invent_type_id: 123)
+              expect(subject.errors.details[:base]).to include(error: :cannot_update_with_orders)
+            end
+          end
+
+          context 'when item_type was changed' do
+            it 'does not update item' do
+              subject.update(item_type: 'NEW PC')
+              expect(subject.reload.item_type).to eq type.short_description
+            end
+
+            it 'adds :cannot_update_with_orders error' do
+              subject.update(item_type: 'NEW PC')
+              expect(subject.errors.details[:base]).to include(error: :cannot_update_with_orders)
+            end
+          end
+
+          context 'and when invent_model_id was changed' do
+            it 'does not update item' do
+              subject.update(invent_model_id: 123)
+              expect(subject.reload.invent_model_id).to eq new_item.invent_model_id
+            end
+
+            it 'adds :cannot_update_with_orders error' do
+              subject.update(invent_model_id: 123)
+              expect(subject.errors.details[:base]).to include(error: :cannot_update_with_orders)
+            end
+          end
+
+          context 'and when item_model was changed' do
+            it 'does not update item' do
+              subject.update(item_model: 'NEW UNIT')
+              expect(subject.reload.item_model).to eq 'UNIT'
+            end
+
+            it 'adds :cannot_update_with_orders error' do
+              subject.update(item_model: 'NEW UNIT')
+              expect(subject.errors.details[:base]).to include(error: :cannot_update_with_orders)
+            end
+          end
+
+          context 'and when count was changed' do
+            it 'allows to update item' do
+              subject.update(count: 222)
+              expect(subject.reload.count).to eq 222
+            end
+          end
+        end
+
+        context 'and when item does not have any order' do
+          it 'allows to update item' do
+            subject.update(item_model: 'NEW UNIT')
+            expect(subject.reload.item_model).to eq 'NEW UNIT'
+          end
+        end
+      end
+
+      context 'when warehouse_type is :without_invent_num' do
+        let!(:new_item) { create(:new_item, warehouse_type: :without_invent_num, count: 4, count_reserved: 2, item_type: 'Батареи', item_model: '12V') }
+
+        it 'allows to update item' do
+          subject.update(item_model: '14V')
+          expect(subject.reload.item_model).to eq '14V'
+        end
+      end
+    end
   end
 end

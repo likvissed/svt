@@ -37,6 +37,42 @@ module Invent
           expect(subject.data).to include(:item, :prop_data)
         end
       end
+
+      context 'when property_value does not exist for corresponding property' do
+        let(:item) do
+          i = create(:item, :with_property_values, type_name: :ups)
+          Invent::PropertyValue.destroy_all
+          i
+        end
+        let(:ups_type) { Invent::Type.find_by(name: :ups) }
+        let(:list_prop) { ups_type.properties.find_by(property_type: 'list') }
+        let(:list_index) { ups_type.properties.index(list_prop) }
+        let(:model_prop_list) do
+          Invent::ModelPropertyList.find_by(
+            model_id: item.model_id,
+            property_id: list_prop.property_id
+          )
+        end
+        subject { Edit.new(item.item_id, true) }
+
+        it 'creates a missing property_values' do
+          subject.run
+          expect(subject.data[:item]['property_values_attributes'].size).to eq ups_type.properties.size
+        end
+
+        it 'sets property_id attribute for each missing property_value' do
+          subject.run
+          subject.data[:item]['property_values_attributes'].each do |prop_val|
+            expect(ups_type.properties.any? { |prop| prop['property_id'] == prop_val['property_id'] }).to be_truthy
+          end
+        end
+
+        it 'sets default property_value_id attribute for each missing property_value which has :list or :list_plus type' do
+          subject.run
+
+          expect(subject.data[:item]['property_values_attributes'][list_index]['property_list_id']).to eq model_prop_list.property_list_id
+        end
+      end
     end
   end
 end

@@ -3,6 +3,14 @@ module Invent
     self.primary_key = :item_id
     self.table_name = "#{table_name_prefix}item"
 
+    # Содержит уровни критичности для замены батарей
+    LEVELS_BATTERY_REPLACEMENT = {
+      warning: 3,
+      critical: 5
+    }.freeze
+    # Статусы, обозначающие перемещение техники
+    MOVE_ITEM_TYPES = %w[prepared_to_swap waiting_bring waiting_take].freeze
+
     has_one :warehouse_item, foreign_key: 'invent_item_id', class_name: 'Warehouse::Item', dependent: :destroy
     has_many :property_values,
              -> { joins('LEFT OUTER JOIN invent_property ON invent_property_value.property_id = invent_property.property_id').order('invent_property.property_order').includes(:property) },
@@ -34,12 +42,41 @@ module Invent
     scope :responsible, ->(responsible) { left_outer_joins(workplace: :user_iss).where('fio LIKE ?', "%#{responsible}%") }
     scope :status, ->(status) { where(status: status) }
     scope :properties, ->(prop) do
-      return all if prop['property_id'].to_i.zero? || prop['property_value'].blank?
+      return all if prop['property_id'].to_i.zero? || (prop['property_value'].blank? && prop['property_list_id'].to_i.zero?)
 
-      if prop['exact']
-        where('invent_item.item_id IN (SELECT item_id FROM invent_property_value AS val LEFT JOIN invent_property_list AS list USING(property_list_id) WHERE val.property_id = :prop_id AND (val.value = :val OR list.short_description = :val))', prop_id: prop['property_id'], val: prop['property_value'])
+      if !prop['property_list_id'].to_i.zero?
+        where('
+        invent_item.item_id
+          IN
+            (SELECT
+              item_id
+            FROM
+              invent_property_value AS val
+            WHERE
+              val.property_id = :prop_id AND val.property_list_id = :prop_list_id
+            )', prop_id: prop['property_id'], prop_list_id: prop['property_list_id'])
+      elsif prop['property_value'] && prop['exact']
+        where('
+        invent_item.item_id
+        IN
+          (SELECT
+            item_id
+          FROM
+            invent_property_value AS val
+          WHERE
+            val.property_id = :prop_id AND val.value = :val
+          )', prop_id: prop['property_id'], val: prop['property_value'])
       else
-        where('invent_item.item_id IN (SELECT item_id FROM invent_property_value AS val LEFT JOIN invent_property_list AS list USING(property_list_id) WHERE val.property_id = :prop_id AND (val.value LIKE :val OR list.short_description LIKE :val))', prop_id: prop['property_id'], val: "%#{prop['property_value']}%")
+        where('
+        invent_item.item_id
+        IN
+          (SELECT
+            item_id
+          FROM
+            invent_property_value AS val
+          WHERE
+            val.property_id = :prop_id AND val.value LIKE :val
+          )', prop_id: prop['property_id'], val: "%#{prop['property_value']}%")
       end
     end
     scope :location_building_id, ->(building_id) do
@@ -64,26 +101,31 @@ module Invent
 
     def self.by_invent_num(invent_num)
       return all if invent_num.blank?
+
       where(invent_num: invent_num)
     end
 
     def self.by_item_id(item_id)
       return all if item_id.blank?
+
       where(item_id: item_id)
     end
 
     def self.not_by_items(rejected)
       return where('item_id IS NOT NULL') if rejected.compact.empty?
+
       where('item_id NOT IN (?)', rejected)
     end
 
     def self.by_division(division)
       return all if division.blank?
+
       where(workplace: { invent_workplace_count: { division: division } })
     end
 
     def self.by_type_id(type_id)
       return all if type_id.blank?
+
       where(type_id: type_id)
     end
 
@@ -135,11 +177,7 @@ module Invent
       return unless type
 
       self.property_values = type.properties.map do |prop|
-        prop_list = if model && %w[list list_plus].include?(prop.property_type)
-                      model.property_list_for(prop)
-                    else
-                      nil
-                    end
+        prop_list = model.property_list_for(prop) if model && Property::LIST_PROPS.include?(prop.property_type)
 
         PropertyValue.new(
           property: prop,
@@ -150,7 +188,41 @@ module Invent
       end
     end
 
+    # Проверяет необходимость замены батарей для ИБП
+    def need_battery_replacement?
+      return false if type.name != 'ups' || priority != 'high'
+
+      replacement_date_ups_prop = Property.find_by(name: :replacement_date)
+      prop_val = get_value(replacement_date_ups_prop)
+      return unless prop_val
+
+      # replacement_date = Date.strptime(prop_val, '%Y-%m')
+      replacement_date = Date.parse(prop_val)
+      current_time = Time.zone.now
+
+      if battery_difference_in_years(replacement_date, current_time) > LEVELS_BATTERY_REPLACEMENT[:critical]
+        {
+          years: LEVELS_BATTERY_REPLACEMENT[:critical],
+          type: :critical
+        }
+      elsif battery_difference_in_years(replacement_date, current_time) > (LEVELS_BATTERY_REPLACEMENT[:warning])
+        {
+          years: LEVELS_BATTERY_REPLACEMENT[:warning],
+          type: :warning
+        }
+      else
+        false
+      end
+    end
+
     protected
+
+    # Возвращает сколько полных лет назад производилась замена батарей.
+    def battery_difference_in_years(replacement_date, current_date)
+      d = (replacement_date.year - current_date.year).abs
+      d -= 1 if replacement_date.month > current_date.month
+      d
+    end
 
     # Проверка наличия модели.
     def presence_model

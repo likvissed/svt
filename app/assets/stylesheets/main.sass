@@ -100,6 +100,11 @@ search-user.full-width
   .ui-select-match-text
     max-width: 100% !important
 
+.item-table-filter
+  .ui-select-container > ul
+    width: 300px
+
+
 /* ================================================ Страницы входа на сайт ========================================== */
 
 .auth-header
@@ -172,6 +177,14 @@ datatable-wrapper
   border: 1px solid $table-border-color
   background-color: $bgDefault
 
+table.table-tbody-striped
+  tbody + tbody
+    border-top: 1px !important
+
+  tbody:nth-child(even)
+    background-color: $bgDefault
+
+
 /* ================================================ Стиль для компонентов таблицы DataTables ======================== */
 
 .dataTables_wrapper
@@ -196,7 +209,7 @@ ul.nav-tabs
     color: $btn-danger-bg
     cursor: pointer
 
-/* ================================================ Стили модальных окон ================================================= */
+/* ================================================ Стили модальных окон ============================================ */
 
 .modal-header .icon-block
   margin:

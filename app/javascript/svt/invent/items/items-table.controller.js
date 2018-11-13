@@ -5,14 +5,15 @@ import { app } from '../../app/app';
 
   app.controller('InventItemsTableCtrl', InventItemsTableCtrl);
 
-  InventItemsTableCtrl.$inject = ['$uibModal', 'TablePaginator', 'ActionCableChannel', 'InventItemsTable', 'InventItemsTableFiltersFactory', 'InventItem', 'Config', 'Server', 'Flash', 'Error'];
+  InventItemsTableCtrl.$inject = ['$uibModal', 'TablePaginator', 'ActionCableChannel', 'InventItemsTable', 'InventItemsTableFiltersFactory', 'InventItem', 'PropertyValue', 'Config', 'Server', 'Flash', 'Error'];
 
-  function InventItemsTableCtrl($uibModal, TablePaginator, ActionCableChannel, InventItemsTable, InventItemsTableFiltersFactory, InventItem, Config, Server, Flash, Error) {
+  function InventItemsTableCtrl($uibModal, TablePaginator, ActionCableChannel, InventItemsTable, InventItemsTableFiltersFactory, InventItem, PropertyValue, Config, Server, Flash, Error) {
     this.$uibModal = $uibModal;
-    this.ActionCableChannel = ActionCableChannel
+    this.ActionCableChannel = ActionCableChannel;
     this.Items = InventItemsTable;
     this.Filters = InventItemsTableFiltersFactory;
     this.Item = InventItem;
+    this.PropertyValue = PropertyValue;
     this.Config = Config;
     this.Server = Server;
     this.Flash = Flash;
@@ -20,7 +21,7 @@ import { app } from '../../app/app';
 
     this.pagination = TablePaginator.config();
     this.filters = this.Filters.getFilters();
-    this.selected= this.Filters.getSelected();
+    this.selected = this.Filters.getSelected();
 
     this._loadItems(true);
     this._initActionCable();
@@ -83,10 +84,13 @@ import { app } from '../../app/app';
    * @param index - индекс удаляемого элемента.
    */
   InventItemsTableCtrl.prototype.delPropFilter = function(index) {
-    if (this.filters.properties.length > 1) {
+    if (this.selected.properties.length > 1) {
       this.Filters.delProperty(index);
-      this._loadItems(false);
+    } else {
+      this.Filters.setDefaultState(index);
     }
+
+    this._loadItems(false);
   };
 
   /**
@@ -110,7 +114,9 @@ import { app } from '../../app/app';
   };
 
   /**
-   * Редактировать состав техники
+   * Редактировать состав техники.
+   *
+   * @param item
    */
   InventItemsTableCtrl.prototype.editItem = function(item) {
     this.Item.edit(item.item_id).then(
@@ -124,7 +130,57 @@ import { app } from '../../app/app';
           backdrop: 'static'
         });
       }
-    )
-  }
+    );
+  };
 
+  /**
+   * Подсветить ИБП, для которых необходимо заменить батареи.
+   *
+   * @param item
+   */
+  InventItemsTableCtrl.prototype.colorizeUps = function(item) {
+    if (!item['need_battery_replacement?']) { return false; }
+
+    if (item['need_battery_replacement?'].type == 'warning') {
+      return 'warning';
+    } else if (item['need_battery_replacement?'].type == 'critical') {
+      return 'danger';
+    }
+  };
+
+  /**
+   * Изменить данные фильтра в свойстве с типом list_plus.
+   *
+   * @param index - индекс фильтра в массиве.
+   */
+  InventItemsTableCtrl.prototype.changeFilterPropertyType = function(index) {
+    let filter = this.selected.properties[index];
+
+    filter.value_manually = !filter.value_manually;
+
+    this.Filters.clearValueForSelectedProperty(filter);
+  };
+
+  /**
+   * Очистить данные фильтру, указанному по индексу.
+   *
+   * @param index
+   */
+  InventItemsTableCtrl.prototype.clearPropertyFilter = function(index) {
+    let filter = this.selected.properties[index];
+    this.Filters.clearValueForSelectedProperty(filter);
+  };
+
+  /**
+   * Определяет, разрешить ли фильтр "Exact" для фильтра, указанного по индексу.
+   */
+  InventItemsTableCtrl.prototype.isAllowExactFilter = function(index) {
+    let filter = this.selected.properties[index];
+
+    if (!filter.property_to_type.property) { return false; }
+
+    let prop_type = filter.property_to_type.property.property_type;
+
+    return prop_type == 'string' || prop_type == 'list_plus' && filter.value_manually;
+  };
 })();

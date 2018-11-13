@@ -24,7 +24,7 @@ import { app } from '../../app/app';
     this._initActionCable();
 
     $scope.$on('WorkplaceTableCtrl::reloadWorkplacesTable', () => this.reloadWorkplaces());
-  };
+  }
 
   /**
    * Загрузить данные о РМ.

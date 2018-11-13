@@ -6,10 +6,20 @@ import { app } from '../../app/app';
 
   function InventItemsTableFiltersFactory() {
     let
+      _defaultProp = {
+        property_id: '',
+        long_description: 'Выберите свойство'
+      },
+      _defaultPropList = {
+        property_list_id: '',
+        short_description: 'Выберите значение'
+      },
       _propertyTemplate = {
-        property_id: 0,
+        property_id: '',
         property_value: '',
-        exact: false
+        property_list_id: '',
+        exact: false,
+        property_to_type: _defaultProp
       },
       // Фильтры с вариантом выбора значений
       _filters = {
@@ -19,12 +29,7 @@ import { app } from '../../app/app';
             short_description: 'Все типы'
           }
         ],
-        properties: [
-          {
-            property_id: 0,
-            long_description: 'Выберите свойство'
-          }
-        ],
+        properties: [_defaultProp],
         statuses: { '': 'Все статусы' },
         priorities: { '': 'Все приоритеты' },
         buildings: [],
@@ -46,6 +51,14 @@ import { app } from '../../app/app';
 
     function _addProperty() {
       _selected.properties.push(angular.copy(_propertyTemplate));
+    }
+
+    function _setDefaultValueForPropertyList() {
+      _filters.properties.forEach((prop) => {
+        if (!prop.property) { return true; }
+
+        prop.property.property_lists.unshift(_defaultPropList);
+      });
     }
 
     return {
@@ -70,13 +83,18 @@ import { app } from '../../app/app';
         obj.location_building_id = obj.building.building_id;
         obj.location_room_id = obj.room.room_id;
 
-        delete(obj.building);
-        delete(obj.room);
+        delete obj.building;
+        delete obj.room;
+
+        obj.properties.forEach((prop) => {
+          prop.property_id = prop.property_to_type.property_id;
+          delete prop.property;
+        });
 
         return obj;
       },
       /**
-       * Заполнить фильтры данными
+       * Заполнить фильтры данными.
        */
       setPossibleValues: function(data, with_properties = false) {
         angular.forEach(_filters, function(arr, key) {
@@ -91,18 +109,45 @@ import { app } from '../../app/app';
 
         if (with_properties) {
           _addProperty();
+          _setDefaultValueForPropertyList();
         }
       },
       /**
-       * Добавить фильтр по типу
+       * Добавить фильтр по типу.
        */
       addProperty: _addProperty,
+      /**
+       * Удалить фильтр по его индексу.
+       *
+       * @param index
+       */
       delProperty: function(index) {
         _selected.properties.splice(index, 1);
       },
+      /**
+       * Очистить фильтр комнат.
+       */
       clearRooms: function() {
         _filters.rooms = [];
+      },
+      /**
+       * Очистить данные фильтра.
+       *
+       * @param filter
+       */
+      clearValueForSelectedProperty: function(filter) {
+        filter.property_list_id = _propertyTemplate.property_list_id;
+        filter.property_value = _propertyTemplate.property_value;
+      },
+      /**
+       * Сбросить фильтр в значения по умолчанию.
+       *
+       * @param index
+       */
+      setDefaultState: function(index) {
+        _selected.properties[index] = angular.copy(_propertyTemplate);
+
       }
     }
-  };
+  }
 })();

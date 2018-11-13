@@ -1,6 +1,6 @@
 module Invent
   module Models
-    class NewModel < Invent::ApplicationService
+    class NewModel < BaseService
       def initialize
         super
       end

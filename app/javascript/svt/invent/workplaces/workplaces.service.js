@@ -26,7 +26,7 @@ import { app } from '../../app/app';
    */
   Workplaces.prototype._isNeedToInitFilters = function(init) {
     return init && !this.Filter.filters.init;
-  }
+  };
 
   Workplaces.prototype.loadWorkplaces = function(init) {
     return this.Server.Invent.Workplace.query(

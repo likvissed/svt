@@ -86,6 +86,17 @@ import { app } from '../../app/app';
        */
       copyAttr: function(item, index) {
         item.property_values_attributes.splice(index, 0, angular.copy(item.property_values_attributes[index - 1]));
+      },
+      /**
+       * Преобразовать в дату значение свойства
+       *
+       * @param item
+       * @param index
+       */
+      processDatePropVal: function(item, index) {
+        if (!item.property_values_attributes[index].value) { return false; }
+
+        item.property_values_attributes[index].value = new Date(item.property_values_attributes[index].value);
       }
     }
   }

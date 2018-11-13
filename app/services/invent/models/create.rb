@@ -1,6 +1,6 @@
 module Invent
   module Models
-    class Create < Invent::ApplicationService
+    class Create < BaseService
       def initialize(model_params)
         @model_params = model_params
 

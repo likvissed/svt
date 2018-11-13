@@ -7,7 +7,7 @@
         = render partial: 'filters'
       .row
         .col-fhd-24
-          table.table.table-striped.table-condensed
+          table.table.table-condensed.table-tbody-striped
             thead
               tr
                 th
@@ -21,14 +21,14 @@
                 th Статус
                 th Описание
                 th
-            tbody
-              tr ng-repeat="item in table.items"
+            tbody ng-repeat="item in table.items"
+              tr ng-compile-item-rows=true
                 td ng-class="item.priority == 'high' ? 'text-danger' : 'text-muted'"
                   = fa_icon "circle", "uib-tooltip": "{{item.translated_priority}} приоритет"
                 td.col-sm-1
                   a ng-href="/invent/workplaces/{{item.workplace.workplace_id}}/edit" class="default-color" target="_blank" ng-show="item.workplace"
                     = fa_icon "external-link fw", class: "pointer", "uib-tooltip": "Перейти к рабочему месту", "tooltip-append-to-body": "true"
-                  = fa_icon "pencil-square-o fw", class: "pointer", "ng-click": "table.editItem(item)", "uib-tooltip": "Редактировать состав техники",
+                  = fa_icon "pencil-square-o fw", class: "pointer", id: "editItem", "uib-tooltip": "Редактировать технику",
                     "tooltip-append-to-body": "true"
                 td.col-sm-1 ng-bind="item.item_id"
                 td.col-sm-2 ng-bind="item.type.short_description"

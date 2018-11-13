@@ -12,7 +12,10 @@ module Invent
       def run
         load_item
         prepare_to_edit_item(data[:item])
-        load_properties if @with_init_props
+        if @with_init_props
+          load_properties
+          generate_property_values_for_item(data[:item])
+        end
 
         true
       rescue RuntimeError => e
@@ -25,16 +28,15 @@ module Invent
       protected
 
       def load_item
-        show = Show.new({ item_id: @item_id })
+        show = Show.new(item_id: @item_id)
 
         raise 'Сервис Show не отработал' unless show.run
 
         data[:item] = show.data.first
-        # data['status'] = :prepared_to_swap
       end
 
       def load_properties
-        properties = LkInvents::InitProperties.new(@current_user)
+        properties = LkInvents::InitProperties.new(current_user)
         return data[:prop_data] = properties.data if properties.run
 
         raise 'Ошибка сервиса LkInvents::InitProperties'

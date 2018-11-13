@@ -99,7 +99,7 @@ import { app } from '../../app/app';
    * Отправить данные на сервер для сохранения.
    */
   WorkplaceEditCtrl.prototype.saveWorkplace = function() {
-    this.Workplace.saveWorkplace()
+    this.Workplace.saveWorkplace();
   };
 
   /**

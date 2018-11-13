@@ -104,6 +104,17 @@ task 'sidekiq:restart' do
   end
 end
 
+desc 'Transform property_value to date string'
+task :transform_property_value_to_date do
+  on roles(:web) do
+    within release_path do
+      with rails_env: fetch(:rails_env) do
+        execute :rails, 'db:transform_property_value_to_date'
+      end
+    end
+  end
+end
+
 
 before "deploy:assets:precompile", "deploy:yarn_install"
 after 'deploy', 'deploy:cleanup'

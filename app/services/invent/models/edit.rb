@@ -1,6 +1,6 @@
 module Invent
   module Models
-    class Edit < Invent::ApplicationService
+    class Edit < BaseService
       def initialize(model_id)
         @id = model_id
 

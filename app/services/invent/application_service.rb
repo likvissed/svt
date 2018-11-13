@@ -39,7 +39,7 @@ class Invent::ApplicationService < ApplicationService
 
       # Для пустых значений с типом list и list_plus установить значение = -1 (Это автоматически выберет строчку
       # "Выбрать из списка")
-      if %w[list list_plus].include?(prop_val['property']['property_type']) && prop_val['property_list_id'].nil? && prop_val['value'].blank?
+      if Invent::Property::LIST_PROPS.include?(prop_val['property']['property_type']) && prop_val['property_list_id'].nil? && prop_val['value'].blank?
         prop_val['property_list_id'] = -1
       end
 
@@ -70,9 +70,26 @@ class Invent::ApplicationService < ApplicationService
     end
   end
 
-  def load_types
-    data[:types] = Invent::Type.all.includes(properties: :property_lists).as_json(include: { properties: { include: :property_lists } }).each do |type|
-      type['properties'].delete_if { |prop| prop['mandatory'] == false || %w[list list_plus].exclude?(prop['property_type']) }
+  # Создать значения для свойств типа list и list_plus (если значения отсутствуют)
+  def generate_property_values_for_item(item)
+    type = data[:prop_data][:eq_types].find { |t| t['type_id'] == item['type_id'] }
+    return if item['property_values_attributes'].size == type['properties'].size
+
+    type['properties'].each do |prop|
+      # Ищем отсутствующие свойства
+      next if item['property_values_attributes'].find { |prop_val| prop_val['property_id'] == prop['property_id'] }
+
+      new_prop_val = Invent::PropertyValue.new
+      if Invent::Property::LIST_PROPS.include?(prop['property_type'])
+        prop['property_lists'].each do |prop_list|
+          new_prop_val['property_list_id'] = prop_list['property_list_id'] if prop_list['model_property_lists'].find { |m_prop_list| m_prop_list['model_id'] == item['model_id'] && m_prop_list['property_id'] == prop_list['property_id'] }
+        end
+
+        new_prop_val['property_list_id'] ||= -1
+      end
+
+      new_prop_val['property_id'] = prop['property_id']
+      item['property_values_attributes'] << new_prop_val
     end
   end
 end

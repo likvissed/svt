@@ -14,7 +14,8 @@ import { app } from '../../app/app';
       if (scope.$parent.exec.order.operation != 'in' || scope.$parent.exec.order.status == 'done') { return true; }
 
       element.removeAttr('ng-exec-in-order-table');
-      var mes;
+
+      let mes;
       if (scope.op.unreg == true) {
         mes = 'Хост разрегистрирован'
       } else if (scope.op.unreg == false) {

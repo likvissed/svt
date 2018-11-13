@@ -17,12 +17,10 @@ import { app } from '../../app/app';
 
     this.item_o = InventItem.data;
     this.additional = WorkplaceItem.getAdditional();
-  };
+  }
 
   /**
    * Отправить запрос в Аудит для получения конфигурации оборудования.
-   *
-   * @param item
    */
   EditInventItemCtrl.prototype.getAuditData = function() {
     if (this.item_o.item.invent_num) {
@@ -51,8 +49,6 @@ import { app } from '../../app/app';
 
   /**
    * Записать в модель workplace.items данные о выбранной модели выбранного типа оборудования.
-   *
-   * @param item - экземпляр техники, у которого изменили модель
    */
   EditInventItemCtrl.prototype.changeItemModel = function() {
     this.WorkplaceItem.changeModel(this.item_o.item);

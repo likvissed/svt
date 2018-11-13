@@ -1,6 +1,6 @@
 module Invent
   module Models
-    class Index < Invent::ApplicationService
+    class Index < BaseService
       def initialize(params)
         @params = params
 

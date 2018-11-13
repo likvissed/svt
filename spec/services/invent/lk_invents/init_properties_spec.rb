@@ -20,10 +20,10 @@ module Invent
         end
 
         context 'when @data is filling' do
-          let!(:data_keys) { %i[divisions eq_types wp_types specs iss_locations statuses file_depending single_pc_items type_with_files] }
+          let!(:data_keys) { %i[divisions eq_types wp_types specs iss_locations statuses move_item_types file_depending date_props single_pc_items type_with_files] }
           before { subject.run }
 
-          it 'fills the @data hash with %i[divisions eq_types wp_types specs iss_locations statuses file_depending single_pc_items type_with_files] keys' do
+          it 'fills the @data hash with %i[divisions eq_types wp_types specs iss_locations statuses move_item_types file_depending date_props single_pc_items type_with_files] keys' do
             expect(subject.data.keys).to include(*data_keys)
           end
 
