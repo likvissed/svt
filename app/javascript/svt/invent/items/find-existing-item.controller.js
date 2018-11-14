@@ -18,28 +18,16 @@ import { app } from '../../app/app';
   FindExistingInventItemCtrl.prototype._setDeafultAttrs = function() {
     this.selectedType = this.$scope.$parent.select.eqTypes[0];
     this.items = [];
-  }
+  };
 
   /**
-   * Загрузить список техники указанного типа.
-   *
-   * @param searchType
+   * Загрузить список техники.
    */
-  FindExistingInventItemCtrl.prototype.loadItems = function(searchType) {
-    let message = 'Техника не найдена. ';
-
-    message += searchType == 'invent_num' ? 'Проверьте корректность введенного инвентарного номера.' : 'Проверьте корректность введенного ID.'
+  FindExistingInventItemCtrl.prototype.loadItems = function() {
     this.Item.loadBusyItems(this.selectedType.type_id, this.invent_num, this.item_id, this.$scope.$parent.division)
-      .then((response) => {
-        this.items = response;
+      .then(() => {
+        this.items = this.Item.items;
         this.$scope.$emit('removeDuplicateInvItems', this.items);
-
-        if (response.length == 0) {
-          this.Flash.alert(message);
-          return false;
-        } else if (this.items.length == 1) {
-          this.Item.selectedItem = this.items[0];
-        }
       }
     );
   };

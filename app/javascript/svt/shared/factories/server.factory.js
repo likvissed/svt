@@ -62,8 +62,7 @@ import { app } from '../../app/app';
           },
           busy: {
             method: 'GET',
-            url: '/invent/items/busy',
-            isArray: true
+            url: '/invent/items/busy'
           },
           avaliable: {
             method: 'GET',
