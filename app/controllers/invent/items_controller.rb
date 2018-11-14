@@ -23,7 +23,7 @@ module Invent
       if @busy.run
         render json: @busy.data
       else
-        render json: { full_message: I18n.t('controllers.app.unprocessable_entity') }, status: 422
+        render json: { full_message: @busy.errors.full_messages.join('. ') }, status: 422
       end
     end
 

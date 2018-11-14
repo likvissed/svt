@@ -29,13 +29,16 @@ import { app } from '../../app/app';
         item_id: item_id,
         division: division
       },
-      function(response) {},
+      (response) => {
+        this.items = response.items;
+        this.selectedItem = this.items.length == 1 ? this.items[0] : null;
+      },
       (response, status) => this.Error.response(response, status)
     ).$promise;
   };
 
   /**
-   * Удалить объект выбранной техники
+   * Удалить объект выбранной техники.
    */
   FindExistingItemService.prototype.clearSelectedItem = function() {
     this.selectedItem = null;

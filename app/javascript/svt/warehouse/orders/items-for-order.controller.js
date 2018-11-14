@@ -14,7 +14,7 @@ import { app } from '../../app/app';
     this.Flash = Flash;
 
     this.eqTypes = WarehouseOrder.additional.eqTypes;
-    this.warehouseType = '';
+    this.warehouseType = 'with_invent_num';
     this.manuallyItem = {
       item_model: '',
       item_type: ''

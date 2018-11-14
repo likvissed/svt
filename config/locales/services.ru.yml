@@ -6,6 +6,9 @@ ru:
         inv_num: 'Инвентарный номер'
         host: 'ПК'
 
+      invent/items/busy:
+        base: ''
+
     errors:
       models:
         invent/items/pc_config_from_audit:
@@ -17,6 +20,10 @@ ru:
            кнопку "Ввод данных вручную"'
           not_relevant: 'Полученные данные не действительны, вам необходимо ввести данные вручную. Для этого нажмите
            кнопку "Ввод данных вручную"'
+
+        invent/items/busy:
+          item_not_found: 'Техника не найдена. Проверьте корректность введенных данных'
+          item_already_used_in_orders: 'Техника уже используется в ордерах под следующими номерами: %{orders}'
 
         invent/workplaces/confirm:
           unknown_action: 'Неизвестное действие. Обратитесь к администратору (т. ***REMOVED***)'
