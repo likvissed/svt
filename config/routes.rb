@@ -119,6 +119,7 @@ Rails.application.routes.draw do
   end
 
   get 'locations/load_rooms/:building_id', to: 'locations#rooms_for_building'
+  resource :statistics, only: :show
 
   mount ActionCable.server, at: '/cable'
 end

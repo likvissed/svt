@@ -3,10 +3,9 @@ import { app } from '../../app/app';
 (function() {
   'use strict';
 
-  app
-    .service('InventItemsTable', InventItemsTable);
+  app.service('InventItemsTable', InventItemsTable);
 
-    InventItemsTable.$inject = ['TablePaginator', 'Config', 'Server', 'Error', 'InventItemsTableFiltersFactory'];
+  InventItemsTable.$inject = ['TablePaginator', 'Config', 'Server', 'Error', 'InventItemsTableFiltersFactory'];
 
   function InventItemsTable(TablePaginator, Config, Server, Error, InventItemsTableFiltersFactory) {
     this.Config = Config;

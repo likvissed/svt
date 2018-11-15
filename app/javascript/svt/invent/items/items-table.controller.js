@@ -5,15 +5,16 @@ import { app } from '../../app/app';
 
   app.controller('InventItemsTableCtrl', InventItemsTableCtrl);
 
-  InventItemsTableCtrl.$inject = ['$uibModal', 'TablePaginator', 'ActionCableChannel', 'InventItemsTable', 'InventItemsTableFiltersFactory', 'InventItem', 'PropertyValue', 'Config', 'Server', 'Flash', 'Error'];
+  InventItemsTableCtrl.$inject = ['$uibModal', 'TablePaginator', 'ActionCableChannel', 'InventItemsTable', 'InventItemsTableFiltersFactory', 'InventItem', 'PropertyValue', 'Statistics', 'Config', 'Server', 'Flash', 'Error'];
 
-  function InventItemsTableCtrl($uibModal, TablePaginator, ActionCableChannel, InventItemsTable, InventItemsTableFiltersFactory, InventItem, PropertyValue, Config, Server, Flash, Error) {
+  function InventItemsTableCtrl($uibModal, TablePaginator, ActionCableChannel, InventItemsTable, InventItemsTableFiltersFactory, InventItem, PropertyValue, Statistics, Config, Server, Flash, Error) {
     this.$uibModal = $uibModal;
     this.ActionCableChannel = ActionCableChannel;
     this.Items = InventItemsTable;
     this.Filters = InventItemsTableFiltersFactory;
     this.Item = InventItem;
     this.PropertyValue = PropertyValue;
+    this.Statistics = Statistics;
     this.Config = Config;
     this.Server = Server;
     this.Flash = Flash;
@@ -182,5 +183,23 @@ import { app } from '../../app/app';
     let prop_type = filter.property_to_type.property.property_type;
 
     return prop_type == 'string' || prop_type == 'list_plus' && filter.value_manually;
+  };
+
+  /**
+   * Загрузить статистику по батареям ИБП.
+   */
+  InventItemsTableCtrl.prototype.getBatteryStat = function() {
+    this.Statistics.get('ups_battery').then(
+      () => {
+        this.$uibModal.open({
+          animation: this.Config.global.modalAnimation,
+          templateUrl: 'statisticsUps.slim',
+          controller: 'StatisticsCtrl',
+          controllerAs: 'stat',
+          size: 'md',
+          backdrop: 'static'
+        });
+      }
+    )
   };
 })();
