@@ -209,6 +209,11 @@ import { app } from '../../app/app';
           url: ' /locations/load_rooms/:building_id',
           isArray: true
         }
+      }),
+      Statistics: $resource('/statistics', {}, {
+        get: {
+          isArray: true
+        }
       })
     }
   }

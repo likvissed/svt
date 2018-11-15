@@ -36,13 +36,17 @@ module Invent
                 item.property_values << build(
                   :property_value, item: item, property: prop, value: 'old_pc_config.txt'
                 )
+              when 'date', 'date_month'
+                item.property_values << build(
+                  :property_value, item: item, property: prop, value: Time.zone.now
+                )
               end
             else
               setting_prop = evaluator.property_values.find { |prop_val| prop_val.keys.first.to_sym == prop.name.to_sym }
               # Если property_value задано, необходимо создать invent_property_value со значениями указанными в setting_prop
               if setting_prop
                 case prop.property_type
-                when 'string'
+                when 'string', 'date', 'date_month'
                   item.property_values << build(
                     :property_value, item: item, property: prop, value: setting_prop[prop.name.to_sym][:value]
                   )
@@ -74,6 +78,10 @@ module Invent
                 when 'file'
                   item.property_values << build(
                     :property_value, item: item, property: prop, value: 'old_pc_config.txt'
+                  )
+                when 'date', 'date_month'
+                  item.property_values << build(
+                    :property_value, item: item, property: prop, value: Time.zone.now
                   )
                 end
               end

@@ -1,0 +1,24 @@
+script type="text/ng-template" id="statisticsUps.slim"
+  .modal-header
+    .pull-left
+      h4 Статистика по батареям ИБП КВРМ
+    .pull-right
+      .icon-block
+        = render partial: 'templates/load_spinner'
+      .icon-block
+        = fa_icon "refresh 2x fw", class: "pointer", "tooltip-placement": "left", "uib-tooltip": "Обновить данные",
+          "ng-click": "stat.reloadData()"
+  .modal-body
+    table.table.table-striped.table-condensed
+      thead
+        tr
+          th.col-sm-12 Наименование
+          th.col-sm-6 Общее кол-во
+          th.col-sm-6 На замену
+      tbody
+        tr ng-repeat="battery in stat.data"
+          td ng-bind="battery.description"
+          td ng-bind="battery.total_count"
+          td ng-bind="battery.to_replace_count"
+  .modal-footer
+    = button_tag "Закрыть", type: :button, class: "btn-default", "ng-click": "stat.close()"

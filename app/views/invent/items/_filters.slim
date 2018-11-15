@@ -64,10 +64,8 @@
         class: "btn-default btn-sm btn-block", "uib-tooltip": "Поиск строго по заданному значению",
         "ng-click": "table.selected.properties[$index].exact = !table.selected.properties[$index].exact; table.changeFilter()",
         "tooltip-append-to-body": "true", "ng-disabled": "!table.isAllowExactFilter($index)" do
-        = fa_icon "toggle-off lg", "ng-if": "!table.selected.properties[$index].exact",
-          class: "text-danger"
-        = fa_icon "toggle-on lg", "ng-if": "table.selected.properties[$index].exact",
-          class: "text-success"
+        = fa_icon "toggle-off lg", "ng-if": "!table.selected.properties[$index].exact", class: "text-danger"
+        = fa_icon "toggle-on lg", "ng-if": "table.selected.properties[$index].exact", class: "text-success"
     .col-sm-5.col-md-5.col-lg-5.col-xlg-5.col-fhd-4
       .btn-group.btn-group-justified.btn-group-sm
         .btn-group.btn-group-sm
@@ -97,7 +95,7 @@
 .col-sm-5.col-md-5.col-lg-4.col-xlg-4.col-fhd-3.multiline-buffer
   = text_field_tag "", "", class: "form-control input-sm", placeholder: "ФИО ответственного",
     "ng-model": "table.selected.responsible", "ng-model-options": "{ debounce: 500 }", "ng-change": "table.changeFilter()"
-.col-sm-5.col-md-4.col-xlg-3.multiline-buffer
+.col-sm-5.col-md-5.col-xlg-3.multiline-buffer
   .input-group.input-group-sm.form-input-sm.multiline-select
     ui-select ng-model="table.selected.building" on-select="table.changeFilter(); table.loadRooms()" theme="bootstrap"
       ui-select-match placeholder="Корпус"
@@ -108,7 +106,7 @@
       = button_tag type: :button, class: "btn-default", "ng-click": "table.selected.building = ''; table.selected.room = ''; table.changeFilter(); table.clearRooms()",
         "uib-tooltip": "Очистить", "tooltip-append-to-body": true, "ng-disabled": "!table.selected.building" do
         = fa_icon "times"
-.col-sm-5.col-md-4.col-xlg-3.multiline-buffer
+.col-sm-5.col-md-5.col-xlg-3.multiline-buffer
   .input-group.input-group-sm.form-input-sm.multiline-select
     ui-select ng-model="table.selected.room" on-select="table.changeFilter()" theme="bootstrap"
       ui-select-match placeholder="Комната"
@@ -122,3 +120,5 @@
 .col-sm-5.col-md-5.col-lg-3.col-xlg-3.col-fhd-3.multiline-buffer
   = select_tag "", "", class: "form-control input-sm", "ng-model": "table.selected.priority", "ng-change": "table.changeFilter()",
     "ng-options": "priority as translated for (priority, translated) in table.filters.priorities"
+.col-sm-5.col-md-5.col-lg-3.col-xlg-2.col-fhd-2.multiline-buffer
+  = button_tag "Батареи", type: :button, class: "btn btn-default btn-sm btn-block", "ng-click": "table.getBatteryStat()"
