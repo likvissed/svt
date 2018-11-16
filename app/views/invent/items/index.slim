@@ -39,8 +39,8 @@
                 td.col-sm-2 ng-bind-html="item.label_status"
                 td.col-sm-9 ng-bind-html="item.description"
                 td.text-center
-                  = fa_icon "trash-o fw", class: "text-danger pointer", "uib-tooltip": "Удалить технику",
-                    "tooltip-append-to-body": true, "ng-click": "table.destroyItem(item)"
+                  = fa_icon "trash-o fw", class: "text-danger pointer", id: "destroyItem",
+                    "uib-tooltip": "Удалить технику", "tooltip-append-to-body": true
       .row
         .col-xs-12
           div.animate-show ng-table-info="" info-attrs="table.pagination" ng-if="table.items"

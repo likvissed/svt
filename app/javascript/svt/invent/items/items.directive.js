@@ -21,6 +21,7 @@ import { app } from '../../app/app';
       }
 
       element.find('#editItem').attr("ng-click", "table.editItem(item)");
+      element.find('#destroyItem').attr("ng-click", "table.destroyItem(item)");
       $compile(element)(scope);
     }
   }

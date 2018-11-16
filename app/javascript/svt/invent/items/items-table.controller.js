@@ -104,7 +104,7 @@ import { app } from '../../app/app';
 
     if (!confirm(confirm_str)) { return false; }
 
-    this.Server.Invent.Items.delete(
+    this.Server.Invent.Item.delete(
       { item_id: item.item_id },
       (response) => {
         this.Flash.notice(response.full_message);
