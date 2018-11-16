@@ -53,7 +53,7 @@ module Warehouse
             Invent::Item.transaction(requires_new: true) do
               warehouse_item_in(@item)
               save_order(@order)
-              @order.operations.each { |op| op.inv_items.each { |inv_item| inv_item.update!(status: :in_stock, workplace: nil) } }
+              @order.operations.each { |op| op.inv_items.each { |inv_item| inv_item.to_stock! } }
             end
           end
         end

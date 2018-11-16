@@ -137,6 +137,23 @@ module Invent
       end
     end
 
+    describe '#to_stock!' do
+      subject { create(:item, :with_property_values, type_name: :ups, workplace_id: 123, status: :in_workplace, priority: :high) }
+      before { subject.to_stock! }
+
+      it 'sets nil to the workplace_id attribute' do
+        expect(subject.workplace).to be_nil
+      end
+
+      it 'sets :in_stock to the status attribute' do
+        expect(subject.status).to eq 'in_stock'
+      end
+
+      it 'sets :default to the priority attribute' do
+        expect(subject.priority).to eq 'default'
+      end
+    end
+
     describe '#get_item_model' do
       context 'when type is :pc' do
         let(:item_model) do

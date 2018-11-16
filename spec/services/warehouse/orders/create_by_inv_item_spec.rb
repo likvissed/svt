@@ -7,6 +7,7 @@ module Warehouse
       let!(:workplace) { create(:workplace_pk, :add_items, items: %i[pc monitor]) }
       let(:item) { workplace.items.first }
       subject { CreateByInvItem.new(current_user, item) }
+      before { Invent::Item.update_all(priority: :high) }
 
       its(:run) { is_expected.to be_truthy }
 
@@ -53,31 +54,16 @@ module Warehouse
         subject.run
 
         Order.all.includes(operations: :item).each do |o|
-          o.operations.each do |op|
-            expect(op.item.count).to eq 1
-          end
+          o.operations.each { |op| expect(op.item.count).to eq 1 }
         end
       end
 
-      it 'sets count_reserved of items to 0' do
+      it 'runs :to_stock! method' do
+        expect_any_instance_of(Invent::Item).to receive(:to_stock!)
         subject.run
-
-        Order.all.includes(operations: :item).each do |o|
-          o.operations.each do |op|
-            expect(op.item.count_reserved).to eq 0
-          end
-        end
       end
 
-      it 'sets nil to workplace_id attribute of ivnent_item' do
-        subject.run
-
-        Order.all.includes(:inv_items).each do |o|
-          o.inv_items.each { |i| expect(i.workplace).to be_nil }
-        end
-      end
-
-      it 'sets a :in_workplace status to each inv_item' do
+      it 'sets :default priority to each item' do
         subject.run
 
         Order.all.includes(:inv_items).each do |o|

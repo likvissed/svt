@@ -128,10 +128,17 @@ module Invent
       where(type_id: type_id)
     end
 
+    # Изменить параметры для отправки техники на склад.
+    def to_stock!
+      update_attributes!(status: :in_stock, workplace: nil, priority: :default)
+    end
+
+    # Проверка, существует ли техника
     def model_exists?
       model || item_model.present?
     end
 
+    # Получить модель техники в виде строки (для СБ вывести его конфигурацию).
     def get_item_model
       if Type::TYPE_WITH_FILES.include?(type.name)
         @@props ||= Property.where(name: Property::FILE_DEPENDING)
@@ -144,10 +151,12 @@ module Invent
       end
     end
 
+    # Получить модель техники (только то, что указано в поле item_model или таблице models).
     def short_item_model
       model.try(:item_model) || item_model
     end
 
+    # Получить значение свойства.
     def get_value(property)
       res = []
 
@@ -172,6 +181,7 @@ module Invent
       end
     end
 
+    # Сгенерировать массив объектов значений свойств.
     def build_property_values(skip_validations = false)
       return unless type
 
@@ -187,7 +197,7 @@ module Invent
       end
     end
 
-    # Проверяет необходимость замены батарей для ИБП
+    # Проверяет необходимость замены батарей для ИБП.
     def need_battery_replacement?
       return false if type.name != 'ups' || priority != 'high'
 

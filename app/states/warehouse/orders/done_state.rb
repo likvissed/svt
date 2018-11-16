@@ -9,7 +9,7 @@ module Warehouse
       end
 
       def update_inv_items(order)
-        order.operations.each { |op| op.inv_items.each { |inv_item| inv_item.update!(status: :in_stock, workplace: nil) } }
+        order.operations.each { |op| op.inv_items.each { |inv_item| inv_item.to_stock! } }
       end
 
       def init_warehouse_item(operation)

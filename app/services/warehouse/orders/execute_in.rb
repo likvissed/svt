@@ -96,7 +96,7 @@ module Warehouse
             next unless @item_ids.include?(op.item_id)
 
             op.item.save!
-            op&.item&.inv_item&.update_attributes!(workplace: nil, status: :in_stock)
+            op.inv_items.first.to_stock!
           end
         end
       end
