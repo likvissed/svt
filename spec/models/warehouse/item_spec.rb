@@ -249,6 +249,16 @@ module Warehouse
             Warehouse::Orders::CreateOut.new(create(:***REMOVED***_user), order_params).run
           end
 
+          context 'and when :allow_update_model_or_type is true' do
+            before { new_item.allow_update_model_or_type = true }
+
+            it 'allows to change types and models attributes' do
+              subject.update(item_type: 'NEW PC', item_model: 'NEW MODEL')
+              expect(subject.reload.item_type).to eq 'NEW PC'
+              expect(subject.reload.item_model).to eq 'NEW MODEL'
+            end
+          end
+
           context 'and when invent_type_id was changed' do
             it 'does not update item' do
               subject.update(invent_type_id: 123)

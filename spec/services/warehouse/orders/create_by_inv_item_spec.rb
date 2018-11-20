@@ -80,6 +80,18 @@ module Warehouse
         expect(subject).to receive(:broadcast_archive_orders)
         subject.run
       end
+
+      context 'when warehouse_item already exist (with another model)' do
+        let!(:w_item) { create(:used_item, count: 1, inv_item: item, item_model: '12345') }
+        let(:operation) { attributes_for(:order_operation, item_id: w_item.id, shift: -1) }
+        before do
+          order_params = attributes_for(:order, operation: :out, invent_workplace_id: workplace.workplace_id)
+          order_params[:operations_attributes] = [operation]
+          Warehouse::Orders::CreateOut.new(create(:***REMOVED***_user), order_params).run
+        end
+
+        its(:run) { is_expected.to be_truthy }
+      end
     end
   end
 end

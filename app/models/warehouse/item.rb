@@ -22,7 +22,7 @@ module Warehouse
     after_initialize :set_initial_count, if: -> { new_record? }
     before_validation :set_string_values
     before_destroy :prevent_destroy, prepend: true
-    before_update :prevent_update, if: -> { warehouse_type.to_s == 'with_invent_num' }, prepend: true
+    before_update :prevent_update, if: -> { warehouse_type.to_s == 'with_invent_num' && !allow_update_model_or_type }, prepend: true
 
     scope :show_only_presence, ->(_attr = nil) { where('count > count_reserved') }
     scope :used, ->(used) { where('used = ?', used.to_s == 'true') }
@@ -36,7 +36,9 @@ module Warehouse
 
     enum warehouse_type: { without_invent_num: 1, with_invent_num: 2 }
 
-    attr_accessor :was_created
+    # was_created - ставится, если техника была создана (используется внутри сервиса Warehouse::Orders::BaseService).
+    # allow_update_model_or_type - разрешает обновить технику на складе, даже если модели или тип ихменились.
+    attr_accessor :was_created, :allow_update_model_or_type
 
     def order_operations
       operations.where(operationable_type: 'Warehouse::Order')
@@ -94,8 +96,10 @@ module Warehouse
 
     def compare_invent_nums_with_reserved
       return unless invent_num_end
+
       nums = inv_items.pluck(:invent_num)
       return unless nums.any? { |num| !num.to_i.zero? && !num.to_i.between?(invent_num_start, invent_num_end) }
+
       errors.add(:base, :invent_num_pool_is_too_small, model: item_model)
     end
 

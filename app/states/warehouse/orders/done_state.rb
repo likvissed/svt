@@ -29,7 +29,7 @@ module Warehouse
       end
 
       def update_warehouse_item(w_item, inv_item)
-        w_item.update!(item_model: inv_item.get_item_model, count: 1, count_reserved: 0)
+        w_item.update!(item_model: inv_item.get_item_model, count: 1, count_reserved: 0, allow_update_model_or_type: true)
       end
 
       def broadcast_orders
