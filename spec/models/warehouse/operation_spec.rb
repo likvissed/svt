@@ -58,8 +58,8 @@ module Warehouse
 
       context 'when :warehouse_type attribute of item has :with_invent_num value' do
         context 'and when inv_item exists' do
-          let!(:workplace_1) { create(:workplace_pk, :add_items, items: [:pc, :monitor]) }
-          let!(:workplace_2) { create(:workplace_pk, :add_items, items: [:pc, :monitor]) }
+          let!(:workplace_1) { create(:workplace_pk, :add_items, items: %i[pc monitor]) }
+          let!(:workplace_2) { create(:workplace_pk, :add_items, items: %i[pc monitor]) }
           let!(:item) { create(:used_item, inv_item: workplace_1.items.first) }
 
           it 'change inv_item params' do
@@ -73,7 +73,7 @@ module Warehouse
         end
 
         context 'and when inv_item is not exist' do
-          let(:workplace) { create(:workplace_pk, :add_items, items: [:pc, :monitor]) }
+          let(:workplace) { create(:workplace_pk, :add_items, items: %i[pc monitor]) }
           let(:type) { Invent::Type.find_by(name: :monitor) }
           let(:item) { create(:new_item, inv_type: type, inv_model: type.models.first, count: 2, invent_num_end: 112) }
           before { subject.build_inv_items(subject.shift.abs, workplace: workplace) }
@@ -187,14 +187,14 @@ module Warehouse
     end
 
     describe '#calculate_item_invent_num_end' do
-      let!(:item) { build(:new_item, warehouse_type: :with_invent_num, count: 0, invent_num_start: 765100) }
+      let!(:item) { build(:new_item, warehouse_type: :with_invent_num, count: 0, invent_num_start: 765_100) }
 
       context 'when operation is a new record' do
         subject { build(:supply_operation, item: item, shift: 25) }
 
         it 'calculate :invent_num_end attribute' do
           subject.calculate_item_invent_num_end
-          expect(item.invent_num_end).to eq 765124
+          expect(item.invent_num_end).to eq 765_124
         end
       end
 
@@ -206,7 +206,7 @@ module Warehouse
 
           it 'reduced :invent_num_end attribute' do
             subject.calculate_item_invent_num_end
-            expect(item.invent_num_end).to eq 765100
+            expect(item.invent_num_end).to eq 765_100
           end
         end
 
@@ -215,7 +215,7 @@ module Warehouse
 
           it 'reduced :invent_num_end attribute' do
             subject.calculate_item_invent_num_end
-            expect(item.invent_num_end).to eq 765105
+            expect(item.invent_num_end).to eq 765_105
           end
         end
 
@@ -224,7 +224,7 @@ module Warehouse
 
           it 'increased :invent_num_end attribute' do
             subject.calculate_item_invent_num_end
-            expect(item.invent_num_end).to eq 765101
+            expect(item.invent_num_end).to eq 765_101
           end
         end
       end
@@ -336,14 +336,15 @@ module Warehouse
     end
 
     describe '#set_date' do
-      let(:date) { DateTime.now }
-      before { allow(DateTime).to receive(:new).and_return(date) }
+      let!(:date) { Time.zone.now }
+      before { allow(Time).to receive(:now).and_return(date) }
 
       context 'when status is :done' do
         subject { build(:order_operation, status: :done) }
 
         it 'sets current date to the :date attribute' do
           subject.save
+
           expect(subject.date.utc.to_s).to eq date.utc.to_s
         end
       end
@@ -353,6 +354,7 @@ module Warehouse
 
         it 'sets current date to the :date attribute' do
           subject.save
+
           expect(subject.date).to be_nil
         end
       end

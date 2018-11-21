@@ -6,6 +6,7 @@ module Invent
 
     def self.by_type_id(type_id)
       return all if type_id.to_i.zero?
+
       where(type_id: type_id)
     end
   end

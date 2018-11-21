@@ -90,17 +90,17 @@ module Invent
   end
 
   shared_examples 'workplace policy for another roles' do
-    ['manager', 'worker'].each do |user|
+    %w[manager worker].each do |user|
       context "with #{user} role" do
         it 'grants access to the workplace' do
-          expect(subject).to permit(send(user), Workplace.new())
+          expect(subject).to permit(send(user), Workplace.new)
         end
       end
     end
 
     context 'with read_only role' do
       it 'denies access to the workplace' do
-        expect(subject).not_to permit(read_only, Workplace.new())
+        expect(subject).not_to permit(read_only, Workplace.new)
       end
     end
   end

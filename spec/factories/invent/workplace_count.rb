@@ -1,7 +1,7 @@
 module Invent
   FactoryBot.define do
     factory :workplace_count, class: WorkplaceCount do
-      division { |i| users.empty? ? ***REMOVED*** : users.first.division }
+      division { users.empty? ? ***REMOVED*** : users.first.division }
       users []
 
       trait :default_user do

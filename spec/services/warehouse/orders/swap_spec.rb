@@ -11,15 +11,15 @@ module Warehouse
       subject { Swap.new(current_user, workplace_1.workplace_id, swap_items) }
 
       it 'creates warehouse_operations records' do
-        expect { subject.run }.to change(Operation, :count).by(swap_items.size*2)
+        expect { subject.run }.to change(Operation, :count).by(swap_items.size * 2)
       end
 
       it 'creates warehouse_item_to_orders records' do
-        expect { subject.run }.to change(InvItemToOperation, :count).by(swap_items.size*2)
+        expect { subject.run }.to change(InvItemToOperation, :count).by(swap_items.size * 2)
       end
 
       it 'creates as many warehouse_orders as the number of workplaces is specified' do
-        expect { subject.run }.to change(Order, :count).by(2*2)
+        expect { subject.run }.to change(Order, :count).by(2 * 2)
       end
 
       it 'sets :done to the each operation attribute' do
@@ -98,7 +98,7 @@ module Warehouse
         # end
 
         it 'creates as many warehouse_orders as the number of workplaces is specified' do
-          expect { subject.run }.to change(Order, :count).by(2*2)
+          expect { subject.run }.to change(Order, :count).by(2 * 2)
         end
 
         it 'does not change :workplace attribute of selected items' do

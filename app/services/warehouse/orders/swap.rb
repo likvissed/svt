@@ -66,7 +66,7 @@ module Warehouse
             shift: 1,
             status: :done,
             item_type: inv_item.type.short_description,
-            item_model: inv_item.get_item_model
+            item_model: inv_item.full_item_model
           )
           op.set_stockman(current_user)
           op.inv_item_ids = [inv_item.item_id]
@@ -111,7 +111,7 @@ module Warehouse
             shift: -1,
             status: :done,
             item_type: inv_item.type.short_description,
-            item_model: inv_item.get_item_model
+            item_model: inv_item.full_item_model
           )
           op.set_stockman(current_user)
           op.inv_item_ids = [inv_item.item_id]

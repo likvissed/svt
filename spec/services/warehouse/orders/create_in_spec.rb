@@ -20,7 +20,7 @@ module Warehouse
         order
       end
       let(:op_with_inv) { order_params[:operations_attributes].select { |attr| attr[:inv_item_ids] } }
-      let(:op_without_inv) { order_params[:operations_attributes].reject { |attr| !attr[:inv_item_ids] } }
+      let(:op_without_inv) { order_params[:operations_attributes].select { |attr| attr[:inv_item_ids] } }
       let(:invent_item_ids) { order_params[:operations_attributes].map { |op| op[:inv_item_ids] }.flatten.compact }
       subject { CreateIn.new(current_user, order_params.as_json) }
 

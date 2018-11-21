@@ -17,7 +17,7 @@ module Invent
 
           prop_val.delete('property_list')
         end
-        data.delete('get_item_model')
+        data.delete('full_item_model')
 
         data.as_json
       end
@@ -45,7 +45,7 @@ module Invent
 
       context 'with invalid item params' do
         its(:run) { is_expected.to be_falsey }
-        before { allow_any_instance_of(Item).to receive(:update_attributes).and_return(false) }
+        before { allow_any_instance_of(Item).to receive(:update).and_return(false) }
 
         it 'does not update item data' do
           subject.run

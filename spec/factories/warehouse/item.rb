@@ -8,7 +8,7 @@ module Warehouse
       invent_num_start 111
       invent_num_end 111
 
-      after(:build) do |item, ev|
+      after(:build) do |item, _ev|
         item.item_type = item.inv_type.short_description if item.inv_type
         item.item_model = item.inv_model.item_model if item.inv_model
 

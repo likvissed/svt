@@ -41,7 +41,7 @@ import { app } from '../../app/app';
           op.inv_items = [item];
           op.inv_item_ids = [item.item_id];
           op.item_type = item.type.short_description;
-          op.item_model = item.get_item_model;
+          op.item_model = item.full_item_model;
         } else {
           op.item_type = item.item_type;
           op.item_model = item.item_model;

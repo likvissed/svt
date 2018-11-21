@@ -12,9 +12,9 @@ module Invent
         expect(subject.data[:item]['id']). to eq item.item_id
       end
 
-      it 'fills the item at least with %w[id property_values_attributes get_item_model invent_num] keys' do
+      it 'fills the item at least with %w[id property_values_attributes full_item_model invent_num] keys' do
         subject.run
-        expect(subject.data[:item]).to include('id', 'property_values_attributes', 'get_item_model', 'invent_num')
+        expect(subject.data[:item]).to include('id', 'property_values_attributes', 'full_item_model', 'invent_num')
       end
 
       it 'fills each property_values_attribute at least with %w[id value property_list] key' do

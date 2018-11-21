@@ -130,7 +130,7 @@ module Invent
 
     # Изменить параметры для отправки техники на склад.
     def to_stock!
-      update_attributes!(status: :in_stock, workplace: nil, priority: :default)
+      update!(status: :in_stock, workplace: nil, priority: :default)
     end
 
     # Проверка, существует ли техника
@@ -139,7 +139,7 @@ module Invent
     end
 
     # Получить модель техники в виде строки (для СБ вывести его конфигурацию).
-    def get_item_model
+    def full_item_model
       if Type::TYPE_WITH_FILES.include?(type.name)
         @@props ||= Property.where(name: Property::FILE_DEPENDING)
         attrs = property_values.select { |prop_val| @@props.map(&:property_id).include?(prop_val.property_id) }.map(&:value).reject(&:blank?).join(' / ')

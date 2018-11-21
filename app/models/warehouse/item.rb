@@ -68,7 +68,7 @@ module Warehouse
 
     def set_string_values
       self.item_type ||= inv_type.short_description if inv_type
-      self.item_model ||= inv_item.try(:get_item_model) || inv_model.try(:item_model) if inv_item || inv_model
+      self.item_model ||= inv_item.try(:full_item_model) || inv_model.try(:item_model) if inv_item || inv_model
     end
 
     def max_count
@@ -105,11 +105,10 @@ module Warehouse
 
     def prevent_update
       return if orders.empty?
+      return unless invent_type_id_changed? || item_type_changed? || invent_model_id_changed? || item_model_changed?
 
-      if invent_type_id_changed? || item_type_changed? || invent_model_id_changed? || item_model_changed?
-        errors.add(:base, :cannot_update_with_orders)
-        throw(:abort)
-      end
+      errors.add(:base, :cannot_update_with_orders)
+      throw(:abort)
     end
   end
 end

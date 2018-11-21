@@ -50,7 +50,7 @@ module Warehouse
                 :item,
                 inv_items: {
                   include: %i[model type],
-                  methods: :get_item_model
+                  methods: :full_item_model
                 }
               ]
             }

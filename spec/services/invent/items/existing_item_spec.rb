@@ -22,7 +22,7 @@ module Invent
         end
 
         it 'sets item_model to the :model key' do
-          expect(subject.data[:model]).to eq item.get_item_model
+          expect(subject.data[:model]).to eq item.full_item_model
         end
       end
 

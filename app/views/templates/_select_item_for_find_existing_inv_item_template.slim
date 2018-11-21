@@ -5,4 +5,4 @@
       | {{ $select.selected.main_info }}
     ui-select-choices repeat="obj in find.items | filter: $select.search"
       div ng-bind-html="obj.main_info | highlight: $select.search"
-      small ng-bind-html="obj.get_item_model | highlight: $select.search"
+      small ng-bind-html="obj.full_item_model | highlight: $select.search"

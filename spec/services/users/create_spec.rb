@@ -3,7 +3,7 @@ require 'feature_helper'
 module Users
   RSpec.describe Create, type: :model do
     let!(:role) { create(:admin_role) }
-    let(:user_params) { model = attributes_for(:user, role_id: role.id) }
+    let(:user_params) { attributes_for(:user, role_id: role.id) }
     subject { Create.new(user_params.as_json) }
 
     its(:run) { is_expected.to be_truthy }

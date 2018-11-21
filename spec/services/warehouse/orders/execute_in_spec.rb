@@ -92,7 +92,7 @@ module Warehouse
         end
 
         context 'and when invent_item was not updated' do
-          before { allow_any_instance_of(Invent::Item).to receive(:update_attributes!).and_raise(ActiveRecord::RecordNotSaved) }
+          before { allow_any_instance_of(Invent::Item).to receive(:update!).and_raise(ActiveRecord::RecordNotSaved) }
 
           it 'does not save all another records' do
             subject.run

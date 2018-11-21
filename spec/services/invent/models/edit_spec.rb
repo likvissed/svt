@@ -6,7 +6,7 @@ module Invent
       let(:type) { :monitor }
       let(:properties) { Type.find_by(name: type).properties.includes(:property_lists) }
       let(:attributes) do
-        properties.map.each_with_index do |prop, index|
+        properties.map do |prop|
           {
             property_id: prop.property_id,
             property_list_id: prop.property_lists.first.property_list_id
