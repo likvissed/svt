@@ -6,17 +6,17 @@ class HostIss < Netadmin
   alias_attribute :invent_num, :id
 
   def self.by_invent_num(invent_num)
-    sql = "SELECT * FROM hosts WHERE id = ?;"
+    sql = 'SELECT * FROM hosts WHERE id = ?;'
     connection.select_all(
       send(:sanitize_sql_array, [sql, invent_num])
     ).to_hash.first
   end
 
   def klass
-    read_attribute(:class)
+    self[:class]
   end
 
   def klass=(val)
-    write_attribute(:class, val)
+    self[:class] = val
   end
 end

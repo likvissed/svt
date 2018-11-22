@@ -33,8 +33,8 @@ module Invent
       items = Invent::Item.where('invent_item.invent_num LIKE ?', "%#{invent_num}%").limit(RECORD_LIMIT)
       where(items: items.pluck(:workplace_id))
     end
-    scope :location_building_id, -> (building_id) { where(location_building_id: building_id) }
-    scope :location_room_id, -> (room_id) { where(location_room_id: room_id) }
+    scope :location_building_id, ->(building_id) { where(location_building_id: building_id) }
+    scope :location_room_id, ->(room_id) { where(location_room_id: room_id) }
 
     # Для тестов (от имени пользователя заполняется поле "Комната")
     attr_accessor :location_room_name, :division
@@ -142,18 +142,10 @@ module Invent
         errors.add(:base, :wrong_rm_pk_composition)
       end
 
-      if (count_all_types['pc'] + count_all_types['allin1']) > 1
-        errors.add(:base, :rm_pk_only_one_pc_or_allin1)
-      end
-      if (count_all_types['pc'] + count_all_types['allin1']).zero?
-        errors.add(:base, :rm_pk_at_least_one_pc_or_allin1)
-      end
-      if (count_all_types['notebook'] + count_all_types['tablet']) >= 1
-        errors.add(:base, :rm_pk_forbid_notebook_and_tablet)
-      end
-      if count_all_types['monitor'].zero? && count_all_types['allin1'].zero?
-        errors.add(:base, :rm_pk_at_least_one_monitor)
-      end
+      errors.add(:base, :rm_pk_only_one_pc_or_allin1) if (count_all_types['pc'] + count_all_types['allin1']) > 1
+      errors.add(:base, :rm_pk_at_least_one_pc_or_allin1) if (count_all_types['pc'] + count_all_types['allin1']).zero?
+      errors.add(:base, :rm_pk_forbid_notebook_and_tablet) if (count_all_types['notebook'] + count_all_types['tablet']) >= 1
+      errors.add(:base, :rm_pk_at_least_one_monitor) if count_all_types['monitor'].zero? && count_all_types['allin1'].zero?
       errors.add(:base, :rm_pk_forbid_net_printer) if net_printer
     end
 
@@ -167,15 +159,9 @@ module Invent
         errors.add(:base, :wrong_rm_mob_composition)
       end
 
-      if (count_all_types['notebook'] + count_all_types['tablet']).zero?
-        errors.add(:base, :at_least_one_notebook_or_tablet)
-      end
-      if total_count != 0 && total_count != (count_all_types['notebook'] + count_all_types['tablet'])
-        errors.add(:base, :only_notebook_or_tablet)
-      end
-      if total_count > 1 && (count_all_types['notebook'] + count_all_types['tablet']) == total_count
-        errors.add(:base, :only_one_notebook_or_tablet)
-      end
+      errors.add(:base, :at_least_one_notebook_or_tablet) if (count_all_types['notebook'] + count_all_types['tablet']).zero?
+      errors.add(:base, :only_notebook_or_tablet) if total_count != 0 && total_count != (count_all_types['notebook'] + count_all_types['tablet'])
+      errors.add(:base, :only_one_notebook_or_tablet) if total_count > 1 && (count_all_types['notebook'] + count_all_types['tablet']) == total_count
     end
 
     # Для РМ печати.
@@ -204,9 +190,7 @@ module Invent
         errors.add(:base, :wrong_rm_net_print_composition)
       end
 
-      if (counter[:net] + count_all_types['3d_printer'] + count_all_types['print_server']).zero?
-        errors.add(:base, :at_least_one_print)
-      end
+      errors.add(:base, :at_least_one_print) if (counter[:net] + count_all_types['3d_printer'] + count_all_types['print_server']).zero?
 
       if counter[:net] > 1
         errors.add(:base, :only_one_net_print)
@@ -241,15 +225,9 @@ module Invent
         errors.add(:base, :wrong_rm_server_composition)
       end
 
-      if (count_all_types['pc'] + count_all_types['allin1']) > 1
-        errors.add(:base, :rm_server_only_one_pc_or_allin1)
-      end
-      if (count_all_types['notebook'] + count_all_types['tablet']) >= 1
-        errors.add(:base, :rm_server_forbid_notebook_and_tablet)
-      end
-      if count_all_types['pc'].zero? && count_all_types['allin1'].zero?
-        errors.add(:base, :rm_server_at_least_one_pc_or_allin1)
-      end
+      errors.add(:base, :rm_server_only_one_pc_or_allin1) if (count_all_types['pc'] + count_all_types['allin1']) > 1
+      errors.add(:base, :rm_server_forbid_notebook_and_tablet) if (count_all_types['notebook'] + count_all_types['tablet']) >= 1
+      errors.add(:base, :rm_server_at_least_one_pc_or_allin1) if count_all_types['pc'].zero? && count_all_types['allin1'].zero?
       errors.add(:base, :rm_server_forbid_net_printer) if net_printer
     end
 

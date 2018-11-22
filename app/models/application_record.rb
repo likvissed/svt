@@ -9,6 +9,6 @@ class ApplicationRecord < ActiveRecord::Base
   # type - имя переводимого поля (в ед. числе)
   # key - переводимое значение
   def self.translate_enum(type, key)
-    status = I18n.t("activerecord.attributes.#{model_name.i18n_key}.#{type.to_s.pluralize}.#{key}")
+    I18n.t("activerecord.attributes.#{model_name.i18n_key}.#{type.to_s.pluralize}.#{key}")
   end
 end

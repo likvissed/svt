@@ -433,7 +433,7 @@ module Warehouse
           end
 
           context 'and when Invent::Item is not destroyed' do
-            before { allow_any_instance_of(Invent::Item).to receive(:destroy!).and_raise(ActiveRecord::RecordNotDestroyed)  }
+            before { allow_any_instance_of(Invent::Item).to receive(:destroy!).and_raise(ActiveRecord::RecordNotDestroyed) }
 
             include_examples 'failed updating :out on del'
           end

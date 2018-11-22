@@ -5,7 +5,7 @@ class ApplicationService
 
   attr_reader :data, :current_user, :error, :params
 
-  def initialize(*args)
+  def initialize(*_args)
     @data = {}
     @error = {}
   end

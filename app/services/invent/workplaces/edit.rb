@@ -50,12 +50,14 @@ module Invent
       def load_workplace
         @edit_workplace = LkInvents::EditWorkplace.new(@current_user, @workplace_id)
         return data[:wp_data] = @edit_workplace.data if @edit_workplace.run
+
         raise 'LkInvents::EditWorkplace не отработал'
       end
 
       def load_properties
         properties = LkInvents::InitProperties.new(@current_user, @edit_workplace.workplace.division)
         return data[:prop_data] = properties.data if properties.run
+
         raise 'LkInvents::InitProperties не отработал'
       end
 

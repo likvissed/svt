@@ -23,7 +23,7 @@ RSpec.describe User, type: :model do
     end
 
     context 'when :tn is invalid' do
-      let(:tn) { ***REMOVED***123123 }
+      let(:tn) { ***REMOVED***_123_123 }
       let(:user_iss) { UserIss.find_by(tn: tn) }
       before { subject.tn = tn }
 

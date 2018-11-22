@@ -1,5 +1,5 @@
-
 require 'feature_helper'
+
 module Warehouse
   module Supplies
     RSpec.describe Update, type: :model do
@@ -200,7 +200,7 @@ module Warehouse
         let(:supply_params) do
           edit = Edit.new(user, supply.id)
           edit.run
-          edit.data[:supply]['operations_attributes'].find { |op| op['item']['warehouse_type'] == 'with_invent_num' }['item']['invent_num_start'] = 765100
+          edit.data[:supply]['operations_attributes'].find { |op| op['item']['warehouse_type'] == 'with_invent_num' }['item']['invent_num_start'] = 765_100
           edit.data[:supply].as_json
         end
         before do

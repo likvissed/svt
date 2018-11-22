@@ -36,6 +36,7 @@ module Invent
       hash_arr.each do |user_values|
         user_values = user_values.symbolize_keys
         return if user_values[:tn].blank?
+
         @user_iss = UserIss.find_by(tn: user_values[:tn])
         user_values[:phone] = '' if user_values[:phone].nil?
 

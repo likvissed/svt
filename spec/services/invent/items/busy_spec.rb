@@ -48,15 +48,15 @@ module Invent
         expect(subject.data[:items].first['item_id']).to eq item.item_id
       end
 
-      it 'adds :main_info and :get_item_model field to the each item' do
+      it 'adds :main_info and :full_item_model field to the each item' do
         subject.run
-        expect(subject.data[:items].first).to include(:main_info, 'get_item_model')
+        expect(subject.data[:items].first).to include(:main_info, 'full_item_model')
       end
 
       context 'when item does not belong to any operation' do
         it 'shows this item in result array' do
           subject.run
-          expect(subject.data[:items].first).to include({item_id: item.id}.as_json)
+          expect(subject.data[:items].first).to include({ item_id: item.id }.as_json)
         end
       end
 
@@ -89,7 +89,7 @@ module Invent
 
         it 'shows this item in result array' do
           subject.run
-          expect(subject.data[:items].first).to include({item_id: item.id}.as_json)
+          expect(subject.data[:items].first).to include({ item_id: item.id }.as_json)
         end
       end
     end

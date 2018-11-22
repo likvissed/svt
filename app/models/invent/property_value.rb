@@ -58,12 +58,8 @@ module Invent
       # 1 - если инв. № относится к исключениям и при этом свойство также относится к исключениям - false
       # 2 - если свойство обязательно - true
       common_condition = !(Property::PROP_MANDATORY_EXCEPT.include?(property.name) && @pc_exceptions.any? { |s| s.casecmp(item.invent_num).zero? }) && property.mandatory
-
       # Если тип техники не относится к исключениям (Type::PRESENCE_MODEL_EXCEPT), добавить еще одно условие
-      unless Type::PRESENCE_MODEL_EXCEPT.include?(item.type.name)
-        common_condition &&= item.model_exists?
-      end
-
+      common_condition &&= item.model_exists? unless Type::PRESENCE_MODEL_EXCEPT.include?(item.type.name)
       common_condition
     end
 

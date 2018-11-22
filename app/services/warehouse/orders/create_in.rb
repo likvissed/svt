@@ -54,6 +54,7 @@ module Warehouse
           # Выбор операций для текущего РМ из полученного массива операций
           order['operations_attributes'] = order['operations_attributes'].select do |op_attr|
             next unless op_attr['inv_item_ids']
+
             items.select { |i| i['workplace_id'] == item.workplace_id }.map(&:item_id).include?(op_attr['inv_item_ids'].first)
           end
           order

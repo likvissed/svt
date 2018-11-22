@@ -14,6 +14,7 @@ module Warehouse
         find_order
         search_inv_items
         return false unless validate_order
+
         prepare_params
 
         true

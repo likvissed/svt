@@ -84,10 +84,27 @@ module Warehouse
       context 'when warehouse_item already exist (with another model)' do
         let!(:w_item) { create(:used_item, count: 1, inv_item: item, item_model: '12345') }
         let(:operation) { attributes_for(:order_operation, item_id: w_item.id, shift: -1) }
+        let(:execute_order_params) do
+          edit = Edit.new(Order.last.id)
+          edit.run
+          edit.data[:order]['consumer_tn'] = current_user.tn
+          edit.data[:order]['operations_attributes'].each do |op|
+            op['status'] = 'done'
+
+            op.delete('item')
+            op.delete('inv_items')
+            op.delete('inv_item_ids')
+            op.delete('formatted_date')
+          end
+
+          edit.data[:order].delete('consumer_obj')
+          edit.data[:order]
+        end
         before do
           order_params = attributes_for(:order, operation: :out, invent_workplace_id: workplace.workplace_id)
           order_params[:operations_attributes] = [operation]
-          Warehouse::Orders::CreateOut.new(create(:***REMOVED***_user), order_params).run
+          CreateOut.new(create(:***REMOVED***_user), order_params).run
+          ExecuteOut.new(current_user, Order.last.id, execute_order_params.as_json).run
         end
 
         its(:run) { is_expected.to be_truthy }

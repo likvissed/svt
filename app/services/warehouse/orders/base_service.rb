@@ -32,10 +32,7 @@ module Warehouse
 
         @order.operations.select { |op| op.inv_item_ids.first == inv_item.item_id }.each do |op|
           op.item = item
-
-          if Invent::Type::TYPE_WITH_FILES.include?(op.item.inv_item.type.name)
-            op.item_model = op.item.inv_item.get_item_model
-          end
+          op.item_model = op.item.inv_item.full_item_model if Invent::Type::TYPE_WITH_FILES.include?(op.item.inv_item.type.name)
         end
       end
 

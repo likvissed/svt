@@ -4,6 +4,8 @@ module Warehouse
       def initialize(current_user, item)
         @current_user = current_user
         @item = item
+
+        super
       end
 
       def run
@@ -41,7 +43,7 @@ module Warehouse
           shift: 1,
           status: :done,
           item_type: @item.type.short_description,
-          item_model: @item.get_item_model
+          item_model: @item.full_item_model
         )
         op.set_stockman(current_user)
         op.inv_item_ids = [@item.item_id]
@@ -53,7 +55,7 @@ module Warehouse
             Invent::Item.transaction(requires_new: true) do
               warehouse_item_in(@item)
               save_order(@order)
-              @order.operations.each { |op| op.inv_items.each { |inv_item| inv_item.to_stock! } }
+              @order.operations.each { |op| op.inv_items.each(&:to_stock!) }
             end
           end
         end

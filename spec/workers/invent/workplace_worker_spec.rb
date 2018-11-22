@@ -2,14 +2,14 @@ require 'feature_helper'
 
 module Invent
   RSpec.describe WorkplaceWorker, type: :worker do
-    let!(:workplace) { create(:workplace_pk, :add_items, items: [:pc, :monitor], status: :confirmed) }
+    let!(:workplace) { create(:workplace_pk, :add_items, items: %i[pc monitor], status: :confirmed) }
 
     context 'when workplace does not have responsible user' do
       before { allow_any_instance_of(Workplace).to receive(:user_iss).and_return(nil) }
 
       %i[pending_verification disapproved freezed].each do |status|
         context "and when workplace has #{status} status" do
-          let!(:workplace) { create(:workplace_pk, :add_items, items: [:pc, :monitor], status: status) }
+          let!(:workplace) { create(:workplace_pk, :add_items, items: %i[pc monitor], status: status) }
 
           it 'does not change workplace status' do
             subject.perform

@@ -40,7 +40,7 @@ module Warehouse
     end
 
     def formatted_date
-      date.strftime('%d-%m-%Y') if date
+      date&.strftime('%d-%m-%Y')
     end
 
     def build_inv_items(count, **params)
@@ -73,11 +73,13 @@ module Warehouse
       elsif shift_changed?
         delta = shift_was - shift
         item.count_reserved += delta
+      elsif status_changed? && done?
+        item.count_reserved += shift
       end
     end
 
     def calculate_item_count
-      if new_record?
+      if new_record? || (status_changed? && done?)
         item.count += shift
       elsif marked_for_destruction?
         item.count -= shift

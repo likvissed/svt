@@ -158,8 +158,8 @@ module Warehouse
       context 'when all operations is done' do
         let(:operations) do
           [
-             build(:order_operation, status: :done, stockman_id_tn: user.id_tn),
-             build(:order_operation, status: :done, stockman_id_tn: user.id_tn)
+            build(:order_operation, status: :done, stockman_id_tn: user.id_tn),
+            build(:order_operation, status: :done, stockman_id_tn: user.id_tn)
           ]
         end
 
@@ -177,8 +177,8 @@ module Warehouse
       context 'when not all operations is done' do
         let(:operations) do
           [
-             build(:order_operation, status: :done, stockman_id_tn: user.id_tn),
-             build(:order_operation, status: :processing)
+            build(:order_operation, status: :done, stockman_id_tn: user.id_tn),
+            build(:order_operation, status: :processing)
           ]
         end
 
@@ -274,7 +274,7 @@ module Warehouse
 
     describe '#set_closed_time' do
       context 'when status is :done' do
-        let(:date) { DateTime.now }
+        let(:date) { Time.zone.now }
         before { allow(DateTime).to receive(:new).and_return(date) }
         subject { build(:order, status: :done) }
 
@@ -334,7 +334,7 @@ module Warehouse
         end
 
         context 'and when item without invent_num' do
-          subject { build(:order, inv_workplace: nil, consumer_tn: 12321, consumer_dept: nil) }
+          subject { build(:order, inv_workplace: nil, consumer_tn: 12_321, consumer_dept: nil) }
 
           it 'gets consumer_dept from UserIss' do
             subject.valid?

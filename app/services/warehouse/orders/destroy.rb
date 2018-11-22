@@ -34,7 +34,7 @@ module Warehouse
       protected
 
       def in_order
-        @order.inv_items.each { |inv_item| inv_item.update_attributes!(status: :in_workplace) }
+        @order.inv_items.each { |inv_item| inv_item.update!(status: :in_workplace) }
         destroy_order
       end
 
