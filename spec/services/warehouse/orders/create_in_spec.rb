@@ -20,7 +20,7 @@ module Warehouse
         order
       end
       let(:op_with_inv) { order_params[:operations_attributes].select { |attr| attr[:inv_item_ids] } }
-      let(:op_without_inv) { order_params[:operations_attributes].reject { |attr| !attr[:inv_item_ids] } }
+      let(:op_without_inv) { order_params[:operations_attributes].select { |attr| attr[:inv_item_ids] } }
       let(:invent_item_ids) { order_params[:operations_attributes].map { |op| op[:inv_item_ids] }.flatten.compact }
       subject { CreateIn.new(current_user, order_params.as_json) }
 
@@ -181,6 +181,7 @@ module Warehouse
           order
         end
         subject { CreateIn.new(current_user, order_params.as_json) }
+        before { Invent::Item.update_all(priority: :high) }
 
         its(:run) { is_expected.to be_truthy }
 
@@ -233,11 +234,12 @@ module Warehouse
           end
         end
 
-        it 'sets nil to the workplace and status attributes into the invent_item record' do
+        it 'sets nil to the workplace, :in_stock to the status and :default to the priority attributes into the invent_item record' do
           subject.run
           [inv_item_1.reload, inv_item_2.reload].each do |inv_item|
             expect(inv_item.workplace).to be_nil
             expect(inv_item.status).to eq 'in_stock'
+            expect(inv_item.priority).to eq 'default'
           end
         end
 

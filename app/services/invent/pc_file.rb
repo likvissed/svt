@@ -4,7 +4,7 @@ module Invent
 
     def initialize(property_value_id, uploaded_file = nil)
       # Основная директория
-      @default_dir = if Rails.env == 'test'
+      @default_dir = if Rails.env.test?
                        Rails.root.join('spec', 'uploads', 'invent')
                      else
                        Rails.root.join('public', 'uploads', 'invent')
@@ -17,8 +17,8 @@ module Invent
 
     def upload
       raise 'abort' if @file.nil?
-      Rails.logger.info 'Получен файл для загрузки на сервер'.red
 
+      Rails.logger.info 'Получен файл для загрузки на сервер'.red
       prepare_to_upload
       save_file
     rescue RuntimeError
@@ -27,9 +27,8 @@ module Invent
 
     def destroy
       Rails.logger.info "Удаление директории: #{@path_to_file_dir}".red
-
       FileUtils.rm_r(@path_to_file_dir) if File.exist?(@path_to_file_dir)
-      
+
       true
     rescue RuntimeError => e
       Rails.logger.error e.inspect.red

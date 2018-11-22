@@ -39,10 +39,10 @@ module Warehouse
         @supply_params[:operations_attributes].each do |op|
           item = op[:item]
           op[:item] = if item[:id]
-                          Item.find(item[:id])
-                        else
-                          find_or_generate_item(op)
-                        end
+                        Item.find(item[:id])
+                      else
+                        find_or_generate_item(op)
+                      end
 
           op[:item].used = false
           op[:item].assign_attributes(item)

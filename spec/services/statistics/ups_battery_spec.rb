@@ -10,15 +10,12 @@ module Invent
       let(:battery_type_val) { prop_lists.first }
       let(:ups) { create_list(:item, 5, :with_property_values, type_name: 'ups', priority: :high) }
       let(:battery_count_val) { '4' }
-      let(:total_count) { ups.inject(0) { |sum, _el| sum += battery_count_val.to_i } }
+      let(:total_count) { ups.inject(0) { |sum, _el| sum + battery_count_val.to_i } }
       let(:to_replace_count) { battery_count_val.to_i * 2 }
 
       before do
         ups.each_with_index do |u, index|
-          if [0, 1].include?(index)
-            u.property_values.find_by(property: battery_replacement_date).update(value: Time.zone.now - Item::LEVELS_BATTERY_REPLACEMENT[:critical].years)
-          end
-
+          u.property_values.find_by(property: battery_replacement_date).update(value: Time.zone.now - Item::LEVELS_BATTERY_REPLACEMENT[:critical].years) if [0, 1].include?(index)
           u.property_values.find_by(property: battery_type_prop).update(property_list: battery_type_val)
           u.property_values.find_by(property: battery_count_prop).update(value: battery_count_val)
         end

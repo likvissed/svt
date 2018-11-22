@@ -7,6 +7,7 @@ module Warehouse
       let!(:workplace) { create(:workplace_pk, :add_items, items: %i[pc monitor]) }
       let(:item) { workplace.items.first }
       subject { CreateByInvItem.new(current_user, item) }
+      before { Invent::Item.update_all(priority: :high) }
 
       its(:run) { is_expected.to be_truthy }
 
@@ -53,31 +54,16 @@ module Warehouse
         subject.run
 
         Order.all.includes(operations: :item).each do |o|
-          o.operations.each do |op|
-            expect(op.item.count).to eq 1
-          end
+          o.operations.each { |op| expect(op.item.count).to eq 1 }
         end
       end
 
-      it 'sets count_reserved of items to 0' do
+      it 'runs :to_stock! method' do
+        expect_any_instance_of(Invent::Item).to receive(:to_stock!)
         subject.run
-
-        Order.all.includes(operations: :item).each do |o|
-          o.operations.each do |op|
-            expect(op.item.count_reserved).to eq 0
-          end
-        end
       end
 
-      it 'sets nil to workplace_id attribute of ivnent_item' do
-        subject.run
-
-        Order.all.includes(:inv_items).each do |o|
-          o.inv_items.each { |i| expect(i.workplace).to be_nil }
-        end
-      end
-
-      it 'sets a :in_workplace status to each inv_item' do
+      it 'sets :default priority to each item' do
         subject.run
 
         Order.all.includes(:inv_items).each do |o|
@@ -93,6 +79,35 @@ module Warehouse
       it 'broadcasts to archive_orders' do
         expect(subject).to receive(:broadcast_archive_orders)
         subject.run
+      end
+
+      context 'when warehouse_item already exist (with another model)' do
+        let!(:w_item) { create(:used_item, count: 1, inv_item: item, item_model: '12345') }
+        let(:operation) { attributes_for(:order_operation, item_id: w_item.id, shift: -1) }
+        let(:execute_order_params) do
+          edit = Edit.new(Order.last.id)
+          edit.run
+          edit.data[:order]['consumer_tn'] = current_user.tn
+          edit.data[:order]['operations_attributes'].each do |op|
+            op['status'] = 'done'
+
+            op.delete('item')
+            op.delete('inv_items')
+            op.delete('inv_item_ids')
+            op.delete('formatted_date')
+          end
+
+          edit.data[:order].delete('consumer_obj')
+          edit.data[:order]
+        end
+        before do
+          order_params = attributes_for(:order, operation: :out, invent_workplace_id: workplace.workplace_id)
+          order_params[:operations_attributes] = [operation]
+          CreateOut.new(create(:***REMOVED***_user), order_params).run
+          ExecuteOut.new(current_user, Order.last.id, execute_order_params.as_json).run
+        end
+
+        its(:run) { is_expected.to be_truthy }
       end
     end
   end

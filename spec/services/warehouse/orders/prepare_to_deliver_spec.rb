@@ -30,7 +30,7 @@ module Warehouse
           build(:order_operation, item: first_item, inv_item_ids: [first_inv_item.item_id], shift: -1),
           build(:order_operation, item: sec_item, inv_item_ids: [sec_inv_item.item_id], shift: -1),
           build(:order_operation, item: third_item, shift: -1),
-          build(:order_operation, item: fourth_item, inv_item_ids: [fourth_inv_item.item_id, fifth_inv_item.item_id, sixth_inv_item.item_id], shift: -3),
+          build(:order_operation, item: fourth_item, inv_item_ids: [fourth_inv_item.item_id, fifth_inv_item.item_id, sixth_inv_item.item_id], shift: -3)
         ]
       end
       let!(:order) do

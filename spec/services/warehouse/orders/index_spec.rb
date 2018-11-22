@@ -5,7 +5,7 @@ module Warehouse
     RSpec.describe Index, type: :model do
       let!(:params) { { start: 0, length: 25 } }
 
-      [:in, :out].each do |op_type|
+      %i[in out].each do |op_type|
         context "when :operation attribute has :#{op_type} value" do
           let(:additional) { { operation: op_type, status: :processing } }
           let!(:orders) { create_list(:order, 30, operation: op_type) }

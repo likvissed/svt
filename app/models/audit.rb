@@ -23,6 +23,7 @@ class Audit < SMSServer
     raw_data = execute_procedure('ISS_Get_HW_invent_inf', pc_name, 'f')
     logger.info "Raw data: #{raw_data.inspect}".blue
     return nil if raw_data.empty?
+
     processing_pc_data(raw_data[0])
   end
 

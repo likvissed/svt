@@ -27,7 +27,7 @@ module Invent
         if item
           data[:exists] = true
           data[:type] = item.type.short_description
-          data[:model] = item.get_item_model
+          data[:model] = item.full_item_model
 
           load_connection_type(item)
         else

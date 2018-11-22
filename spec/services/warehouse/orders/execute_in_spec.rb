@@ -7,8 +7,8 @@ module Warehouse
       subject { ExecuteIn.new(current_user, order.id, order_params) }
 
       context 'when operations belongs_to item' do
-        let(:first_inv_item) { create(:item, :with_property_values, type_name: :pc, status: :waiting_bring) }
-        let(:sec_inv_item) { create(:item, :with_property_values, type_name: :monitor) }
+        let(:first_inv_item) { create(:item, :with_property_values, type_name: :pc, status: :waiting_bring, priority: :high) }
+        let(:sec_inv_item) { create(:item, :with_property_values, type_name: :monitor, priority: :high) }
         let(:workplace) do
           wp = build(:workplace_pk, items: [first_inv_item, sec_inv_item], dept: ***REMOVED***)
           wp.save(validate: false)
@@ -72,12 +72,18 @@ module Warehouse
           expect { subject.run }.to change { Item.first.count }.by(operations.first.shift)
         end
 
-        it 'sets nil to the workplace and :in_stock to the status attributes into the invent_item record' do
+        it 'runs :to_stock! method' do
+          expect_any_instance_of(Invent::Item).to receive(:to_stock!)
           subject.run
-
-          expect(first_inv_item.reload.workplace).to be_nil
-          expect(first_inv_item.reload.status).to eq 'in_stock'
         end
+
+        # it 'sets nil to the workplace, :in_stock to the status and :default to the priority attributes into the invent_item record' do
+        #   subject.run
+        #
+        #   expect(first_inv_item.reload.workplace).to be_nil
+        #   expect(first_inv_item.reload.status).to eq 'in_stock'
+        #   expect(first_inv_item.reload.priority).to eq 'default'
+        # end
 
         it 'does not set nil to the workplace into another invent_item records' do
           subject.run
@@ -86,7 +92,7 @@ module Warehouse
         end
 
         context 'and when invent_item was not updated' do
-          before { allow_any_instance_of(Invent::Item).to receive(:update_attributes!).and_raise(ActiveRecord::RecordNotSaved) }
+          before { allow_any_instance_of(Invent::Item).to receive(:update!).and_raise(ActiveRecord::RecordNotSaved) }
 
           it 'does not save all another records' do
             subject.run

@@ -152,7 +152,7 @@ module Warehouse
         context 'and when params[:start] is equal 0' do
           context 'and when items count of selected order more than params[:length] attribute' do
             30.times do |i|
-              let(:"operation_#{i}") { build(:order_operation, item: Item.last(i+1).first) }
+              let(:"operation_#{i}") { build(:order_operation, item: Item.last(i + 1).first) }
             end
             let(:order) { build(:order, operation: :out, without_operations: true) }
             before do
@@ -203,7 +203,7 @@ module Warehouse
         context 'and when params[:start] is not equal 0' do
           context 'and when items count of selected order more than params[:length] attribute' do
             30.times do |i|
-              let(:"operation_#{i}") { build(:order_operation, item: Item.last(i+1).first) }
+              let(:"operation_#{i}") { build(:order_operation, item: Item.last(i + 1).first) }
             end
             let(:order) { build(:order, operation: :out, without_operations: true) }
             before do

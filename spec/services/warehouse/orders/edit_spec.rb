@@ -27,8 +27,8 @@ module Warehouse
           expect(subject.data[:order]['operations_attributes'].first['inv_item_ids']).to eq order.inv_items.pluck(:invent_item_id)
         end
 
-        it 'adds get_item_model key' do
-          expect(subject.data[:order]['operations_attributes'].first['inv_items'].first['get_item_model']).to eq order.operations.first.item.item_model
+        it 'adds full_item_model key' do
+          expect(subject.data[:order]['operations_attributes'].first['inv_items'].first['full_item_model']).to eq order.operations.first.item.item_model
         end
 
         it 'loads type for each inv_item' do

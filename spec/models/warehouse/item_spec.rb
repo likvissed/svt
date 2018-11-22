@@ -17,7 +17,6 @@ module Warehouse
     it { is_expected.to validate_numericality_of(:count).is_greater_than_or_equal_to(0) }
     it { is_expected.to validate_numericality_of(:count_reserved).is_greater_than_or_equal_to(0) }
 
-
     context 'when warehouse_type is :with_invent_num' do
       subject { build(:new_item, count: 4, inv_type: Invent::Type.find_by(name: :pc), item_model: 'UNIT') }
 
@@ -62,7 +61,7 @@ module Warehouse
       subject { create(:new_item, count: 4, inv_type: Invent::Type.find_by(name: :pc), item_model: 'UNIT', invent_num_end: 114) }
 
       context 'when not all invent_nums is busy' do
-        before { allow(Invent::Item).to receive_message_chain(:pluck).and_return(['111', '113']) }
+        before { allow(Invent::Item).to receive_message_chain(:pluck).and_return(%w[111 113]) }
 
         it 'generates an invent_num excluding existing' do
           expect(subject.generate_invent_num).to eq 112
@@ -70,7 +69,7 @@ module Warehouse
       end
 
       context 'when all invent_nums is busy' do
-        before { allow(Invent::Item).to receive_message_chain(:pluck).and_return(['111', '112', '113', '114']) }
+        before { allow(Invent::Item).to receive_message_chain(:pluck).and_return(%w[111 112 113 114]) }
 
         it 'generates an invent_num excluding existing' do
           expect(subject.generate_invent_num).to be_nil
@@ -86,7 +85,7 @@ module Warehouse
         it 'adds item_model value' do
           subject.valid?
 
-          expect(subject.item_model).to eq inv_item.get_item_model
+          expect(subject.item_model).to eq inv_item.full_item_model
         end
       end
 
@@ -247,6 +246,16 @@ module Warehouse
             order_params = attributes_for(:order, operation: :out, invent_workplace_id: workplace.workplace_id)
             order_params[:operations_attributes] = [operation]
             Warehouse::Orders::CreateOut.new(create(:***REMOVED***_user), order_params).run
+          end
+
+          context 'and when :allow_update_model_or_type is true' do
+            before { new_item.allow_update_model_or_type = true }
+
+            it 'allows to change types and models attributes' do
+              subject.update(item_type: 'NEW PC', item_model: 'NEW MODEL')
+              expect(subject.reload.item_type).to eq 'NEW PC'
+              expect(subject.reload.item_model).to eq 'NEW MODEL'
+            end
           end
 
           context 'and when invent_type_id was changed' do

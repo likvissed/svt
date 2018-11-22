@@ -61,7 +61,7 @@ script type="text/ng-template" id="deliveryOfItems.slim"
                 tr
                   td.col-sm-8
                     strong Модель
-                  td.col-sm-16 ng-bind="inv_item.get_item_model || op.item.item_model"
+                  td.col-sm-16 ng-bind="inv_item.full_item_model || op.item.item_model"
                 tr ng-repeat="prop_val in inv_item.property_values"
                   td.col-sm-8
                     strong ng-bind="prop_val.property.short_description"

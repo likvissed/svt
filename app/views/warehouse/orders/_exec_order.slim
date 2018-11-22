@@ -67,7 +67,7 @@ script type="text/ng-template" id="execOrder.slim"
                 td ng-bind="op.inv_items[0].type.short_description || op.item.item_type || op.item_type"
                 td ng-bind="op.inv_items | inventNumsToStr"
                 td ng-bind="op.shift | positiveVal"
-                td ng-bind="op.inv_items[0].get_item_model || op.item.item_model || op.item_model"
+                td ng-bind="op.inv_items[0].full_item_model || op.item.item_model || op.item_model"
                 td ng-bind="op.stockman_fio | fioInitials"
                 td ng-bind="op.formatted_date"
 

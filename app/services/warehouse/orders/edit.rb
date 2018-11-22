@@ -50,7 +50,7 @@ module Warehouse
                 :item,
                 inv_items: {
                   include: %i[model type],
-                  methods: :get_item_model
+                  methods: :full_item_model
                 }
               ]
             }
@@ -65,9 +65,6 @@ module Warehouse
 
           op['inv_item_ids'] = op['inv_items'].map { |io| io['item_id'] }
         end
-
-        # data[:order]['consumer_obj'] = data[:order]['consumer']
-        # data[:order]['consumer'] = data[:order]['consumer_fio']
       end
 
       def check_hosts

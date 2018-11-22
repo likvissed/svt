@@ -41,7 +41,7 @@ module Invent
       protected
 
       def update_workplace
-        if @workplace.update_attributes(@workplace_params)
+        if @workplace.update(@workplace_params)
           # Чтобы избежать N+1 запрос в методе 'transform_workplace' нужно создать объект ActiveRecord (например,
           # вызвать find)
           @workplace = Workplace
