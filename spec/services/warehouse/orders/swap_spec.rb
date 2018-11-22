@@ -103,9 +103,6 @@ module Warehouse
 
         it 'does not change :workplace attribute of selected items' do
           subject.run
-          # expect(workplace_1.reload.items.count).to eq 2
-          # expect(workplace_2.reload.items.count).to eq 2
-          # expect(workplace_4.reload.items.count).to eq 2
 
           expect(workplace_1.reload.items.count).to eq 4
           expect(workplace_2.reload.items.count).to eq 1

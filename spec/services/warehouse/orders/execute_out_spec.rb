@@ -112,7 +112,7 @@ module Warehouse
             expect(sec_item.reload.count_reserved).to eq 1
           end
 
-          it 'changes count of selected items' do
+          it 'changes count and count_reserved of selected items' do
             subject.run
 
             expect(sec_item.reload.count).to be_zero

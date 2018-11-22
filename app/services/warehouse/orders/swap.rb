@@ -115,7 +115,7 @@ module Warehouse
           )
           op.set_stockman(current_user)
           op.inv_item_ids = [inv_item.item_id]
-          op.item.count = op.item.count + op.shift.to_i
+          op.calculate_item_count
         end
 
         save_order(@order)

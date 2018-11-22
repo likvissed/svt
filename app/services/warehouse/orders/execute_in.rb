@@ -72,7 +72,7 @@ module Warehouse
           op_selected = true
           op.set_stockman(current_user)
           if op.item
-            op.item.count = op.item.count + op.shift.to_i
+            op.calculate_item_count
             op.item_id
           else
             op.create_item!(
