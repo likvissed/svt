@@ -23,6 +23,7 @@ module Invent
         type = Invent::Type.find_by(name: :ups)
         @property_battery_type = type.properties.find_by(name: :battery_type)
         @property_battery_count = type.properties.find_by(name: :battery_count)
+        @property_battery_module = type.properties.find_by(name: :battery_module)
         @data = @property_battery_type.property_lists.map do |prop_list|
           {
             id: prop_list.property_list_id,
@@ -32,13 +33,18 @@ module Invent
             to_replace_count: 0
           }
         end
+
         @ups = Invent::Item.where(type: type, priority: :high).includes(:type)
       end
 
       def process_data
         @ups.find_each do |ups|
           arr_el = data.find { |i| i[:id] == ups.property_values.find_by(property: @property_battery_type).property_list_id }
-          count = ups.property_values.find_by(property: @property_battery_count).value.to_i
+
+          battery_count = ups.property_values.find_by(property: @property_battery_count)&.property_list&.value.to_i
+          battery_module = ups.property_values.find_by(property: @property_battery_module)&.value.to_i
+
+          count = battery_count + battery_module
           arr_el[:total_count] += count
           next unless ups.need_battery_replacement?
 
