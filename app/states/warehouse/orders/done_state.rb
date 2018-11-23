@@ -9,7 +9,7 @@ module Warehouse
       end
 
       def update_inv_items(order)
-        order.operations.each { |op| op.inv_items.each { |inv_item| inv_item.update!(status: :in_stock, workplace: nil) } }
+        order.operations.each { |op| op.inv_items.each(&:to_stock!) }
       end
 
       def init_warehouse_item(operation)
@@ -29,7 +29,7 @@ module Warehouse
       end
 
       def update_warehouse_item(w_item, inv_item)
-        w_item.update!(item_model: inv_item.get_item_model, count: 1, count_reserved: 0)
+        w_item.update!(item_model: inv_item.full_item_model, count: 1, count_reserved: 0, allow_update_model_or_type: true)
       end
 
       def broadcast_orders

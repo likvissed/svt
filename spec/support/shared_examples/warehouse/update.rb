@@ -9,7 +9,7 @@ module Warehouse
     end
   end
 
-# =============================================================================
+  # =============================================================================
 
   shared_examples 'updating :in order' do
     include_examples 'updating order'
@@ -43,7 +43,7 @@ module Warehouse
     end
   end
 
-# =============================================================================
+  # =============================================================================
 
   shared_examples 'updating :out order' do
     include_examples 'updating order'

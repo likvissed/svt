@@ -31,7 +31,7 @@ module Invent
         self.item_model = "#{vendor.vendor_name} #{item_model}"
       elsif vendor_id_changed?
         old_vendor = Vendor.find(vendor_id_was)
-        self.item_model.gsub!(/^#{old_vendor.vendor_name}/, vendor.vendor_name)
+        item_model.gsub!(/^#{old_vendor.vendor_name}/, vendor.vendor_name)
       end
     end
   end

@@ -16,7 +16,7 @@ module Warehouse
         end
 
         it 'sets -1 to the shift attribute' do
-          expect(subject.data[:operation].shift).to eq -1
+          expect(subject.data[:operation].shift).to eq(-1)
         end
       end
 

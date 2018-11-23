@@ -33,7 +33,7 @@ module Invent
       end
 
       def update_item
-        return if @item.update_attributes(@item_params)
+        return if @item.update(@item_params)
 
         error[:full_message] = @item.errors.full_messages.join('. ')
         raise 'Данные не обновлены'

@@ -7,6 +7,9 @@ app
     controller: 'SearchUserController',
     controllerAs: 'su',
     bindings: {
-      selectedUser: '='
+      // Объект выбранного пользователя.
+      selectedUser: '=',
+      // Флаг, отключающий поиск.
+      disableSearch: '<'
     }
   });

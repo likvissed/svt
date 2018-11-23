@@ -14,6 +14,7 @@ module Invent
 
       def run
         return false if @invent_num.blank? && @item_id.blank?
+
         find_items
         prepare_params
 
@@ -28,32 +29,30 @@ module Invent
       private
 
       def find_items
-=begin
-        @data = Item
-                  .includes(:model, :type)
-                  .select('invent_item.*, io_id')
-                  .joins(
-                    'LEFT OUTER JOIN
-                    (
-                      SELECT
-                        warehouse_inv_item_to_operations.id AS io_id, warehouse_inv_item_to_operations.operation_id, warehouse_inv_item_to_operations.invent_item_id, op.id as op_id, op.status
-                      FROM
-                        warehouse_inv_item_to_operations
-                      INNER JOIN
-                        (SELECT * FROM warehouse_operations WHERE status != 2) op
-                      ON op.id = warehouse_inv_item_to_operations.operation_id
-                    ) io
-                    ON
-                      io.invent_item_id = invent_item.item_id'
-                  )
-                  .joins(workplace: :workplace_count)
-                  .by_invent_num(@invent_num)
-                  .by_item_id(@item_id)
-                  .by_division(@division)
-                  .where('invent_item.workplace_id IS NOT NULL')
-                  .where('io_id IS NULL')
-                  .by_type_id(@type_id)
-=end
+        # @data = Item
+        #           .includes(:model, :type)
+        #           .select('invent_item.*, io_id')
+        #           .joins(
+        #             'LEFT OUTER JOIN
+        #             (
+        #               SELECT
+        #                 warehouse_inv_item_to_operations.id AS io_id, warehouse_inv_item_to_operations.operation_id, warehouse_inv_item_to_operations.invent_item_id, op.id as op_id, op.status
+        #               FROM
+        #                 warehouse_inv_item_to_operations
+        #               INNER JOIN
+        #                 (SELECT * FROM warehouse_operations WHERE status != 2) op
+        #               ON op.id = warehouse_inv_item_to_operations.operation_id
+        #             ) io
+        #             ON
+        #               io.invent_item_id = invent_item.item_id'
+        #           )
+        #           .joins(workplace: :workplace_count)
+        #           .by_invent_num(@invent_num)
+        #           .by_item_id(@item_id)
+        #           .by_division(@division)
+        #           .where('invent_item.workplace_id IS NOT NULL')
+        #           .where('io_id IS NULL')
+        #           .by_type_id(@type_id)
 
         data[:items] = Item
                          .includes(:model, :type, :property_values)
@@ -90,14 +89,14 @@ module Invent
 
         data[:items] -= excluded
 
-        if data[:items].empty?
-          errors.add(:base, :item_already_used_in_orders, orders: orders.join(', '))
-          raise 'Техника используется в ордерах'
-        end
+        return if data[:items].any?
+
+        errors.add(:base, :item_already_used_in_orders, orders: orders.join(', '))
+        raise 'Техника используется в ордерах'
       end
 
       def prepare_params
-        data[:items] = data[:items].as_json(include: %i[model type], methods: :get_item_model).each do |item|
+        data[:items] = data[:items].as_json(include: %i[model type], methods: :full_item_model).each do |item|
           inv_num = item['invent_num'].blank? ? 'инв. № отсутствует' : "инв. №: #{item['invent_num']}"
           item[:main_info] = "#{item['type']['short_description']} - #{inv_num}"
         end

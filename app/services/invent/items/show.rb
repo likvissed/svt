@@ -20,7 +20,7 @@ module Invent
                         include: %i[property property_list]
                       }
                     },
-                    methods: :get_item_model
+                    methods: :full_item_model
                   )
 
         true

@@ -27,8 +27,8 @@ module Warehouse
       protected
 
       def load_order
-        data[:order] = Order.includes(operations: [:item, inv_items: %i[model type]]).find(@order_id)
-        data[:operation] = Operation.new(operationable: data[:order], shift: 1)
+        @order = Order.includes(operations: [:item, inv_items: %i[model type]]).find(@order_id)
+        data[:operation] = Operation.new(operationable: @order, shift: 1)
       end
 
       def load_divisions
@@ -41,7 +41,7 @@ module Warehouse
       end
 
       def transform_to_json
-        data[:order] = data[:order].as_json(
+        data[:order] = @order.as_json(
           include: [
             :consumer,
             operations: {
@@ -50,7 +50,7 @@ module Warehouse
                 :item,
                 inv_items: {
                   include: %i[model type],
-                  methods: :get_item_model
+                  methods: :full_item_model
                 }
               ]
             }
@@ -59,15 +59,13 @@ module Warehouse
 
         data[:order]['operations_attributes'] = data[:order]['operations']
         data[:order].delete('operations')
+        data[:order]['consumer'] ||= @order.consumer_from_history
 
         data[:order]['operations_attributes'].each do |op|
           next unless op['item']
 
           op['inv_item_ids'] = op['inv_items'].map { |io| io['item_id'] }
         end
-
-        # data[:order]['consumer_obj'] = data[:order]['consumer']
-        # data[:order]['consumer'] = data[:order]['consumer_fio']
       end
 
       def check_hosts

@@ -22,8 +22,8 @@ module Users
 
     context 'when user already logged in' do
       before do
-        allow_any_instance_of(User).to receive(:current_sign_in_at).and_return(Time.now)
-        allow_any_instance_of(User).to receive(:last_sign_in_at).and_return(Time.now)
+        allow_any_instance_of(User).to receive(:current_sign_in_at).and_return(Time.zone.now)
+        allow_any_instance_of(User).to receive(:last_sign_in_at).and_return(Time.zone.now)
       end
 
       it 'adds %w[current_sign_in_data last_sign_in_data] fields to each item' do

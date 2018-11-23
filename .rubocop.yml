@@ -48,3 +48,7 @@ Layout/AlignHash:
 Layout/MultilineMethodCallIndentation:
   EnforcedStyle: indented_relative_to_receiver
   IndentationWidth: 2
+
+Lint/AmbiguousBlockAssociation:
+  Exclude:
+    - "spec/**/*"

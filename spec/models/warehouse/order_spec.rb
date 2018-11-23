@@ -69,6 +69,23 @@ module Warehouse
       end
     end
 
+    describe '#consumer_from_history' do
+      let(:result) do
+        {
+          id_tn: 123,
+          fio: 'Тест ФИО'
+        }
+      end
+      before do
+        subject.consumer_id_tn = 123
+        subject.consumer_fio = 'Тест ФИО'
+      end
+
+      it 'creates object with :id_tn and :fio attributes' do
+        expect(subject.consumer_from_history).to eq result
+      end
+    end
+
     # describe '#presence_consumer' do
     #   subject { build(:order, operations: operations) }
     #   before { subject.valid? }
@@ -158,8 +175,8 @@ module Warehouse
       context 'when all operations is done' do
         let(:operations) do
           [
-             build(:order_operation, status: :done, stockman_id_tn: user.id_tn),
-             build(:order_operation, status: :done, stockman_id_tn: user.id_tn)
+            build(:order_operation, status: :done, stockman_id_tn: user.id_tn),
+            build(:order_operation, status: :done, stockman_id_tn: user.id_tn)
           ]
         end
 
@@ -177,8 +194,8 @@ module Warehouse
       context 'when not all operations is done' do
         let(:operations) do
           [
-             build(:order_operation, status: :done, stockman_id_tn: user.id_tn),
-             build(:order_operation, status: :processing)
+            build(:order_operation, status: :done, stockman_id_tn: user.id_tn),
+            build(:order_operation, status: :processing)
           ]
         end
 
@@ -274,7 +291,7 @@ module Warehouse
 
     describe '#set_closed_time' do
       context 'when status is :done' do
-        let(:date) { DateTime.now }
+        let(:date) { Time.zone.now }
         before { allow(DateTime).to receive(:new).and_return(date) }
         subject { build(:order, status: :done) }
 
@@ -334,7 +351,7 @@ module Warehouse
         end
 
         context 'and when item without invent_num' do
-          subject { build(:order, inv_workplace: nil, consumer_tn: 12321, consumer_dept: nil) }
+          subject { build(:order, inv_workplace: nil, consumer_tn: 12_321, consumer_dept: nil) }
 
           it 'gets consumer_dept from UserIss' do
             subject.valid?

@@ -58,8 +58,8 @@ module Warehouse
 
       context 'when :warehouse_type attribute of item has :with_invent_num value' do
         context 'and when inv_item exists' do
-          let!(:workplace_1) { create(:workplace_pk, :add_items, items: [:pc, :monitor]) }
-          let!(:workplace_2) { create(:workplace_pk, :add_items, items: [:pc, :monitor]) }
+          let!(:workplace_1) { create(:workplace_pk, :add_items, items: %i[pc monitor]) }
+          let!(:workplace_2) { create(:workplace_pk, :add_items, items: %i[pc monitor]) }
           let!(:item) { create(:used_item, inv_item: workplace_1.items.first) }
 
           it 'change inv_item params' do
@@ -73,7 +73,7 @@ module Warehouse
         end
 
         context 'and when inv_item is not exist' do
-          let(:workplace) { create(:workplace_pk, :add_items, items: [:pc, :monitor]) }
+          let(:workplace) { create(:workplace_pk, :add_items, items: %i[pc monitor]) }
           let(:type) { Invent::Type.find_by(name: :monitor) }
           let(:item) { create(:new_item, inv_type: type, inv_model: type.models.first, count: 2, invent_num_end: 112) }
           before { subject.build_inv_items(subject.shift.abs, workplace: workplace) }
@@ -105,6 +105,7 @@ module Warehouse
 
         it 'increased :count_reserved attribute' do
           subject.calculate_item_count_reserved
+
           expect(item.count_reserved).to eq subject.shift.abs
         end
       end
@@ -118,6 +119,7 @@ module Warehouse
 
           it 'reduced :count_reserved attribute' do
             subject.calculate_item_count_reserved
+
             expect(item.count_reserved).to eq 11
           end
         end
@@ -127,6 +129,7 @@ module Warehouse
 
           it 'reduced :count_reserved attribute' do
             subject.calculate_item_count_reserved
+
             expect(item.count_reserved).to eq 14
           end
         end
@@ -136,7 +139,18 @@ module Warehouse
 
           it 'increased :count_reserved attribute' do
             subject.calculate_item_count_reserved
+
             expect(item.count_reserved).to eq 17
+          end
+        end
+
+        context 'when status of operation changed to :done' do
+          before { subject.status = :done }
+
+          it 'reduced :count_reserved attribute' do
+            subject.calculate_item_count_reserved
+
+            expect(item.count_reserved).to eq 11
           end
         end
       end
@@ -145,56 +159,97 @@ module Warehouse
     describe '#calculate_item_count' do
       let!(:item) { create(:new_item, warehouse_type: :without_invent_num, count: 20) }
 
-      context 'when operation is a new record' do
-        subject { build(:supply_operation, item: item, shift: 4) }
+      context 'with supply operation' do
+        context 'and when operation is a new record' do
+          subject { build(:supply_operation, item: item, shift: 4) }
 
-        it 'increased :count_reserved attribute' do
-          subject.calculate_item_count
-          expect(item.count).to eq 24
+          it 'increased :count_reserved attribute' do
+            subject.calculate_item_count
+            expect(item.count).to eq 24
+          end
+        end
+
+        context 'and when operation already exists' do
+          subject { create(:supply_operation, item: item, shift: 4) }
+
+          context 'and when operation marked for destruction' do
+            before { subject.mark_for_destruction }
+
+            it 'reduced :count attribute' do
+              subject.calculate_item_count
+
+              expect(item.count).to eq 16
+            end
+          end
+
+          context 'and when :shift attribute is increased' do
+            before { subject.shift = 7 }
+
+            it 'reduced :count attribute' do
+              subject.calculate_item_count
+
+              expect(item.count).to eq 23
+            end
+          end
+
+          context 'and when :shift attribute is reduced' do
+            before { subject.shift = 2 }
+
+            it 'increased :count attribute' do
+              subject.calculate_item_count
+
+              expect(item.count).to eq 18
+            end
+          end
         end
       end
 
-      context 'when operation already exists' do
-        subject { create(:supply_operation, item: item, shift: 4) }
+      context 'and with order operation and when status of operation changed to :done' do
+        let!(:user) { create(:***REMOVED***_user) }
+        let(:workplace) { create(:workplace_pk, :add_items, items: %i[pc monitor]) }
 
-        context 'and when operation marked for destruction' do
-          before { subject.mark_for_destruction }
-
-          it 'reduced :count attribute' do
-            subject.calculate_item_count
-            expect(item.count).to eq 16
+        context 'and when operation is :in' do
+          let(:item) { workplace.items.first }
+          let(:operation) { attributes_for(:order_operation, inv_item_ids: [item.item_id]) }
+          before do
+            operation = attributes_for(:order_operation, inv_item_ids: [item.item_id])
+            order_params = attributes_for(:order, operation: :in, invent_workplace_id: workplace.workplace_id, operations_attributes: [operation])
+            Orders::CreateIn.new(user, order_params.as_json).run
           end
-        end
-
-        context 'and when :shift attribute is increased' do
-          before { subject.shift = 7 }
-
-          it 'reduced :count attribute' do
-            subject.calculate_item_count
-            expect(item.count).to eq 23
-          end
-        end
-
-        context 'and when :shift attribute is reduced' do
-          before { subject.shift = 2 }
+          subject { Operation.last }
 
           it 'increased :count attribute' do
+            subject.status = :done
             subject.calculate_item_count
-            expect(item.count).to eq 18
+
+            expect(subject.item.count).to eq 1
+          end
+        end
+
+        context 'and when operation is :out' do
+          let(:order) { create(:order, operation: :out, inv_workplace: workplace) }
+          subject { create(:order_operation, item: item, shift: -4, operationable: order) }
+          before { subject.status = :done }
+
+          it 'reduced :count attribute' do
+            subject.calculate_item_count
+
+            expect(item.count).to eq 16
           end
         end
       end
     end
 
     describe '#calculate_item_invent_num_end' do
-      let!(:item) { build(:new_item, warehouse_type: :with_invent_num, count: 0, invent_num_start: 765100) }
+      let!(:item) { build(:new_item, warehouse_type: :with_invent_num, count: 0, invent_num_start: 765_100) }
 
       context 'when operation is a new record' do
         subject { build(:supply_operation, item: item, shift: 25) }
 
         it 'calculate :invent_num_end attribute' do
           subject.calculate_item_invent_num_end
-          expect(item.invent_num_end).to eq 765124
+
+          expect(item.invent_num_end).to eq 765_124
         end
       end
 
@@ -206,7 +261,8 @@ module Warehouse
 
           it 'reduced :invent_num_end attribute' do
             subject.calculate_item_invent_num_end
-            expect(item.invent_num_end).to eq 765100
+
+            expect(item.invent_num_end).to eq 765_100
           end
         end
 
@@ -215,7 +271,8 @@ module Warehouse
 
           it 'reduced :invent_num_end attribute' do
             subject.calculate_item_invent_num_end
-            expect(item.invent_num_end).to eq 765105
+
+            expect(item.invent_num_end).to eq 765_105
           end
         end
 
@@ -224,7 +281,8 @@ module Warehouse
 
           it 'increased :invent_num_end attribute' do
             subject.calculate_item_invent_num_end
-            expect(item.invent_num_end).to eq 765101
+
+            expect(item.invent_num_end).to eq 765_101
           end
         end
       end
@@ -244,6 +302,7 @@ module Warehouse
 
         it 'calculates a new :invent_num_end attribute' do
           subject.calculate_item_invent_num_end
+
           expect(subject.item.invent_num_end).to eq 125
         end
       end
@@ -258,6 +317,7 @@ module Warehouse
 
         it 'does not calculate invent_num_end' do
           subject.calculate_item_invent_num_end
+
           expect(subject.item.invent_num_end).to be_nil
         end
       end
@@ -273,6 +333,7 @@ module Warehouse
 
         it 'does not change status' do
           subject.valid?
+
           expect(subject.done?).to be_truthy
         end
       end
@@ -298,6 +359,7 @@ module Warehouse
 
           it 'adds :operation_already_exists error' do
             subject.valid?
+
             expect(subject.errors.details[:base]).to include(
               error: :operation_with_invent_num_already_exists,
               type: used_item.item_type,
@@ -324,6 +386,7 @@ module Warehouse
 
           it 'adds :operation_already_exists error' do
             subject.valid?
+
             expect(subject.errors.details[:base]).to include(
               error: :operation_without_invent_num_already_exists,
               type: used_item.item_type,
@@ -336,14 +399,15 @@ module Warehouse
     end
 
     describe '#set_date' do
-      let(:date) { DateTime.now }
-      before { allow(DateTime).to receive(:new).and_return(date) }
+      let!(:date) { Time.zone.now }
+      before { allow(Time).to receive(:now).and_return(date) }
 
       context 'when status is :done' do
         subject { build(:order_operation, status: :done) }
 
         it 'sets current date to the :date attribute' do
           subject.save
+
           expect(subject.date.utc.to_s).to eq date.utc.to_s
         end
       end
@@ -353,6 +417,7 @@ module Warehouse
 
         it 'sets current date to the :date attribute' do
           subject.save
+
           expect(subject.date).to be_nil
         end
       end

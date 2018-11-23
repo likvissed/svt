@@ -48,6 +48,7 @@ module Invent
         end
 
         return if errors_arr.empty?
+
         errors.add(:base, :error_update_status, workplaces: errors_arr.join(', '))
         raise 'Статус не обновлен'
       end

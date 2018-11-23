@@ -156,7 +156,7 @@ module Warehouse
 
               expect(Operation.last.item).to eq Item.last
               expect(Item.last.inv_item).to eq workplace.items[2]
-              # expect(Item.last.item_model).to eq workplace.items[2].get_item_model
+              # expect(Item.last.item_model).to eq workplace.items[2].full_item_model
             end
           end
 
@@ -166,7 +166,7 @@ module Warehouse
             it 'sets item data to the corresponding operation and warehouse_item records' do
               subject.run
 
-              expect(Item.last.item_model).to eq workplace.items[2].get_item_model
+              expect(Item.last.item_model).to eq workplace.items[2].full_item_model
             end
 
             context 'and when order was not saved' do

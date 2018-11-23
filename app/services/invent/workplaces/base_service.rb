@@ -45,7 +45,7 @@ module Invent
 
       def fill_swap_arr
         @swap = []
-        @workplace_params['items_attributes'].delete_if { |i| @swap << i['id'] if i['status'] == 'prepared_to_swap' }.map { |i| i['id'] } if @workplace_params['items_attributes']
+        @workplace_params['items_attributes']&.delete_if { |i| @swap << i['id'] if i['status'] == 'prepared_to_swap' }
       end
 
       def swap_items
@@ -83,8 +83,8 @@ module Invent
         data[:filters][:statuses] = workplace_statuses
         data[:filters][:types] = WorkplaceType.select(:workplace_type_id, :short_description)
         data[:filters][:buildings] = IssReferenceBuilding
-                                        .select('iss_reference_sites.name as site_name, iss_reference_buildings.*')
-                                        .left_outer_joins(:iss_reference_site)
+                                       .select('iss_reference_sites.name as site_name, iss_reference_buildings.*')
+                                       .left_outer_joins(:iss_reference_site)
         data[:filters][:priorities] = item_priorities
       end
     end

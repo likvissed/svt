@@ -5,22 +5,21 @@ module Invent
     RSpec.describe UpsBattery, type: :model do
       let(:battery_type_prop) { Property.find_by(name: :battery_type) }
       let(:battery_count_prop) { Property.find_by(name: :battery_count) }
+      let(:battery_module_prop) { Property.find_by(name: :battery_module) }
       let(:battery_replacement_date) { Property.find_by(name: :replacement_date) }
       let(:prop_lists) { battery_type_prop.property_lists }
       let(:battery_type_val) { prop_lists.first }
       let(:ups) { create_list(:item, 5, :with_property_values, type_name: 'ups', priority: :high) }
-      let(:battery_count_val) { '4' }
-      let(:total_count) { ups.inject(0) { |sum, _el| sum += battery_count_val.to_i } }
-      let(:to_replace_count) { battery_count_val.to_i * 2 }
-
+      let(:battery_count_val) { battery_count_prop.property_lists.first.value }
+      let(:battery_module_val) { '4' }
+      let(:total_count) { ups.inject(0) { |sum, _el| sum + battery_count_val.to_i + battery_module_val.to_i } }
+      # Умножаем на 2, так как далее у двух ИБП ставим срок давности замены батарей на критическую отметку
+      let(:to_replace_count) { (battery_count_val.to_i + battery_module_val.to_i) * 2 }
       before do
         ups.each_with_index do |u, index|
-          if [0, 1].include?(index)
-            u.property_values.find_by(property: battery_replacement_date).update(value: Time.zone.now - Item::LEVELS_BATTERY_REPLACEMENT[:critical].years)
-          end
-
+          u.property_values.find_by(property: battery_replacement_date).update(value: Time.zone.now - Item::LEVELS_BATTERY_REPLACEMENT[:critical].years) if [0, 1].include?(index)
           u.property_values.find_by(property: battery_type_prop).update(property_list: battery_type_val)
-          u.property_values.find_by(property: battery_count_prop).update(value: battery_count_val)
+          u.property_values.find_by(property: battery_module_prop).update(value: battery_module_val)
         end
 
         subject.run

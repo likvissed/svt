@@ -6,12 +6,12 @@ module Invent
       let(:item) { create(:item, :with_property_values, type_name: 'monitor') }
 
       context 'when receive item_id' do
-        subject { Show.new({ item_id: item.item_id}) }
+        subject { Show.new(item_id: item.item_id) }
 
-        it 'fills the item at least with %w[property_values get_item_model invent_num] keys' do
+        it 'fills the item at least with %w[property_values full_item_model invent_num] keys' do
           subject.run
           subject.data.each do |i|
-            expect(i).to include('property_values', 'get_item_model', 'invent_num')
+            expect(i).to include('property_values', 'full_item_model', 'invent_num')
           end
         end
 
@@ -33,21 +33,13 @@ module Invent
         # end
       end
 
-      context 'test' do
-        subject { Show.new("1=1; SELECT * FROM users --") }
-
-        it 'test' do
-
-        end
-      end
-
       context 'when receive invent_num' do
-        subject { Show.new({ invent_num: item.invent_num}) }
+        subject { Show.new(invent_num: item.invent_num) }
 
-        it 'fills the item at least with %w[property_values get_item_model invent_num] keys' do
+        it 'fills the item at least with %w[property_values full_item_model invent_num] keys' do
           subject.run
           subject.data.each do |i|
-            expect(i).to include('property_values', 'get_item_model', 'invent_num')
+            expect(i).to include('property_values', 'full_item_model', 'invent_num')
           end
         end
 

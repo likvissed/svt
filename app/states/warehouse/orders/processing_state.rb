@@ -6,7 +6,7 @@ module Warehouse
       end
 
       def update_warehouse_item(w_item, inv_item)
-        w_item.update!(item_model: inv_item.get_item_model)
+        w_item.update!(item_model: inv_item.full_item_model)
       end
 
       def broadcast_orders

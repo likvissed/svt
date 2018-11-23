@@ -138,7 +138,7 @@ module Invent
     end
 
     describe 'POST #to_stock' do
-      let(:workplace) { create(:workplace_pk, :add_items, items: [:pc, :monitor]) }
+      let(:workplace) { create(:workplace_pk, :add_items, items: %i[pc monitor]) }
       let(:params) { { item_id: workplace.items.first.item_id } }
 
       it 'creates instance of the Items::ToStock' do

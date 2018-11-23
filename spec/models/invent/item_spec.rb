@@ -137,7 +137,24 @@ module Invent
       end
     end
 
-    describe '#get_item_model' do
+    describe '#to_stock!' do
+      subject { create(:item, :with_property_values, type_name: :ups, workplace_id: 123, status: :in_workplace, priority: :high) }
+      before { subject.to_stock! }
+
+      it 'sets nil to the workplace_id attribute' do
+        expect(subject.workplace).to be_nil
+      end
+
+      it 'sets :in_stock to the status attribute' do
+        expect(subject.status).to eq 'in_stock'
+      end
+
+      it 'sets :default to the priority attribute' do
+        expect(subject.priority).to eq 'default'
+      end
+    end
+
+    describe '#full_item_model' do
       context 'when type is :pc' do
         let(:item_model) do
           properties = Property.where(name: Property::FILE_DEPENDING)
@@ -148,7 +165,7 @@ module Invent
           subject { create(:item, :with_property_values, type_name: :pc) }
 
           it 'loads all config parameters' do
-            expect(subject.get_item_model).to eq item_model
+            expect(subject.full_item_model).to eq item_model
           end
         end
 
@@ -157,7 +174,7 @@ module Invent
           subject { create(:item, :with_property_values, item_model: str_item_model, type_name: :pc) }
 
           it 'loads item_model and config parameters' do
-            expect(subject.get_item_model).to eq "#{str_item_model}: #{item_model}"
+            expect(subject.full_item_model).to eq "#{str_item_model}: #{item_model}"
           end
         end
 
@@ -169,7 +186,7 @@ module Invent
           end
 
           it 'removes skips blank values' do
-            expect(subject.get_item_model).to eq 'Конфигурация отсутствует'
+            expect(subject.full_item_model).to eq 'Конфигурация отсутствует'
           end
         end
       end
@@ -179,7 +196,7 @@ module Invent
 
         it 'runs :short_item_model method' do
           expect(subject).to receive(:short_item_model)
-          subject.get_item_model
+          subject.full_item_model
         end
       end
     end
@@ -189,7 +206,7 @@ module Invent
         subject { build(:item, type_name: :monitor) }
 
         it 'returns value from model.item_model' do
-          expect(subject.get_item_model).to eq subject.model.item_model
+          expect(subject.full_item_model).to eq subject.model.item_model
         end
       end
 
@@ -197,7 +214,7 @@ module Invent
         subject { build(:item, type_name: :monitor, model: nil, item_model: 'My model') }
 
         it 'returns value from item_model' do
-          expect(subject.get_item_model).to eq subject.item_model
+          expect(subject.full_item_model).to eq subject.item_model
         end
       end
     end
@@ -315,13 +332,13 @@ module Invent
         before { subject.property_values.find_by(property_id: prop.property_id).update_attribute(:value, new_date) }
 
         context 'and when battery was replaced less than 3 years ago' do
-          let(:new_date) { DateTime.now - 2.year }
+          let(:new_date) { Time.zone.now - 2.years }
 
           its(:need_battery_replacement?) { is_expected.to be_falsey }
         end
 
         context 'and when battery was replaced more than 3 years ago' do
-          let(:new_date) { DateTime.now - 4.year }
+          let(:new_date) { Time.zone.now - 4.years }
           let(:expected) do
             {
               type: :warning,
@@ -335,7 +352,7 @@ module Invent
         end
 
         context 'and when battery was replaced more than 5 years ago' do
-          let(:new_date) { DateTime.now - 6.year }
+          let(:new_date) { Time.zone.now - 6.years }
           let(:expected) do
             {
               type: :critical,
@@ -466,7 +483,7 @@ module Invent
       end
 
       context 'when item without supply' do
-        let!(:workplace) { create(:workplace_pk, :add_items, items: [:pc, :monitor]) }
+        let!(:workplace) { create(:workplace_pk, :add_items, items: %i[pc monitor]) }
         subject { workplace.items.first }
         before { subject.invent_num = 'new_num' }
 

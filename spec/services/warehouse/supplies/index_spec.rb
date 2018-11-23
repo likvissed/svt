@@ -13,7 +13,7 @@ module Warehouse
       end
 
       it 'adds total count of items to the each supply' do
-        expect(subject.data[:data].first['total_count']).to eq supplies.first.operations.inject(0) { |sum, op| sum + op.shift  }
+        expect(subject.data[:data].first['total_count']).to eq supplies.first.operations.inject(0) { |sum, op| sum + op.shift }
       end
     end
   end

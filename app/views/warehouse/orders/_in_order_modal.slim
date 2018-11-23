@@ -36,7 +36,7 @@ script type="text/ng-template" id="inOrderModal.slim"
                 "ng-click": "edit.delPosition(op)", "ng-if": "op.status != 'done'"
               td ng-bind="op.inv_items[0].type.short_description"
               td ng-bind="op.inv_items[0].invent_num"
-              td ng-bind="op.inv_items[0].get_item_model"
+              td ng-bind="op.inv_items[0].full_item_model"
             tr.animate-show ng-repeat="op in edit.order.operations_attributes" ng-hide="op._destroy" ng-if="!op.inv_item_ids.length"
               td= fa_icon "times-circle lg", class: "pointer", "tooltip-placement": "left", "uib-tooltip": "Убрать позицию",
                 "ng-click": "edit.delPosition(op)", "ng-if": "op.status != 'done'"
