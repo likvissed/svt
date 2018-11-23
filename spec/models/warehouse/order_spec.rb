@@ -69,6 +69,23 @@ module Warehouse
       end
     end
 
+    describe '#consumer_from_history' do
+      let(:result) do
+        {
+          id_tn: 123,
+          fio: 'Тест ФИО'
+        }
+      end
+      before do
+        subject.consumer_id_tn = 123
+        subject.consumer_fio = 'Тест ФИО'
+      end
+
+      it 'creates object with :id_tn and :fio attributes' do
+        expect(subject.consumer_from_history).to eq result
+      end
+    end
+
     # describe '#presence_consumer' do
     #   subject { build(:order, operations: operations) }
     #   before { subject.valid? }

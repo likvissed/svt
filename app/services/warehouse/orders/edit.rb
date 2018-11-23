@@ -27,8 +27,8 @@ module Warehouse
       protected
 
       def load_order
-        data[:order] = Order.includes(operations: [:item, inv_items: %i[model type]]).find(@order_id)
-        data[:operation] = Operation.new(operationable: data[:order], shift: 1)
+        @order = Order.includes(operations: [:item, inv_items: %i[model type]]).find(@order_id)
+        data[:operation] = Operation.new(operationable: @order, shift: 1)
       end
 
       def load_divisions
@@ -41,7 +41,7 @@ module Warehouse
       end
 
       def transform_to_json
-        data[:order] = data[:order].as_json(
+        data[:order] = @order.as_json(
           include: [
             :consumer,
             operations: {
@@ -59,6 +59,7 @@ module Warehouse
 
         data[:order]['operations_attributes'] = data[:order]['operations']
         data[:order].delete('operations')
+        data[:order]['consumer'] ||= @order.consumer_from_history
 
         data[:order]['operations_attributes'].each do |op|
           next unless op['item']

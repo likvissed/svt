@@ -74,6 +74,13 @@ module Warehouse
       operations.any? { |op| op.inv_item_to_operations.any? }
     end
 
+    def consumer_from_history
+      {
+        id_tn: consumer_id_tn,
+        fio: consumer_fio
+      }
+    end
+
     protected
 
     def presence_consumer
