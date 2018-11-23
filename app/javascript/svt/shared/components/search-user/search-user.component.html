@@ -1,5 +1,5 @@
 <div class="input-group multiline-select">
-  <ui-select ng-model="su.selectedUser" theme="bootstrap">
+  <ui-select ng-model="su.selectedUser" theme="bootstrap" ng-disabled="su.disableSearch">
     <ui-select-match placeholder="ФИО или таб. №">
       {{$select.selected.fio}}
     </ui-select-match>

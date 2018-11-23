@@ -39,7 +39,7 @@ script type="text/ng-template" id="execOrder.slim"
                   | ФИО или таб. № сдающего технику
                 span ng-if="exec.order.operation == 'out'"
                   | ФИО или таб. № получающего технику
-              search-user selected-user="exec.order.consumer"
+              search-user selected-user="exec.order.consumer" disable-search="exec.order.status == 'done'"
               = hidden_field_tag "order[consumer]", "", class: "form-control", autocomplete: "off", "ng-model": "exec.order.consumer"
               span.help-block ng-show="exec.form['order[consumer]'].$invalid" ng-bind="exec.errorMessage('order[consumer]')"
           .col-sm-6

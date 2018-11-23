@@ -9,9 +9,9 @@ function SearchUserController(SearchUserService) {
     SearchUserService.getUsers(searchValue).then(
       () => this.users = SearchUserService.users
     );
-  }
+  };
 
   this.clearUser = () => {
     this.selectedUser = null;
-  }
+  };
 }
