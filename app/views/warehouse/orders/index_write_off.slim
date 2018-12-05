@@ -1,13 +1,12 @@
-= title "Приходные ордеры"
+= title "Ордеры на списание"
 
-#index_order.container ng-controller="OrdersController as table" ng-init="initOperation('in')"
+#index_order.container ng-controller="OrdersController as table" ng-init="initOperation('write_off')"
   .well
     .table-block
       .row
-        .col-sm-7.col-md-6.col-xlg-5.col-fhd-4
-          = button_tag "Сформировать приходный ордер", type: :button, class: "btn-primary btn-sm btn-block", "ng-click": "table.newOrder()"
-      .row
-        = render partial: 'filters'
+        .bg-info.context-info
+          = fa_icon "exclamation-triangle"
+          '  Для изменения ордера перейдите в раздел "Склад"
       .row
         .col-sm-24
           table.table.table-striped.table-condensed
@@ -15,32 +14,26 @@
               tr
                 th
                 th №
-                th Отдел
-                th ID РМ
                 th Позиции ордера
                 th Кем создан
-                th Кто принес
+                th Кем утвержден
                 th Статус
                 th
             tbody
               tr ng-repeat="order in table.orders"
-                td.col-sm-2.col-md-1
+                td.col-sm-1
                   = button_tag "Открыть", type: :button, class: "btn-default btn-xs", "ng-click": "table.execOrder(order)"
                 td.col-sm-1 ng-bind="order.id"
-                td.col-sm-1 ng-bind="order.consumer_dept"
-                td.col-sm-1 ng-bind="order.invent_workplace_id"
-                td.col-sm-10 ng-bind="order.operations_to_string"
-                td.col-sm-3.col-xlg-4 ng-bind="order.creator.fio || order.creator_fio"
-                td.col-sm-3.col-md-4 ng-bind="order.consumer.fio || order.consumer_fio"
-                td.col-sm-2.col-xlg-1 ng-bind="order.status_translated"
-                td.col-sm-1.text-center
-                  = fa_icon "pencil-square-o fw", class: "pointer",
-                    "ng-click": "table.editOrder(order)", "uib-tooltip": "Редактировать состав ордера",
-                    "tooltip-append-to-body": "true"
+                td.col-sm-11.col-md-12.col-fhd-13 ng-bind="order.operations_to_string"
+                td.col-sm-4 ng-bind="order.creator.fio || order.creator_fio"
+                td.col-sm-4 ng-bind="order.validator.fio || order.validator_fio"
+                td.col-sm-3.col-md-2.col-fhd-1 ng-bind="order.status_translated"
+                td.text-center
                   = fa_icon "trash-o fw", class: "pointer text-danger", "ng-click": "table.destroyOrder(order)",
                     "uib-tooltip": "Удалить ордер", "tooltip-append-to-body": "true"
               tr ng-if="table.orders.length == 0"
                 td colspan=10 Данных нет
+
       .row
         .col-sm-12
           .animate-show ng-table-info="" info-attrs="table.pagination" ng-if="table.orders"
@@ -48,5 +41,4 @@
           ul{ uib-pagination="true" total-items="table.pagination.filteredRecords" ng-model="table.pagination.currentPage"
             max-size="table.pagination.maxSize" class="pagination-sm pull-right" ng-change="table.reloadOrders()" }
 
-= render partial: 'in_order_modal'
 = render partial: 'exec_order'

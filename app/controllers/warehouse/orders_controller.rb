@@ -30,6 +30,21 @@ module Warehouse
       end
     end
 
+    def index_write_off
+      respond_to do |format|
+        format.html
+        format.json do
+          @index = Orders::Index.new(params, operation: :write_off, status: :processing)
+
+          if @index.run
+            render json: @index.data
+          else
+            render json: { full_message: I18n.t('controllers.app.unprocessable_entity') }, status: 422
+          end
+        end
+      end
+    end
+
     def archive
       respond_to do |format|
         format.html

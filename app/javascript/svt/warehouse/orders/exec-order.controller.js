@@ -102,7 +102,7 @@ import { FormValidationController } from '../../shared/functions/form-validation
   ExecOrderController.prototype.ok = function() {
     let sendData = this.Order.getObjectToSend();
 
-    if (!confirm('Вы действительно хотите исполнить выбранные позиции? Удалить исполненные позиции или отменить их исполнение невозмозно')) {
+    if (!confirm('Вы действительно хотите исполнить выбранные позиции? Удалить исполненные позиции или отменить их исполнение невозможно')) {
       return false;
     }
 

@@ -35,6 +35,21 @@ module Warehouse
       end
     end
 
+    describe 'GET #index_write_off' do
+      let(:index) { Orders::Index.new(params) }
+
+      it 'creates instance of the Orders::Index' do
+        get :index_write_off, format: :json
+        expect(assigns(:index)).to be_instance_of Orders::Index
+      end
+
+      it 'calls :run method' do
+        expect(Orders::Index).to receive(:new).with(anything, operation: :write_off, status: :processing).and_return(index)
+        expect(index).to receive(:run)
+        get :index_write_off, format: :json
+      end
+    end
+
     describe 'GET #archive' do
       let(:index) { Orders::Index.new(params) }
 

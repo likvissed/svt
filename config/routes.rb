@@ -96,6 +96,7 @@ Rails.application.routes.draw do
     resources :orders, only: [:new, :edit, :destroy] do
       get 'in', to: 'orders#index_in', on: :collection
       get 'out', to: 'orders#index_out', on: :collection
+      get 'write_off', to: 'orders#index_write_off', on: :collection
       get 'archive', to: 'orders#archive', on: :collection
       get 'print', to: 'print', on: :member
       post 'create_in', to: 'orders#create_in', on: :collection

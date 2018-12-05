@@ -20,7 +20,7 @@ script type="text/ng-template" id="execOrder.slim"
 
     .modal-body
       fieldset ng-disabled="exec.order.status == 'done'"
-        .row
+        .row ng-if="exec.order.operation != 'write_off'"
           .col-sm-5
             .form-group
               = label_tag "order[consumer_dept]", "Отдел", class: "control-label"
@@ -49,7 +49,7 @@ script type="text/ng-template" id="execOrder.slim"
 
         .form-group
           h4 Позиции
-          table.table.table-condensed
+          table.table.table-condensed.table-tbody-striped
             thead
               tr
                 th.col-sm-1

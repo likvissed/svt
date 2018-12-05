@@ -91,19 +91,30 @@ module Warehouse
     end
 
     describe '#consumer_from_history' do
-      let(:result) do
-        {
-          id_tn: 123,
-          fio: 'Тест ФИО'
-        }
-      end
-      before do
-        subject.consumer_id_tn = 123
-        subject.consumer_fio = 'Тест ФИО'
+      context 'when consumer_fio is empty' do
+        let(:result) do
+          {
+            id_tn: 123,
+            fio: 'Тест ФИО'
+          }
+        end
+        before do
+          subject.consumer_id_tn = 123
+          subject.consumer_fio = 'Тест ФИО'
+        end
+
+        it 'creates object with :id_tn and :fio attributes' do
+          expect(subject.consumer_from_history).to eq result
+        end
       end
 
-      it 'creates object with :id_tn and :fio attributes' do
-        expect(subject.consumer_from_history).to eq result
+      context 'when consumer_fio is filled' do
+        before do
+          subject.consumer_id_tn = nil
+          subject.consumer_fio = nil
+        end
+
+        its(:consumer_from_history) { is_expected.to be_nil }
       end
     end
 

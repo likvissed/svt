@@ -87,6 +87,8 @@ module Warehouse
     end
 
     def consumer_from_history
+      return nil unless consumer_fio
+
       {
         id_tn: consumer_id_tn,
         fio: consumer_fio
