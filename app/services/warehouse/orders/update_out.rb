@@ -78,7 +78,7 @@ module Warehouse
           next unless op.item
 
           if op.new_record?
-            op.build_inv_items(op.shift.abs, workplace: @order.inv_workplace)
+            op.build_inv_items(op.shift.abs, workplace: @order.inv_workplace, status: :waiting_take)
           elsif op.marked_for_destruction?
             op.item.inv_item ? inv_items_for_update(op.inv_items) : inv_items_for_destroy(op.inv_items)
           elsif op.shift_changed?
@@ -107,7 +107,7 @@ module Warehouse
         delta = op.shift_was - op.shift
 
         if delta.positive?
-          op.build_inv_items(delta, workplace: @order.inv_workplace)
+          op.build_inv_items(delta, workplace: @order.inv_workplace, status: :waiting_take)
         elsif delta.negative?
           inv_items_for_destroy(op.inv_items.last(delta.abs))
         end

@@ -92,6 +92,21 @@ module Warehouse
       end
     end
 
+    describe 'POST #create_write_off' do
+      let(:order) { build(:order) }
+      let(:params) { { order: order.as_json } }
+
+      it 'creates instance of the Orders::CreateWriteOff' do
+        post :create_write_off, params: params, format: :json
+        expect(assigns(:create_write_off)).to be_instance_of Orders::CreateWriteOff
+      end
+
+      it 'calls :run method' do
+        expect_any_instance_of(Orders::CreateWriteOff).to receive(:run)
+        post :create_write_off, params: params, format: :json
+      end
+    end
+
     describe 'GET #edit' do
       let!(:order) { create(:order) }
       let(:params) { { id: order.id } }

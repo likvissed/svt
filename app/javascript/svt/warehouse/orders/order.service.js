@@ -43,7 +43,7 @@ import { app } from '../../app/app';
    */
   WarehouseOrder.prototype._setOrder = function(order) {
     angular.extend(this.order, order);
-    this.order.operations_attributes = order.operations_attributes || [];
+    this.order.operations_attributes = order.operations_attributes || this.order.operations_attributes || [];
     this.order.consumer = order.consumer;
 
     if (typeof this._orderTemplate === 'undefined') {
@@ -53,7 +53,8 @@ import { app } from '../../app/app';
   };
 
   WarehouseOrder.prototype.getOperation = function(item) {
-    if (!this.order) { return false; }
+    if (!this.order || !this.order.operations_attributes) { return false; }
+
     return this.order.operations_attributes.find((op) => op.item_id == item.id);
   }
 

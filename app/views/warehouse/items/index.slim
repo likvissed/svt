@@ -13,6 +13,7 @@
                 th
                 th
                 th Тип техники
+                th ID
                 th Модель
                 th Инв. №
                 th Состояние
@@ -27,14 +28,16 @@
                 td
                   ng-warehouse-item-supply-popover
                 td.col-sm-3 ng-bind="item.item_type"
-                td.col-sm-13 ng-bind="item.item_model"
+                td.col-sm-2 ng-bind="item.inv_item.item_id"
+                td.col-sm-11 ng-bind="item.item_model"
                 td.col-sm-2 ng-bind="item.inv_item.invent_num || item.range_inv_nums"
                 td.col-sm-2 ng-bind-html="item.translated_used"
                 td.col-sm-2 ng-bind="item.count"
                 td.col-sm-2 ng-bind="item.count_reserved"
                 td
-                  = fa_icon "trash-o fw", class: "pointer text-danger", "ng-click": "table.destroyItem(item)", "uib-tooltip": "Удалить технику со склада",
+                  = fa_icon "trash-o sm", class: "pointer text-danger", "ng-click": "table.destroyItem(item)", "uib-tooltip": "Удалить технику со склада",
                      "tooltip-append-to-body": "true", "ng-hide": "table.isItemInOrder(item)"
+
               tr ng-if="table.items.length == 0"
                 td colspan=9 Данных нет
 
@@ -46,5 +49,6 @@
             max-size="table.pagination.maxSize" class="pagination-sm pull-right" ng-change="table.reloadItems()" }
 
 = render partial: '/warehouse/orders/out_order_modal'
+= render partial: '/warehouse/orders/write_off_order_modal'
 = render partial: 'supply_template'
 = render partial: '/warehouse/supplies/show'

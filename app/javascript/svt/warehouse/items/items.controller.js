@@ -59,11 +59,13 @@ import { app } from '../../app/app';
 
   /**
    * Открыть модальное окно для редактирования состава ордера.
+   *
+   * @param type
    */
-  WarehouseItemsCtrl.prototype._openEditModal = function() {
+  WarehouseItemsCtrl.prototype._openOrderModal = function(type) {
     let modalInstance = this.$uibModal.open({
-      templateUrl: 'outOrderModal.slim',
-      controller: 'EditOutOrderController',
+      templateUrl: `edit${type}OrderModal.slim`,
+      controller: `Edit${type}OrderController`,
       controllerAs: 'edit',
       size: 'md',
       backdrop: 'static'
@@ -162,9 +164,18 @@ import { app } from '../../app/app';
 
   /**
    * Открыть окно создания ордера.
+   *
+   * @param operation
    */
-  WarehouseItemsCtrl.prototype.newOrder = function() {
-    this._openEditModal();
+  WarehouseItemsCtrl.prototype.newOrder = function(operation) {
+    let operationName;
+
+    this.Order.init(operation).then(
+      () => {
+        operationName = operation == 'out' ? 'Out' : 'WriteOff'
+        this._openOrderModal(operationName);
+      }
+    );
   };
 
   /**
@@ -191,7 +202,7 @@ import { app } from '../../app/app';
    */
   WarehouseItemsCtrl.prototype.loadOrder = function() {
     this.Order.loadOrder(this.selectedOrder.id, true).then(() => {
-      this._openEditModal();
+      this._openOrderModal('Out');
       this.Items.findSelected();
 
       this.reloadItems();

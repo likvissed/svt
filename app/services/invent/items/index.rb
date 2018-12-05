@@ -94,8 +94,12 @@ module Invent
                         'label-warning'
                       when 'in_stock'
                         'label-info'
-                      else
+                      when 'waiting_write_off'
+                        'label-danger'
+                      when 'write_off'
                         'label-default'
+                      else
+                        'label-success'
                       end
 
         "<span class='label #{label_class}'>#{text}</span>"

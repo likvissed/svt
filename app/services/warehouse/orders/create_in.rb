@@ -11,7 +11,7 @@ module Warehouse
       end
 
       def run
-        raise 'Неверные данные' if order_out?
+        raise 'Неверные данные (тип операции или аттрибут :shift)' unless order_in?
 
         processing_nested_attributes if @order_params['operations_attributes']&.any?
         return false unless wrap_order_with_transactions

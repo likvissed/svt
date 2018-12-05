@@ -1,6 +1,16 @@
 .col-sm-7.col-md-6.col-xlg-5.col-fhd-4.multiline-buffer
-  = button_tag "Сформировать расходный ордер", type: :button, class: "btn-primary btn-sm btn-block", "ng-click": "table.newOrder()",
-    "ng-disabled": "table.extraOrder.visibleCount == 0"
+  .btn-group
+    = button_tag "Создать расходный ордер", type: :button, class: "btn-primary btn-sm", "ng-click": "table.newOrder('out')",
+      "ng-disabled": "table.extraOrder.visibleCount == 0"
+    = button_tag type: :button, class: "btn-primary btn-sm dropdown-toggle", "data-toggle": "dropdown", "ng-disabled": "table.extraOrder.visibleCount == 0" do
+      span.caret
+    ul.dropdown-menu
+      li
+        a href="" ng-click="table.newOrder('write_off')"
+          | Пометить технику на списание
+      li
+        a href="" ng-click="table.execOrder()"
+          | Списать технику
 .col-sm-11.col-md-8.col-lg-7.col-xlg-6.col-fhd-5.multiline-buffer
   .input-group.input-group-sm.form-input-sm.multiline-select
     ui-select ng-model="table.selectedOrder" on-select="table.loadOrder()" theme="bootstrap" allow-clear=true

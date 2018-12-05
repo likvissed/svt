@@ -95,7 +95,7 @@ module Invent
 
     accepts_nested_attributes_for :property_values, allow_destroy: true
 
-    enum status: { waiting_take: 1, waiting_bring: 2, prepared_to_swap: 3, in_stock: 4, in_workplace: 5 }
+    enum status: { waiting_take: 1, waiting_bring: 2, prepared_to_swap: 3, in_stock: 4, in_workplace: 5, waiting_write_off: 6, written_off: 7 }
     enum priority: { default: 1, high: 2 }
 
     def self.by_invent_num(invent_num)

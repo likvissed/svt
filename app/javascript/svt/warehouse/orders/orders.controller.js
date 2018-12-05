@@ -53,7 +53,7 @@ import { app } from '../../app/app';
    */
   OrdersController.prototype._openEditModal = function() {
     this.$uibModal.open({
-      templateUrl: 'inOrderModal.slim',
+      templateUrl: 'editInOrderModal.slim',
       controller: 'EditInOrderController',
       controllerAs: 'edit',
       size: 'md',

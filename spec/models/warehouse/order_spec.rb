@@ -69,6 +69,27 @@ module Warehouse
       end
     end
 
+    context 'when operation is :write_off' do
+      let(:operation) { build(:order_operation, item: item) }
+      subject { build(:order, operation: :write_off, operations: [operation]) }
+
+      context 'and when item is new' do
+        let(:item) { create(:new_item) }
+
+        it 'adds :cant_create_write_off_order_with_new_item error' do
+          subject.valid?
+
+          expect(subject.errors.details[:base]).to include(error: :cant_create_write_off_order_with_new_item)
+        end
+      end
+
+      context 'and when item is used' do
+        let(:item) { create(:used_item) }
+
+        it { is_expected.to be_valid }
+      end
+    end
+
     describe '#consumer_from_history' do
       let(:result) do
         {

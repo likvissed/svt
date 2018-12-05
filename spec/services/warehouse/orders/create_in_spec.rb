@@ -26,7 +26,7 @@ module Warehouse
 
       its(:run) { is_expected.to be_truthy }
 
-      context 'when :operation attribute is :out' do
+      context 'when :operation attribute is not :in' do
         before { order_params['operation'] = 'out' }
 
         its(:run) { is_expected.to be_falsey }
@@ -34,6 +34,11 @@ module Warehouse
 
       context 'when :shift attribute of any operation has negative value' do
         before { order_params[:operations_attributes].first[:shift] = -4 }
+
+        it 'exit from service without processing params' do
+          expect(subject).not_to receive(:processing_nested_attributes)
+          subject.run
+        end
 
         its(:run) { is_expected.to be_falsey }
       end

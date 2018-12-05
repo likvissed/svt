@@ -168,6 +168,10 @@ import { app } from '../../app/app';
             method: 'POST',
             url: '/warehouse/orders/create_out'
           },
+          saveWriteOff: {
+            method: 'POST',
+            url: '/warehouse/orders/create_write_off'
+          },
           updateIn: {
             method: 'PUT',
             url: '/warehouse/orders/:id/update_in'

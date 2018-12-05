@@ -1,7 +1,7 @@
 module Warehouse
   module Orders
     # Создание расходного ордера
-    class CreateOut < BaseService
+    class CreateWriteOff < BaseService
       def initialize(current_user, order_params)
         @current_user = current_user
         @order_params = order_params
@@ -10,15 +10,12 @@ module Warehouse
       end
 
       def run
-        raise 'Неверные данные (тип операции или аттрибут :shift)' unless order_out?
+        raise 'Неверные данные (тип операции или аттрибут :shift)' unless order_write_off?
 
         init_order
         return false unless wrap_order
 
-        broadcast_out_orders
         broadcast_items
-        broadcast_workplaces
-        broadcast_workplaces_list
 
         true
       rescue RuntimeError => e
@@ -32,7 +29,6 @@ module Warehouse
 
       def init_order
         @order = Order.new(@order_params)
-        authorize @order, :create_out?
         @order.skip_validator = true
         @order.set_creator(current_user)
       end
@@ -62,7 +58,7 @@ module Warehouse
         @order.operations.each do |op|
           next unless op.item
 
-          op.build_inv_items(op.shift.abs, workplace: @order.inv_workplace, status: :waiting_take)
+          op.build_inv_items(op.shift.abs, status: :waiting_write_off)
           op.calculate_item_count_reserved
         end
       end

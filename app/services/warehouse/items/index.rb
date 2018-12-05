@@ -15,7 +15,6 @@ module Warehouse
         load_order_items
         load_other_items
         init_filters if need_init_filters?
-        init_order unless @selected_order_id
         load_orders
         limit_records
         prepare_to_render
@@ -82,14 +81,6 @@ module Warehouse
           item['translated_used'] = item['used'] ? '<span class="label label-warning">Б/У</span>' : '<span class="label label-success">Новое</span>'
           item['supplies'].each { |supply| supply['date'] = supply['date'].strftime('%d-%m-%Y') }
         end
-      end
-
-      def init_order
-        new_order = Orders::NewOrder.new(nil, :out)
-
-        raise 'Не удалось создать шаблон расходного ордера' unless new_order.run
-
-        data[:order] = new_order.data
       end
 
       def init_filters

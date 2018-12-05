@@ -75,6 +75,16 @@ module Warehouse
       end
     end
 
+    def create_write_off
+      @create_write_off = Orders::CreateWriteOff.new(current_user, order_params)
+
+      if @create_write_off.run
+        render json: { full_message: I18n.t('controllers.warehouse/order.created_write_off') }
+      else
+        render json: @create_write_off.error, status: 422
+      end
+    end
+
     def edit
       @edit = Orders::Edit.new(params[:id], params[:check_unreg])
 

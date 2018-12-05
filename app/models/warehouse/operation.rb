@@ -49,7 +49,7 @@ module Warehouse
       count.times do |i|
         if item.inv_item
           item.inv_item.workplace = params[:workplace]
-          item.inv_item.status = :waiting_take
+          item.inv_item.status = params[:status]
           inv_items << item.inv_item
         else
           new_inv_item = inv_items.build(
@@ -58,7 +58,7 @@ module Warehouse
             model: item.inv_model,
             item_model: item.item_model,
             invent_num: item.generate_invent_num(i),
-            status: :waiting_take
+            status: params[:status]
           )
           new_inv_item.build_property_values(true)
         end

@@ -37,14 +37,19 @@ module Warehouse
         let(:inv_items) { Item.includes(:inv_item).find(order_params[:operations_attributes].map { |op| op[:item_id] }).map(&:inv_item).compact }
         let(:items) { Item.find(order_params[:operations_attributes].map { |op| op[:item_id] }) }
 
-        context 'and when :operation attribute is :in' do
+        context 'and when :operation attribute is not :out' do
           before { order_params['operation'] = 'in' }
 
           its(:run) { is_expected.to be_falsey }
         end
 
         context 'and when :shift attribute of any operation has positive value' do
-          before { order_params[:operations_attributes].first[:shift] = 4 }
+          before { order_params[:operations_attributes].first[:shift] = 1 }
+
+          it 'exit from service without processing params' do
+            expect(subject).not_to receive(:init_order)
+            subject.run
+          end
 
           its(:run) { is_expected.to be_falsey }
         end

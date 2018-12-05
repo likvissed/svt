@@ -100,6 +100,7 @@ Rails.application.routes.draw do
       get 'print', to: 'print', on: :member
       post 'create_in', to: 'orders#create_in', on: :collection
       post 'create_out', to: 'orders#create_out', on: :collection
+      post 'create_write_off', to: 'orders#create_write_off', on: :collection
       post 'execute_in', to: 'orders#execute_in', on: :member
       post 'execute_out', to: 'orders#execute_out', on: :member
       post 'prepare_to_deliver', to: 'orders#prepare_to_deliver', on: :member
