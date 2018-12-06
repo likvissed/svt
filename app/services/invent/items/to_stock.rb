@@ -4,6 +4,8 @@ module Invent
       def initialize(current_user, item_id)
         @current_user = current_user
         @item_id = item_id
+
+        super
       end
 
       def run
@@ -30,6 +32,7 @@ module Invent
 
         return true if @order.run
 
+        @error = @order.error
         raise 'Сервис CreateByInvItem завершился с ошибкой'
       end
     end

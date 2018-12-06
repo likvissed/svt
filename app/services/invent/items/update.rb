@@ -1,6 +1,6 @@
 module Invent
   module Items
-    # Загрузить данные по указанной технике
+    # Обновить данные по указанной технике
     class Update < Invent::ApplicationService
       def initialize(current_user, item_id, item_params)
         @current_user = current_user

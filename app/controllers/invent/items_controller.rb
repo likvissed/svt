@@ -103,7 +103,7 @@ module Invent
       if @to_stock.run
         render json: { full_message: I18n.t('controllers.invent/item.sended_to_stock', item_id: params[:id]) }
       else
-        render json: @to_stock.error, status: 422
+        render json: { full_message: @to_stock.error[:full_message] }, status: 422
       end
     end
 
