@@ -35,6 +35,7 @@ module Warehouse
     scope :invent_item_id, ->(invent_item_id) { where(invent_item_id: invent_item_id) }
 
     enum warehouse_type: { without_invent_num: 1, with_invent_num: 2 }
+    enum status: { non_used: 1, used: 2, waiting_write_off: 3, written_off: 4 }
 
     # was_created - ставится, если техника была создана (используется внутри сервиса Warehouse::Orders::BaseService).
     # allow_update_model_or_type - разрешает обновить технику на складе, даже если модели или тип ихменились.

@@ -103,7 +103,7 @@ module Warehouse
         before do
           order_params = attributes_for(:order, operation: :out, invent_workplace_id: workplace.workplace_id)
           order_params[:operations_attributes] = [operation]
-          CreateOut.new(create(:***REMOVED***_user), order_params).run
+          CreateOut.new(create(:***REMOVED***_user), order_params.as_json).run
           ExecuteOut.new(current_user, Order.last.id, execute_order_params.as_json).run
         end
 

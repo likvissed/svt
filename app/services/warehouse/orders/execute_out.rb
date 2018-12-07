@@ -11,7 +11,7 @@ module Warehouse
       end
 
       def run
-        raise 'Неверные данные' if order_in?
+        raise 'Неверные данные (тип операции или аттрибут :shift)' unless order_out?
 
         find_order
         return false unless wrap_order

@@ -1,7 +1,7 @@
 module Warehouse
   module Orders
     # Исполнить выбранные позиции указанного ордера
-    class ExecuteIn < BaseService
+    class ExecuteWriteOff < BaseService
       def initialize(current_user, order_id, order_params)
         @current_user = current_user
         @order_id = order_id
@@ -11,15 +11,14 @@ module Warehouse
       end
 
       def run
-        raise 'Неверные данные (тип операции или аттрибут :shift)' unless order_in?
+        raise 'Неверные данные (тип операции или аттрибут :shift)' unless order_write_off?
 
         find_order
         return false unless wrap_order
 
-        broadcast_in_orders
+        broadcast_write_off_orders
         broadcast_archive_orders
         broadcast_items
-        broadcast_workplaces
 
         true
       rescue RuntimeError => e
@@ -33,7 +32,6 @@ module Warehouse
 
       def find_order
         @order = Order.find(@order_id)
-        authorize @order, :execute_in?
       end
 
       def wrap_order
@@ -44,8 +42,10 @@ module Warehouse
               raise 'Позиции не выбраны'
             end
 
-            save_order(@order)
-            update_items if @item_ids.any?
+            Invent::Item.transaction(requires_new: true) do
+              save_order(@order)
+              update_items if @item_ids.any?
+            end
 
             true
           rescue ActiveRecord::RecordNotSaved, ActiveRecord::RecordInvalid => e
@@ -64,39 +64,29 @@ module Warehouse
 
       def processing_params
         op_selected = false
-        @order.assign_attributes(@order_params)
 
+        @order.assign_attributes(@order_params)
         @item_ids = @order.operations.map do |op|
           next unless op.status_changed? && op.done?
 
           op_selected = true
           op.set_stockman(current_user)
-          if op.item
-            op.calculate_item_count
-            op.item_id
-          else
-            op.create_item!(
-              warehouse_type: :without_invent_num,
-              item_type: op.item_type,
-              item_model: op.item_model,
-              used: true,
-              count: op.shift,
-              count_reserved: 0
-            )
-            nil
-          end
+          op.calculate_item_count
+          op.calculate_item_count_reserved
+          op.inv_items.each { |inv_item| inv_item.status = :written_off }
+          op.item.status = :written_off
+          op.item_id
         end.compact
 
         op_selected
       end
 
       def update_items
-        Invent::Item.transaction(requires_new: true) do
+        Item.transaction(requires_new: true) do
           @order.operations.each do |op|
             next unless @item_ids.include?(op.item_id)
 
             op.item.save!
-            op.inv_items.first.to_stock!
           end
         end
       end

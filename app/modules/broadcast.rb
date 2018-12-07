@@ -1,22 +1,10 @@
 module Broadcast
-  def broadcast_archive_orders
-    ActionCable.server.broadcast 'archive_orders', nil
-  end
-
-  def broadcast_in_orders
-    ActionCable.server.broadcast 'in_orders', nil
-  end
-
   def broadcast_items(id = nil, _type = nil)
     ActionCable.server.broadcast 'items', id
   end
 
   def broadcast_models
     ActionCable.server.broadcast 'models', nil
-  end
-
-  def broadcast_out_orders
-    ActionCable.server.broadcast 'out_orders', nil
   end
 
   def broadcast_supplies
@@ -37,5 +25,21 @@ module Broadcast
 
   def broadcast_workplaces_list
     ActionCable.server.broadcast 'workplaces_list', nil
+  end
+
+  def broadcast_in_orders
+    ActionCable.server.broadcast 'in_orders', nil
+  end
+
+  def broadcast_out_orders
+    ActionCable.server.broadcast 'out_orders', nil
+  end
+
+  def broadcast_archive_orders
+    ActionCable.server.broadcast 'archive_orders', nil
+  end
+
+  def broadcast_write_off_orders
+    ActionCable.server.broadcast 'write_off_orders', nil
   end
 end

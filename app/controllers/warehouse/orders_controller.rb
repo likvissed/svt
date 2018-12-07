@@ -160,6 +160,16 @@ module Warehouse
       end
     end
 
+    def execute_write_off
+      @execute_write_off = Orders::ExecuteWriteOff.new(current_user, params[:id], order_params)
+
+      if @execute_write_off.run
+        render json: { full_message: I18n.t('controllers.warehouse/order.executed') }
+      else
+        render json: @execute_write_off.error, status: 422
+      end
+    end
+
     def destroy
       @destroy = Orders::Destroy.new(current_user, params[:id])
 

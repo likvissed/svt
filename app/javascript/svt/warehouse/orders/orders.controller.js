@@ -32,10 +32,17 @@ import { app } from '../../app/app';
    * Инициировать подключение к каналу OrdersChannel
    */
   OrdersController.prototype._initActionCable = function() {
-    let
-      channelType = this.operation.charAt(0).toUpperCase() + this.operation.slice(1),
-      consumer = new this.ActionCableChannel('Warehouse::' + channelType + 'OrdersChannel');
+    let channelType;
 
+    if (this.operation == 'in') {
+      channelType = 'In';
+    } else if (this.operation == 'out') {
+      channelType = 'Out';
+    } else if (this.operation == 'write_off') {
+      channelType = 'WriteOff';
+    }
+
+    let consumer = new this.ActionCableChannel('Warehouse::' + channelType + 'OrdersChannel');
     consumer.subscribe(() => this._loadOrders());
   };
 

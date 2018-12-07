@@ -97,6 +97,11 @@ module Warehouse
         include_examples 'specs for failed on create :write_off order'
       end
 
+      it 'broadcasts to write_off_orders' do
+        expect(subject).to receive(:broadcast_write_off_orders)
+        subject.run
+      end
+
       it 'broadcasts to items' do
         expect(subject).to receive(:broadcast_items)
         subject.run

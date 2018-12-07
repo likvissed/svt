@@ -15,6 +15,7 @@ module Warehouse
         init_order
         return false unless wrap_order
 
+        broadcast_write_off_orders
         broadcast_items
 
         true

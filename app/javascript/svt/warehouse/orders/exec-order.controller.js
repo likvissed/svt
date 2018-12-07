@@ -28,6 +28,73 @@ import { FormValidationController } from '../../shared/functions/form-validation
   ExecOrderController.prototype.constructor = ExecOrderController;
 
   /**
+   * Исполнить приходный ордер.
+   */
+  ExecOrderController.prototype._executeIn = function() {
+    let sendData = this.Order.getObjectToSend();
+
+    if (!confirm('Вы действительно хотите исполнить выбранные позиции? Удалить исполненные позиции или отменить их исполнение невозможно')) {
+      return false;
+    }
+
+    this.Server.Warehouse.Order.executeIn(
+      { id: this.order.id },
+      { order: sendData },
+      (response) => {
+        this.Flash.notice(response.full_message);
+        this.$uibModalInstance.close();
+      },
+      (response, status) => {
+        this.Error.response(response, status);
+        this.errorResponse(response);
+      }
+    )
+  };
+
+  /**
+   * Исполнить расходный ордер.
+   */
+  ExecOrderController.prototype._executeOut = function() {
+    this.Order.prepareToDeliver()
+      .then(
+        (response) => {
+          this.clearErrors();
+          let modalInstance = this.$uibModal.open({
+            templateUrl: 'deliveryOfItems.slim',
+            controller: 'DeliveryItemsCtrl',
+            controllerAs: 'delivery',
+            size: 'lg',
+            backdrop: 'static'
+          });
+
+          modalInstance.result.then(() => this.cancel());
+        },
+        (response) => this.errorResponse(response)
+      );
+  };
+
+  /**
+   * Исполнить ордер на списание.
+   */
+  ExecOrderController.prototype._executeWriteOff = function() {
+    let sendData = this.Order.getObjectToSend();
+
+    if (!confirm('Вы действительно хотите списать выбранные позиции? Удалить исполненные позиции или отменить их исполнение невозможно')) {
+      return false;
+    }
+
+    this.Server.Warehouse.Order.executeWriteOff(
+      { id: this.order.id },
+      { order: sendData },
+      (response) => {
+        this.Flash.notice(response.full_message);
+        this.$uibModalInstance.close();
+      },
+      (response, status) => this.Error.response(response, status)
+    )
+  };
+
+  /**
    * Поставить/убрать все позиции на исполнение.
    */
   ExecOrderController.prototype.toggleAll = function() {
@@ -57,25 +124,6 @@ import { FormValidationController } from '../../shared/functions/form-validation
     this.isAllOpSelected = this.order.operations_attributes.every((op) => op.status == 'done');
   };
 
-  ExecOrderController.prototype.deliveryItems = function() {
-    this.Order.prepareToDeliver()
-      .then(
-        (response) => {
-          this.clearErrors();
-          let modalInstance = this.$uibModal.open({
-            templateUrl: 'deliveryOfItems.slim',
-            controller: 'DeliveryItemsCtrl',
-            controllerAs: 'delivery',
-            size: 'lg',
-            backdrop: 'static'
-          });
-
-          modalInstance.result.then(() => this.cancel());
-        },
-        (response) => this.errorResponse(response)
-      );
-  };
-
   /**
    * Утвердить/отклонить ордер.
    */
@@ -100,24 +148,13 @@ import { FormValidationController } from '../../shared/functions/form-validation
    * Исполнить выбранные поля ордера.
    */
   ExecOrderController.prototype.ok = function() {
-    let sendData = this.Order.getObjectToSend();
-
-    if (!confirm('Вы действительно хотите исполнить выбранные позиции? Удалить исполненные позиции или отменить их исполнение невозможно')) {
-      return false;
+    if (this.order.operation == 'in') {
+      this._executeIn();
+    } else if (this.order.operation == 'out') {
+      this._executeOut();
+    } else if (this.order.operation == 'write_off') {
+      this._executeWriteOff();
     }
-
-    this.Server.Warehouse.Order.executeIn(
-      { id: this.order.id },
-      { order: sendData },
-      (response) => {
-        this.Flash.notice(response.full_message);
-        this.$uibModalInstance.close();
-      },
-      (response, status) => {
-        this.Error.response(response, status);
-        this.errorResponse(response);
-      }
-    )
   };
 
   /**

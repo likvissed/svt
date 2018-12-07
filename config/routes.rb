@@ -104,6 +104,7 @@ Rails.application.routes.draw do
       post 'create_write_off', to: 'orders#create_write_off', on: :collection
       post 'execute_in', to: 'orders#execute_in', on: :member
       post 'execute_out', to: 'orders#execute_out', on: :member
+      post 'execute_write_off', to: 'orders#execute_write_off', on: :member
       post 'prepare_to_deliver', to: 'orders#prepare_to_deliver', on: :member
       put 'update_in', to: 'orders#update_in', on: :member
       put 'update_out', to: 'orders#update_out', on: :member

@@ -77,7 +77,7 @@ script type="text/ng-template" id="execOrder.slim"
 
     .modal-footer
       - if current_user.one_of_roles? :admin, :manager
-        .pull-left ng-if="exec.order.operation == 'out' && exec.order.status == 'processing' && !exec.order.validator_id_tn"
+        .pull-left ng-if="(exec.order.operation == 'out' || exec.order.operation == 'write_off') && exec.order.status == 'processing' && !exec.order.validator_id_tn"
           = button_tag "Утвердить", class: "btn-success", "ng-click": "exec.confirmOrder()"
         / .pull-left ng-if="exec.order.operation == 'out' && exec.order.status == 'processing' && !exec.order.validator_id_tn"
         /   .btn-group
@@ -91,6 +91,7 @@ script type="text/ng-template" id="execOrder.slim"
           span class='label label-info' ng-show="!exec.order.validator_id_tn" В ожидании проверки
 
       .pull-right
-        = button_tag "Исполнить...", class: "btn-success btn-sm", "ng-click": "exec.deliveryItems()", "ng-if": "exec.order.operation == 'out' && exec.order.status != 'done'"
+        = button_tag "Исполнить...", class: "btn-success btn-sm", "ng-click": "exec.ok()", "ng-if": "exec.order.operation == 'out' && exec.order.status != 'done'"
         = button_tag "Исполнить", class: "btn-success btn-sm", "ng-click": "exec.ok()", "ng-if": "exec.order.operation == 'in' && exec.order.status != 'done'"
+        = button_tag "Списать", class: "btn-success btn-sm", "ng-click": "exec.ok()", "ng-if": "exec.order.operation == 'write_off' && exec.order.status != 'done'"
         = button_tag "Закрыть", class: "btn-default btn-sm", "ng-click": "exec.cancel()"

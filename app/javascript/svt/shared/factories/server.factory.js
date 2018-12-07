@@ -191,6 +191,10 @@ import { app } from '../../app/app';
           executeOut: {
             method: 'POST',
             url: '/warehouse/orders/:id/execute_out'
+          },
+          executeWriteOff: {
+            method: 'POST',
+            url: '/warehouse/orders/:id/execute_write_off'
           }
         }),
         Supply: $resource('/warehouse/supplies/:id.json', {}, {

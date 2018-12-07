@@ -232,6 +232,26 @@ module Warehouse
       end
     end
 
+    describe 'POST #execute_write_off' do
+      let!(:order) { create(:order) }
+      let(:params) do
+        {
+          id: order.id,
+          order: order.as_json
+        }
+      end
+
+      it 'creates instance of the Orders::ExecuteWriteOff' do
+        post :execute_write_off, params: params, format: :json
+        expect(assigns(:execute_write_off)).to be_instance_of Orders::ExecuteWriteOff
+      end
+
+      it 'calls :run method' do
+        expect_any_instance_of(Orders::ExecuteWriteOff).to receive(:run)
+        post :execute_write_off, params: params, format: :json
+      end
+    end
+
     describe 'DELETE #destroy' do
       let!(:order) { create(:order) }
       let(:params) { { id: order.id } }

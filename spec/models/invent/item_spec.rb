@@ -424,7 +424,7 @@ module Invent
           before do
             order_params = attributes_for(:order, operation: :out, invent_workplace_id: workplace.workplace_id)
             order_params[:operations_attributes] = [operation]
-            Warehouse::Orders::CreateOut.new(create(:***REMOVED***_user), order_params).run
+            Warehouse::Orders::CreateOut.new(create(:***REMOVED***_user), order_params.as_json).run
           end
 
           context 'and when invent_num from allowed pool' do

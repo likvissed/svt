@@ -17,7 +17,7 @@ module Warehouse
     validates :validator_fio, presence: { message: :empty }, if: -> { (out? || write_off?) && !skip_validator }
     validates :closed_time, presence: true, if: -> { done? }
     validates :invent_workplace_id, presence: true, if: -> { out? }
-    validate :presence_consumer, if: -> { operations.any?(&:done?) }
+    validate :presence_consumer, if: -> { operations.any?(&:done?) && !write_off? }
     validate :at_least_one_operation
     validate :validate_in_order, if: -> { in? }
     validate :validate_write_off_order, if: -> { write_off? }
@@ -125,7 +125,7 @@ module Warehouse
     end
 
     def validate_write_off_order
-      return if operations.all? { |op| op.item.used? }
+      return if operations.all? { |op| op.item.used }
 
       errors.add(:base, :cant_create_write_off_order_with_new_item)
     end

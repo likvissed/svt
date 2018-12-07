@@ -46,7 +46,7 @@ import { app } from '../../app/app';
           op.item_type = item.item_type;
           op.item_model = item.item_model;
         }
-      } else if (_orderOperation == 'out') {
+      } else if (_orderOperation == 'out' || _orderOperation == 'write_off') {
         op.item_id = item.id;
         op.item_type = item.item_type;
         op.item_model = item.item_model;
@@ -89,7 +89,7 @@ import { app } from '../../app/app';
           return _generateOrder(warehouseType, item);
         } else if (_templateOperation.operationable_type == 'Warehouse::Supply') {
           return _generateSupply(item);
-        } else { return false; }
+        }
       },
       update: function(op, data) {
         if (_templateOperation.operationable_type == 'Warehouse::Supply') {

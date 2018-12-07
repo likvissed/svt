@@ -96,7 +96,7 @@ module Invent
                         'label-info'
                       when 'waiting_write_off'
                         'label-danger'
-                      when 'write_off'
+                      when 'written_off'
                         'label-default'
                       else
                         'label-success'

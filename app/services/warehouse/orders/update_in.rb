@@ -11,7 +11,7 @@ module Warehouse
       end
 
       def run
-        raise 'Неверные данные' if order_out?
+        raise 'Неверные данные (тип операции или аттрибут :shift)' unless order_in?
 
         @order = Order.find(@order_id)
         authorize @order, :update_in?
