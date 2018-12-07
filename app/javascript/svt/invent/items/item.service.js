@@ -109,10 +109,7 @@ import { app } from '../../app/app';
         this.Flash.notice(response.full_message);
         this.item = null;
       },
-      (response, status) => {
-        this.Error.response(response, status);
-        this.errorResponse(response);
-      }
+      (response, status) => this.Error.response(response, status)
     ).$promise;
   };
 
@@ -135,10 +132,7 @@ import { app } from '../../app/app';
     return this.Server.Invent.Item.toStock(
       { item_id: this.data.item.id },
       (response) => this.Flash.notice(response.full_message),
-      (response, status) => {
-        this.Error.response(response, status);
-        this.errorResponse(response);
-      }
+      (response, status) => this.Error.response(response, status)
     ).$promise;
   }
 })();
