@@ -64,6 +64,7 @@ module Warehouse
 
       def processing_params
         op_selected = false
+        new_status = :written_off
 
         @order.assign_attributes(@order_params)
         @item_ids = @order.operations.map do |op|
@@ -73,8 +74,8 @@ module Warehouse
           op.set_stockman(current_user)
           op.calculate_item_count
           op.calculate_item_count_reserved
-          op.inv_items.each { |inv_item| inv_item.status = :written_off }
-          op.item.status = :written_off
+          op.inv_items.each { |inv_item| inv_item.status = new_status }
+          op.item.status = new_status
           op.item_id
         end.compact
 

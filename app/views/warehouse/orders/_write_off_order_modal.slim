@@ -7,16 +7,16 @@ script type="text/ng-template" id="editWriteOffOrderModal.slim"
       table.table.table-striped.table-condensed
         thead
           tr
-            th
-            th Тип
-            th Инв. №
-            th Модель
+            th.col-sm-1
+            th.col-sm-4 Тип
+            th.col-sm-4 Инв. №
+            th.col-sm-15 Модель
         tbody
           tr ng-repeat="op in edit.order.operations_attributes"
             td= fa_icon "times-circle lg", class: "pointer", "tooltip-placement": "left", "uib-tooltip": "Убрать позицию",
               "ng-click": "edit.delPosition(op)", "ng-if": "op.status != 'done'"
             td ng-bind="op.item_type"
-            td ng-bind="op.inv_items | inventNumsToStr"
+            td ng-bind="op.invent_num"
             td ng-bind="op.item_model"
 
     .modal-footer

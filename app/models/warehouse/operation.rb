@@ -48,9 +48,7 @@ module Warehouse
 
       count.times do |i|
         if item.inv_item
-          item.inv_item.workplace = params[:workplace]
-          item.inv_item.status = params[:status]
-          inv_items << item.inv_item
+          change_inv_item(params[:status], params[:workplace])
         else
           new_inv_item = inv_items.build(
             type: item.inv_type,
@@ -63,6 +61,14 @@ module Warehouse
           new_inv_item.build_property_values(true)
         end
       end
+    end
+
+    def change_inv_item(status, workplace = nil)
+      return unless item.warehouse_type == 'with_invent_num' && item.inv_item
+
+      item.inv_item.status = status
+      item.inv_item.workplace = workplace
+      inv_items << item.inv_item
     end
 
     def calculate_item_count_reserved

@@ -89,6 +89,7 @@ module Warehouse
         subject.run
 
         expect(item.reload.status).to eq 'waiting_write_off'
+        expect(w_item_1.reload.status).to eq 'waiting_write_off'
       end
 
       context 'when invent_item was not updated' do

@@ -13,8 +13,13 @@ module Warehouse
         item.item_model = item.inv_model.item_model if item.inv_model
 
         # Если не задан тип и модель
-        if !item.item_type && !item.item_model && item.warehouse_type.to_s != 'without_invent_num'
-          item.inv_item ||= create(:item, :with_property_values, type_name: 'monitor')
+        if !item.item_type && !item.item_model && item.warehouse_type.to_s == 'with_invent_num'
+          if item.status != 'non_used'
+            item.inv_item ||= create(:item, :with_property_values, type_name: 'monitor')
+          else
+            item.inv_type ||= Invent::Type.find_by(name: :monitor)
+            item.inv_model ||= Invent::Type.find_by(name: :monitor).models.first
+          end
         end
 
         if item.inv_item

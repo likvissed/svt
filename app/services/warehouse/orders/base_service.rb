@@ -8,7 +8,6 @@ module Warehouse
       end
 
       def order_in?
-        # p @order_params['operations_attributes']
         @order_params['operation'] == 'in' && @order_params['operations_attributes']&.all? { |op| op['shift'].to_i.positive? }
       end
 

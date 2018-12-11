@@ -20,6 +20,14 @@ import { app } from '../../app/app';
   }
 
   /**
+   * Убрать позицию
+   */
+  EditWriteOffOrderController.prototype.delPosition = function(operation) {
+    this.Order.delPosition(operation);
+    this.Items.items.find((item) => item.id == operation.item_id).added_to_order = false
+  };
+
+  /**
    * Создать ордер.
    */
   EditWriteOffOrderController.prototype.ok = function() {

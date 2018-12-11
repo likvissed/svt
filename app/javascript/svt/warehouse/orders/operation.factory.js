@@ -32,7 +32,6 @@ import { app } from '../../app/app';
       op.item.invent_num_end = data.inventNumEnd;
     }
 
-
     function _generateOrder(warehouseType, item) {
       let op = _getTemplate();
 
@@ -50,6 +49,10 @@ import { app } from '../../app/app';
         op.item_id = item.id;
         op.item_type = item.item_type;
         op.item_model = item.item_model;
+
+        if (item.inv_item) {
+          op.invent_num = item.inv_item.invent_num;
+        }
       } else { return false; }
 
       return op;

@@ -56,10 +56,13 @@ module Warehouse
       end
 
       def prepare_inv_items
+        new_status = :waiting_write_off
+
         @order.operations.each do |op|
           next unless op.item
 
-          op.build_inv_items(op.shift.abs, status: :waiting_write_off)
+          op.change_inv_item(new_status)
+          op.item.status = new_status
           op.calculate_item_count_reserved
         end
       end
