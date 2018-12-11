@@ -34,8 +34,8 @@
       = fa_icon "toggle-off lg", class: "text-danger"
     |  Показать отсутствующие
 .col-sm-5.col-lg-3.col-fhd-2.multiline-buffer
-  = select_tag "", "", class: "form-control input-sm", "ng-model": "table.selectedFilters.used", "ng-change": "table.reloadItems()",
-    "ng-options": "used.value as used.descr for used in table.filters.selUsedFilter"
+  = select_tag "", "", class: "form-control input-sm", "ng-model": "table.selectedFilters.status", "ng-change": "table.reloadItems()",
+    "ng-options": "status as translated for (status, translated) in table.filters.selStatusFilter"
 .col-sm-5.col-lg-4.col-xlg-3.multiline-buffer
   .input-group.input-group-sm.form-input-sm.multiline-select
     ui-select ng-model="table.selectedFilters.item_type" on-select="table.reloadItems()" theme="bootstrap"

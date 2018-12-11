@@ -13,7 +13,7 @@ module Warehouse
     validates :item_type, :item_model, :shift, :status, presence: true
     validates :shift, numericality: { other_than: 0 }
     validates :stockman_fio, :date, presence: true, if: -> { done? }
-    validate :uniq_item_by_processing_operation, if: -> { item.try(:used) && item_id_changed? }
+    validate :uniq_item_by_processing_operation, if: -> { item.try(:used?) && item_id_changed? }
 
     after_initialize :set_initial_status, if: -> { new_record? }
     after_initialize :set_initial_shift, if: -> { new_record? }

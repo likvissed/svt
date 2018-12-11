@@ -5,7 +5,7 @@ module Warehouse
 
       def find_or_generate_item(op)
         if op[:item][:warehouse_type].to_s == 'without_invent_num'
-          Item.find_by(item_type: op[:item][:item_type], item_model: op[:item][:item_model], used: false) || Item.new(op[:item])
+          Item.find_by(item_type: op[:item][:item_type], item_model: op[:item][:item_model], status: :non_used) || Item.new(op[:item])
         else
           Item.new(op[:item])
         end

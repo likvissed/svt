@@ -125,9 +125,9 @@ module Warehouse
     end
 
     def validate_write_off_order
-      return if operations.all? { |op| op.item.used }
+      return if operations.all? { |op| !op.item.new? }
 
-      errors.add(:base, :cant_create_write_off_order_with_new_item)
+      errors.add(:base, :order_must_contains_only_used_items)
     end
 
     def set_initial_status

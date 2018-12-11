@@ -74,7 +74,7 @@ module Warehouse
           end
         end
 
-        context 'and when item with the same model exist (but with :used type)' do
+        context 'and when item with the same model exist (and item has :used status)' do
           let!(:item) { create(:item, :with_property_values, type_name: :printer, model: model) }
           let!(:w_item) { create(:used_item, inv_item: item, count_reserved: 1) }
 
@@ -197,10 +197,12 @@ module Warehouse
       end
 
       context 'when item was created without invent_num_start and now there is invent_num_start' do
+        let(:invent_num_start) { 765_100 }
+        let(:operation) { supply.items.where(warehouse_type: :with_invent_num).last.operations.last }
         let(:supply_params) do
           edit = Edit.new(user, supply.id)
           edit.run
-          edit.data[:supply]['operations_attributes'].find { |op| op['item']['warehouse_type'] == 'with_invent_num' }['item']['invent_num_start'] = 765_100
+          edit.data[:supply]['operations_attributes'].find { |op| op['item']['warehouse_type'] == 'with_invent_num' }['item']['invent_num_start'] = invent_num_start
           edit.data[:supply].as_json
         end
         before do
@@ -212,7 +214,8 @@ module Warehouse
 
         it 'calculates invent_num_end' do
           subject.run
-          p subject.error
+
+          expect(supply.reload.items.where(warehouse_type: :with_invent_num).last.invent_num_end).to eq invent_num_start + operation.shift - 1
         end
       end
     end

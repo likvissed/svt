@@ -2,7 +2,7 @@ module Warehouse
   FactoryBot.define do
     factory :used_item, class: Item do
       warehouse_type :with_invent_num
-      used true
+      status :used
       count 1
       count_reserved 0
       invent_num_start 111
@@ -31,7 +31,7 @@ module Warehouse
 
     factory :new_item, parent: :used_item, class: Item do
       warehouse_type :with_invent_num
-      used false
+      status :non_used
       inv_item nil
     end
   end

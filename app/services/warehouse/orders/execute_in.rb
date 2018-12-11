@@ -79,7 +79,7 @@ module Warehouse
               warehouse_type: :without_invent_num,
               item_type: op.item_type,
               item_model: op.item_model,
-              used: true,
+              status: :used,
               count: op.shift,
               count_reserved: 0
             )

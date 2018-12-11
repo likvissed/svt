@@ -140,7 +140,7 @@ module Invent
 
         context 'and with status filter' do
           let(:status) { :waiting_take }
-          let(:status_translated) { Invent::Item.translate_enum(:status, :waiting_take) }
+          let(:status_translated) { Invent::Item.translate_enum(:status, status) }
           let(:filters) { { status: status } }
           let!(:item) { create(:item, :with_property_values, type_name: :monitor, status: status) }
 

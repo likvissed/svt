@@ -17,7 +17,7 @@ module Warehouse
           warehouse_type: :without_invent_num,
           item_type: operation.item_type,
           item_model: operation.item_model,
-          used: true,
+          status: :used,
           count: 1,
           count_reserved: 0
         )

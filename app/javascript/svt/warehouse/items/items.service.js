@@ -18,27 +18,15 @@ import { app } from '../../app/app';
 
     this.selectedTableFilters = {
       show_only_presence: true,
-      used: '',
+      status: '',
       item_type: '',
       barcode: '',
       invent_num: '',
       invent_item_id: ''
     };
-    this.filters = {};
-    this.filters.selUsedFilter = [
-      {
-        descr: 'Все состояния',
-        value: ''
-      },
-      {
-        descr: 'Б/У',
-        value: 'true'
-      },
-      {
-        descr: 'Новое',
-        value: 'false'
-      }
-    ];
+    this.filters = {
+      selStatusFilter: { '': 'Все состояния' }
+    };
   }
 
   WarehouseItems.prototype.loadItems = function(init) {
@@ -59,6 +47,7 @@ import { app } from '../../app/app';
         if (init) {
           // Данные для фильтров
           this.filters.selItemTypesFiler = response.filters.item_types;
+          this.filters.selStatusFilter = Object.assign(this.filters.selStatusFilter, response.filters.statuses);
         }
       },
       (response, status) => this.Error.response(response, status)

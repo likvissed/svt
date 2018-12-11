@@ -23,7 +23,7 @@ module Warehouse
             w_item.inv_type = inv_item.type
             w_item.inv_model = inv_item.model
             w_item.warehouse_type = :with_invent_num
-            w_item.used = true
+            w_item.status = :used
 
             @order_state.edit_warehouse_item(w_item)
 

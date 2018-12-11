@@ -184,7 +184,7 @@ module Warehouse
             expect(op.item.warehouse_type).to eq 'without_invent_num'
             expect(op.item.item_type).to eq op.item_type
             expect(op.item.item_model).to eq op.item_model
-            expect(op.item.used).to be_truthy
+            expect(op.item.status).to eq 'used'
             expect(op.item.count).to eq op.shift
             expect(op.item.count_reserved).to be_zero
           end

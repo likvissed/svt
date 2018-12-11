@@ -49,7 +49,7 @@ module Warehouse
       end
 
       def filtering_params
-        JSON.parse(params[:filters]).slice('show_only_presence', 'used', 'item_type', 'barcode', 'item_model', 'invent_num', 'invent_item_id')
+        JSON.parse(params[:filters]).slice('show_only_presence', 'status', 'item_type', 'barcode', 'item_model', 'invent_num', 'invent_item_id')
       end
 
       def limit_records
@@ -78,7 +78,18 @@ module Warehouse
 
         data[:data] = result_arr.as_json(include: %i[inv_item supplies]).each do |item|
           item['range_inv_nums'] = item['invent_num_start'] ? "#{item['invent_num_start']} - #{item['invent_num_end']}" : ''
-          item['translated_used'] = item['used'] ? '<span class="label label-warning">Б/У</span>' : '<span class="label label-success">Новое</span>'
+          i_tr = Item.translate_enum(:status, item['status'])
+          item['translated_status'] = case item['status']
+                                      when 'non_used'
+                                        "<span class='label label-success'>#{i_tr}</span>"
+                                      when 'used'
+                                        "<span class='label label-warning'>#{i_tr}</span>"
+                                      when 'waiting_write_off'
+                                        "<span class='label label-danger'>#{i_tr}</span>"
+                                      when 'written_off'
+                                        "<span class='label label-default'>#{i_tr}</span>"
+                                      end
+
           item['supplies'].each { |supply| supply['date'] = supply['date'].strftime('%d-%m-%Y') }
         end
       end
@@ -86,6 +97,7 @@ module Warehouse
       def init_filters
         data[:filters] = {}
         data[:filters][:item_types] = Item.pluck(:item_type).uniq
+        data[:filters][:statuses] = Item.statuses.map { |key, _val| [key, Item.translate_enum(:status, key)] }.to_h
       end
 
       def load_orders

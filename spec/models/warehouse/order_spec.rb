@@ -76,10 +76,10 @@ module Warehouse
       context 'and when item is new' do
         let(:item) { create(:new_item) }
 
-        it 'adds :cant_create_write_off_order_with_new_item error' do
+        it 'adds :order_must_contains_only_used_items error' do
           subject.valid?
 
-          expect(subject.errors.details[:base]).to include(error: :cant_create_write_off_order_with_new_item)
+          expect(subject.errors.details[:base]).to include(error: :order_must_contains_only_used_items)
         end
       end
 
