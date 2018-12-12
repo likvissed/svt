@@ -177,18 +177,18 @@ module Warehouse
       end
     end
 
-    describe 'PUT #confirm_out' do
+    describe 'PUT #confirm' do
       let!(:order) { create(:order) }
       let(:params) { { id: order.id } }
 
-      it 'creates instance of the Orders::ConfirmOut' do
-        put :confirm_out, params: params
-        expect(assigns(:confirm_out)).to be_instance_of Orders::ConfirmOut
+      it 'creates instance of the Orders::Confirm' do
+        put :confirm, params: params
+        expect(assigns(:confirm)).to be_instance_of Orders::Confirm
       end
 
       it 'calls :run method' do
-        expect_any_instance_of(Orders::ConfirmOut).to receive(:run)
-        put :confirm_out, params: params
+        expect_any_instance_of(Orders::Confirm).to receive(:run)
+        put :confirm, params: params
       end
     end
 

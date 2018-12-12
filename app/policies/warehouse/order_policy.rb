@@ -13,19 +13,22 @@ module Warehouse
       for_worker
     end
 
+    def create_write_off?
+      record.set_validator(user) if for_manager
+      for_worker
+    end
+
     def update_in?
       for_worker
     end
 
     def update_out?
-      # if for_manager
-        # record.set_validator(user)
       record.set_validator(nil) if user.role? :worker
 
       for_worker
     end
 
-    def confirm_out?
+    def confirm?
       for_manager
     end
 
@@ -34,6 +37,10 @@ module Warehouse
     end
 
     def execute_out?
+      for_worker
+    end
+
+    def execute_write_off?
       for_worker
     end
 

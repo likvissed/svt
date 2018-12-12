@@ -63,6 +63,13 @@ module Warehouse
 
       its(:run) { is_expected.to be_truthy }
 
+      it 'sets validator fields' do
+        subject.run
+
+        expect(Order.last.validator_id_tn).to eq current_user.id_tn
+        expect(Order.last.validator_fio).to eq current_user.fullname
+      end
+
       it 'creates warehouse_operations records' do
         expect { subject.run }.to change(Operation, :count).by(order_params[:operations_attributes].size)
       end

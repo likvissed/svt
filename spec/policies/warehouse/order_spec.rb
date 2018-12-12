@@ -43,6 +43,22 @@ module Warehouse
       end
     end
 
+    permissions :create_write_off? do
+      let(:model) { Order.first }
+
+      context 'with manager role' do
+        it 'grants access' do
+          expect(subject).to permit(manager, model)
+        end
+
+        it 'sets validator' do
+          expect(subject).to permit(manager, model)
+          expect(model.validator_id_tn).to eq manager.id_tn
+          expect(model.validator_fio).to eq manager.fullname
+        end
+      end
+    end
+
     permissions :update_in? do
       let(:model) { Order.first }
 
@@ -83,7 +99,7 @@ module Warehouse
       end
     end
 
-    permissions :confirm_out? do
+    permissions :confirm? do
       let(:model) { Order.first }
 
       include_examples 'policy for manager'
@@ -96,6 +112,12 @@ module Warehouse
     end
 
     permissions :execute_out? do
+      let(:model) { Order.first }
+
+      include_examples 'policy for worker'
+    end
+
+    permissions :execute_write_off? do
       let(:model) { Order.first }
 
       include_examples 'policy for worker'

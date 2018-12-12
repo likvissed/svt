@@ -1,6 +1,6 @@
 module Warehouse
   module Orders
-    class ConfirmOut < BaseService
+    class Confirm < BaseService
       def initialize(current_user, order_id)
         @current_user = current_user
         @order_id = order_id
@@ -10,10 +10,15 @@ module Warehouse
 
       def run
         find_order
-        raise 'Неверные данные' if @order.operation != 'out'
-
         save_order(@order)
-        broadcast_out_orders
+
+        if @order.in?
+          broadcast_in_orders
+        elsif @order.out?
+          broadcast_out_orders
+        elsif @order.write_off?
+          broadcast_write_off_orders
+        end
 
         true
       rescue RuntimeError => e
@@ -27,7 +32,7 @@ module Warehouse
 
       def find_order
         @order = Order.find(@order_id)
-        authorize @order, :confirm_out?
+        authorize @order, :confirm?
         @order.set_validator(current_user)
       end
     end

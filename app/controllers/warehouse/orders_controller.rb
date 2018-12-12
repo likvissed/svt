@@ -130,13 +130,13 @@ module Warehouse
       end
     end
 
-    def confirm_out
-      @confirm_out = Orders::ConfirmOut.new(current_user, params[:id])
+    def confirm
+      @confirm = Orders::Confirm.new(current_user, params[:id])
 
-      if @confirm_out.run
+      if @confirm.run
         render json: { full_message: I18n.t('controllers.warehouse/order.confirmed', order_id: params[:id]) }
       else
-        render json: @confirm_out.error, status: 422
+        render json: @confirm.error, status: 422
       end
     end
 

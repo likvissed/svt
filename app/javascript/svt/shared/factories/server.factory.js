@@ -180,9 +180,9 @@ import { app } from '../../app/app';
             method: 'PUT',
             url: '/warehouse/orders/:id/update_out'
           },
-          confirmOut: {
+          confirm: {
             method: 'PUT',
-            url: '/warehouse/orders/:id/confirm_out'
+            url: '/warehouse/orders/:id/confirm'
           },
           executeIn: {
             method: 'POST',

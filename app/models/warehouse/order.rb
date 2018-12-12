@@ -125,7 +125,7 @@ module Warehouse
     end
 
     def validate_write_off_order
-      return if operations.all? { |op| !op.item.new? }
+      return if operations.all? { |op| !op.item.new? && op.item.status_was != 'non_used' }
 
       errors.add(:base, :order_must_contains_only_used_items)
     end

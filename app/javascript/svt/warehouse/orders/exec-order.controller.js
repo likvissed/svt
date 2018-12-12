@@ -128,9 +128,7 @@ import { FormValidationController } from '../../shared/functions/form-validation
    * Утвердить/отклонить ордер.
    */
   ExecOrderController.prototype.confirmOrder = function() {
-    if (this.order.operation != 'out') { return false; }
-
-    this.Server.Warehouse.Order.confirmOut(
+    this.Server.Warehouse.Order.confirm(
       { id: this.order.id },
       {},
       (response) => {

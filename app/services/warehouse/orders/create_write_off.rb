@@ -30,6 +30,7 @@ module Warehouse
 
       def init_order
         @order = Order.new(@order_params)
+        authorize @order, :create_write_off?
         @order.skip_validator = true
         @order.set_creator(current_user)
       end

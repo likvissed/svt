@@ -50,8 +50,9 @@ module Warehouse
         elsif order.operation.to_s == 'write_off'
           if order.operations.empty? && !ev.without_operations
             item = create(:item, :with_property_values, type_name: :monitor)
+            w_item = create(:used_item, inv_item: item)
 
-            order.operaitons << build(:order_operation, inv_item_ids: [item.item_id], shift: -1)
+            order.operations << build(:order_operation, item: w_item, inv_item_ids: [item.item_id], shift: -1)
           end
         end
       end
