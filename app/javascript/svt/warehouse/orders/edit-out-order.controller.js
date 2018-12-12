@@ -44,7 +44,7 @@ import { FormValidationController } from '../../shared/functions/form-validation
   };
 
   /**
-   * Обновить данные ордера
+   * Обновить данные ордера.
    */
   EditOutOrderController.prototype.reloadOrder = function() {
     this.Order.reloadOrder();
@@ -52,11 +52,15 @@ import { FormValidationController } from '../../shared/functions/form-validation
   };
 
   /**
-   * Убрать позицию
+   * Убрать позицию.
    */
   EditOutOrderController.prototype.delPosition = function(operation) {
     this.Order.delPosition(operation);
-    this.Items.items.find((item) => item.id == operation.item_id).added_to_order = false
+
+    let item = this.Items.items.find((item) => item.id == operation.item_id)
+    if (item) {
+      item.added_to_order = false;
+    }
   };
 
   /**

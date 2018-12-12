@@ -21,12 +21,24 @@ import { app } from '../../app/app';
     this.order = {};
   }
 
+  /**
+   * Сформировать счетчик выбранных элементов в таблице техники.
+   *
+   * @param count
+   */
   WarehouseOrder.prototype._initVisibleCount = function(count) {
     this.additional.visibleCount = count || 0;
-  }
+  };
 
-  WarehouseOrder.prototype._processingData = function(data, onlyOrder = false) {
-    this._setOrder(data.order);
+  /**
+   * Обработать данные для формирования ордера.
+   *
+   * @param data - данные, которые будут вставлены в ордер.
+   * @param onlyOrder - флаг. Если true, дополнительные параметры устанавливаться не будут, только данные ордера.
+   * @param newOperations - флаг. Если true, позиции ордера будут созданы заново.
+   */
+  WarehouseOrder.prototype._processingData = function(data, onlyOrder = false, newOperations = false) {
+    this._setOrder(data.order, newOperations);
 
     if (!onlyOrder) {
       // Заполнить список отделов
@@ -36,14 +48,31 @@ import { app } from '../../app/app';
 
       this.Operation.setTemplate(data.operation, this.order.operation);
     }
-  }
+  };
 
   /**
-   * Создать объект Order
+   * Сформировать массив позиций.
+   *
+   * @param order - данные ордера
+   * @param newOp - флаг. Если true - позиции будут пустыми.
    */
-  WarehouseOrder.prototype._setOrder = function(order) {
+  WarehouseOrder.prototype._initOperations = function(order, newOp = false) {
+    if (newOp) {
+      this.order.operations_attributes = [];
+    } else {
+      this.order.operations_attributes = order.operations_attributes || this.order.operations_attributes || [];
+    }
+  };
+
+  /**
+   * Создать объект Order.
+   *
+   * @param order - данные ордера.
+   * @param newOperations - флаг. Если true, позиции ордера будут созданы заново.
+   */
+  WarehouseOrder.prototype._setOrder = function(order, newOperations = false) {
     angular.extend(this.order, order);
-    this.order.operations_attributes = order.operations_attributes || this.order.operations_attributes || [];
+    this._initOperations(order, newOperations);
     this.order.consumer = order.consumer;
 
     if (typeof this._orderTemplate === 'undefined') {
@@ -52,17 +81,22 @@ import { app } from '../../app/app';
     this._initVisibleCount(this.order.operations_attributes.length);
   };
 
+  /**
+   * Получить выбранную позицию.
+   *
+   * @param item - техника, по которой ищется позиция
+   */
   WarehouseOrder.prototype.getOperation = function(item) {
     if (!this.order || !this.order.operations_attributes) { return false; }
 
     return this.order.operations_attributes.find((op) => op.item_id == item.id);
-  }
+  };
 
   /**
    * Загрузить список ордеров
    *
-   * @params operation
-   * @params init
+   * @params operation - тип ордеров
+   * @params init - флаг. Если true, будут загружены фильтры.
    */
   WarehouseOrder.prototype.loadOrders = function(operation, init = false) {
     return this.Server.Warehouse.Order.query(
@@ -88,7 +122,11 @@ import { app } from '../../app/app';
   };
 
   /**
-   * Загрузить данные указанного ордера
+   * Загрузить данные указанного ордера.
+   *
+   * @param order_id - id ордера
+   * @param onlyOrder - флаг. Если true, дополнительные параметры устанавливаться не будут, только данные ордера.
+   * @param checkUnreg - флаг. Если true, будет проверка, разрегестрирована ли техника.
    */
   WarehouseOrder.prototype.loadOrder = function(order_id, onlyOrder = false, checkUnreg = false) {
     return this.Server.Warehouse.Order.edit(
@@ -112,8 +150,10 @@ import { app } from '../../app/app';
    * Загрузить данные с сервера: объект ордер, список отделов
    *
    * @param type - тип ордера (на приход или расход)
+   * @param data - данные ордера.
+   * @param newOperations - флаг. Если true, позиции ордера будут созданы заново.
    */
-  WarehouseOrder.prototype.init = function(type, data) {
+  WarehouseOrder.prototype.init = function(type, data, newOperations = false) {
     if (data) {
       this._processingData(data);
 
@@ -122,7 +162,7 @@ import { app } from '../../app/app';
 
     return this.Server.Warehouse.Order.newOrder(
       { operation: type },
-      (data) => this._processingData(data),
+      (data) => this._processingData(data, false, newOperations),
       (response, status) => this.Error.response(response, status)
     ).$promise;
   };
@@ -133,8 +173,11 @@ import { app } from '../../app/app';
   WarehouseOrder.prototype.reinit = function() {
     angular.extend(this.order, angular.copy(this._orderTemplate));
     this._initVisibleCount();
-  }
+  };
 
+  /**
+   * Выбрать все позиции ордера для исполнения.
+   */
   WarehouseOrder.prototype.prepareToExec = function() {
     this.order.operations_attributes.forEach((op) => op.status = 'done');
   };
@@ -177,13 +220,15 @@ import { app } from '../../app/app';
 
   /**
    * Подготовить данные для отправки на сервер.
+   *
+   * @param doneFlag
    */
-  WarehouseOrder.prototype.getObjectToSend = function(done_flag = false) {
+  WarehouseOrder.prototype.getObjectToSend = function(doneFlag = false) {
     this._setConsumer();
 
     let obj = angular.copy(this.order);
 
-    if (done_flag) {
+    if (doneFlag) {
       obj.status = 'done';
       obj.dont_calculate_status = true;
     }
@@ -209,10 +254,10 @@ import { app } from '../../app/app';
     delete(obj.selected_op);
 
     return obj;
-  }
+  };
 
   /**
-   * Проверить корректность данных ордера перед выдачей оборудования
+   * Проверить корректность данных ордера перед выдачей оборудования.
    */
   WarehouseOrder.prototype.prepareToDeliver = function() {
     let sendData = this.getObjectToSend();

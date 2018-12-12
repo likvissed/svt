@@ -18,7 +18,7 @@ import { app } from '../../app/app';
     this.pagination = TablePaginator.config();
 
     this.filters = this.Filters.getFilters();
-    this.selected= this.Filters.getSelected();
+    this.selected = this.Filters.getSelected();
 
     $scope.initOperation = (operation) => {
       this.operation = operation;
@@ -79,7 +79,7 @@ import { app } from '../../app/app';
    * Открыть окно создания ордера.
    */
   OrdersController.prototype.newOrder = function() {
-    this.Order.init('in').then(() => this._openEditModal());
+    this.Order.init('in', null, true).then(() => this._openEditModal());
   };
 
   /**
