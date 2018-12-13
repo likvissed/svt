@@ -32,7 +32,7 @@ module Invent
         return if @item.destroy
 
         error[:full_message] = @item.errors.full_messages.join('. ')
-        raise 'Модель не удалена'
+        raise 'Техника не удалена'
       end
     end
   end

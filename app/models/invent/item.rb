@@ -11,7 +11,7 @@ module Invent
     # Статусы, обозначающие перемещение техники
     MOVE_ITEM_TYPES = %w[prepared_to_swap waiting_bring waiting_take].freeze
 
-    has_one :warehouse_item, foreign_key: 'invent_item_id', class_name: 'Warehouse::Item', dependent: :destroy
+    has_one :warehouse_item, foreign_key: 'invent_item_id', class_name: 'Warehouse::Item', dependent: :nullify
     has_many :property_values,
              -> { joins('LEFT OUTER JOIN invent_property ON invent_property_value.property_id = invent_property.property_id').order('invent_property.property_order').includes(:property) },
              inverse_of: :item, dependent: :destroy

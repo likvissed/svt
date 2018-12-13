@@ -19,7 +19,7 @@
                 th Состояние
                 th На складе
                 th Зарезервировано
-                th
+                / th
             tbody
               tr ng-repeat="item in table.items" ng-class="{ 'text-muted': (!table.isItemInStock(item) && !table.isItemInOrder(item)) || table.isItemInDoneOp(item) }"
                 td
@@ -34,7 +34,7 @@
                 td.col-sm-2 ng-bind-html="item.translated_status"
                 td.col-sm-2 ng-bind="item.count"
                 td.col-sm-2 ng-bind="item.count_reserved"
-                td
+                / td
                   = fa_icon "trash-o sm", class: "pointer text-danger", "ng-click": "table.destroyItem(item)", "uib-tooltip": "Удалить технику со склада",
                      "tooltip-append-to-body": "true", "ng-hide": "table.isItemInOrder(item)"
 

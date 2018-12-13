@@ -2,7 +2,7 @@ require 'feature_helper'
 
 module Invent
   RSpec.describe Item, type: :model do
-    it { is_expected.to have_one(:warehouse_item).with_foreign_key('invent_item_id').class_name('Warehouse::Item').dependent(:destroy) }
+    it { is_expected.to have_one(:warehouse_item).with_foreign_key('invent_item_id').class_name('Warehouse::Item').dependent(:nullify) }
     it { is_expected.to have_many(:property_values).inverse_of(:item).dependent(:destroy).order('invent_property.property_order') }
     it { is_expected.to have_many(:standard_discrepancies).class_name('Standard::Discrepancy').dependent(:destroy) }
     it { is_expected.to have_many(:standard_logs).class_name('Standard::Log') }

@@ -29,7 +29,7 @@ module Warehouse
         return if @item.destroy
 
         error[:full_message] = @item.errors.full_messages.join('. ')
-        raise 'Ордер не удален'
+        raise 'Техника не удалена'
       end
     end
   end
