@@ -14,9 +14,6 @@ script type="text/ng-template" id="execOrder.slim"
           = render partial: 'templates/load_spinner'
         .icon-block ng-if="exec.order.status == 'done' && exec.order.operation == 'out'"
           = fa_icon "print 2x fw", class: "pointer", "uib-tooltip": "Распечатать ордер", "tooltip-append-to-body": "true", "ng-click": "exec.printOrder()"
-        / .icon-block ng-show="exec.order.id"
-          = fa_icon "refresh 2x fw", class: "pointer", "tooltip-placement": "top", "tooltip-append-to-body": true, "uib-tooltip": "Загрузать данные об ордере заново",
-            "ng-click": "exec.reloadOrder()"
 
     .modal-body
       fieldset ng-disabled="exec.order.status == 'done'"
@@ -54,6 +51,8 @@ script type="text/ng-template" id="execOrder.slim"
               tr
                 th.col-sm-1
                   input type="checkbox" ng-model="exec.isAllOpSelected" ng-click="exec.toggleAll()"
+                th ng-if="exec.order.operation == 'in'"
+                 | На списание
                 th.col-sm-3 Тип
                 th.col-sm-3 Инв. №
                 th.col-sm-2 Кол-во
@@ -64,6 +63,8 @@ script type="text/ng-template" id="execOrder.slim"
               tr ng-exec-in-order-table=true
                 td
                   input type="checkbox" ng-model="op.status" ng-true-value="'done'" ng-false-value="'processing'" ng-click="exec.checkSelected()" ng-disabled="exec.isOperationDone(op)"
+                td.text-center ng-if="exec.order.operation == 'in'"
+                  input type="checkbox" ng-model="op.to_write_off" ng-disabled="exec.isOperationDone(op)"
                 td ng-bind="op.inv_items[0].type.short_description || op.item.item_type || op.item_type"
                 td ng-bind="op.inv_items | inventNumsToStr"
                 td ng-bind="op.shift | positiveVal"
@@ -79,14 +80,9 @@ script type="text/ng-template" id="execOrder.slim"
       - if current_user.one_of_roles? :admin, :manager
         .pull-left ng-if="(exec.order.operation == 'out' || exec.order.operation == 'write_off') && exec.order.status == 'processing' && !exec.order.validator_id_tn"
           = button_tag "Утвердить", class: "btn-success", "ng-click": "exec.confirmOrder()"
-        / .pull-left ng-if="exec.order.operation == 'out' && exec.order.status == 'processing' && !exec.order.validator_id_tn"
-        /   .btn-group
-        /     = button_tag "Утвердить", class: "btn-success", "ng-click": "exec.confirmOrder()"
-        /     = button_tag "Отклонить", class: "btn-danger", "ng-click": "exec.confirmOrder()"
 
       .pull-left ng-if="exec.order.operation == 'out'"
         span class='label label-success' ng-show="exec.order.validator_id_tn" Утвержден
-        / span class='label label-danger' Отклонен
         - if !current_user.one_of_roles? :admin, :manager
           span class='label label-info' ng-show="!exec.order.validator_id_tn" В ожидании проверки
 

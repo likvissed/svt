@@ -192,7 +192,7 @@ import { app } from '../../app/app';
   };
 
   /**
-   * Добавить объект operation к текущему ордеру
+   * Добавить объект operation к текущему ордеру.
    *
    * @param warehouseType
    * @param item
@@ -203,7 +203,7 @@ import { app } from '../../app/app';
   };
   /**
 
-   * Удалить объект operation из ордера
+   * Удалить объект operation из ордера.
    *
    * @param operation
    */

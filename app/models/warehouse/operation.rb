@@ -26,6 +26,8 @@ module Warehouse
 
     enum status: { processing: 1, done: 2 }
 
+    attr_accessor :to_write_off
+
     def set_stockman(user)
       self.stockman_id_tn = user.id_tn
       self.stockman_fio = user.fullname

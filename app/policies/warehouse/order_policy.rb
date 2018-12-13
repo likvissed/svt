@@ -88,6 +88,7 @@ module Warehouse
             :status,
             :date,
             :_destroy,
+            :to_write_off,
             inv_item_ids: [],
             inv_items_attributes: [
               :id,
@@ -126,6 +127,7 @@ module Warehouse
             :status,
             :date,
             :_destroy,
+            :to_write_off,
             inv_item_ids: [],
             inv_items_attributes: [
               :id,

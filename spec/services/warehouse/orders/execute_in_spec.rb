@@ -74,6 +74,19 @@ module Warehouse
 
         it 'runs :to_stock! method' do
           expect_any_instance_of(Invent::Item).to receive(:to_stock!)
+
+          subject.run
+        end
+
+        it 'does not run Orders::CreateWriteOff service' do
+          expect(Orders::CreateWriteOff).not_to receive(:new)
+
+          subject.run
+        end
+
+        it 'does not broadcast to write_off_orders' do
+          expect(subject).not_to receive(:broadcast_write_off_orders)
+
           subject.run
         end
 
@@ -152,6 +165,72 @@ module Warehouse
 
             expect(subject.error[:full_message]).to eq 'Необходимо выбрать хотя бы одну позицию'
           end
+
+          context 'and when operation has :to_write_off flag' do
+            let(:order_params) do
+              order_json['consumer_tn'] = ***REMOVED***
+              order_json['operations_attributes'] = operations.as_json
+              order_json['operations_attributes'].each_with_index do |op, index|
+                next unless index.zero?
+
+                op['to_write_off'] = true
+              end
+
+              order_json
+            end
+
+            it 'does not run Orders::CreateWriteOff service' do
+              expect(Orders::CreateWriteOff).not_to receive(:new)
+
+              subject.run
+            end
+
+            it 'does not broadcast to write_off_orders' do
+              expect(subject).not_to receive(:broadcast_write_off_orders)
+
+              subject.run
+            end
+
+            its(:run) { is_expected.to be_falsey }
+          end
+        end
+
+        context 'and when operation has :to_write_off flag' do
+          let(:order_params) do
+            order_json['consumer_tn'] = ***REMOVED***
+            order_json['operations_attributes'] = operations.as_json
+            order_json['operations_attributes'].each_with_index do |op, index|
+              next unless index.zero?
+
+              op['status'] = 'done'
+              op['to_write_off'] = true
+            end
+
+            order_json
+          end
+          let(:write_off) { Orders::CreateWriteOff.new(current_user, order_params) }
+          let(:create_write_off) { double(:create_write_off) }
+
+          it 'runs Orders::CreateWriteOff service' do
+            allow(Orders::CreateWriteOff).to receive(:new).and_return(create_write_off)
+            expect(write_off).to receive(:run).and_return(true)
+
+            subject.run
+          end
+
+          it 'creates order with :write_off operation' do
+            subject.run
+
+            expect(Order.last.operation).to eq 'write_off'
+          end
+
+          it 'broadcasts to write_off_orders' do
+            expect(subject).to receive(:broadcast_write_off_orders)
+
+            subject.run
+          end
+
+          its(:run) { is_expected.to be_truthy }
         end
       end
 

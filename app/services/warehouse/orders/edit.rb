@@ -45,7 +45,7 @@ module Warehouse
           include: [
             :consumer,
             operations: {
-              methods: :formatted_date,
+              methods: %i[formatted_date to_write_off],
               include: [
                 :item,
                 inv_items: {
