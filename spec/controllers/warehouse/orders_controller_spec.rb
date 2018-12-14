@@ -177,6 +177,26 @@ module Warehouse
       end
     end
 
+    describe 'PUT #update_write_off' do
+      let!(:order) { create(:order) }
+      let(:params) do
+        {
+          id: order.id,
+          order: order.as_json
+        }
+      end
+
+      it 'creates instance of the Orders::UpdateWriteOff' do
+        put :update_write_off, params: params
+        expect(assigns(:update_write_off)).to be_instance_of Orders::UpdateWriteOff
+      end
+
+      it 'calls :run method' do
+        expect_any_instance_of(Orders::UpdateWriteOff).to receive(:run)
+        put :update_write_off, params: params
+      end
+    end
+
     describe 'PUT #confirm' do
       let!(:order) { create(:order) }
       let(:params) { { id: order.id } }

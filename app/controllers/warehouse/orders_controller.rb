@@ -130,6 +130,16 @@ module Warehouse
       end
     end
 
+    def update_write_off
+      @update_write_off = Orders::UpdateWriteOff.new(current_user, params[:id], order_params)
+
+      if @update_write_off.run
+        render json: { full_message: I18n.t('controllers.warehouse/order.updated', order_id: params[:id]) }
+      else
+        render json: @update_write_off.error, status: 422
+      end
+    end
+
     def confirm
       @confirm = Orders::Confirm.new(current_user, params[:id])
 

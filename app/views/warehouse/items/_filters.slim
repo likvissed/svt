@@ -1,5 +1,5 @@
 .col-sm-7.col-md-6.col-xlg-5.col-fhd-4.multiline-buffer
-  .btn-group
+  .btn-group ng-if="!table.selectedOrder.id" ng-cloak="true"
     = button_tag "Создать расходный ордер", type: :button, class: "btn-primary btn-sm", "ng-click": "table.newOrder('out')",
       "ng-disabled": "table.extraOrder.visibleCount == 0"
     = button_tag type: :button, class: "btn-primary btn-sm dropdown-toggle", "data-toggle": "dropdown", "ng-disabled": "table.extraOrder.visibleCount == 0" do
@@ -7,16 +7,23 @@
     ul.dropdown-menu
       li
         a href="" ng-click="table.newOrder('write_off')"
-          | Пометить технику на списание
+          | Создать ордер на списание
       li
         a href="" ng-click="table.execOrder()"
-          | Списать технику
+          | Создать ордер и списать технику
+  div ng-if="table.selectedOrder.id && table.selectedOrder.operation == 'out'" ng-cloak="true"
+    = button_tag "Обновить расходный ордер", type: :button, class: "btn-primary btn-sm", "ng-click": "table.showOrder('out')",
+      "ng-disabled": "table.extraOrder.visibleCount == 0"
+  div ng-if="table.selectedOrder.id && table.selectedOrder.operation == 'write_off'" ng-cloak="true"
+    = button_tag "Обновить ордер на списание", type: :button, class: "btn-primary btn-sm", "ng-click": "table.showOrder('write_off')",
+      "ng-disabled": "table.extraOrder.visibleCount == 0"
+
 .col-sm-11.col-md-8.col-lg-7.col-xlg-6.col-fhd-5.multiline-buffer
   .input-group.input-group-sm.form-input-sm.multiline-select
     ui-select ng-model="table.selectedOrder" on-select="table.loadOrder()" theme="bootstrap" allow-clear=true
       ui-select-match placeholder="Выберите ордер для редактирования"
         | {{ $select.selected.main_info }}
-      ui-select-choices repeat="obj in table.orders | filter: $select.search"
+      ui-select-choices group-by="'operation_translated'" repeat="obj in table.orders | filter: $select.search"
         div ng-bind-html="obj.main_info | highlight: $select.search"
         small ng-bind-html="obj.operations_to_string | highlight: $select.search"
     span.input-group-btn
@@ -26,6 +33,7 @@
       = button_tag type: :button, class: "btn-default", "ng-click": "table.destroyOrder()", "uib-tooltip": "Удалить ордер", "tooltip-append-to-body": true,
         "ng-disabled": "!table.selectedOrder.id" do
         = fa_icon "trash", class: "text-danger"
+
 .col-sm-6.col-md-5.col-lg-4.col-xlg-4.col-fhd-3.col-fhd-offset-1.multiline-buffer
   = button_tag type: :button, class: "btn btn-default btn-block btn-sm", "ng-click": "table.showOnlyPresenceFilter()" do
     span ng-if="!table.selectedFilters.show_only_presence"
@@ -33,9 +41,11 @@
     span ng-if="table.selectedFilters.show_only_presence"
       = fa_icon "toggle-off lg", class: "text-danger"
     |  Показать отсутствующие
+
 .col-sm-5.col-lg-3.col-fhd-2.multiline-buffer
   = select_tag "", "", class: "form-control input-sm", "ng-model": "table.selectedFilters.status", "ng-change": "table.reloadItems()",
     "ng-options": "status as translated for (status, translated) in table.filters.selStatusFilter"
+
 .col-sm-5.col-lg-4.col-xlg-3.multiline-buffer
   .input-group.input-group-sm.form-input-sm.multiline-select
     ui-select ng-model="table.selectedFilters.item_type" on-select="table.reloadItems()" theme="bootstrap"
@@ -47,6 +57,7 @@
       = button_tag type: :button, class: "btn-default", "ng-click": "table.closeItemTypeFilter()", "uib-tooltip": "Очистить", "tooltip-append-to-body": true,
         "ng-disabled": "!table.selectedFilters.item_type" do
         = fa_icon "times"
+
 .col-sm-5.col-lg-4.col-xlg-3.multiline-buffer
   = text_field_tag "", "", class: "form-control input-sm", placeholder: "Модель", "ng-model": "table.selectedFilters.item_model",
     "ng-model-options": "{ debounce: 300 }", "ng-change": "table.reloadItems()"

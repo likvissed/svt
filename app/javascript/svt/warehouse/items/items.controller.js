@@ -26,7 +26,7 @@ import { app } from '../../app/app';
   }
 
   /**
-   * Инициировать подключение к каналу ItemsChannel
+   * Инициировать подключение к каналу ItemsChannel.
    */
   WarehouseItemsCtrl.prototype._initActionCable = function() {
     let consumer = new this.ActionCableChannel('Warehouse::ItemsChannel');
@@ -39,6 +39,8 @@ import { app } from '../../app/app';
 
   /**
    * Загрузить список ордеров.
+   *
+   * @param init - флаг. Если true, будут загружены и фильтры
    */
   WarehouseItemsCtrl.prototype._loadItems = function(init) {
     this.Items.loadItems(init).then(
@@ -172,14 +174,25 @@ import { app } from '../../app/app';
 
     this.Order.init(operation).then(
       () => {
-        operationName = operation == 'out' ? 'Out' : 'WriteOff'
+        operationName = operation == 'out' ? 'Out' : 'WriteOff';
         this._openOrderModal(operationName);
       }
     );
   };
 
   /**
-   * Удалить технику со склада
+   * Открыть окно обновления ордера.
+   *
+   * @param operation
+   */
+  WarehouseItemsCtrl.prototype.showOrder = function(operation) {
+    let operationName = operation == 'out' ? 'Out' : 'WriteOff';
+
+    this._openOrderModal(operationName);
+  };
+
+  /**
+   * Удалить технику со склада.
    *
    * @param item
    */
@@ -196,13 +209,14 @@ import { app } from '../../app/app';
   };
 
   /**
-   * Загрузить ордера для редактирования
-   *
-   * @param order
+   * Загрузить ордер для редактирования.
    */
   WarehouseItemsCtrl.prototype.loadOrder = function() {
+    let operationName;
+
     this.Order.loadOrder(this.selectedOrder.id, true).then(() => {
-      this._openOrderModal('Out');
+      operationName = this.selectedOrder.operation == 'out' ? 'Out' : 'WriteOff';
+      this._openOrderModal(operationName);
       this.Items.findSelected();
 
       this.reloadItems();
@@ -210,7 +224,7 @@ import { app } from '../../app/app';
   }
 
   /**
-   * Очистить выбранный ордер
+   * Очистить выбранный ордер.
    */
   WarehouseItemsCtrl.prototype.closeOrder = function() {
     this.Order.reinit();
@@ -219,7 +233,7 @@ import { app } from '../../app/app';
   };
 
   /**
-   * Очистить фильтр по типу техники
+   * Очистить фильтр по типу техники.
    */
   WarehouseItemsCtrl.prototype.closeItemTypeFilter = function() {
     delete(this.selectedFilters.item_type);

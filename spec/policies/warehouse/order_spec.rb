@@ -99,6 +99,34 @@ module Warehouse
       end
     end
 
+    permissions :update_write_off? do
+      let(:model) { Order.first }
+
+      context 'with manager role' do
+        it 'grants access' do
+          expect(subject).to permit(manager, model)
+        end
+      end
+
+      context 'with worker role' do
+        it 'grants access' do
+          expect(subject).to permit(worker, model)
+        end
+
+        it 'sets nil to validator' do
+          expect(subject).to permit(worker, model)
+          expect(model.validator_id_tn).to be_nil
+          expect(model.validator_fio).to be_nil
+        end
+      end
+
+      context 'with read_only role' do
+        it 'denies access' do
+          expect(subject).not_to permit(read_only, model)
+        end
+      end
+    end
+
     permissions :confirm? do
       let(:model) { Order.first }
 

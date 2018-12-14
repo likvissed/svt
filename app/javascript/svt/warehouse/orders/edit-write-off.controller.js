@@ -33,14 +33,26 @@ import { app } from '../../app/app';
   EditWriteOffOrderController.prototype.ok = function() {
     let sendData = this.Order.getObjectToSend();
 
-    this.Server.Warehouse.Order.saveWriteOff(
-      { order: sendData },
-      (response) => {
-        this.Flash.notice(response.full_message);
-        this.$uibModalInstance.close();
-      },
-      (response, status) => this.Error.response(response, status)
-    )
+    if (this.order.id) {
+      this.Server.Warehouse.Order.updateWriteOff(
+        { id: this.order.id },
+        { order: sendData },
+        (response) => {
+          this.Flash.notice(response.full_message);
+          this.$uibModalInstance.close();
+        },
+        (response, status) => this.Error.response(response, status)
+      );
+    } else {
+      this.Server.Warehouse.Order.saveWriteOff(
+        { order: sendData },
+        (response) => {
+          this.Flash.notice(response.full_message);
+          this.$uibModalInstance.close();
+        },
+        (response, status) => this.Error.response(response, status)
+      );
+    }
   };
 
   /**

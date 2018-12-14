@@ -180,6 +180,10 @@ import { app } from '../../app/app';
             method: 'PUT',
             url: '/warehouse/orders/:id/update_out'
           },
+          updateWriteOff: {
+            method: 'PUT',
+            url: '/warehouse/orders/:id/update_write_off'
+          },
           confirm: {
             method: 'PUT',
             url: '/warehouse/orders/:id/confirm'

@@ -74,7 +74,7 @@ module Warehouse
         expect { subject.run }.to change(Operation, :count).by(order_params[:operations_attributes].size)
       end
 
-      it 'creates warehouse_item_to_orders records' do
+      it 'creates warehouse_item_to_operations records' do
         expect { subject.run }.to change(InvItemToOperation, :count).by(1)
       end
 

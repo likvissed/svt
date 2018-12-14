@@ -12,7 +12,7 @@ script type="text/ng-template" id="editWriteOffOrderModal.slim"
             th.col-sm-4 Инв. №
             th.col-sm-15 Модель
         tbody
-          tr ng-repeat="op in edit.order.operations_attributes"
+          tr ng-repeat="op in edit.order.operations_attributes" ng-hide="op._destroy"
             td= fa_icon "times-circle lg", class: "pointer", "tooltip-placement": "left", "uib-tooltip": "Убрать позицию",
               "ng-click": "edit.delPosition(op)", "ng-if": "op.status != 'done'"
             td ng-bind="op.item_type"

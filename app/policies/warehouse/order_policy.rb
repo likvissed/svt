@@ -28,6 +28,12 @@ module Warehouse
       for_worker
     end
 
+    def update_write_off?
+      record.set_validator(nil) if user.role? :worker
+
+      for_worker
+    end
+
     def confirm?
       for_manager
     end

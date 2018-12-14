@@ -101,11 +101,13 @@ module Warehouse
       end
 
       def load_orders
-        order = Orders::Index.new({ start: nil, length: nil }, operation: :out, status: :processing)
+        out_orders = Orders::Index.new({ start: nil, length: nil }, operation: :out, status: :processing)
+        raise 'Не удалось загрузить список расходных ордеров' unless out_orders.run
 
-        raise 'Не удалось загрузить список ордеров' unless order.run
+        write_off_orders = Orders::Index.new({ start: nil, length: nil }, operation: :write_off, status: :processing)
+        raise 'Не удалось загрузить список ордеров на списание' unless write_off_orders.run
 
-        data[:orders] = order.data[:data]
+        data[:orders] = out_orders.data[:data] + write_off_orders.data[:data]
         data[:orders].each { |o| o[:main_info] = "ID ордера: #{o['id']}; ID РМ: #{o['invent_workplace_id']}" }
       end
 

@@ -108,6 +108,7 @@ Rails.application.routes.draw do
       post 'prepare_to_deliver', to: 'orders#prepare_to_deliver', on: :member
       put 'update_in', to: 'orders#update_in', on: :member
       put 'update_out', to: 'orders#update_out', on: :member
+      put 'update_write_off', to: 'orders#update_write_off', on: :member
       put 'confirm', to: 'orders#confirm', on: :member
     end
     resources :supplies

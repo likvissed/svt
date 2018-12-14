@@ -112,7 +112,7 @@ module Warehouse
           let(:new_operation) { attributes_for(:order_operation, item_id: flash_items.id, item_type: 'Флэш-накопитель', item_model: 'Silicon Power', shift: -1) }
           let(:order_params) do
             order_json['operations_attributes'] = order.operations.as_json
-            order_json['operations_attributes'] << new_operation
+            order_json['operations_attributes'] << new_operation.as_json
 
             order_json
           end
@@ -292,7 +292,7 @@ module Warehouse
           let(:new_operation) { attributes_for(:order_operation, item_id: printer_items.id, shift: -2) }
           let(:order_params) do
             order_json['operations_attributes'] = order.operations.as_json
-            order_json['operations_attributes'] << new_operation
+            order_json['operations_attributes'] << new_operation.as_json
 
             order_json
           end
@@ -349,7 +349,7 @@ module Warehouse
           let(:new_operation) { attributes_for(:order_operation, item_id: printer_items.id, shift: -1) }
           let(:order_params) do
             order_json['operations_attributes'] = order.operations.as_json
-            order_json['operations_attributes'] << new_operation
+            order_json['operations_attributes'] << new_operation.as_json
 
             order_json
           end
