@@ -123,6 +123,7 @@ import { app } from '../../app/app';
    */
   WarehouseItemsCtrl.prototype.isItemInOrder = function(item) {
     if (!this.order) { return false; }
+
     return this.Order.getOperation(item);
   }
 

@@ -198,7 +198,13 @@ import { app } from '../../app/app';
    * @param item
    */
   WarehouseOrder.prototype.addPosition = function(warehouseType, item) {
-    this.order.operations_attributes.push(this.Operation.generate(warehouseType, item));
+    let existingItem = this.order.operations_attributes.find((op) => op.item_id == item.id );
+    if (existingItem) {
+      delete(existingItem._destroy);
+    } else {
+      this.order.operations_attributes.push(this.Operation.generate(warehouseType, item));
+    }
+
     this.additional.visibleCount ++;
   };
   /**
