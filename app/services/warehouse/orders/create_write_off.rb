@@ -15,7 +15,7 @@ module Warehouse
         init_order
         return false unless wrap_order
 
-        broadcast_write_off_orders
+        @order_state.broadcast_orders
         broadcast_items
 
         true
@@ -33,6 +33,7 @@ module Warehouse
         authorize @order, :create_write_off?
         @order.skip_validator = true
         @order.set_creator(current_user)
+        @order_state = @order.done? && @order.dont_calculate_status ? Orders::WriteOff::DoneState.new(@order) : Orders::WriteOff::ProcessingState.new(@order)
       end
 
       def wrap_order
@@ -57,14 +58,15 @@ module Warehouse
       end
 
       def prepare_inv_items
-        new_status = :waiting_write_off
+        new_status = @order_state.new_item_status
 
         @order.operations.each do |op|
+          @order_state.processing_operations(current_user)
           next unless op.item
 
           op.change_inv_item(new_status)
           op.item.status = new_status
-          op.calculate_item_count_reserved
+          @order_state.edit_warehouse_item_for(op)
         end
       end
     end

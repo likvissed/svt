@@ -8,9 +8,6 @@
       li
         a href="" ng-click="table.newOrder('write_off')"
           | Создать ордер на списание
-      li
-        a href="" ng-click="table.execOrder()"
-          | Создать ордер и списать технику
   div ng-if="table.selectedOrder.id && table.selectedOrder.operation == 'out'" ng-cloak="true"
     = button_tag "Обновить расходный ордер", type: :button, class: "btn-primary btn-sm", "ng-click": "table.showOrder('out')",
       "ng-disabled": "table.extraOrder.visibleCount == 0"

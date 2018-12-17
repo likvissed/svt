@@ -29,9 +29,15 @@ import { app } from '../../app/app';
 
   /**
    * Создать ордер.
+   *
+   * @param done - если true, ордер будет сразу же исполнен.
    */
-  EditWriteOffOrderController.prototype.ok = function() {
-    let sendData = this.Order.getObjectToSend();
+  EditWriteOffOrderController.prototype.ok = function(done = false) {
+    let sendData = this.Order.getObjectToSend(done);
+
+    if (done && !confirm('Вы действительно хотите создать ордер и сразу же его исполнить? Удалить исполненый ордер или отменить его исполнение невозможно')) {
+      return false;
+    }
 
     if (this.order.id) {
       this.Server.Warehouse.Order.updateWriteOff(

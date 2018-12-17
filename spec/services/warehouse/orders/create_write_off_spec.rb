@@ -106,13 +106,83 @@ module Warehouse
       end
 
       it 'broadcasts to write_off_orders' do
-        expect(subject).to receive(:broadcast_write_off_orders)
+        expect_any_instance_of(Orders::WriteOff::AbstractState).to receive(:broadcast_write_off_orders)
+
         subject.run
       end
 
       it 'broadcasts to items' do
         expect(subject).to receive(:broadcast_items)
+
         subject.run
+      end
+
+      context 'when flag :done is set' do
+        let(:order_params) do
+          order = attributes_for(:order, operation: :write_off)
+          order[:operations_attributes] = [operation_1, operation_2]
+
+          order['status'] = 'done'
+          order['dont_calculate_status'] = true
+          order
+        end
+
+        its(:run) { is_expected.to be_truthy }
+
+        it 'sets :done to the each operation attribute' do
+          subject.run
+
+          Order.last.operations.each { |op| expect(op.done?).to be_truthy }
+        end
+
+        it 'sets stockman to the each operation' do
+          subject.run
+
+          Order.last.operations.each do |op|
+            expect(op.stockman_id_tn).to eq current_user.id_tn
+            expect(op.stockman_fio).to eq current_user.fullname
+          end
+        end
+
+        it 'sets :done to the order status' do
+          subject.run
+
+          expect(Order.last.done?).to be_truthy
+        end
+
+        it 'sets count of items to 0' do
+          subject.run
+
+          expect(w_item_1.reload.count).to be_zero
+          expect(w_item_2.reload.count).to be_zero
+        end
+
+        it 'sets count_reserved of items to 0' do
+          subject.run
+
+          expect(w_item_1.reload.count_reserved).to be_zero
+          expect(w_item_2.reload.count_reserved).to be_zero
+        end
+
+        it 'sets :written_off to the warehouse_item and invent_item' do
+          subject.run
+
+          expect(w_item_1.reload.written_off?).to be_truthy
+          expect(w_item_2.reload.written_off?).to be_truthy
+          expect(item.reload.status).to eq 'written_off'
+        end
+
+        it 'broadcasts to archive_orders' do
+          expect_any_instance_of(Orders::WriteOff::AbstractState).to receive(:broadcast_archive_orders)
+
+          subject.run
+        end
+
+        it 'broadcasts to items' do
+          expect(subject).to receive(:broadcast_items)
+
+          subject.run
+        end
       end
     end
   end

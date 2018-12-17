@@ -32,7 +32,7 @@ import { app } from '../../app/app';
     let consumer = new this.ActionCableChannel('Warehouse::ItemsChannel');
 
     consumer.subscribe((data) => {
-      this.closeOrder();
+      // this.closeOrder();
       this._loadItems();
     });
   };

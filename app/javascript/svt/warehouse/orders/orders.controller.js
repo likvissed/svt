@@ -40,6 +40,8 @@ import { app } from '../../app/app';
       channelType = 'Out';
     } else if (this.operation == 'write_off') {
       channelType = 'WriteOff';
+    } else {
+      channelType = 'Archive';
     }
 
     let consumer = new this.ActionCableChannel('Warehouse::' + channelType + 'OrdersChannel');

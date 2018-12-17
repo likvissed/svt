@@ -133,7 +133,7 @@ module Warehouse
           skip_validator: true
         )
         @order.set_creator(current_user)
-        @order_state = DoneState.new(@order)
+        @order_state = Orders::In::DoneState.new(@order)
       end
     end
   end

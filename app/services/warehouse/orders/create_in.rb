@@ -91,10 +91,10 @@ module Warehouse
       def init_order(param)
         @order = Order.new(param)
         authorize @order, :create_in?
-        @order_state = @order.done? && @order.dont_calculate_status ? DoneState.new(@order) : ProcessingState.new(@order)
+        @order_state = @order.done? && @order.dont_calculate_status ? Orders::In::DoneState.new(@order) : Orders::In::ProcessingState.new(@order)
         @order.set_creator(current_user)
 
-        @order_state.init_operations(current_user)
+        @order_state.processing_operations(current_user)
       end
 
       def fill_order_arr

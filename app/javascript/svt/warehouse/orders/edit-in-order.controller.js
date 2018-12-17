@@ -126,10 +126,7 @@ import { FormValidationController } from '../../shared/functions/form-validation
       );
     } else {
       this.Server.Warehouse.Order.saveIn(
-        {
-          order: sendData,
-          done: done
-        },
+        { order: sendData },
         (response) => {
           this.Flash.notice(response.full_message);
           this.$uibModalInstance.close();

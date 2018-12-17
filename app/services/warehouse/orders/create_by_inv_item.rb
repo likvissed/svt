@@ -35,7 +35,7 @@ module Warehouse
         )
         authorize @order, :create_by_inv_item?
         @order.set_creator(current_user)
-        @order_state = DoneState.new(@order)
+        @order_state = Orders::In::DoneState.new(@order)
       end
 
       def set_operations
