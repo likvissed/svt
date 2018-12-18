@@ -28,7 +28,7 @@ module Invent
     end
 
     def show
-      @show = Items::Show.new({ item_id: params[:item_id] })
+      @show = Items::Show.new(item_id: params[:item_id])
 
       if @show.run
         render json: @show.data.first

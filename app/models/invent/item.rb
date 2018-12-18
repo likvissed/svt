@@ -40,8 +40,17 @@ module Invent
     scope :invent_num, ->(invent_num) { where('invent_num LIKE ?', "%#{invent_num}%").limit(RECORD_LIMIT) }
     scope :item_model, ->(item_model) { left_outer_joins(:model).where('invent_model.item_model LIKE :item_model OR invent_item.item_model LIKE :item_model', item_model: "%#{item_model}%") }
     scope :responsible, ->(responsible) { left_outer_joins(workplace: :user_iss).where('fio LIKE ?', "%#{responsible}%") }
-    scope :status, ->(status) { where(status: status) }
-    scope :properties, ->(prop) do
+    scope :for_statuses, ->(status_arr) do
+      result = []
+      values = status_arr.map do |el|
+        result << 'status = ?'
+        el['id']
+      end
+
+      where(result.join(' OR '), *values)
+    end
+    scope :properties, ->(prop_arr) { prop_arr.inject(self) { |item, prop| item.property(prop) } }
+    scope :property, ->(prop) do
       return all if prop['property_id'].to_i.zero? || (prop['property_value'].blank? && prop['property_list_id'].to_i.zero?)
 
       if !prop['property_list_id'].to_i.zero?

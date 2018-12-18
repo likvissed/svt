@@ -12,7 +12,8 @@ let app = angular
     'ngSanitize',
     'ui.select',
     'ngCookies',
-    'ngFileUpload'
+    'ngFileUpload',
+    'angularjs-dropdown-multiselect'
   ]);
 
 app
