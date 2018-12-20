@@ -59,6 +59,8 @@ ru:
           prepared_to_swap: 'Подготовлен к переводу на другое РМ'
           in_stock: 'На складе'
           in_workplace: 'На РМ'
+          waiting_write_off: 'На списание'
+          written_off: 'Списано'
         priorities:
           default: 'Стандартный'
           high: 'Высокий'
@@ -91,6 +93,7 @@ ru:
         operations:
           out: 'Расходный'
           in: 'Приходный'
+          write_off: 'На списание'
         statuses:
           processing: 'В работе'
           done: 'Исполнен'
@@ -141,7 +144,13 @@ ru:
         invent_num_end: 'Конечный инвентарный номер'
         count: 'Количество на складе'
         warehouse_type: 'Тип (с инв. номером или без)'
-        used: 'Тип (новая или б/у)'
+        status: 'Состояние техники'
+        statuses:
+          non_used: 'Новая'
+          used: 'Б/У'
+          waiting_write_off: 'На списание'
+          written_off: 'Списано'
+
 
       warehouse/item:
         inv_item: 'Техника'
@@ -150,7 +159,12 @@ ru:
         warehouse_type: 'Тип (с инв. номером или без)'
         item_type: 'Тип техники (опред. авт.)'
         item_model: 'Модель (опред. авт.)'
-        used: 'Тип (новая или б/у)'
+        status: 'Состояние техники'
+        statuses:
+          non_used: 'Новая'
+          used: 'Б/У'
+          waiting_write_off: 'На списание'
+          written_off: 'Списано'
         count: 'Количество на складе'
         count_reserved: 'Зарезервированное количество'
         invent_num_start: 'Начальный инвентарный номер'
@@ -289,6 +303,7 @@ ru:
               cannot_have_operations_with_different_workplace: 'Текущий ордер не может содержать позиции из разных рабочих
                мест. Убедитесь, что выбранная техника принадлежит одному рабочему месту'
               shift_must_be_equal_1: 'Каждая позиция приходного ордера должно иметь "Количество" равное единице'
+              order_must_contains_only_used_items: 'Текущий ордер должен содержать только б/у технику'
             consumer:
               user_by_tn_not_found: 'с указанным табельным номером не найден. Проверьте корректность
               введенных данных'

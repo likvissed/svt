@@ -43,6 +43,22 @@ module Warehouse
       end
     end
 
+    permissions :create_write_off? do
+      let(:model) { Order.first }
+
+      context 'with manager role' do
+        it 'grants access' do
+          expect(subject).to permit(manager, model)
+        end
+
+        it 'sets validator' do
+          expect(subject).to permit(manager, model)
+          expect(model.validator_id_tn).to eq manager.id_tn
+          expect(model.validator_fio).to eq manager.fullname
+        end
+      end
+    end
+
     permissions :update_in? do
       let(:model) { Order.first }
 
@@ -83,7 +99,35 @@ module Warehouse
       end
     end
 
-    permissions :confirm_out? do
+    permissions :update_write_off? do
+      let(:model) { Order.first }
+
+      context 'with manager role' do
+        it 'grants access' do
+          expect(subject).to permit(manager, model)
+        end
+      end
+
+      context 'with worker role' do
+        it 'grants access' do
+          expect(subject).to permit(worker, model)
+        end
+
+        it 'sets nil to validator' do
+          expect(subject).to permit(worker, model)
+          expect(model.validator_id_tn).to be_nil
+          expect(model.validator_fio).to be_nil
+        end
+      end
+
+      context 'with read_only role' do
+        it 'denies access' do
+          expect(subject).not_to permit(read_only, model)
+        end
+      end
+    end
+
+    permissions :confirm? do
       let(:model) { Order.first }
 
       include_examples 'policy for manager'
@@ -96,6 +140,12 @@ module Warehouse
     end
 
     permissions :execute_out? do
+      let(:model) { Order.first }
+
+      include_examples 'policy for worker'
+    end
+
+    permissions :execute_write_off? do
       let(:model) { Order.first }
 
       include_examples 'policy for worker'
@@ -114,12 +164,6 @@ module Warehouse
     end
 
     permissions :print? do
-      let(:model) { Order.first }
-
-      include_examples 'policy for worker'
-    end
-
-    permissions :create_by_inv_item? do
       let(:model) { Order.first }
 
       include_examples 'policy for worker'

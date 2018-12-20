@@ -83,6 +83,10 @@ import { app } from '../../app/app';
             method: 'POST',
             url: '/invent/items/to_stock'
           },
+          toWriteOff: {
+            method: 'POST',
+            url: '/invent/items/to_write_off'
+          },
           update: { method: 'PUT' }
         }),
         Vendor: $resource('/invent/vendors/:vendor_id.json', {}),
@@ -168,6 +172,10 @@ import { app } from '../../app/app';
             method: 'POST',
             url: '/warehouse/orders/create_out'
           },
+          saveWriteOff: {
+            method: 'POST',
+            url: '/warehouse/orders/create_write_off'
+          },
           updateIn: {
             method: 'PUT',
             url: '/warehouse/orders/:id/update_in'
@@ -176,9 +184,13 @@ import { app } from '../../app/app';
             method: 'PUT',
             url: '/warehouse/orders/:id/update_out'
           },
-          confirmOut: {
+          updateWriteOff: {
             method: 'PUT',
-            url: '/warehouse/orders/:id/confirm_out'
+            url: '/warehouse/orders/:id/update_write_off'
+          },
+          confirm: {
+            method: 'PUT',
+            url: '/warehouse/orders/:id/confirm'
           },
           executeIn: {
             method: 'POST',
@@ -187,6 +199,10 @@ import { app } from '../../app/app';
           executeOut: {
             method: 'POST',
             url: '/warehouse/orders/:id/execute_out'
+          },
+          executeWriteOff: {
+            method: 'POST',
+            url: '/warehouse/orders/:id/execute_write_off'
           }
         }),
         Supply: $resource('/warehouse/supplies/:id.json', {}, {

@@ -1,4 +1,4 @@
-script type="text/ng-template" id="inOrderModal.slim"
+script type="text/ng-template" id="editInOrderModal.slim"
   form role="form" name="edit.form" data-method="edit.method"
     .modal-header
       .pull-left
@@ -45,10 +45,10 @@ script type="text/ng-template" id="inOrderModal.slim"
               td ng-bind="op.item_model"
 
     .modal-footer
-      = button_tag "Создать и исполнить", class: "btn-success btn-sm", "ng-click": "edit.ok(true)", "ng-if": "!edit.order.id"
+      = button_tag "Закрыть", class: "btn-default btn-sm", "ng-click": "edit.cancel()"
       = button_tag class: "btn-success btn-sm", "ng-click": "edit.ok()", "ng-disabled": "edit.order.status == 'done'" do
         div ng-if="edit.order.id" Обновить
         div ng-if="!edit.order.id" Создать
-      = button_tag "Закрыть", class: "btn-default btn-sm", "ng-click": "edit.cancel()"
+      = button_tag "Создать и исполнить", class: "btn-success btn-sm", "ng-click": "edit.ok(true)", "ng-if": "!edit.order.id"
 
   = render partial: 'existing_item'

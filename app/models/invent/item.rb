@@ -11,7 +11,7 @@ module Invent
     # Статусы, обозначающие перемещение техники
     MOVE_ITEM_TYPES = %w[prepared_to_swap waiting_bring waiting_take].freeze
 
-    has_one :warehouse_item, foreign_key: 'invent_item_id', class_name: 'Warehouse::Item', dependent: :destroy
+    has_one :warehouse_item, foreign_key: 'invent_item_id', class_name: 'Warehouse::Item', dependent: :nullify
     has_many :property_values,
              -> { joins('LEFT OUTER JOIN invent_property ON invent_property_value.property_id = invent_property.property_id').order('invent_property.property_order').includes(:property) },
              inverse_of: :item, dependent: :destroy
@@ -40,8 +40,17 @@ module Invent
     scope :invent_num, ->(invent_num) { where('invent_num LIKE ?', "%#{invent_num}%").limit(RECORD_LIMIT) }
     scope :item_model, ->(item_model) { left_outer_joins(:model).where('invent_model.item_model LIKE :item_model OR invent_item.item_model LIKE :item_model', item_model: "%#{item_model}%") }
     scope :responsible, ->(responsible) { left_outer_joins(workplace: :user_iss).where('fio LIKE ?', "%#{responsible}%") }
-    scope :status, ->(status) { where(status: status) }
-    scope :properties, ->(prop) do
+    scope :for_statuses, ->(status_arr) do
+      result = []
+      values = status_arr.map do |el|
+        result << 'status = ?'
+        el['id']
+      end
+
+      where(result.join(' OR '), *values)
+    end
+    scope :properties, ->(prop_arr) { prop_arr.inject(self) { |item, prop| item.property(prop) } }
+    scope :property, ->(prop) do
       return all if prop['property_id'].to_i.zero? || (prop['property_value'].blank? && prop['property_list_id'].to_i.zero?)
 
       if !prop['property_list_id'].to_i.zero?
@@ -95,7 +104,7 @@ module Invent
 
     accepts_nested_attributes_for :property_values, allow_destroy: true
 
-    enum status: { waiting_take: 1, waiting_bring: 2, prepared_to_swap: 3, in_stock: 4, in_workplace: 5 }
+    enum status: { waiting_take: 1, waiting_bring: 2, prepared_to_swap: 3, in_stock: 4, in_workplace: 5, waiting_write_off: 6, written_off: 7 }
     enum priority: { default: 1, high: 2 }
 
     def self.by_invent_num(invent_num)

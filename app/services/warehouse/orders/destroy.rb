@@ -61,6 +61,19 @@ module Warehouse
         end
       end
 
+      def write_off_order
+        Item.transaction do
+          @order.inv_items.each { |inv_item| inv_item.update!(status: :in_stock) }
+          @order.operations.each do |op|
+            op.mark_for_destruction
+            op.calculate_item_count_reserved
+            op.item.status = :used
+            op.item.save!
+          end
+          destroy_order
+        end
+      end
+
       def destroy_item(inv_item)
         inv_item.destroy_from_order = true
 
@@ -91,6 +104,10 @@ module Warehouse
           broadcast_out_orders
           broadcast_workplaces
           broadcast_workplaces_list
+        when 'write_off'
+          write_off_order
+          broadcast_write_off_orders
+          broadcast_items(@order.id)
         else
           raise 'Неизвестный тип ордера'
         end

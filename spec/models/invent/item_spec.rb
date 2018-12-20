@@ -2,7 +2,7 @@ require 'feature_helper'
 
 module Invent
   RSpec.describe Item, type: :model do
-    it { is_expected.to have_one(:warehouse_item).with_foreign_key('invent_item_id').class_name('Warehouse::Item').dependent(:destroy) }
+    it { is_expected.to have_one(:warehouse_item).with_foreign_key('invent_item_id').class_name('Warehouse::Item').dependent(:nullify) }
     it { is_expected.to have_many(:property_values).inverse_of(:item).dependent(:destroy).order('invent_property.property_order') }
     it { is_expected.to have_many(:standard_discrepancies).class_name('Standard::Discrepancy').dependent(:destroy) }
     it { is_expected.to have_many(:standard_logs).class_name('Standard::Log') }
@@ -424,7 +424,7 @@ module Invent
           before do
             order_params = attributes_for(:order, operation: :out, invent_workplace_id: workplace.workplace_id)
             order_params[:operations_attributes] = [operation]
-            Warehouse::Orders::CreateOut.new(create(:***REMOVED***_user), order_params).run
+            Warehouse::Orders::CreateOut.new(create(:***REMOVED***_user), order_params.as_json).run
           end
 
           context 'and when invent_num from allowed pool' do

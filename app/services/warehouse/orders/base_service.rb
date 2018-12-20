@@ -4,11 +4,15 @@ module Warehouse
       protected
 
       def order_out?
-        @order_params['operation'] == 'out' || @order_params['operations_attributes']&.any? { |op| op['shift'].to_i.negative? }
+        @order_params['operation'] == 'out' && @order_params['operations_attributes']&.all? { |op| op['shift'].to_i.negative? }
       end
 
       def order_in?
-        @order_params['operation'] == 'in' || @order_params['operations_attributes']&.any? { |op| op['shift'].to_i.positive? }
+        @order_params['operation'] == 'in' && @order_params['operations_attributes']&.all? { |op| op['shift'].to_i.positive? }
+      end
+
+      def order_write_off?
+        @order_params['operation'] == 'write_off' && @order_params['operations_attributes']&.all? { |op| op['shift'].to_i.negative? }
       end
 
       def warehouse_item_in(inv_item)
@@ -18,7 +22,7 @@ module Warehouse
             w_item.inv_type = inv_item.type
             w_item.inv_model = inv_item.model
             w_item.warehouse_type = :with_invent_num
-            w_item.used = true
+            w_item.status = :used
 
             @order_state.edit_warehouse_item(w_item)
 

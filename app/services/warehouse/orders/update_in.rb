@@ -11,11 +11,11 @@ module Warehouse
       end
 
       def run
-        raise 'Неверные данные' if order_out?
+        raise 'Неверные данные (тип операции или аттрибут :shift)' unless order_in?
 
         @order = Order.find(@order_id)
         authorize @order, :update_in?
-        @order_state = ProcessingState.new(@order)
+        @order_state = Orders::In::ProcessingState.new(@order)
         return false unless wrap_order_with_transactions
 
         broadcast_items

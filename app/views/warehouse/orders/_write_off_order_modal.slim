@@ -1,0 +1,27 @@
+script type="text/ng-template" id="editWriteOffOrderModal.slim"
+  form role="form" name="edit.form" data-method="edit.method"
+    .modal-header
+      .pull-left
+        h4 Ордер на списание
+    .modal-body
+      table.table.table-striped.table-condensed
+        thead
+          tr
+            th.col-sm-1
+            th.col-sm-4 Тип
+            th.col-sm-4 Инв. №
+            th.col-sm-15 Модель
+        tbody
+          tr ng-repeat="op in edit.order.operations_attributes" ng-hide="op._destroy"
+            td= fa_icon "times-circle lg", class: "pointer", "tooltip-placement": "left", "uib-tooltip": "Убрать позицию",
+              "ng-click": "edit.delPosition(op)", "ng-if": "op.status != 'done'"
+            td ng-bind="op.item_type"
+            td ng-bind="op.invent_num"
+            td ng-bind="op.item_model"
+
+    .modal-footer
+      = button_tag "Вернуться к списку", class: "btn-default btn-sm", "ng-click": "edit.cancel()"
+      = button_tag class: "btn-success btn-sm", "ng-click": "edit.ok()" do
+        div ng-if="edit.order.id" Обновить
+        div ng-if="!edit.order.id" Создать
+      = button_tag "Создать и исполнить", class: "btn-success btn-sm", "ng-click": "edit.ok(true)", "ng-if": "!edit.order.id"

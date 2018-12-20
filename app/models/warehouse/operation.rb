@@ -13,7 +13,7 @@ module Warehouse
     validates :item_type, :item_model, :shift, :status, presence: true
     validates :shift, numericality: { other_than: 0 }
     validates :stockman_fio, :date, presence: true, if: -> { done? }
-    validate :uniq_item_by_processing_operation, if: -> { item.try(:used) && item_id_changed? }
+    validate :uniq_item_by_processing_operation, if: -> { item.try(:used?) && item_id_changed? }
 
     after_initialize :set_initial_status, if: -> { new_record? }
     after_initialize :set_initial_shift, if: -> { new_record? }
@@ -25,6 +25,8 @@ module Warehouse
     accepts_nested_attributes_for :inv_items, allow_destroy: false
 
     enum status: { processing: 1, done: 2 }
+
+    attr_accessor :to_write_off
 
     def set_stockman(user)
       self.stockman_id_tn = user.id_tn
@@ -48,9 +50,7 @@ module Warehouse
 
       count.times do |i|
         if item.inv_item
-          item.inv_item.workplace = params[:workplace]
-          item.inv_item.status = :waiting_take
-          inv_items << item.inv_item
+          change_inv_item(params[:status], params[:workplace])
         else
           new_inv_item = inv_items.build(
             type: item.inv_type,
@@ -58,11 +58,19 @@ module Warehouse
             model: item.inv_model,
             item_model: item.item_model,
             invent_num: item.generate_invent_num(i),
-            status: :waiting_take
+            status: params[:status]
           )
           new_inv_item.build_property_values(true)
         end
       end
+    end
+
+    def change_inv_item(status, workplace = nil)
+      return unless item.warehouse_type == 'with_invent_num' && item.inv_item
+
+      item.inv_item.status = status
+      item.inv_item.workplace = workplace
+      inv_items << item.inv_item
     end
 
     def calculate_item_count_reserved

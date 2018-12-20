@@ -13,19 +13,28 @@ module Warehouse
       for_worker
     end
 
+    def create_write_off?
+      record.set_validator(user) if for_manager
+      for_worker
+    end
+
     def update_in?
       for_worker
     end
 
     def update_out?
-      # if for_manager
-        # record.set_validator(user)
       record.set_validator(nil) if user.role? :worker
 
       for_worker
     end
 
-    def confirm_out?
+    def update_write_off?
+      record.set_validator(nil) if user.role? :worker
+
+      for_worker
+    end
+
+    def confirm?
       for_manager
     end
 
@@ -37,15 +46,15 @@ module Warehouse
       for_worker
     end
 
+    def execute_write_off?
+      for_worker
+    end
+
     def prepare_to_deliver?
       for_worker
     end
 
     def print?
-      for_worker
-    end
-
-    def create_by_inv_item?
       for_worker
     end
 
@@ -81,6 +90,7 @@ module Warehouse
             :status,
             :date,
             :_destroy,
+            :to_write_off,
             inv_item_ids: [],
             inv_items_attributes: [
               :id,
@@ -119,6 +129,7 @@ module Warehouse
             :status,
             :date,
             :_destroy,
+            :to_write_off,
             inv_item_ids: [],
             inv_items_attributes: [
               :id,

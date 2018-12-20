@@ -28,7 +28,7 @@ module Invent
     end
 
     def show
-      @show = Items::Show.new({ item_id: params[:item_id] })
+      @show = Items::Show.new(item_id: params[:item_id])
 
       if @show.run
         render json: @show.data.first
@@ -101,16 +101,26 @@ module Invent
       @to_stock = Items::ToStock.new(current_user, params[:item_id])
 
       if @to_stock.run
-        render json: { full_message: I18n.t('controllers.invent/item.sended_to_stock', item_id: params[:id]) }
+        render json: { full_message: I18n.t('controllers.invent/item.sended_to_stock', item_id: params[:item_id]) }
       else
         render json: { full_message: @to_stock.error[:full_message] }, status: 422
+      end
+    end
+
+    def to_write_off
+      @to_write_off = Items::ToWriteOff.new(current_user, params[:item_id])
+
+      if @to_write_off.run
+        render json: { full_message: I18n.t('controllers.invent/item.written_off', item_id: params[:item_id]) }
+      else
+        render json: { full_message: @to_write_off.error[:full_message] }, status: 422
       end
     end
 
     protected
 
     def check_access
-      authorize [:invent, :item], :ctrl_access?
+      authorize %i[invent item], :ctrl_access?
     end
 
     def item_params

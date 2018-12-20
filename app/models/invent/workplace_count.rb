@@ -50,9 +50,10 @@ module Invent
             next
           end
 
-          user['fullname'] = @user_iss.fio
-          user['phone'] = user_values[:phone].empty? ? @user_iss.tel : user_values[:phone]
-
+          if @user_iss
+            user['fullname'] = @user_iss.fio
+            user['phone'] = user_values[:phone].empty? ? @user_iss.tel : user_values[:phone]
+          end
         # Если id не задан, но пользователь существует в таблице 'users'.
         elsif user = User.find_by(tn: user_values[:tn])
           user.fullname = @user_iss.fio

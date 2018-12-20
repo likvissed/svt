@@ -69,43 +69,102 @@ module Warehouse
       end
     end
 
-    describe '#consumer_from_history' do
-      let(:result) do
-        {
-          id_tn: 123,
-          fio: 'Тест ФИО'
-        }
-      end
-      before do
-        subject.consumer_id_tn = 123
-        subject.consumer_fio = 'Тест ФИО'
+    context 'when operation is :write_off' do
+      let(:operation) { build(:order_operation, item: item) }
+      subject { build(:order, operation: :write_off, operations: [operation]) }
+
+      context 'and when item is new' do
+        let(:item) { create(:new_item) }
+
+        it 'adds :order_must_contains_only_used_items error' do
+          subject.valid?
+
+          expect(subject.errors.details[:base]).to include(error: :order_must_contains_only_used_items)
+        end
       end
 
-      it 'creates object with :id_tn and :fio attributes' do
-        expect(subject.consumer_from_history).to eq result
+      context 'and when item is used' do
+        let(:item) { create(:used_item) }
+
+        it { is_expected.to be_valid }
       end
     end
 
-    # describe '#presence_consumer' do
-    #   subject { build(:order, operations: operations) }
-    #   before { subject.valid? }
+    describe '#consumer_from_history' do
+      context 'when consumer_fio is empty' do
+        let(:result) do
+          {
+            id_tn: 123,
+            fio: 'Тест ФИО'
+          }
+        end
+        before do
+          subject.consumer_id_tn = 123
+          subject.consumer_fio = 'Тест ФИО'
+        end
 
-    #   context 'when one of operations status is done' do
-    #     let(:operations) { [build(:order_operation, status: :done), build(:order_operation)] }
+        it 'creates object with :id_tn and :fio attributes' do
+          expect(subject.consumer_from_history).to eq result
+        end
+      end
 
-    #     it 'adds error :blank to the consumer' do
-    #       expect(subject.errors.details[:consumer]).to include(error: :blank)
-    #     end
-    #   end
+      context 'when consumer_fio is filled' do
+        before do
+          subject.consumer_id_tn = nil
+          subject.consumer_fio = nil
+        end
 
-    #   context 'when all of operations status is processing' do
-    #     let(:operations) { [build(:order_operation), build(:order_operation)] }
+        its(:consumer_from_history) { is_expected.to be_nil }
+      end
+    end
 
-    #     it 'adds error :blank to the consumer' do
-    #       expect(subject.errors.details[:consumer]).to be_empty
-    #     end
-    #   end
-    # end
+    describe '#presence_consumer' do
+      before { subject.valid? }
+
+      %i[in out].each do |op|
+        context "when order operation is :#{op}" do
+          subject { build(:order, operation: op, operations: operations) }
+
+          context 'and when one of operations status is done' do
+            let(:operations) { [build(:order_operation, status: :done), build(:order_operation)] }
+
+            it 'adds error :blank to the consumer' do
+              expect(subject.errors.details[:consumer]).to include(error: :blank)
+            end
+          end
+
+          context 'and when all of operations status is processing' do
+            let(:operations) { [build(:order_operation), build(:order_operation)] }
+
+            it 'does not add error :blank to the consumer' do
+              expect(subject.errors.details[:consumer]).to be_empty
+            end
+          end
+        end
+      end
+
+      context 'when order operation is :write_off' do
+        subject { build(:order, operation: :write_off, operations: operations) }
+        let!(:item_1) { create(:used_item) }
+        let!(:item_2) { create(:used_item) }
+
+        context 'and when one of operations status is done' do
+          let(:operations) { [build(:order_operation, status: :done, item: item_1), build(:order_operation, item: item_2)] }
+
+          it 'does not add error :blank to the consumer' do
+            expect(subject.errors.details[:consumer]).to be_empty
+          end
+        end
+
+        context 'and when all of operations status is processing' do
+          let(:operations) { [build(:order_operation, item: item_1), build(:order_operation, item: item_2)] }
+
+          it 'does not add error :blank to the consumer' do
+            expect(subject.errors.details[:consumer]).to be_empty
+          end
+        end
+      end
+    end
 
     describe '#uniqueness_of_workplace' do
       let!(:workplace_1) { create(:workplace_pk, :add_items, items: %i[pc monitor], dept: ***REMOVED***) }

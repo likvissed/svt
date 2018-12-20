@@ -30,6 +30,21 @@ module Warehouse
       end
     end
 
+    def index_write_off
+      respond_to do |format|
+        format.html
+        format.json do
+          @index = Orders::Index.new(params, operation: :write_off, status: :processing)
+
+          if @index.run
+            render json: @index.data
+          else
+            render json: { full_message: I18n.t('controllers.app.unprocessable_entity') }, status: 422
+          end
+        end
+      end
+    end
+
     def archive
       respond_to do |format|
         format.html
@@ -75,6 +90,16 @@ module Warehouse
       end
     end
 
+    def create_write_off
+      @create_write_off = Orders::CreateWriteOff.new(current_user, order_params)
+
+      if @create_write_off.run
+        render json: { full_message: I18n.t('controllers.warehouse/order.created_write_off') }
+      else
+        render json: @create_write_off.error, status: 422
+      end
+    end
+
     def edit
       @edit = Orders::Edit.new(params[:id], params[:check_unreg])
 
@@ -105,13 +130,23 @@ module Warehouse
       end
     end
 
-    def confirm_out
-      @confirm_out = Orders::ConfirmOut.new(current_user, params[:id])
+    def update_write_off
+      @update_write_off = Orders::UpdateWriteOff.new(current_user, params[:id], order_params)
 
-      if @confirm_out.run
+      if @update_write_off.run
+        render json: { full_message: I18n.t('controllers.warehouse/order.updated', order_id: params[:id]) }
+      else
+        render json: @update_write_off.error, status: 422
+      end
+    end
+
+    def confirm
+      @confirm = Orders::Confirm.new(current_user, params[:id])
+
+      if @confirm.run
         render json: { full_message: I18n.t('controllers.warehouse/order.confirmed', order_id: params[:id]) }
       else
-        render json: @confirm_out.error, status: 422
+        render json: @confirm.error, status: 422
       end
     end
 
@@ -132,6 +167,16 @@ module Warehouse
         render json: { full_message: I18n.t('controllers.warehouse/order.executed') }
       else
         render json: @execute_out.error, status: 422
+      end
+    end
+
+    def execute_write_off
+      @execute_write_off = Orders::ExecuteWriteOff.new(current_user, params[:id], order_params)
+
+      if @execute_write_off.run
+        render json: { full_message: I18n.t('controllers.warehouse/order.executed') }
+      else
+        render json: @execute_write_off.error, status: 422
       end
     end
 

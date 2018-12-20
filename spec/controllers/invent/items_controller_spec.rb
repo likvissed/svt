@@ -151,5 +151,20 @@ module Invent
         post :to_stock, params: params, format: :json
       end
     end
+
+    describe 'POST #to_write_off' do
+      let(:workplace) { create(:workplace_pk, :add_items, items: %i[pc monitor]) }
+      let(:params) { { item_id: workplace.items.first.item_id } }
+
+      it 'creates instance of the Items::ToStock' do
+        post :to_write_off, params: params, format: :json
+        expect(assigns(:to_write_off)).to be_instance_of Items::ToWriteOff
+      end
+
+      it 'calls :run method' do
+        expect_any_instance_of(Items::ToWriteOff).to receive(:run)
+        post :to_write_off, params: params, format: :json
+      end
+    end
   end
 end

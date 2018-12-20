@@ -35,6 +35,21 @@ module Warehouse
       end
     end
 
+    describe 'GET #index_write_off' do
+      let(:index) { Orders::Index.new(params) }
+
+      it 'creates instance of the Orders::Index' do
+        get :index_write_off, format: :json
+        expect(assigns(:index)).to be_instance_of Orders::Index
+      end
+
+      it 'calls :run method' do
+        expect(Orders::Index).to receive(:new).with(anything, operation: :write_off, status: :processing).and_return(index)
+        expect(index).to receive(:run)
+        get :index_write_off, format: :json
+      end
+    end
+
     describe 'GET #archive' do
       let(:index) { Orders::Index.new(params) }
 
@@ -89,6 +104,21 @@ module Warehouse
       it 'calls :run method' do
         expect_any_instance_of(Orders::CreateOut).to receive(:run)
         post :create_out, params: params, format: :json
+      end
+    end
+
+    describe 'POST #create_write_off' do
+      let(:order) { build(:order) }
+      let(:params) { { order: order.as_json } }
+
+      it 'creates instance of the Orders::CreateWriteOff' do
+        post :create_write_off, params: params, format: :json
+        expect(assigns(:create_write_off)).to be_instance_of Orders::CreateWriteOff
+      end
+
+      it 'calls :run method' do
+        expect_any_instance_of(Orders::CreateWriteOff).to receive(:run)
+        post :create_write_off, params: params, format: :json
       end
     end
 
@@ -147,18 +177,38 @@ module Warehouse
       end
     end
 
-    describe 'PUT #confirm_out' do
+    describe 'PUT #update_write_off' do
       let!(:order) { create(:order) }
-      let(:params) { { id: order.id } }
+      let(:params) do
+        {
+          id: order.id,
+          order: order.as_json
+        }
+      end
 
-      it 'creates instance of the Orders::ConfirmOut' do
-        put :confirm_out, params: params
-        expect(assigns(:confirm_out)).to be_instance_of Orders::ConfirmOut
+      it 'creates instance of the Orders::UpdateWriteOff' do
+        put :update_write_off, params: params
+        expect(assigns(:update_write_off)).to be_instance_of Orders::UpdateWriteOff
       end
 
       it 'calls :run method' do
-        expect_any_instance_of(Orders::ConfirmOut).to receive(:run)
-        put :confirm_out, params: params
+        expect_any_instance_of(Orders::UpdateWriteOff).to receive(:run)
+        put :update_write_off, params: params
+      end
+    end
+
+    describe 'PUT #confirm' do
+      let!(:order) { create(:order) }
+      let(:params) { { id: order.id } }
+
+      it 'creates instance of the Orders::Confirm' do
+        put :confirm, params: params
+        expect(assigns(:confirm)).to be_instance_of Orders::Confirm
+      end
+
+      it 'calls :run method' do
+        expect_any_instance_of(Orders::Confirm).to receive(:run)
+        put :confirm, params: params
       end
     end
 
@@ -199,6 +249,26 @@ module Warehouse
       it 'calls :run method' do
         expect_any_instance_of(Orders::ExecuteOut).to receive(:run)
         post :execute_out, params: params, format: :json
+      end
+    end
+
+    describe 'POST #execute_write_off' do
+      let!(:order) { create(:order) }
+      let(:params) do
+        {
+          id: order.id,
+          order: order.as_json
+        }
+      end
+
+      it 'creates instance of the Orders::ExecuteWriteOff' do
+        post :execute_write_off, params: params, format: :json
+        expect(assigns(:execute_write_off)).to be_instance_of Orders::ExecuteWriteOff
+      end
+
+      it 'calls :run method' do
+        expect_any_instance_of(Orders::ExecuteWriteOff).to receive(:run)
+        post :execute_write_off, params: params, format: :json
       end
     end
 

@@ -105,11 +105,13 @@ module Invent
         it 'runs Warehouse::Orders::Swap service' do
           expect(Warehouse::Orders::Swap).to receive(:new).with(user, workplace_2.workplace_id + 1, [workplace['items_attributes'].last['id']]).and_return(swap)
           expect(swap).to receive(:run)
+
           subject.run
         end
 
         it 'create all items of created workplace' do
           subject.run
+
           expect(Workplace.last.items.count).to eq 3
         end
 

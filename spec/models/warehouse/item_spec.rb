@@ -198,7 +198,7 @@ module Warehouse
         before do
           order_params = attributes_for(:order, operation: :out, invent_workplace_id: workplace.workplace_id)
           order_params[:operations_attributes] = [operation]
-          Warehouse::Orders::CreateOut.new(create(:***REMOVED***_user), order_params).run
+          Warehouse::Orders::CreateOut.new(create(:***REMOVED***_user), order_params.as_json).run
           Invent::Item.last.update_attribute(:invent_num, '114')
         end
 
@@ -245,7 +245,7 @@ module Warehouse
           before do
             order_params = attributes_for(:order, operation: :out, invent_workplace_id: workplace.workplace_id)
             order_params[:operations_attributes] = [operation]
-            Warehouse::Orders::CreateOut.new(create(:***REMOVED***_user), order_params).run
+            Warehouse::Orders::CreateOut.new(create(:***REMOVED***_user), order_params.as_json).run
           end
 
           context 'and when :allow_update_model_or_type is true' do

@@ -26,6 +26,22 @@ import { app } from '../../app/app';
 
     this._loadItems(true);
     this._initActionCable();
+
+    this.statusFilter = {
+      settings: {
+        buttonClasses: 'btn btn-default btn-sm btn-block',
+        dynamicTitle: false
+      },
+      translations: {
+        buttonDefaultText: 'Статусы',
+        checkAll: 'Выбрать всё',
+        uncheckAll: 'Сбросить всё',
+        dynamicButtonTextSuffix: 'статусы'
+      },
+      events: {
+        onSelectionChanged: () => this.changeFilter()
+      }
+    };
   }
 
   /**

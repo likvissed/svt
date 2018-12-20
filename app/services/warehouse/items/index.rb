@@ -15,7 +15,6 @@ module Warehouse
         load_order_items
         load_other_items
         init_filters if need_init_filters?
-        init_order unless @selected_order_id
         load_orders
         limit_records
         prepare_to_render
@@ -50,7 +49,7 @@ module Warehouse
       end
 
       def filtering_params
-        JSON.parse(params[:filters]).slice('show_only_presence', 'used', 'item_type', 'barcode', 'item_model', 'invent_num', 'invent_item_id')
+        JSON.parse(params[:filters]).slice('show_only_presence', 'status', 'item_type', 'barcode', 'item_model', 'invent_num', 'invent_item_id')
       end
 
       def limit_records
@@ -79,30 +78,36 @@ module Warehouse
 
         data[:data] = result_arr.as_json(include: %i[inv_item supplies]).each do |item|
           item['range_inv_nums'] = item['invent_num_start'] ? "#{item['invent_num_start']} - #{item['invent_num_end']}" : ''
-          item['translated_used'] = item['used'] ? '<span class="label label-warning">Б/У</span>' : '<span class="label label-success">Новое</span>'
+          i_tr = Item.translate_enum(:status, item['status'])
+          item['translated_status'] = case item['status']
+                                      when 'non_used'
+                                        "<span class='label label-success'>#{i_tr}</span>"
+                                      when 'used'
+                                        "<span class='label label-warning'>#{i_tr}</span>"
+                                      when 'waiting_write_off'
+                                        "<span class='label label-danger'>#{i_tr}</span>"
+                                      when 'written_off'
+                                        "<span class='label label-default'>#{i_tr}</span>"
+                                      end
+
           item['supplies'].each { |supply| supply['date'] = supply['date'].strftime('%d-%m-%Y') }
         end
-      end
-
-      def init_order
-        new_order = Orders::NewOrder.new(nil, :out)
-
-        raise 'Не удалось создать шаблон расходного ордера' unless new_order.run
-
-        data[:order] = new_order.data
       end
 
       def init_filters
         data[:filters] = {}
         data[:filters][:item_types] = Item.pluck(:item_type).uniq
+        data[:filters][:statuses] = Item.statuses.map { |key, _val| [key, Item.translate_enum(:status, key)] }.to_h
       end
 
       def load_orders
-        order = Orders::Index.new({ start: nil, length: nil }, operation: :out, status: :processing)
+        out_orders = Orders::Index.new({ start: nil, length: nil }, operation: :out, status: :processing)
+        raise 'Не удалось загрузить список расходных ордеров' unless out_orders.run
 
-        raise 'Не удалось загрузить список ордеров' unless order.run
+        write_off_orders = Orders::Index.new({ start: nil, length: nil }, operation: :write_off, status: :processing)
+        raise 'Не удалось загрузить список ордеров на списание' unless write_off_orders.run
 
-        data[:orders] = order.data[:data]
+        data[:orders] = out_orders.data[:data] + write_off_orders.data[:data]
         data[:orders].each { |o| o[:main_info] = "ID ордера: #{o['id']}; ID РМ: #{o['invent_workplace_id']}" }
       end
 

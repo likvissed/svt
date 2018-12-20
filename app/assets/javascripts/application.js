@@ -18,6 +18,7 @@
 //= require ui-select
 //= require angular-cookies
 //= require ng-file-upload/dist/ng-file-upload-all
+//= require angularjs-dropdown-multiselect
 
 // DataTables
 //= require datatables.net/js/jquery.dataTables

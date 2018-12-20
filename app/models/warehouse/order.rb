@@ -13,20 +13,21 @@ module Warehouse
     belongs_to :validator, foreign_key: 'validator_id_tn', class_name: 'UserIss', optional: true
 
     validates :operation, :status, :creator_fio, presence: true
-    # validates :consumer_dept, presence: true, if: -> { operation == 'in' && done? }
-    validates :validator_fio, presence: { message: :empty }, if: -> { operation == 'out' && !skip_validator }
+    # validates :consumer_dept, presence: true, if: -> { in? && done? }
+    validates :validator_fio, presence: { message: :empty }, if: -> { (out? || write_off?) && !skip_validator }
     validates :closed_time, presence: true, if: -> { done? }
-    validates :invent_workplace_id, presence: true, if: -> { operation == 'out' }
-    validate :presence_consumer, if: -> { operations.any?(&:done?) }
+    validates :invent_workplace_id, presence: true, if: -> { out? }
+    validate :presence_consumer, if: -> { operations.any?(&:done?) && !write_off? }
     validate :at_least_one_operation
-    validate :validate_in_order, if: -> { operation == 'in' }
+    validate :validate_in_order, if: -> { in? }
+    validate :validate_write_off_order, if: -> { write_off? }
 
     after_initialize :set_initial_status, if: -> { new_record? }
     before_validation :set_consumer, if: -> { consumer_fio.blank? || consumer_id_tn.blank? }
     before_validation :set_closed_time, if: -> { done? && status_changed? }
-    before_validation :set_workplace, if: -> { errors.empty? && any_inv_item_to_operation? && new_record? && operation == 'in' }
-    before_validation :set_consumer_dept_out, if: -> { operation == 'out' }
-    before_validation :set_consumer_dept_in, if: -> { operation == 'in' }
+    before_validation :set_workplace, if: -> { errors.empty? && any_inv_item_to_operation? && new_record? && in? }
+    before_validation :set_consumer_dept_out, if: -> { out? }
+    before_validation :set_consumer_dept_in, if: -> { in? }
     before_validation :calculate_status, unless: -> { dont_calculate_status }
     before_update :prevent_update_done_order
     before_update :prevent_update_attributes
@@ -40,8 +41,7 @@ module Warehouse
     scope :consumer_fio, ->(consumer_fio) { where('consumer_fio LIKE ?', "%#{consumer_fio}%") }
     scope :invent_num, ->(invent_num) { joins(:inv_items).where(invent_item: { invent_num: invent_num }) }
 
-    # discard: 3 - добавить новый тип ордера (на списание)
-    enum operation: { out: 1, in: 2 }
+    enum operation: { out: 1, in: 2, write_off: 3 }
     enum status: { processing: 1, done: 2 }
 
     accepts_nested_attributes_for :operations, allow_destroy: true
@@ -70,11 +70,25 @@ module Warehouse
       status == 'done'
     end
 
+    def in?
+      operation == 'in'
+    end
+
+    def out?
+      operation == 'out'
+    end
+
+    def write_off?
+      operation == 'write_off'
+    end
+
     def any_inv_item_to_operation?
       operations.any? { |op| op.inv_item_to_operations.any? }
     end
 
     def consumer_from_history
+      return nil unless consumer_fio
+
       {
         id_tn: consumer_id_tn,
         fio: consumer_fio
@@ -100,7 +114,7 @@ module Warehouse
     end
 
     def validate_in_order
-      presence_consumer if operations.any?(&:done?)
+      # presence_consumer if operations.any?(&:done?)
       check_operation_list
       uniqueness_of_workplace if any_inv_item_to_operation?
       # compare_consumer_dept if any_inv_item_to_operation? && errors.empty?
@@ -108,6 +122,12 @@ module Warehouse
 
       # Эта валидация должна быть самой последней
       compare_nested_arrs if any_inv_item_to_operation? && errors.empty?
+    end
+
+    def validate_write_off_order
+      return if operations.all? { |op| !op.item.new? && op.item.status_was != 'non_used' }
+
+      errors.add(:base, :order_must_contains_only_used_items)
     end
 
     def set_initial_status

@@ -31,7 +31,7 @@ module Warehouse
         @supply_params[:operations_attributes] ||= []
         @supply_params[:operations_attributes].each do |op|
           op[:item] = find_or_generate_item(op)
-          op[:item].used = false
+          op[:item].status = :non_used
         end
       end
 

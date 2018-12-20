@@ -4,6 +4,23 @@
   .well
     .table-block
       .row
+        .col-sm-7.col-md-6.col-xlg-5.col-fhd-4
+          .btn-group ng-if="!table.selectedOrder.id" ng-cloak="true"
+            = button_tag "Создать расходный ордер", type: :button, class: "btn-primary btn-sm", "ng-click": "table.newOrder('out')",
+              "ng-disabled": "table.extraOrder.visibleCount == 0"
+            = button_tag type: :button, class: "btn-primary btn-sm dropdown-toggle", "data-toggle": "dropdown", "ng-disabled": "table.extraOrder.visibleCount == 0" do
+              span.caret
+            ul.dropdown-menu
+              li
+                a href="" ng-click="table.newOrder('write_off')"
+                  | Создать ордер на списание
+          div ng-if="table.selectedOrder.id && table.selectedOrder.operation == 'out'" ng-cloak="true"
+            = button_tag "Обновить расходный ордер", type: :button, class: "btn-primary btn-sm", "ng-click": "table.showOrder('out')",
+              "ng-disabled": "table.extraOrder.visibleCount == 0"
+          div ng-if="table.selectedOrder.id && table.selectedOrder.operation == 'write_off'" ng-cloak="true"
+            = button_tag "Обновить ордер на списание", type: :button, class: "btn-primary btn-sm", "ng-click": "table.showOrder('write_off')",
+              "ng-disabled": "table.extraOrder.visibleCount == 0"
+      .row
         = render partial: 'filters'
       .row
         .col-sm-24
@@ -13,12 +30,13 @@
                 th
                 th
                 th Тип техники
+                th ID
                 th Модель
                 th Инв. №
                 th Состояние
                 th На складе
                 th Зарезервировано
-                th
+                / th
             tbody
               tr ng-repeat="item in table.items" ng-class="{ 'text-muted': (!table.isItemInStock(item) && !table.isItemInOrder(item)) || table.isItemInDoneOp(item) }"
                 td
@@ -27,14 +45,16 @@
                 td
                   ng-warehouse-item-supply-popover
                 td.col-sm-3 ng-bind="item.item_type"
-                td.col-sm-13 ng-bind="item.item_model"
+                td.col-sm-2 ng-bind="item.inv_item.item_id"
+                td.col-sm-11 ng-bind="item.item_model"
                 td.col-sm-2 ng-bind="item.inv_item.invent_num || item.range_inv_nums"
-                td.col-sm-2 ng-bind-html="item.translated_used"
+                td.col-sm-2 ng-bind-html="item.translated_status"
                 td.col-sm-2 ng-bind="item.count"
                 td.col-sm-2 ng-bind="item.count_reserved"
-                td
-                  = fa_icon "trash-o fw", class: "pointer text-danger", "ng-click": "table.destroyItem(item)", "uib-tooltip": "Удалить технику со склада",
+                / td
+                  = fa_icon "trash-o sm", class: "pointer text-danger", "ng-click": "table.destroyItem(item)", "uib-tooltip": "Удалить технику со склада",
                      "tooltip-append-to-body": "true", "ng-hide": "table.isItemInOrder(item)"
+
               tr ng-if="table.items.length == 0"
                 td colspan=9 Данных нет
 
@@ -46,5 +66,6 @@
             max-size="table.pagination.maxSize" class="pagination-sm pull-right" ng-change="table.reloadItems()" }
 
 = render partial: '/warehouse/orders/out_order_modal'
+= render partial: '/warehouse/orders/write_off_order_modal'
 = render partial: 'supply_template'
 = render partial: '/warehouse/supplies/show'

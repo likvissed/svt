@@ -17,7 +17,7 @@ module Warehouse
 
       it 'adds :translated_used field' do
         subject.run
-        expect(subject.data[:data].first).to include('translated_used')
+        expect(subject.data[:data].first).to include('translated_status')
       end
 
       it 'includes :inv_item and :supplies fields' do
@@ -57,38 +57,15 @@ module Warehouse
         end
       end
 
-      context 'when :used filter is set' do
-        context 'and when is equal "true"' do
-          before { params[:filters] = { used: 'true' }.to_json }
+      context 'when :status filter is set' do
+        let(:status) { :used }
+        let(:status_translated) { Item.translate_enum(:status, status) }
+        before { params[:filters] = { status: status }.to_json }
 
-          it 'loads only records where used is true' do
-            subject.run
-            subject.data[:data].each do |i|
-              expect(i['used']).to be_truthy
-            end
-          end
-        end
-
-        context 'and when is equal "false"' do
-          before { params[:filters] = { used: 'false' }.to_json }
-
-          it 'loads only records where used is false' do
-            subject.run
-            subject.data[:data].each do |i|
-              expect(i['used']).to be_falsey
-            end
-          end
-        end
-
-        context 'and when it is empty' do
-          before { params[:filters] = { used: '' }.to_json }
-
-          let(:truthy) { subject.data[:data].find_all { |i| i['used'] == true } }
-          let(:falsey) { subject.data[:data].find_all { |i| i['used'] == false } }
-          it 'loads all records' do
-            subject.run
-            expect(truthy).not_to be_empty
-            expect(falsey).not_to be_empty
+        it 'loads only records with specified status' do
+          subject.run
+          subject.data[:data].each do |i|
+            expect(i['translated_status']).to match(/#{status_translated}/)
           end
         end
       end

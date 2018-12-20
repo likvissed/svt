@@ -20,6 +20,7 @@ ru:
       updated: 'Техника №%{item_id} обновлена'
       destroyed: 'Техника удалена'
       sended_to_stock: 'Техника №%{item_id} отправлена на склад'
+      written_off: 'Техника №%{item_id} отправлена на склад и списана'
     invent/model:
       created: 'Модель создана'
       updated: 'Модель обновлена'
@@ -30,6 +31,7 @@ ru:
     warehouse/order:
       created_in: 'Готово. Количество созданных ордеров: %{count}'
       created_out: 'Ордер создан'
+      created_write_off: 'Ордер создан'
       updated: 'Ордер №%{order_id} обновлен'
       confirmed: 'Ордер №%{order_id} подтвержден'
       destroyed: 'Ордер удален'

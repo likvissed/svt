@@ -51,6 +51,12 @@ module Warehouse
           expect { subject.run }.to change(Item, :count).by(2)
         end
 
+        it 'sets status :non_used to warehouse_item' do
+          subject.run
+
+          expect(Item.last.status).to eq 'non_used'
+        end
+
         it 'sets into the :count attribute value specified in the associated operation' do
           subject.run
           expect(Supply.last.items.first.count).to eq operation_1[:shift]
@@ -103,6 +109,12 @@ module Warehouse
             expect { subject.run }.not_to change { existing_item_1.reload.count }
           end
 
+          it 'sets status :non_used to warehouse_item' do
+            subject.run
+
+            expect(Item.last.status).to eq 'non_used'
+          end
+
           it 'changes :count attribute of existing item and sets a new value for new item' do
             subject.run
             expect(Supply.last.items.last.count).to eq operation_1[:shift]
@@ -111,7 +123,7 @@ module Warehouse
         end
       end
 
-      context 'and when item with the same model exist (and item is used)' do
+      context 'and when item with the same model exists (and item has :used status)' do
         context 'and when item has :with_invent_num type' do
           let!(:item) { create(:item, :with_property_values, type_name: :monitor, model: model) }
           let!(:w_item) { create(:used_item, inv_item: item, count_reserved: 1) }
@@ -128,6 +140,12 @@ module Warehouse
 
           it 'creates all items' do
             expect { subject.run }.to change(Item, :count).by(2)
+          end
+
+          it 'sets status :non_used to warehouse_item' do
+            subject.run
+
+            expect(Item.last.status).to eq 'non_used'
           end
 
           it 'sets into the :count attribute value specified in the associated operation' do
@@ -152,6 +170,12 @@ module Warehouse
 
           it 'creates all items' do
             expect { subject.run }.to change(Item, :count).by(2)
+          end
+
+          it 'sets status :non_used to warehouse_item' do
+            subject.run
+
+            expect(Item.last.status).to eq 'non_used'
           end
 
           it 'sets into the :count attribute value specified in the associated operation' do

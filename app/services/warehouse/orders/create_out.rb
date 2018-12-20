@@ -10,7 +10,7 @@ module Warehouse
       end
 
       def run
-        raise 'Неверные данные' if order_in?
+        raise 'Неверные данные (тип операции или аттрибут :shift)' unless order_out?
 
         init_order
         return false unless wrap_order
@@ -62,7 +62,7 @@ module Warehouse
         @order.operations.each do |op|
           next unless op.item
 
-          op.build_inv_items(op.shift.abs, workplace: @order.inv_workplace)
+          op.build_inv_items(op.shift.abs, workplace: @order.inv_workplace, status: :waiting_take)
           op.calculate_item_count_reserved
         end
       end

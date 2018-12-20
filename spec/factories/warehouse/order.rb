@@ -47,6 +47,15 @@ module Warehouse
             order.operations << build(:order_operation, item: item1, item_type: 'Клавиатура', item_model: 'OKLICK', shift: -2)
             order.operations << build(:order_operation, item: item2, item_type: 'Мышь', item_model: 'Logitech', shift: -2)
           end
+        elsif order.operation.to_s == 'write_off'
+          if order.operations.empty? && !ev.without_operations
+            item = create(:item, :with_property_values, type_name: :monitor)
+            w_item1 = create(:used_item, inv_item: item)
+            w_item2 = create(:used_item, item_type: 'Клавиатура', item_model: 'OKLICK')
+
+            order.operations << build(:order_operation, item: w_item1, inv_items: [item], shift: -1)
+            order.operations << build(:order_operation, item: w_item2, shift: -1)
+          end
         end
       end
     end

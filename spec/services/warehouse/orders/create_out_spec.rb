@@ -37,19 +37,31 @@ module Warehouse
         let(:inv_items) { Item.includes(:inv_item).find(order_params[:operations_attributes].map { |op| op[:item_id] }).map(&:inv_item).compact }
         let(:items) { Item.find(order_params[:operations_attributes].map { |op| op[:item_id] }) }
 
-        context 'and when :operation attribute is :in' do
+        context 'and when :operation attribute is not :out' do
           before { order_params['operation'] = 'in' }
 
           its(:run) { is_expected.to be_falsey }
         end
 
         context 'and when :shift attribute of any operation has positive value' do
-          before { order_params[:operations_attributes].first[:shift] = 4 }
+          before { order_params[:operations_attributes].first[:shift] = 1 }
+
+          it 'exit from service without processing params' do
+            expect(subject).not_to receive(:init_order)
+            subject.run
+          end
 
           its(:run) { is_expected.to be_falsey }
         end
 
         its(:run) { is_expected.to be_truthy }
+
+        it 'sets validator fields' do
+          subject.run
+
+          expect(Order.last.validator_id_tn).to eq current_user.id_tn
+          expect(Order.last.validator_fio).to eq current_user.fullname
+        end
 
         it 'creates warehouse_operations records' do
           expect { subject.run }.to change(Operation, :count).by(order_params[:operations_attributes].size)
@@ -115,6 +127,13 @@ module Warehouse
         end
 
         its(:run) { is_expected.to be_truthy }
+
+        it 'sets validator fields' do
+          subject.run
+
+          expect(Order.last.validator_id_tn).to eq current_user.id_tn
+          expect(Order.last.validator_fio).to eq current_user.fullname
+        end
 
         it 'creates warehouse_operations records' do
           expect { subject.run }.to change(Operation, :count).by(order_params[:operations_attributes].size)

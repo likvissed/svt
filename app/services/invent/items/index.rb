@@ -2,6 +2,9 @@ module Invent
   module Items
     # Загрузить список техники, которая находится в работе в текущий момент.
     class Index < Invent::ApplicationService
+      # Список фильтров по умолчанию для фильтра "Статусы"
+      DEFAULT_STATUS_FILTER = %w[waiting_take waiting_bring in_stock in_workplace].freeze
+
       def initialize(params)
         @params = params
 
@@ -9,10 +12,10 @@ module Invent
       end
 
       def run
+        load_filters if need_init_filters?
         load_items
         limit_records
         prepare_to_render
-        load_filters if need_init_filters?
 
         true
       rescue RuntimeError => e
@@ -35,7 +38,9 @@ module Invent
       end
 
       def filtering_params
-        JSON.parse(params[:filters]).slice('item_id', 'type_id', 'invent_num', 'item_model', 'responsible', 'status', 'properties', 'location_building_id', 'location_room_id', 'priority')
+        filters = JSON.parse(params[:filters])
+        filters['for_statuses'] = data[:filters][:statuses].select { |filter| filter[:default] }.as_json if need_init_filters?
+        filters.slice('item_id', 'type_id', 'invent_num', 'item_model', 'responsible', 'properties', 'for_statuses', 'location_building_id', 'location_room_id', 'priority')
       end
 
       def limit_records
@@ -94,15 +99,21 @@ module Invent
                         'label-warning'
                       when 'in_stock'
                         'label-info'
-                      else
+                      when 'waiting_write_off'
+                        'label-danger'
+                      when 'written_off'
                         'label-default'
+                      else
+                        'label-success'
                       end
 
         "<span class='label #{label_class}'>#{text}</span>"
       end
 
       def item_statuses
-        Invent::Item.statuses.map { |key, _val| [key, Invent::Item.translate_enum(:status, key)] }.to_h
+        statuses = Invent::Item.statuses.map { |key, val| { id: val, status: key, label: Invent::Item.translate_enum(:status, key) } }
+        statuses.each { |status| status[:default] = DEFAULT_STATUS_FILTER.include?(status[:status]) }
+        statuses
       end
     end
   end

@@ -13,11 +13,12 @@ module Warehouse
       end
 
       def run
-        raise 'Неверные данные' if order_in?
+        raise 'Неверные данные (тип операции или аттрибут :shift)' unless order_out?
 
         find_order
 
         return false unless wrap_order_with_transactions
+
         broadcast_out_orders
         broadcast_items
 
@@ -35,6 +36,12 @@ module Warehouse
         @order = Order.includes(:inv_item_to_operations, :inv_items).find(@order_id)
         assign_order_params
         authorize @order, :update_out?
+      end
+
+      def assign_order_params
+        @order.assign_attributes(@order_params)
+        @order.set_creator(current_user)
+        @order.skip_validator = true
       end
 
       def wrap_order_with_transactions
@@ -67,18 +74,12 @@ module Warehouse
         end
       end
 
-      def assign_order_params
-        @order.assign_attributes(@order_params)
-        @order.set_creator(current_user)
-        @order.skip_validator = true
-      end
-
       def prepare_inv_items
         @order.operations.each do |op|
           next unless op.item
 
           if op.new_record?
-            op.build_inv_items(op.shift.abs, workplace: @order.inv_workplace)
+            op.build_inv_items(op.shift.abs, workplace: @order.inv_workplace, status: :waiting_take)
           elsif op.marked_for_destruction?
             op.item.inv_item ? inv_items_for_update(op.inv_items) : inv_items_for_destroy(op.inv_items)
           elsif op.shift_changed?
@@ -107,7 +108,7 @@ module Warehouse
         delta = op.shift_was - op.shift
 
         if delta.positive?
-          op.build_inv_items(delta, workplace: @order.inv_workplace)
+          op.build_inv_items(delta, workplace: @order.inv_workplace, status: :waiting_take)
         elsif delta.negative?
           inv_items_for_destroy(op.inv_items.last(delta.abs))
         end

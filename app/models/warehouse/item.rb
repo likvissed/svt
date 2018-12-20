@@ -11,13 +11,12 @@ module Warehouse
     belongs_to :inv_model, class_name: 'Invent::Model', foreign_key: 'invent_model_id', optional: true
 
     validates :warehouse_type, :item_type, :item_model, presence: true
-    validates :used, inclusion: { in: [true, false] }
     validates :inv_item, uniqueness: true, allow_nil: true
     validates :count, :count_reserved, numericality: { greater_than_or_equal_to: 0 }, presence: true
-    validates :invent_num_start, :invent_num_end, numericality: { greater_than_or_equal_to: 0 }, presence: true, if: -> { warehouse_type.to_s == 'with_invent_num' && !used }
+    validates :invent_num_start, :invent_num_end, numericality: { greater_than_or_equal_to: 0 }, presence: true, if: -> { warehouse_type.to_s == 'with_invent_num' && new? }
     validate :max_count, if: -> { inv_item }
     validate :compare_counts, if: -> { count && count_reserved }
-    validate :compare_invent_nums_with_reserved, if: -> { warehouse_type.to_s == 'with_invent_num' && !used && (invent_num_start_changed? || invent_num_end_changed?) }
+    validate :compare_invent_nums_with_reserved, if: -> { warehouse_type.to_s == 'with_invent_num' && new? && (invent_num_start_changed? || invent_num_end_changed?) }
 
     after_initialize :set_initial_count, if: -> { new_record? }
     before_validation :set_string_values
@@ -25,7 +24,7 @@ module Warehouse
     before_update :prevent_update, if: -> { warehouse_type.to_s == 'with_invent_num' && !allow_update_model_or_type }, prepend: true
 
     scope :show_only_presence, ->(_attr = nil) { where('count > count_reserved') }
-    scope :used, ->(used) { where('used = ?', used.to_s == 'true') }
+    scope :status, ->(status) { where(status: status) }
     scope :item_type, ->(item_type) { where(item_type: item_type) }
     scope :barcode, ->(barcode) { where(barcode: barcode) }
     scope :item_model, ->(item_model) { where('item_model LIKE ?', "%#{item_model}%") }
@@ -35,6 +34,7 @@ module Warehouse
     scope :invent_item_id, ->(invent_item_id) { where(invent_item_id: invent_item_id) }
 
     enum warehouse_type: { without_invent_num: 1, with_invent_num: 2 }
+    enum status: { non_used: 1, used: 2, waiting_write_off: 3, written_off: 4 }
 
     # was_created - ставится, если техника была создана (используется внутри сервиса Warehouse::Orders::BaseService).
     # allow_update_model_or_type - разрешает обновить технику на складе, даже если модели или тип ихменились.
@@ -57,6 +57,18 @@ module Warehouse
 
       existing_invent_nums = Invent::Item.pluck(:invent_num)
       (invent_num_start..invent_num_end).to_a.reject { |el| existing_invent_nums.include?(el.to_s) }[0 + index]
+    end
+
+    def new?
+      status.to_s == 'non_used'
+    end
+
+    def used?
+      status.to_s == 'used'
+    end
+
+    def written_off?
+      status.to_s == 'written_off'
     end
 
     protected

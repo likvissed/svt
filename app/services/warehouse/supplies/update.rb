@@ -44,7 +44,7 @@ module Warehouse
                         find_or_generate_item(op)
                       end
 
-          op[:item].used = false
+          op[:item].status = :non_used
           op[:item].assign_attributes(item)
         end
       end

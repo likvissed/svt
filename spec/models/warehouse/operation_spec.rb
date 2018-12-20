@@ -57,17 +57,19 @@ module Warehouse
       end
 
       context 'when :warehouse_type attribute of item has :with_invent_num value' do
+        let(:status) { 'waiting_take' }
+
         context 'and when inv_item exists' do
           let!(:workplace_1) { create(:workplace_pk, :add_items, items: %i[pc monitor]) }
           let!(:workplace_2) { create(:workplace_pk, :add_items, items: %i[pc monitor]) }
           let!(:item) { create(:used_item, inv_item: workplace_1.items.first) }
 
           it 'change inv_item params' do
-            subject.build_inv_items(subject.shift.abs, workplace: workplace_2)
+            subject.build_inv_items(subject.shift.abs, workplace: workplace_2, status: status)
 
             subject.inv_items.each do |inv_item|
               expect(inv_item.workplace).to eq workplace_2
-              expect(inv_item.status).to eq 'waiting_take'
+              expect(inv_item.status).to eq status
             end
           end
         end
@@ -76,7 +78,7 @@ module Warehouse
           let(:workplace) { create(:workplace_pk, :add_items, items: %i[pc monitor]) }
           let(:type) { Invent::Type.find_by(name: :monitor) }
           let(:item) { create(:new_item, inv_type: type, inv_model: type.models.first, count: 2, invent_num_end: 112) }
-          before { subject.build_inv_items(subject.shift.abs, workplace: workplace) }
+          before { subject.build_inv_items(subject.shift.abs, workplace: workplace, status: status) }
 
           it 'builds inv_items' do
             expect(subject.inv_items.size).to eq subject.shift.abs
@@ -85,7 +87,7 @@ module Warehouse
               expect(inv_item.workplace).to eq workplace
               expect(inv_item.model).to eq item.inv_model
               expect(inv_item.invent_num.to_i).to eq item.invent_num_start + index
-              expect(inv_item.status).to eq 'waiting_take'
+              expect(inv_item.status).to eq status
               expect(inv_item.property_values.size).to eq item.inv_type.properties.size
             end
           end

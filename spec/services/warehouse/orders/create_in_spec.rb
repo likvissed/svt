@@ -26,7 +26,7 @@ module Warehouse
 
       its(:run) { is_expected.to be_truthy }
 
-      context 'when :operation attribute is :out' do
+      context 'when :operation attribute is not :in' do
         before { order_params['operation'] = 'out' }
 
         its(:run) { is_expected.to be_falsey }
@@ -34,6 +34,11 @@ module Warehouse
 
       context 'when :shift attribute of any operation has negative value' do
         before { order_params[:operations_attributes].first[:shift] = -4 }
+
+        it 'exit from service without processing params' do
+          expect(subject).not_to receive(:processing_nested_attributes)
+          subject.run
+        end
 
         its(:run) { is_expected.to be_falsey }
       end
@@ -112,7 +117,7 @@ module Warehouse
       end
 
       it 'broadcasts to in_orders' do
-        expect_any_instance_of(AbstractState).to receive(:broadcast_in_orders)
+        expect_any_instance_of(Orders::In::AbstractState).to receive(:broadcast_in_orders)
         subject.run
       end
 
@@ -187,6 +192,7 @@ module Warehouse
 
         it 'sets :done to the each operation attribute' do
           subject.run
+
           Order.all.includes(:operations).each do |o|
             o.operations.each do |op|
               expect(op.status).to eq 'done'
@@ -207,6 +213,7 @@ module Warehouse
 
         it 'sets :done to the order status' do
           subject.run
+
           Order.all.each { |o| expect(o.done?).to be_truthy }
         end
 
@@ -236,6 +243,7 @@ module Warehouse
 
         it 'sets nil to the workplace, :in_stock to the status and :default to the priority attributes into the invent_item record' do
           subject.run
+
           [inv_item_1.reload, inv_item_2.reload].each do |inv_item|
             expect(inv_item.workplace).to be_nil
             expect(inv_item.status).to eq 'in_stock'
@@ -252,7 +260,8 @@ module Warehouse
         end
 
         it 'broadcasts to archive_orders' do
-          expect_any_instance_of(AbstractState).to receive(:broadcast_archive_orders)
+          expect_any_instance_of(Orders::In::AbstractState).to receive(:broadcast_archive_orders)
+
           subject.run
         end
       end

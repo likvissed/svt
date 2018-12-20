@@ -26,19 +26,21 @@ import { app } from '../../app/app';
   }
 
   /**
-   * Инициировать подключение к каналу ItemsChannel
+   * Инициировать подключение к каналу ItemsChannel.
    */
   WarehouseItemsCtrl.prototype._initActionCable = function() {
     let consumer = new this.ActionCableChannel('Warehouse::ItemsChannel');
 
     consumer.subscribe((data) => {
-      this.closeOrder();
+      // this.closeOrder();
       this._loadItems();
     });
   };
 
   /**
    * Загрузить список ордеров.
+   *
+   * @param init - флаг. Если true, будут загружены и фильтры
    */
   WarehouseItemsCtrl.prototype._loadItems = function(init) {
     this.Items.loadItems(init).then(
@@ -59,11 +61,13 @@ import { app } from '../../app/app';
 
   /**
    * Открыть модальное окно для редактирования состава ордера.
+   *
+   * @param type
    */
-  WarehouseItemsCtrl.prototype._openEditModal = function() {
+  WarehouseItemsCtrl.prototype._openOrderModal = function(type) {
     let modalInstance = this.$uibModal.open({
-      templateUrl: 'outOrderModal.slim',
-      controller: 'EditOutOrderController',
+      templateUrl: `edit${type}OrderModal.slim`,
+      controller: `Edit${type}OrderController`,
       controllerAs: 'edit',
       size: 'md',
       backdrop: 'static'
@@ -119,6 +123,7 @@ import { app } from '../../app/app';
    */
   WarehouseItemsCtrl.prototype.isItemInOrder = function(item) {
     if (!this.order) { return false; }
+
     return this.Order.getOperation(item);
   }
 
@@ -162,13 +167,33 @@ import { app } from '../../app/app';
 
   /**
    * Открыть окно создания ордера.
+   *
+   * @param operation
    */
-  WarehouseItemsCtrl.prototype.newOrder = function() {
-    this._openEditModal();
+  WarehouseItemsCtrl.prototype.newOrder = function(operation) {
+    let operationName;
+
+    this.Order.init(operation).then(
+      () => {
+        operationName = operation == 'out' ? 'Out' : 'WriteOff';
+        this._openOrderModal(operationName);
+      }
+    );
   };
 
   /**
-   * Удалить технику со склада
+   * Открыть окно обновления ордера.
+   *
+   * @param operation
+   */
+  WarehouseItemsCtrl.prototype.showOrder = function(operation) {
+    let operationName = operation == 'out' ? 'Out' : 'WriteOff';
+
+    this._openOrderModal(operationName);
+  };
+
+  /**
+   * Удалить технику со склада.
    *
    * @param item
    */
@@ -185,13 +210,14 @@ import { app } from '../../app/app';
   };
 
   /**
-   * Загрузить ордера для редактирования
-   *
-   * @param order
+   * Загрузить ордер для редактирования.
    */
   WarehouseItemsCtrl.prototype.loadOrder = function() {
+    let operationName;
+
     this.Order.loadOrder(this.selectedOrder.id, true).then(() => {
-      this._openEditModal();
+      operationName = this.selectedOrder.operation == 'out' ? 'Out' : 'WriteOff';
+      this._openOrderModal(operationName);
       this.Items.findSelected();
 
       this.reloadItems();
@@ -199,7 +225,7 @@ import { app } from '../../app/app';
   }
 
   /**
-   * Очистить выбранный ордер
+   * Очистить выбранный ордер.
    */
   WarehouseItemsCtrl.prototype.closeOrder = function() {
     this.Order.reinit();
@@ -208,7 +234,7 @@ import { app } from '../../app/app';
   };
 
   /**
-   * Очистить фильтр по типу техники
+   * Очистить фильтр по типу техники.
    */
   WarehouseItemsCtrl.prototype.closeItemTypeFilter = function() {
     delete(this.selectedFilters.item_type);

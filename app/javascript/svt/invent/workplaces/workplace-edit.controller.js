@@ -185,11 +185,24 @@ import { app } from '../../app/app';
    *
    * @param item
    */
-  WorkplaceEditCtrl.prototype.sendItemToStock = function(item, index) {
+  WorkplaceEditCtrl.prototype.sendItemToStock = function(item) {
     let confirm_str = "ВНИМАНИЕ! Техника будет перемещена на склад! Вы действительно хотите переместить на склад " + item.type.short_description + "?";
 
     if (!confirm(confirm_str)) { return false; }
 
     this.InventItem.sendToStock().then(() => this.Workplace.delItem(item));
+  };
+
+  /**
+   * Списать технику.
+   *
+   * @param item
+   */
+  WorkplaceEditCtrl.prototype.sendItemToWriteOff = function(item) {
+    let confirm_str = "ВНИМАНИЕ! Техника будет перемещена на склад и списана! Вы действительно хотите списать " + item.type.short_description + "?";
+
+    if (!confirm(confirm_str)) { return false; }
+
+    this.InventItem.sendToWriteOff().then(() => this.Workplace.delItem(item));
   };
 })();

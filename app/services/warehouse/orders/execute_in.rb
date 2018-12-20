@@ -11,10 +11,15 @@ module Warehouse
       end
 
       def run
-        raise 'Неверные данные' if order_out?
+        raise 'Неверные данные (тип операции или аттрибут :shift)' unless order_in?
 
         find_order
         return false unless wrap_order
+
+        if @operations_to_write_off.any?
+          write_off_items
+          broadcast_write_off_orders
+        end
 
         broadcast_in_orders
         broadcast_archive_orders
@@ -65,6 +70,7 @@ module Warehouse
       def processing_params
         op_selected = false
         @order.assign_attributes(@order_params)
+        find_items_to_write_off
 
         @item_ids = @order.operations.map do |op|
           next unless op.status_changed? && op.done?
@@ -79,7 +85,7 @@ module Warehouse
               warehouse_type: :without_invent_num,
               item_type: op.item_type,
               item_model: op.item_model,
-              used: true,
+              status: :used,
               count: op.shift,
               count_reserved: 0
             )
@@ -88,6 +94,10 @@ module Warehouse
         end.compact
 
         op_selected
+      end
+
+      def find_items_to_write_off
+        @operations_to_write_off = @order.operations.select(&:to_write_off)
       end
 
       def update_items
@@ -99,6 +109,25 @@ module Warehouse
             op.inv_items.first.to_stock!
           end
         end
+      end
+
+      def write_off_items
+        new_order = Order.new(operation: :write_off).as_json
+        new_order['operations_attributes'] = @operations_to_write_off.map do |op|
+          new_op = Order.new.operations.build
+          new_op.item_id = op.item_id
+          new_op.item_type = op.item_type
+          new_op.item_model = op.item_model
+          new_op.shift = -1
+
+          new_op.as_json
+        end
+
+        create_write_off = CreateWriteOff.new(current_user, new_order)
+        return true if create_write_off.run
+
+        @error = create_write_off.error
+        raise 'Сервис CreateWriteOff завершился с ошибкой'
       end
     end
   end

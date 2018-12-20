@@ -28,7 +28,7 @@ module Invent
       end
 
       def send_to_stock
-        @order = Warehouse::Orders::CreateByInvItem.new(current_user, @item)
+        @order = Warehouse::Orders::CreateByInvItem.new(current_user, @item, :in)
 
         return true if @order.run
 

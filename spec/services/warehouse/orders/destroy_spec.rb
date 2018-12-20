@@ -19,11 +19,10 @@ module Warehouse
 
         include_examples 'destroys order with nested models'
 
-        it 'sets nil status to the each inv_item' do
+        it 'sets :in_workplace status to the each inv_item' do
           subject.run
-          Invent::Item.find_each do |inv_item|
-            expect(inv_item.status).to eq 'in_workplace'
-          end
+
+          Invent::Item.find_each { |inv_item| expect(inv_item.status).to eq 'in_workplace' }
         end
 
         it 'does not destroy items' do
@@ -32,32 +31,35 @@ module Warehouse
 
         it 'broadcasts to in_orders' do
           expect(subject).to receive(:broadcast_in_orders)
+
           subject.run
         end
 
         it 'broadcasts to items' do
           expect(subject).to receive(:broadcast_items)
+
           subject.run
         end
 
         it 'broadcasts to workplaces' do
           expect(subject).to receive(:broadcast_workplaces)
+
           subject.run
         end
 
         it 'broadcasts to workplaces_list' do
           expect(subject).to receive(:broadcast_workplaces_list)
+
           subject.run
         end
 
-        context 'and when order is not destroyed' do
+        context 'and when order was not destroyed' do
           before { allow_any_instance_of(Order).to receive(:destroy).and_return(false) }
 
           it 'does not change inv_item status' do
             subject.run
-            Invent::Item.find_each do |inv_item|
-              expect(inv_item.status).to eq 'waiting_bring'
-            end
+
+            Invent::Item.find_each { |inv_item| expect(inv_item.status).to eq 'waiting_bring' }
           end
 
           it 'does not destroy operations' do
@@ -94,10 +96,10 @@ module Warehouse
 
           it 'changes status of each inv_item, which belongs to order, to :in_stock' do
             subject.run
+
             [inv_item_1, inv_item_2].each do |inv_item|
               expect(inv_item.reload.status).to eq 'in_stock'
             end
-
             expect(inv_item_3.reload.status).to eq 'in_workplace'
           end
 
@@ -107,7 +109,6 @@ module Warehouse
             [inv_item_1, inv_item_2].each do |inv_item|
               expect(inv_item.reload.workplace_id).to be_nil
             end
-
             expect(inv_item_3.reload.workplace_id).to eq workplace.workplace_id
           end
         end
@@ -139,47 +140,116 @@ module Warehouse
 
           it 'change :count_reserved attribute of Item model' do
             subject.run
+
             expect(item_1.reload.count_reserved).to be_zero
             expect(item_2.reload.count_reserved).to be_zero
           end
 
           it 'broadcasts to items' do
             expect(subject).to receive(:broadcast_items).with(order.id)
+
             subject.run
           end
 
           it 'broadcasts to out_orders' do
             expect(subject).to receive(:broadcast_out_orders)
+
             subject.run
           end
 
           it 'broadcasts to workplaces' do
             expect(subject).to receive(:broadcast_workplaces)
+
             subject.run
           end
 
           it 'broadcasts to workplaces_list' do
             expect(subject).to receive(:broadcast_workplaces_list)
+
             subject.run
           end
 
-          context 'and when order is not destroyed' do
+          context 'and when order was not destroyed' do
             before { allow_any_instance_of(Order).to receive(:destroy).and_return(false) }
 
             include_examples 'failed destroy :out order'
           end
 
-          context 'and when inv_item is not destroyed' do
+          context 'and when inv_item was not destroyed' do
             before { allow_any_instance_of(Invent::Item).to receive(:destroy).and_return(false) }
 
             include_examples 'failed destroy :out order'
           end
 
-          context 'and when item is not updated' do
+          context 'and when item was not updated' do
             before { allow_any_instance_of(Item).to receive(:save!).and_raise(ActiveRecord::RecordNotSaved) }
 
             include_examples 'failed destroy :out order'
           end
+        end
+      end
+
+      context 'when operation is :write_off' do
+        let(:item_1) { create(:item, :with_property_values, type_name: :pc, status: :waiting_write_off) }
+        let(:item_2) { create(:item, :with_property_values, type_name: :monitor, status: :waiting_write_off) }
+        let(:w_item_1) { create(:used_item, count_reserved: 1, inv_item: item_1, status: :waiting_write_off) }
+        let(:w_item_2) { create(:used_item, count_reserved: 1, inv_item: item_2, status: :waiting_write_off) }
+        let(:op_1) { build(:order_operation, inv_item_ids: [item_1.item_id], item: w_item_1, shift: -1) }
+        let(:op_2) { build(:order_operation, inv_item_ids: [item_2.item_id], item: w_item_2, shift: -1) }
+        let!(:order) { create(:order, operation: :write_off, operations: [op_1, op_2]) }
+
+        include_examples 'destroys order with nested models'
+
+        it 'changes status of each inv_item, which belongs to order, to :in_stock' do
+          subject.run
+
+          Invent::Item.find_each { |inv_item| expect(inv_item.status).to eq 'in_stock' }
+        end
+
+        it 'changes status of each warehouse_item, which belongs to order, to :used' do
+          subject.run
+
+          Item.find_each { |item| expect(item.status).to eq 'used' }
+        end
+
+        it 'change :count_reserved attribute of warehouse_items' do
+          subject.run
+
+          Item.find_each { |item| expect(item.count_reserved).to be_zero }
+        end
+
+        it 'does not destroy items' do
+          expect { subject.run }.not_to change(Item, :count)
+        end
+
+        it 'broadcasts to items' do
+          expect(subject).to receive(:broadcast_items).with(order.id)
+
+          subject.run
+        end
+
+        it 'broadcasts to write_off_orders' do
+          expect(subject).to receive(:broadcast_write_off_orders)
+
+          subject.run
+        end
+
+        context 'and when order was not destroyed' do
+          before { allow_any_instance_of(Order).to receive(:destroy).and_return(false) }
+
+          include_examples 'failed destroy :write_off order'
+        end
+
+        context 'and when inv_item was not updated' do
+          before { allow_any_instance_of(Invent::Item).to receive(:update!).and_raise(ActiveRecord::RecordNotSaved) }
+
+          include_examples 'failed destroy :write_off order'
+        end
+
+        context 'and when item was not updated' do
+          before { allow_any_instance_of(Item).to receive(:save!).and_raise(ActiveRecord::RecordNotSaved) }
+
+          include_examples 'failed destroy :write_off order'
         end
       end
     end

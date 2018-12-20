@@ -34,6 +34,7 @@ import { app } from '../../app/app';
 
         if (response.filters) {
           this.Filters.setPossibleValues(response.filters, true);
+          this.Filters.setDefaultValues();
         }
       },
       (response, status) => this.Error.response(response, status)

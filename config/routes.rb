@@ -78,6 +78,8 @@ Rails.application.routes.draw do
         post 'pc_config_from_user', to: 'items#pc_config_from_user'
         # Отправить технику на склад
         post 'to_stock', to: 'items#to_stock'
+        # Списать технику
+        post 'to_write_off', to: 'items#to_write_off'
       end
     end
 
@@ -96,16 +98,20 @@ Rails.application.routes.draw do
     resources :orders, only: [:new, :edit, :destroy] do
       get 'in', to: 'orders#index_in', on: :collection
       get 'out', to: 'orders#index_out', on: :collection
+      get 'write_off', to: 'orders#index_write_off', on: :collection
       get 'archive', to: 'orders#archive', on: :collection
       get 'print', to: 'print', on: :member
       post 'create_in', to: 'orders#create_in', on: :collection
       post 'create_out', to: 'orders#create_out', on: :collection
+      post 'create_write_off', to: 'orders#create_write_off', on: :collection
       post 'execute_in', to: 'orders#execute_in', on: :member
       post 'execute_out', to: 'orders#execute_out', on: :member
+      post 'execute_write_off', to: 'orders#execute_write_off', on: :member
       post 'prepare_to_deliver', to: 'orders#prepare_to_deliver', on: :member
       put 'update_in', to: 'orders#update_in', on: :member
       put 'update_out', to: 'orders#update_out', on: :member
-      put 'confirm_out', to: 'orders#confirm_out', on: :member
+      put 'update_write_off', to: 'orders#update_write_off', on: :member
+      put 'confirm', to: 'orders#confirm', on: :member
     end
     resources :supplies
   end

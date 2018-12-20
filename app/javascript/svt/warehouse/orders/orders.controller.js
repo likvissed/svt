@@ -18,7 +18,7 @@ import { app } from '../../app/app';
     this.pagination = TablePaginator.config();
 
     this.filters = this.Filters.getFilters();
-    this.selected= this.Filters.getSelected();
+    this.selected = this.Filters.getSelected();
 
     $scope.initOperation = (operation) => {
       this.operation = operation;
@@ -29,31 +29,42 @@ import { app } from '../../app/app';
   }
 
   /**
-   * Инициировать подключение к каналу OrdersChannel
+   * Инициировать подключение к каналу OrdersChannel.
    */
   OrdersController.prototype._initActionCable = function() {
-    let
-      channelType = this.operation.charAt(0).toUpperCase() + this.operation.slice(1),
-      consumer = new this.ActionCableChannel('Warehouse::' + channelType + 'OrdersChannel');
+    let channelType;
 
+    if (this.operation == 'in') {
+      channelType = 'In';
+    } else if (this.operation == 'out') {
+      channelType = 'Out';
+    } else if (this.operation == 'write_off') {
+      channelType = 'WriteOff';
+    } else {
+      channelType = 'Archive';
+    }
+
+    let consumer = new this.ActionCableChannel('Warehouse::' + channelType + 'OrdersChannel');
     consumer.subscribe(() => this._loadOrders());
   };
 
   /**
    * Загрузить список ордеров.
+   *
+   * @param init - флаг. Если true, будут загружены и фильтры
    */
   OrdersController.prototype._loadOrders = function(init) {
     this.Order.loadOrders(this.operation, init).then(() => this.orders = this.Order.orders);
   };
 
   /**
-   * Открыть модальное окно
+   * Открыть модальное окно.
    *
    * @param operation
    */
   OrdersController.prototype._openEditModal = function() {
     this.$uibModal.open({
-      templateUrl: 'inOrderModal.slim',
+      templateUrl: 'editInOrderModal.slim',
       controller: 'EditInOrderController',
       controllerAs: 'edit',
       size: 'md',
@@ -72,7 +83,7 @@ import { app } from '../../app/app';
    * Открыть окно создания ордера.
    */
   OrdersController.prototype.newOrder = function() {
-    this.Order.init('in').then(() => this._openEditModal());
+    this.Order.init('in', null, true).then(() => this._openEditModal());
   };
 
   /**
@@ -86,6 +97,8 @@ import { app } from '../../app/app';
 
   /**
    * Открыть модальное окно для исполнения ордера.
+   *
+   * @param order
    */
   OrdersController.prototype.execOrder = function(order) {
     let checkUnreg = order.operation == 'in';

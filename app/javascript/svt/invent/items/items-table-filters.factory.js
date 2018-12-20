@@ -30,7 +30,7 @@ import { app } from '../../app/app';
           }
         ],
         properties: [_defaultProp],
-        statuses: { '': 'Все статусы' },
+        statuses: [],
         priorities: { '': 'Все приоритеты' },
         buildings: [],
         rooms: []
@@ -42,7 +42,7 @@ import { app } from '../../app/app';
         invent_num: '',
         responsible: '',
         item_model: '',
-        status: Object.keys(_filters.statuses)[0],
+        for_statuses: [],
         priority: Object.keys(_filters.priorities)[0],
         building: '',
         room: '',
@@ -111,6 +111,12 @@ import { app } from '../../app/app';
           _addProperty();
           _setDefaultValueForPropertyList();
         }
+      },
+      /**
+       * Установить значения по умолчанию для фильтров.
+       */
+      setDefaultValues: function() {
+        _selected.for_statuses =_filters.statuses.filter((el) => el.default);
       },
       /**
        * Добавить фильтр по типу.
