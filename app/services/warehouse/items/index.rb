@@ -77,7 +77,7 @@ module Warehouse
                      end
 
         data[:data] = result_arr.as_json(include: %i[inv_item supplies]).each do |item|
-          item['range_inv_nums'] = item['invent_num_start'] ? "#{item['invent_num_start']} - #{item['invent_num_end']}" : ''
+          item['range_inv_nums'] = item['invent_num_end'].to_i.zero? ? '' : "#{item['invent_num_start']} - #{item['invent_num_end']}"
           i_tr = Item.translate_enum(:status, item['status'])
           item['translated_status'] = case item['status']
                                       when 'non_used'
