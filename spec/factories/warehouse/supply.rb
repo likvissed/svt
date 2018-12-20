@@ -18,7 +18,7 @@ module Warehouse
         if supply.operations.empty? && !ev.without_operations
           item = Item.find_or_initialize_by(item_type: 'Клавиатура', item_model: 'ASUS') do |i|
             i.warehouse_type = :without_invent_num
-            i.used = false
+            i.status = :non_used
             i.count = 20
           end
           # item = build(:new_item, warehouse_type: :without_invent_num, item_type: 'Клавиатура', item_model: 'ASUS', count: 0)
@@ -31,7 +31,7 @@ module Warehouse
             i.warehouse_type = :with_invent_num
             i.item_type = type.short_description
             i.item_model = model.item_model
-            i.used = false
+            i.status = :non_used
             i.invent_num_start = 111
             i.invent_num_end = 120
             i.count = 10
