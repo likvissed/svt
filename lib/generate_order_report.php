@@ -50,7 +50,7 @@ if (!empty($invent_params)) {
     invent_type
   ON
     invent_item.type_id = invent_type.type_id
-  INNER JOIN
+  LEFT JOIN JOIN
     invent_property
   ON
     invent_property.property_id = invent_property_value.property_id AND invent_property.mandatory = true
