@@ -126,7 +126,7 @@ import { app } from '../../app/app';
   };
 
   /**
-   * Отправить технику на склад
+   * Отправить технику на склад.
    */
   InventItem.prototype.sendToStock = function() {
     return this.Server.Invent.Item.toStock(
@@ -134,5 +134,16 @@ import { app } from '../../app/app';
       (response) => this.Flash.notice(response.full_message),
       (response, status) => this.Error.response(response, status)
     ).$promise;
-  }
+  };
+
+  /**
+   * Списать технику.
+   */
+  InventItem.prototype.sendToWriteOff = function() {
+    return this.Server.Invent.Item.toWriteOff(
+      { item_id: this.data.item.id },
+      (response) => this.Flash.notice(response.full_message),
+      (response, status) => this.Error.response(response, status)
+    ).$promise;
+  };
 })();

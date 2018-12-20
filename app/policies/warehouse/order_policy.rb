@@ -58,10 +58,6 @@ module Warehouse
       for_worker
     end
 
-    def create_by_inv_item?
-      for_worker
-    end
-
     def permitted_attributes
       if for_manager
         [

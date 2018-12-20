@@ -168,11 +168,5 @@ module Warehouse
 
       include_examples 'policy for worker'
     end
-
-    permissions :create_by_inv_item? do
-      let(:model) { Order.first }
-
-      include_examples 'policy for worker'
-    end
   end
 end

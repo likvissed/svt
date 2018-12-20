@@ -67,16 +67,19 @@ module Warehouse
 
         it 'broadcasts to write_off_orders' do
           expect(subject).to receive(:broadcast_write_off_orders)
+
           subject.run
         end
 
         it 'broadcasts to archive_orders' do
           expect(subject).to receive(:broadcast_archive_orders)
+
           subject.run
         end
 
         it 'broadcasts to items' do
           expect(subject).to receive(:broadcast_items)
+
           subject.run
         end
 

@@ -78,6 +78,8 @@ Rails.application.routes.draw do
         post 'pc_config_from_user', to: 'items#pc_config_from_user'
         # Отправить технику на склад
         post 'to_stock', to: 'items#to_stock'
+        # Списать технику
+        post 'to_write_off', to: 'items#to_write_off'
       end
     end
 

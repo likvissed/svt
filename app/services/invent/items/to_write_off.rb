@@ -1,6 +1,6 @@
 module Invent
   module Items
-    class ToStock < Invent::ApplicationService
+    class ToWriteOff < Invent::ApplicationService
       def initialize(current_user, item_id)
         @current_user = current_user
         @item_id = item_id
@@ -11,6 +11,7 @@ module Invent
       def run
         find_item
         send_to_stock
+        send_to_write_off
 
         true
       rescue RuntimeError => e
@@ -33,7 +34,16 @@ module Invent
         return true if @order.run
 
         @error = @order.error
-        raise 'Сервис CreateByInvItem завершился с ошибкой'
+        raise 'Сервис CreateByInvItem для создания приходного ордера завершился с ошибкой'
+      end
+
+      def send_to_write_off
+        @order = Warehouse::Orders::CreateByInvItem.new(current_user, @item, :write_off)
+
+        return true if @order.run
+
+        @error = @order.error
+        raise 'Сервис CreateByInvItem для создания ордера на списание завершился с ошибкой'
       end
     end
   end

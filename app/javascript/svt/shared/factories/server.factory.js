@@ -83,6 +83,10 @@ import { app } from '../../app/app';
             method: 'POST',
             url: '/invent/items/to_stock'
           },
+          toWriteOff: {
+            method: 'POST',
+            url: '/invent/items/to_write_off'
+          },
           update: { method: 'PUT' }
         }),
         Vendor: $resource('/invent/vendors/:vendor_id.json', {}),
