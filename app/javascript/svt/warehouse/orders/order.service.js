@@ -195,10 +195,11 @@ import { app } from '../../app/app';
    * Добавить объект operation к текущему ордеру.
    *
    * @param warehouseType
-   * @param item
+   * @param item - для приходного ордера invent_item, для расходного и на списание - warehouse_item
    */
   WarehouseOrder.prototype.addPosition = function(warehouseType, item) {
-    let existingItem = this.order.operations_attributes.find((op) => op.item_id == item.id );
+    let existingItem = this.order.operations_attributes.find((op) => op.item_id == item.id && item.id);
+
     if (existingItem) {
       delete(existingItem._destroy);
     } else {
