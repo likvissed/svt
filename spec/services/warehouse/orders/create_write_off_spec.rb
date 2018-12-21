@@ -112,7 +112,7 @@ module Warehouse
       end
 
       it 'broadcasts to items' do
-        expect(subject).to receive(:broadcast_items)
+        expect_any_instance_of(Orders::WriteOff::AbstractState).to receive(:broadcast_items)
 
         subject.run
       end
@@ -179,7 +179,7 @@ module Warehouse
         end
 
         it 'broadcasts to items' do
-          expect(subject).to receive(:broadcast_items)
+          expect_any_instance_of(Orders::WriteOff::AbstractState).to receive(:broadcast_items)
 
           subject.run
         end

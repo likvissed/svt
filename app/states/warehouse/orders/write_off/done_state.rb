@@ -18,8 +18,10 @@ module Warehouse
           operation.item.count_reserved = 0
         end
 
-        def broadcast_orders
+        def broadcast_data
           broadcast_archive_orders
+
+          super
         end
       end
     end

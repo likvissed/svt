@@ -15,8 +15,7 @@ module Warehouse
         init_order
         return false unless wrap_order
 
-        @order_state.broadcast_orders
-        broadcast_items
+        @order_state.broadcast_data
 
         true
       rescue RuntimeError => e

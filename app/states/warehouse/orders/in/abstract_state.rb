@@ -18,7 +18,9 @@ module Warehouse
 
         def update_warehouse_item(w_item, inv_item); end
 
-        def broadcast_orders; end
+        def broadcast_data
+          broadcast_items
+        end
       end
     end
   end

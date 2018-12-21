@@ -23,8 +23,7 @@ module Warehouse
           raise 'Неизвестный тип операции'
         end
 
-        broadcast_items
-        broadcast_archive_orders
+        @order_state.broadcast_data
 
         true
       rescue RuntimeError => e
@@ -51,7 +50,7 @@ module Warehouse
         @order = Order.new(operation: :write_off)
         authorize @order, :create_write_off?
         @order.set_creator(current_user)
-        @order_state = Orders::WriteOff::DoneState.new(@order)
+        @order_state = Orders::WriteOff::ProcessingState.new(@order)
       end
 
       def set_in_operations
@@ -71,11 +70,10 @@ module Warehouse
         op = @order.operations.build(
           item: @inv_item.warehouse_item,
           shift: -1,
-          status: :done,
+          status: :processing,
           item_type: @inv_item.type.short_description,
           item_model: @inv_item.full_item_model
         )
-        op.set_stockman(current_user)
         op.change_inv_item(new_status)
         op.item.status = new_status
         @order_state.edit_warehouse_item_for(op)
