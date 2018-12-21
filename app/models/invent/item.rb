@@ -43,7 +43,7 @@ module Invent
     scope :for_statuses, ->(status_arr) do
       result = []
       values = status_arr.map do |el|
-        result << 'status = ?'
+        result << "#{table_name}.status = ?"
         el['id']
       end
 
