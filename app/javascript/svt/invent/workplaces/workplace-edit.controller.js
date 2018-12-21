@@ -194,12 +194,12 @@ import { app } from '../../app/app';
   };
 
   /**
-   * Списать технику.
+   * Пометить технику на списание.
    *
    * @param item
    */
   WorkplaceEditCtrl.prototype.sendItemToWriteOff = function(item) {
-    let confirm_str = "ВНИМАНИЕ! Техника будет перемещена на склад и списана! Вы действительно хотите списать " + item.type.short_description + "?";
+    let confirm_str = "ВНИМАНИЕ! Техника будет перемещена на склад и помечена на списание! Вы действительно хотите переместить на склад " + item.type.short_description + " и создать ордер на списание?";
 
     if (!confirm(confirm_str)) { return false; }
 

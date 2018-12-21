@@ -20,7 +20,7 @@ ru:
       updated: 'Техника №%{item_id} обновлена'
       destroyed: 'Техника удалена'
       sended_to_stock: 'Техника №%{item_id} отправлена на склад'
-      written_off: 'Техника №%{item_id} отправлена на склад и списана'
+      sended_to_stock_and_waiting_write_off: 'Техника №%{item_id} отправлена на склад, создан ордер на списание'
     invent/model:
       created: 'Модель создана'
       updated: 'Модель обновлена'

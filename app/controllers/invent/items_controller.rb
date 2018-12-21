@@ -111,7 +111,7 @@ module Invent
       @to_write_off = Items::ToWriteOff.new(current_user, params[:item_id])
 
       if @to_write_off.run
-        render json: { full_message: I18n.t('controllers.invent/item.written_off', item_id: params[:item_id]) }
+        render json: { full_message: I18n.t('controllers.invent/item.sended_to_stock_and_waiting_write_off', item_id: params[:item_id]) }
       else
         render json: { full_message: @to_write_off.error[:full_message] }, status: 422
       end
