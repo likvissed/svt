@@ -10,8 +10,10 @@ module Warehouse
           w_item.update!(item_model: inv_item.full_item_model)
         end
 
-        def broadcast_orders
+        def broadcast_data
           broadcast_in_orders
+
+          super
         end
       end
     end

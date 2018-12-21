@@ -7,6 +7,6 @@ fieldset.ng-hide ng-show="item" ng-disabled="item.status == 'prepared_to_swap'"
       .col-sm-8.col-lg-6.col-xlg-5.col-fhd-4.col-lg-offset-4.col-xlg-offset-5.col-fhd-offset-6
         = button_tag "Удалить, как дубликат", class: "btn-danger btn-sm btn-block", "ng-click": "wp.destroyItem(item)"
       .col-sm-8.col-lg-6.col-xlg-5.col-fhd-4
-        = button_tag "Списать", class: "btn-default btn-sm btn-block", "ng-click": "wp.sendItemToWriteOff(item)"
+        = button_tag "На списание", class: "btn-default btn-sm btn-block", "ng-click": "wp.sendItemToWriteOff(item)"
       .col-sm-8.col-lg-6.col-xlg-5.col-fhd-4
         = button_tag "На склад", class: "btn-default btn-sm btn-block", "ng-click": "wp.sendItemToStock(item)"

@@ -80,12 +80,12 @@ module Warehouse
         end
 
         it 'broadcasts to items' do
-          expect(subject).to receive(:broadcast_items)
+          expect_any_instance_of(Orders::In::AbstractState).to receive(:broadcast_items)
           subject.run
         end
 
         it 'broadcasts to archive_orders' do
-          expect(subject).to receive(:broadcast_archive_orders)
+          expect_any_instance_of(Orders::In::AbstractState).to receive(:broadcast_archive_orders)
           subject.run
         end
 
@@ -133,33 +133,20 @@ module Warehouse
           expect { subject.run }.to change(Operation, :count).by(1)
         end
 
-        it 'sets :done to the operation attribute' do
-          Operation.all.each { |op| expect(op.done?).to be_truthy }
+        it 'sets :processing to the operation attribute' do
+          Operation.all.each { |op| expect(op.processing?).to be_truthy }
         end
 
-        it 'sets stockman to the created operation' do
+        it 'sets :processing to the order status' do
           subject.run
 
-          expect(Operation.last.stockman_id_tn).to eq current_user.id_tn
-          expect(Operation.last.stockman_fio).to eq current_user.fullname
+          expect(Order.last.processing?).to be_truthy
         end
 
-        it 'sets :done to the order status' do
+        it 'sets count_reserved of item to 1' do
           subject.run
 
-          expect(Order.last.done?).to be_truthy
-        end
-
-        it 'sets count of item to 0' do
-          subject.run
-
-          expect(w_item.reload.count).to be_zero
-        end
-
-        it 'sets count_reserved of item to 0' do
-          subject.run
-
-          expect(w_item.reload.count).to be_zero
+          expect(w_item.reload.count).to eq 1
         end
 
         it 'does not create inv_item' do
@@ -170,21 +157,21 @@ module Warehouse
           expect { subject.run }.not_to change(Item, :count)
         end
 
-        it 'sets :written_off to the warehouse_item and invent_item' do
+        it 'sets :waiting_write_off to the warehouse_item and invent_item' do
           subject.run
 
-          expect(inv_item.reload.status).to eq 'written_off'
-          expect(w_item.reload.status).to eq 'written_off'
+          expect(inv_item.reload.status).to eq 'waiting_write_off'
+          expect(w_item.reload.status).to eq 'waiting_write_off'
         end
 
-        it 'broadcasts to archive_orders' do
-          expect(subject).to receive(:broadcast_archive_orders)
+        it 'broadcasts to write_off_orders' do
+          expect_any_instance_of(Orders::WriteOff::AbstractState).to receive(:broadcast_write_off_orders)
 
           subject.run
         end
 
         it 'broadcasts to items' do
-          expect(subject).to receive(:broadcast_items)
+          expect_any_instance_of(Orders::WriteOff::AbstractState).to receive(:broadcast_items)
 
           subject.run
         end

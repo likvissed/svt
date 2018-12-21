@@ -16,8 +16,7 @@ module Warehouse
         processing_nested_attributes if @order_params['operations_attributes']&.any?
         return false unless wrap_order_with_transactions
 
-        broadcast_items
-        @order_state.broadcast_orders
+        @order_state.broadcast_data
 
         true
       rescue RuntimeError => e

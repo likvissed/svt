@@ -33,8 +33,10 @@ module Warehouse
           w_item.update!(item_model: inv_item.full_item_model, count: 1, count_reserved: 0, allow_update_model_or_type: true)
         end
 
-        def broadcast_orders
+        def broadcast_data
           broadcast_archive_orders
+
+          super
         end
       end
     end

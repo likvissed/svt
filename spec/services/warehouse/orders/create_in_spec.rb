@@ -37,6 +37,7 @@ module Warehouse
 
         it 'exit from service without processing params' do
           expect(subject).not_to receive(:processing_nested_attributes)
+
           subject.run
         end
 
@@ -61,6 +62,7 @@ module Warehouse
 
         it 'sets "count" attribute to 0 for each created warehouse_item' do
           subject.run
+
           Item.all.each { |item| expect(item.count).to be_zero }
         end
       end
@@ -101,23 +103,27 @@ module Warehouse
 
       it 'sets total count of created orders to the data variable' do
         subject.run
+
         expect(subject.data).to eq 4
       end
 
       it 'changes status to :waiting_bring of each selected item' do
         subject.run
+
         order_params[:operations_attributes].select { |attr| attr[:inv_item_ids] }.each do |op|
           expect(Invent::Item.find(op[:inv_item_ids].first).status).to eq 'waiting_bring'
         end
       end
 
       it 'broadcasts to items' do
-        expect(subject).to receive(:broadcast_items)
+        expect_any_instance_of(Orders::In::AbstractState).to receive(:broadcast_items)
+
         subject.run
       end
 
       it 'broadcasts to in_orders' do
         expect_any_instance_of(Orders::In::AbstractState).to receive(:broadcast_in_orders)
+
         subject.run
       end
 
