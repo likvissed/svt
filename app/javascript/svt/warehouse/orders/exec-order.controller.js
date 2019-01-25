@@ -161,7 +161,7 @@ import { FormValidationController } from '../../shared/functions/form-validation
   ExecOrderController.prototype.printOrder = function() {
     let sendData = this.Order.getObjectToSend();
 
-    window.open('/warehouse/orders/' + this.order.id + '/print?order=' + JSON.stringify(sendData), '_blank');
+    window.open('/warehouse/orders/' + this.order.id + '/print?order=' + encodeURIComponent(JSON.stringify(sendData)), '_blank');
   };
 
   /**
