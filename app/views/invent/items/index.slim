@@ -27,7 +27,7 @@
                 td ng-class="item.priority == 'high' ? 'text-danger' : 'text-muted'"
                   = fa_icon "circle", "uib-tooltip": "{{item.translated_priority}} приоритет"
                 td.col-sm-1
-                  a{ ng-href="https://astraea-ui.***REMOVED***.ru/index.php?page=tickets&details={{table.dataForAstraea(item)}}" class="btn btn-default btn-xs" target="_blank"
+                  a{ ng-href="https://astraea-ui.***REMOVED***.ru/index.php?page=cases&sub=newcase&details={{table.dataForAstraea(item)}}" class="btn btn-default btn-xs" target="_blank"
                     uib-tooltip="Открыть кейс" tooltip-append-to-body="true" ng-if="item.status == 'in_workplace'" }
                     | кейс
                   / = link_to "кейс", class: "btn btn-default btn-xs", "uib-tooltip": "Открыть кейс", "tooltip-append-to-body": "true"
