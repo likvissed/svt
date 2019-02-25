@@ -1,6 +1,6 @@
 module Invent
   class WorkplaceCountsController < ApplicationController
-    before_action :check_access
+    before_action :check_access, except: :generate_pdf
 
     def index
       respond_to do |format|
@@ -64,6 +64,19 @@ module Invent
         render json: { full_message: I18n.t('controllers.invent/workplace_count.destroyed') }
       else
         render json: { full_message: "Ошибка. #{@workplace_count.errors.full_messages.join(', ')}" }, status: 422
+      end
+    end
+
+    def generate_pdf
+      @division_report = WorkplaceCounts::DivisionReport.new(current_user, params[:division])
+
+      if @division_report.run
+        send_data @division_report.data.read,
+                  filename: "#{params[:division]}.rtf",
+                  type: 'application/rtf',
+                  disposition: 'attachment'
+      else
+        render json: { full_message: I18n.t('controllers.app.unprocessable_entity') }, status: 422
       end
     end
 

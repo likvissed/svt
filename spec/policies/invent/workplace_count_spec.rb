@@ -55,7 +55,7 @@ module Invent
         end
       end
 
-      ['manager', 'worker', 'read_only'].each do |user|
+      %w[manager worker read_only].each do |user|
         context "with #{user} role" do
           it 'grants access to the workplace_count' do
             expect(subject).to permit(send(user), WorkplaceCount.find(workplace_count.workplace_count_id))

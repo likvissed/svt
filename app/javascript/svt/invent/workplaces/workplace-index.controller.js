@@ -38,4 +38,10 @@ import { app } from '../../app/app';
   WorkplaceIndexCtrl.prototype.clearRooms = function() {
     this.Filter.clearRooms();
   };
+
+  WorkplaceIndexCtrl.prototype.generatePDF = function() {
+    let division = this.filters.divisions.length == 1 ? this.filters.divisions[0] : this.selectedFilters.division;
+
+    window.open('/invent/workplace_counts/generate_pdf/' + encodeURIComponent(division.division), '_blank');
+  };
 })();

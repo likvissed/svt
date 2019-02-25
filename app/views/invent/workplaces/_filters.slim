@@ -46,6 +46,9 @@
       ui-select-choices repeat="obj in wp_index.filters.divisions | filter: $select.search"
         div ng-bind-html="obj.division | highlight: $select.search"
     span.input-group-btn
+      = button_tag type: :button, class: "btn-default", "ng-click": "wp_index.generatePDF()", "uib-tooltip": "Сформировать перечень для печати",
+        "tooltip-append-to-body": true, "ng-disabled": "(!wp_index.selectedFilters.division && wp_index.filters.divisions.length > 1) || !wp_index.filters.divisions" do
+        = fa_icon "print"
       = button_tag type: :button, class: "btn-default", "ng-click": "wp_index.selectedFilters.division = ''; wp_index.reloadWorkplaces()",
         "uib-tooltip": "Очистить", "tooltip-append-to-body": true, "ng-disabled": "!wp_index.selectedFilters.division" do
         = fa_icon "times"
