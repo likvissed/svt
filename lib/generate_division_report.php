@@ -25,7 +25,7 @@ $wp_count = count($workplaces);
 
 PHPRtfLite::registerAutoloader();
 $rtf = new PHPRtfLite(); //Основной класс
-$rtf->setMargins(1.7, 0.8, 1, 1);
+$rtf->setMargins(1.2, 0.8, 1, 1);
 
 $font = new PHPRtfLite_Font(12, 'Times New Roman'); //Шрифт
 $fontError = new PHPRtfLite_Font(12, 'Times New Roman', null, '#e2c818'); //Шрифт для выделения недочетов в футере
@@ -46,35 +46,34 @@ $section = $rtf->addSection();
 
 // ============================================ Шапка ==================================================================
 
-$table = $section->addTable();
-$rows = 4;
-$table->addRows($rows, 0.7);
-$table->addColumnsList(array(10.6, 7.3));
+// $table = $section->addTable();
+// $rows = 4;
+// $table->addRows($rows, 0.7);
+// $table->addColumnsList(array(10.6, 7.3));
 
-for ($i = 1; $i <= $rows; $i ++) {
-    $cell = $table->getCell($i, 2);
-    $cell->setTextAlignment(PHPRtfLite_ParFormat::TEXT_ALIGN_RIGHT);
-}
+// for ($i = 1; $i <= $rows; $i ++) {
+//     $cell = $table->getCell($i, 2);
+//     $cell->setTextAlignment(PHPRtfLite_ParFormat::TEXT_ALIGN_RIGHT);
+// }
 
-
-$table->writeToCell(1, 2, 'Начальнику УИВТ', $font);
-$table->writeToCell(2, 2, 'И. В. Потуремскому', $font);
-$table->writeToCell(3, 2, '__________________', $font);
-$table->writeToCell(4, 2, '"___" ____________ 20___г.', $font);
+// $table->writeToCell(1, 2, 'Начальнику УИВТ', $font);
+// $table->writeToCell(2, 2, 'И. В. Потуремскому', $font);
+// $table->writeToCell(3, 2, '__________________', $font);
+// $table->writeToCell(4, 2, '"___" ____________ 20___г.', $font);
 
 $section->writeText('<br>Перечень рабочих мест отдела ' . $dept . '<br>', $fontHeader, $headFormat);
-;
+
 // ============================================ Контент ================================================================
 
 $table = $section->addTable();
 $rows = count($workplaces) + 1;
-$cols = 4;
+$cols = 5;
 $height = 0.45; // Базовая высота ячейки
 $mainBorder = new PHPRtfLite_Border_Format(1); //Формат барьера
 $border = new PHPRtfLite_Border($rtf, $mainBorder, $mainBorder, $mainBorder, $mainBorder);
 
 $table->addRows($rows, $height);
-$table->addColumnsList(array(2, 9, 3.7, 3.2));
+$table->addColumnsList(array(1.3, 1.7, 9, 3.7, 3.2));
 $table->setBorderForCellRange($border, 1, 1, $rows, $cols);
 
 $table->setBackgroundForCellRange('#e0e0e0', 1, 1, 1, 4);
@@ -85,9 +84,10 @@ for ($i = 1; $i <= $cols; $i ++) {
 }
 
 $table->writeToCell(1, 1, '№', $fontBold);
-$table->writeToCell(1, 2, 'Описание', $fontBold);
-$table->writeToCell(1, 3, 'Ответственный', $fontBold);
-$table->writeToCell(1, 4, 'Расположение', $fontBold);
+$table->writeToCell(1, 2, 'ID РМ', $fontBold);
+$table->writeToCell(1, 3, 'Описание', $fontBold);
+$table->writeToCell(1, 4, 'Ответственный', $fontBold);
+$table->writeToCell(1, 5, 'Расположение', $fontBold);
 
 $i = 1;
 foreach ($workplaces as $wp){
@@ -99,14 +99,18 @@ foreach ($workplaces as $wp){
     $cell->setVerticalAlignment('center');
 
     $cell = $table->getCell($i + 1, 2);
-    $cell->setCellPaddings(0.2, 0.2, 0.2, 0.2);
-    $cell->setVerticalAlignment('center');
-
-    $cell = $table->getCell($i + 1, 3);
     $cell->setTextAlignment(PHPRtfLite_ParFormat::TEXT_ALIGN_CENTER);
     $cell->setVerticalAlignment('center');
 
+    $cell = $table->getCell($i + 1, 3);
+    $cell->setCellPaddings(0.2, 0.2, 0.2, 0.2);
+    $cell->setVerticalAlignment('center');
+
     $cell = $table->getCell($i + 1, 4);
+    $cell->setTextAlignment(PHPRtfLite_ParFormat::TEXT_ALIGN_CENTER);
+    $cell->setVerticalAlignment('center');
+
+    $cell = $table->getCell($i + 1, 5);
     $cell->setTextAlignment(PHPRtfLite_ParFormat::TEXT_ALIGN_CENTER);
     $cell->setVerticalAlignment('center');
 //    $cell->setTextAlignment(PHPRtfLite_Container::VERTICAL_ALIGN_CENTER);
@@ -124,24 +128,25 @@ foreach ($workplaces as $wp){
       array_push($invs, $inv['invent_num']);
     $list = $wp['short_description'] . ' (инв. №№: ' . join(', ', $invs) . ')';
 
-    $table->writeToCell($i + 1, 2, $list, $font);
-    $table->writeToCell($i + 1, 3, $wp['fio_initials'], $font);
-    $table->writeToCell($i + 1, 4, 'Пл. ' . $wp['site'] . ', корп. ' . $wp['corp'] . ', комн. ' . $wp['name'], $font);
+    $table->writeToCell($i + 1, 2, $wp['workplace_id'], $font);
+    $table->writeToCell($i + 1, 3, $list, $font);
+    $table->writeToCell($i + 1, 4, $wp['fio_initials'], $font);
+    $table->writeToCell($i + 1, 5, 'Пл. ' . $wp['site'] . ', корп. ' . $wp['corp'] . ', комн. ' . $wp['name'], $font);
     $i++;
 }
 
 // ============================================ Футер ==================================================================
 
-$section->writeText('', $font, $tableFormat);
+// $section->writeText('', $font, $tableFormat);
 
-$table = $section->addTable();
-$table->addRows(1, 0.7);
-$table->addColumnsList(array(10.6, 7.3));
+// $table = $section->addTable();
+// $table->addRows(1, 0.7);
+// $table->addColumnsList(array(10.6, 7.3));
 
-$cell = $table->getCell(1, 2);
-$cell->setTextAlignment(PHPRtfLite_ParFormat::TEXT_ALIGN_RIGHT);
+// $cell = $table->getCell(1, 2);
+// $cell->setTextAlignment(PHPRtfLite_ParFormat::TEXT_ALIGN_RIGHT);
 
-$table->writeToCell(1, 1, 'Руководитель подразделения ' . $dept, $font);
-$table->writeToCell(1, 2, '/________________/', $font);
+// $table->writeToCell(1, 1, 'Руководитель подразделения ' . $dept, $font);
+// $table->writeToCell(1, 2, '/________________/', $font);
 
 $rtf->sendRtf($dept);
