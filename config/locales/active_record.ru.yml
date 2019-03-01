@@ -273,6 +273,12 @@ ru:
               blank: 'не выбран'
             model_id:
               blank: 'не указана'
+            type:
+              cannot_update_due_warehouse_item: 'не может быть изменен, так как он привязан к соответствующей записи на складе'
+            model:
+              cannot_update_due_warehouse_item: 'не может быть изменена, так как она привязана к соответствующей записи на складе'
+            item_model:
+              cannot_update_due_warehouse_item: 'не может быть изменено, так как оно привязано к соответствующей записи на складе'
             invent_num:
               not_from_allowed_pool: 'должен быть в диапазоне %{start_num} - %{end_num}'
 

@@ -34,6 +34,7 @@ module Invent
     after_initialize :set_default_values
     before_save :set_default_model
     before_destroy :prevent_destroy, prepend: true, unless: -> { destroy_from_order }
+    before_update :prevent_update
 
     scope :item_id, ->(item_id) { where(item_id: item_id) }
     scope :type_id, ->(type_id) { where(type_id: type_id) }
@@ -233,6 +234,16 @@ module Invent
       end
     end
 
+    # Проверяет, была ли изменена модель или свойства техники.
+    def was_changed?
+      attribute_before_last_save(:model_id) != model_id ||
+        attribute_before_last_save(:item_model) != item_model ||
+        property_values.any? do |prop_val|
+          prop_val.attribute_before_last_save(:property_list_id) != prop_val.property_list_id ||
+            prop_val.attribute_before_last_save(:value) != prop_val.value
+        end
+    end
+
     protected
 
     # Возвращает сколько полных лет назад производилась замена батарей.
@@ -271,6 +282,24 @@ module Invent
       return unless op
 
       errors.add(:base, :cannot_destroy_with_processing_operation, order_id: op.operationable.id)
+      throw(:abort)
+    end
+
+    # Запретить обновлять модель и тип, если имеется связанная запись в таблице warehouse_item
+    def prevent_update
+      return unless warehouse_item
+
+      if model_id_changed?
+        cannot_update_due_warehouse_item_for(:model)
+      elsif item_model_changed?
+        cannot_update_due_warehouse_item_for(:item_model)
+      elsif type_id_changed?
+        cannot_update_due_warehouse_item_for(:type)
+      end
+    end
+
+    def cannot_update_due_warehouse_item_for(name)
+      errors.add(name, :cannot_update_due_warehouse_item)
       throw(:abort)
     end
 

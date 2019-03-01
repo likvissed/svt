@@ -21,14 +21,14 @@ script type="text/ng-template" id="deliveryOfItems.slim"
             strong
               span ng-bind="$index + 1"
               ' .
-              span ng-bind="op.item.item_type"
+              span ng-bind="op.item_type || op.item.item_type"
 
           div style="padding: 0 45px 15px 45px;"
             table.table.table-condensed
               tr
                 td.col-sm-5
                   strong Модель
-                td.col-sm-19 ng-bind="op.item.item_model"
+                td.col-sm-19 ng-bind="op.item_model || op.item.item_model"
 
         div ng-if="op.item.warehouse_type == 'with_invent_num'"
           div ng-repeat="inv_item in op.inv_items_attributes"
@@ -38,7 +38,7 @@ script type="text/ng-template" id="deliveryOfItems.slim"
                 | .
                 span ng-bind="$index + 1"
                 ' .
-                span ng-bind="op.item.item_type"
+                span ng-bind="op.item_type || op.item.item_type"
               span.pull-right
                 = fa_icon "refresh lg", class: "pointer", "tooltip-placement": "left", "uib-tooltip": "Обновить данные",
                   "ng-click": "delivery.refreshInvItemData(inv_item)"

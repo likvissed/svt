@@ -367,6 +367,43 @@ module Invent
       end
     end
 
+    describe '#was_changed?' do
+      subject { create(:item, :with_property_values, type_name: :monitor) }
+      before do
+        # Далее обновления, чтобы правильно отработал метод attribute_before_last_save внутри метода #was_changed?
+        subject.update(create_time: Time.zone.now)
+        subject.property_values.first.update(create_time: Time.zone.now)
+      end
+
+      context 'when model was changed' do
+        before { subject.model = Invent::Model.last }
+
+        its(:was_changed?) { is_expected.to be_truthy }
+      end
+
+      context 'when item_model was changed' do
+        before { subject.item_model = 'new_item_model' }
+
+        its(:was_changed?) { is_expected.to be_truthy }
+      end
+
+      context 'when property_list_id was changed' do
+        before { subject.property_values.first.property_list_id = 123_123 }
+
+        its(:was_changed?) { is_expected.to be_truthy }
+      end
+
+      context 'when value was changed' do
+        before { subject.property_values.first.value = 'new_value' }
+
+        its(:was_changed?) { is_expected.to be_truthy }
+      end
+
+      context 'when nothing was changed' do
+        its(:was_changed?) { is_expected.to be_falsey }
+      end
+    end
+
     describe '#prevent_destroy' do
       its(:destroy) { is_expected.to be_truthy }
 
@@ -385,6 +422,63 @@ module Invent
         it 'adds :cannot_destroy_with_processing_operation error' do
           subject.destroy
           expect(subject.errors.details[:base]).to include(error: :cannot_destroy_with_processing_operation, order_id: order.id)
+        end
+      end
+    end
+
+    describe '#prevent_update' do
+      let!(:item) { create(:item, :with_property_values, type_name: :printer) }
+      subject { item }
+
+      context 'when warehouse_item does not exist' do
+        it 'allows update any attribute' do
+          expect { subject.update(item_model: 'new_item_model') }.to change { subject.item_model }.to('new_item_model')
+        end
+      end
+
+      context 'when warehouse_item exists' do
+        let!(:w_item) { create(:used_item, inv_item: subject, invent_num_end: 200) }
+
+        context 'and when model was changed' do
+          it 'does not update item' do
+            expect { subject.update(model: Model.last) }.not_to change { subject.reload.model }
+          end
+
+          it 'adds :cannot_update_item_due_warehouse_item' do
+            subject.update(model: Model.last)
+
+            expect(subject.errors.details[:model]).to include(error: :cannot_update_due_warehouse_item)
+          end
+        end
+
+        context 'and when item_model was changed' do
+          it 'does not update item' do
+            expect { subject.update(item_model: 'new_item_model') }.not_to change { subject.reload.item_model }
+          end
+
+          it 'adds :cannot_update_item_due_warehouse_item' do
+            subject.update(item_model: 'new_item_model')
+
+            expect(subject.errors.details[:item_model]).to include(error: :cannot_update_due_warehouse_item)
+          end
+        end
+
+        context 'and when type_id was changed' do
+          it 'does not update item' do
+            expect { subject.update(type: Type.last) }.not_to change { subject.reload.type }
+          end
+
+          it 'adds :cannot_update_item_due_warehouse_item' do
+            subject.update(type: Type.last)
+
+            expect(subject.errors.details[:type]).to include(error: :cannot_update_due_warehouse_item)
+          end
+        end
+
+        context 'and when other attribute was changed' do
+          it 'updates data' do
+            expect { subject.update(serial_num: 'new_serial_num') }.to change { subject.reload.serial_num }
+          end
         end
       end
     end

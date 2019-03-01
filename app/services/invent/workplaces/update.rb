@@ -55,7 +55,9 @@ module Invent
 
           prepare_workplace
         else
-          error[:full_message] = @workplace.errors.full_messages.join('. ')
+          workplace_errors = @workplace.errors.full_messages
+          operation_errors = @workplace.items.map { |item| item.errors.full_messages }
+          error[:full_message] = [workplace_errors, operation_errors].flatten.join('. ')
           raise 'Данные не обновлены'
         end
       end

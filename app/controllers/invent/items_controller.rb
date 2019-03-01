@@ -51,7 +51,7 @@ module Invent
       @update = Items::Update.new(current_user, params[:item_id], item_params)
 
       if @update.run
-        render json: { full_message: I18n.t('controllers.invent/item.updated', item_id: params[:id]) }
+        render json: { full_message: I18n.t('controllers.invent/item.updated', item_id: params[:item_id]) }
       else
         render json: @update.error, status: 422
       end
