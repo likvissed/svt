@@ -100,6 +100,9 @@ import { app } from '../../app/app';
   Workplace.prototype._setProperties = function(data) {
     // По умолчанию фильтры всегда включены
     this.workplace.disabled_filters = false;
+    if (this.workplace.freezing_time) {
+      this.workplace.freezing_time = new Date(this.workplace.freezing_time);
+    }
 
     data.prop_data.iss_locations.forEach((value) => value.iss_reference_buildings.unshift(this.selectIssBuilding));
     this.Item.setTypes(data.prop_data.eq_types);

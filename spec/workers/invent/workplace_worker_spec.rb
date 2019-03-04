@@ -13,6 +13,7 @@ module Invent
 
           it 'does not change workplace status' do
             subject.perform
+
             expect(workplace.reload.status).to eq status.to_s
           end
         end
@@ -21,6 +22,7 @@ module Invent
       context 'and when workplace has confirmed status' do
         it 'changes workplace status' do
           subject.perform
+
           expect(workplace.reload.status).to eq 'freezed'
         end
       end
@@ -29,6 +31,7 @@ module Invent
     context 'when workplace has responsible user' do
       it 'does not change workplace status' do
         subject.perform
+
         expect(workplace.reload.status).to eq 'confirmed'
       end
     end
@@ -38,6 +41,7 @@ module Invent
 
       it 'changes workplace status' do
         subject.perform
+
         expect(workplace.reload.status).to eq 'freezed'
       end
     end
@@ -47,7 +51,26 @@ module Invent
 
       it 'changes workplace status' do
         subject.perform
+
         expect(workplace.reload.status).to eq 'freezed'
+      end
+    end
+
+    context 'when workplace has :temporary status' do
+      context 'and when it is freezing time' do
+        let!(:workplace) { create(:workplace_pk, :add_items, items: %i[pc monitor], status: :temporary, freezing_time: Time.zone.now.to_date) }
+
+        it 'changes workplace status' do
+          expect { subject.perform }.to change { workplace.reload.status }.from('temporary').to('freezed')
+        end
+      end
+
+      context 'and when it is not freezing time' do
+        let!(:workplace) { create(:workplace_pk, :add_items, items: %i[pc monitor], status: :temporary, freezing_time: Time.zone.now.to_date + 10.days) }
+
+        it 'does not change workplace status' do
+          expect { subject.perform }.not_to change { workplace.reload.status }
+        end
       end
     end
   end

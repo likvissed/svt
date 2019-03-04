@@ -152,6 +152,7 @@ module Invent
           :location_room_id,
           :comment,
           :status,
+          :freezing_time,
           item_ids: [],
           items_attributes: [
             :id,
