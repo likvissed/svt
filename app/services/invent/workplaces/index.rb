@@ -87,6 +87,8 @@ module Invent
           label_class = 'label-danger'
         when 'freezed'
           label_class = 'label-primary'
+        when 'temporary'
+          label_class = 'label-info'
         end
 
         "<span class='label #{label_class}'>#{Workplace.translate_enum(:status, status)}</span>"

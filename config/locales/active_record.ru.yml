@@ -29,11 +29,13 @@ ru:
         iss_reference_site: "Площадка"
         iss_reference_building: "Корпус"
         iss_reference_room: "Комната"
+        freezing_time: 'Дата заморозки РМ'
         statuses:
           confirmed: "Подтверждено"
           pending_verification: "В ожидании проверки"
           disapproved: "Отклонено"
           freezed: "Заморожено"
+          temporary: "Временное РМ"
 
       invent/workplace/items:
         base: ""

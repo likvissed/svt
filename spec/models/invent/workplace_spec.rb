@@ -2,6 +2,7 @@ require 'feature_helper'
 
 module Invent
   RSpec.describe Workplace, type: :model do
+    it { is_expected.not_to validate_presence_of(:freezing_time) }
     it { is_expected.to have_many(:items).inverse_of(:workplace).dependent(:nullify) }
     it { is_expected.to have_many(:orders).class_name('Warehouse::Order').dependent(:nullify) }
     it { is_expected.to belong_to(:workplace_type) }
@@ -12,6 +13,12 @@ module Invent
     it { is_expected.to belong_to(:iss_reference_building).with_foreign_key('location_building_id') }
     it { is_expected.to belong_to(:iss_reference_room).with_foreign_key('location_room_id') }
     it { is_expected.to accept_nested_attributes_for(:items).allow_destroy(false) }
+
+    context 'when workplace status is :temporary' do
+      before { subject.status = :temporary }
+
+      it { is_expected.to validate_presence_of(:freezing_time) }
+    end
 
     describe '#destroy_from_***REMOVED***' do
       let!(:workplace) do

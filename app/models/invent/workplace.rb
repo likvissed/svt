@@ -19,6 +19,7 @@ module Invent
               numericality: { only_integer: true },
               reduce: true, unless: :status_freezed?
     validates :id_tn, user_iss_by_id_tn: true, unless: -> { errors.any? || status_freezed? }
+    validates :freezing_time, presence: true, if: -> { status == 'temporary' }
     validate :check_workplace_conditions, if: -> { workplace_type && !disabled_filters }
 
     before_destroy :check_items, prepend: true, unless: -> { hard_destroy }
@@ -47,7 +48,7 @@ module Invent
 
     accepts_nested_attributes_for :items, reject_if: proc { |attr| attr['type_id'].to_i.zero? }
 
-    enum status: { confirmed: 0, pending_verification: 1, disapproved: 2, freezed: 3 }
+    enum status: { confirmed: 0, pending_verification: 1, disapproved: 2, freezed: 3, temporary: 4 }
 
     # Удалить РМ, связанные экземпляры техники, значения их свойств, а также загруженные файлы.
     def destroy_from_***REMOVED***
