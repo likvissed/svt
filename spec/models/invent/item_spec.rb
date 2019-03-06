@@ -584,5 +584,29 @@ module Invent
         it { is_expected.to be_valid }
       end
     end
+
+    describe '#model_id_nil_if_model_item' do
+      context 'when model is set' do
+        let!(:item) { create(:item, :with_property_values, type_name: :printer) }
+        before { item.item_model = 'new_printer_model' }
+    
+        it 'sets empty string to item_model' do
+          item.save
+    
+          expect(item.reload.item_model).to be_empty
+        end
+      end
+    
+      context 'when model is empty' do
+        let!(:item) { create(:item, :with_property_values, type_name: :printer, model: nil, item_model: 'old_printer_model') }
+        before { item.item_model = 'new_printer_model' }
+    
+        it 'does not set empty string to item_model' do
+          item.save
+    
+          expect(item.reload.item_model).to eq 'new_printer_model'
+        end
+      end
+    end
   end
 end
