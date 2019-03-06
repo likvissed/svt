@@ -7,10 +7,10 @@ script type="text/ng-template" id="editVendorModal.slim"
         .icon-block
           = render partial: 'templates/load_spinner'
     .modal-body
-      .form-group ng-class="edit.errorClass('vendor[type]')"
-        = label_tag "vendor[type]", "Наименование", class: "control-label"
-        = text_field_tag "vendor[type]", "", class: "form-control", "ng-model": "edit.vendor.vendor_name"
-        span.help-block ng-show="edit.form['[vendor]'].$invalid" ng-bind="edit.errorMessage('vendor[type]')"
+      .form-group ng-class="edit.errorClass('vendor[vendor_name]')"
+        = label_tag "vendor[vendor_name]", "Наименование", class: "control-label"
+        = text_field_tag "vendor[vendor_name]", "", class: "form-control", "ng-model": "edit.vendor.vendor_name"
+        span.help-block ng-show="edit.form['vendor[vendor_name]'].$invalid" ng-bind="edit.errorMessage('vendor[vendor_name]')"
     .modal-footer
       = button_tag "Создать", class: "btn-success btn-sm", "ng-click": "edit.ok()"
       = button_tag "Закрыть", class: "btn-default btn-sm", "ng-click": "edit.cancel()"

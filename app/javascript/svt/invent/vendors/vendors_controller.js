@@ -1,4 +1,5 @@
 import { app } from '../../app/app';
+import { FormValidationController } from '../../shared/functions/form-validation';
 
 (function() {
   'use strict';
@@ -79,14 +80,20 @@ import { app } from '../../app/app';
 // =====================================================================================================================
 
   function EditVendorCtrl($uibModalInstance, Server, Flash, Error) {
+    this.setFormName('vendor');
+
     this.$uibModalInstance = $uibModalInstance;
     this.Server = Server;
     this.Flash = Flash;
     this.Error = Error;
+    this.vendor = { vendor_name: '' };
   }
 
-    /**
-   * Создать модель.
+  EditVendorCtrl.prototype = Object.create(FormValidationController.prototype);
+  EditVendorCtrl.prototype.constructor = EditVendorCtrl;
+
+  /**
+   * Создать вендор
    */
   EditVendorCtrl.prototype.ok = function() {
     this.Server.Invent.Vendor.save(
@@ -101,4 +108,12 @@ import { app } from '../../app/app';
       }
     );
   };
+
+
+ //Закрыть окно
+  EditVendorCtrl.prototype.cancel = function() {
+    this.$uibModalInstance.dismiss();
+  }
+
+
 })();

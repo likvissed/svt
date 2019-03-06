@@ -5,5 +5,7 @@ module Invent
 
     has_many :models, dependent: :destroy
     has_many :types, through: :models
+
+    validates :vendor_name, presence: true
   end
 end

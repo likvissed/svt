@@ -81,6 +81,9 @@ ru:
         items: 'технике, расположенной на рабочих местах'
         warehouse_items: 'технике, расположенной на складе'
 
+      invent/vendor:
+        vendor_name: 'Наименование'
+
       iss_reference_room:
         name: "Номер комнаты"
 
