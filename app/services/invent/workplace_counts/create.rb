@@ -3,7 +3,8 @@ module Invent
     # Класс создает новый отдел, для заполнения данными о РМ.
     class Create < Invent::ApplicationService
       # strong_params - данные, прошедшие фильтрацию.
-      def initialize(strong_params)
+      def initialize(current_user, strong_params)
+        @current_user = current_user
         @wpc_params = strong_params
 
         super
@@ -11,6 +12,7 @@ module Invent
 
       def run
         @data = WorkplaceCount.new(@wpc_params)
+        authorize @data, :create?
         save_workplace
         broadcast_users
 

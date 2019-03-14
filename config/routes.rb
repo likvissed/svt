@@ -25,7 +25,7 @@ Rails.application.routes.draw do
       collection do
         # Сформировать файл со списком РМ и их составом
         get 'generate_pdf/:division', to: 'workplace_counts#generate_pdf', constraints: { division: /\d+/ }
-        post 'create_list', to: 'workplace_counts#create_list'
+        # post 'create_list', to: 'workplace_counts#create_list'
       end
     end
     # Рабочие места

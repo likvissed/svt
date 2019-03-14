@@ -4,7 +4,8 @@ module Invent
     class Update < Invent::ApplicationService
       # workplace_count_id - id отдела
       # strong_params - данные, прошедшие фильтрацию.
-      def initialize(workplace_count_id, strong_params)
+      def initialize(current_user, workplace_count_id, strong_params)
+        @current_user = current_user
         @workplace_count_id = workplace_count_id
         @wpc_params = strong_params
 
@@ -13,6 +14,8 @@ module Invent
 
       def run
         @data = WorkplaceCount.includes(:users).find(@workplace_count_id)
+        authorize @data, :update?
+
         update_workplace
         broadcast_users
 

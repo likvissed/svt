@@ -51,9 +51,9 @@ import { FormValidationController } from '../../shared/functions/form-validation
         '<"row"' +
           '<"col-sm-4 col-md-3 col-lg-2 col-xlg-2 col-fhd-2"' +
             '<"#workplace_counts.new-record">>' +
-          '<"col-sm-5 col-md-4 col-lg-4 col-xlg-3 col-fhd-3"' +
-            '<"create-workplace-count-list">>' +
-          '<"col-sm-11 col-md-14 col-lg-15 col-xlg-16 col-fhd-16">' +
+          // '<"col-sm-5 col-md-4 col-lg-4 col-xlg-3 col-fhd-3"' +
+            // '<"create-workplace-count-list">>' +
+          '<"col-sm-16 col-md-18 col-lg-19 col-xlg-19 col-fhd-19">' +
           '<"col-sm-4 col-md-3 col-lg-3 col-fhd-3"f>>' +
         '<"row"' +
           '<"col-fhd-24"t>>' +

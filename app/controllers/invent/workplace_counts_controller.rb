@@ -18,7 +18,7 @@ module Invent
     end
 
     def create
-      @create = WorkplaceCounts::Create.new(workplace_count_params)
+      @create = WorkplaceCounts::Create.new(current_user, workplace_count_params)
 
       if @create.run
         render json: { full_message: I18n.t('controllers.invent/workplace_count.created', dept: @create.data.division) }
@@ -27,15 +27,15 @@ module Invent
       end
     end
 
-    def create_list
-      @create_list = WorkplaceCounts::CreateList.new(params[:file])
+    # def create_list
+    #   @create_list = WorkplaceCounts::CreateList.new(params[:file])
 
-      if @create_list.run
-        render json: { full_message: I18n.t('controllers.invent/workplace_count.list_created') }
-      else
-        render json: { full_message: @create_list.errors.full_messages.join('. ') }, status: 422
-      end
-    end
+    #   if @create_list.run
+    #     render json: { full_message: I18n.t('controllers.invent/workplace_count.list_created') }
+    #   else
+    #     render json: { full_message: @create_list.errors.full_messages.join('. ') }, status: 422
+    #   end
+    # end
 
     def show
       @show = WorkplaceCounts::Show.new(params[:workplace_count_id])
@@ -48,7 +48,7 @@ module Invent
     end
 
     def update
-      @update = WorkplaceCounts::Update.new(params[:workplace_count_id], workplace_count_params)
+      @update = WorkplaceCounts::Update.new(current_user, params[:workplace_count_id], workplace_count_params)
 
       if @update.run
         render json: { full_message: I18n.t('controllers.invent/workplace_count.updated', dept: @update.data.division) }
@@ -59,6 +59,7 @@ module Invent
 
     def destroy
       @workplace_count = WorkplaceCount.find(params[:workplace_count_id])
+      authorize @workplace_count
 
       if @workplace_count.destroy
         render json: { full_message: I18n.t('controllers.invent/workplace_count.destroyed') }

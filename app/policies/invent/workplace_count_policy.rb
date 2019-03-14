@@ -18,6 +18,24 @@ module Invent
       end
     end
 
+    def update?
+      return true if admin?
+
+      user.role? :manager
+    end
+
+    def create?
+      return true if admin?
+
+      user.role? :manager
+    end
+
+    def destroy?
+      return true if admin?
+
+      user.role? :manager
+    end
+
     class Scope < Scope
       def resolve
         if user.role? :***REMOVED***_user
