@@ -4,14 +4,14 @@ div ng-controller="FindExistingInventItemCtrl as find"
     uib-tab heading="Поиск по штрих-коду (ID техники)" classes="btn-sm" select="find.clearFindedData(); find.clearSearchData()"
       .form-group
         = label_tag "item_id", "Штрих-код (ID техники)", class: "control-label"
-        .input-group
+        .span.input-group-btn
           = text_field_tag "item_id", "", class: "form-control", autocomplete: "off", placeholder: "Штрих-код",
-            "ng-model": "find.item_id", "ng-change": "find.clearFindedData()"
-          span.input-group-btn
-            = button_tag "", type: :button, class: "btn-primary", "ng-click": "find.loadItems()",
-              "ng-disabled": "!find.item_id", "uib-tooltip": "Нажмите для поиска",
-              "tooltip-append-to-body": true do
-              = fa_icon "search"
+            "ng-model": "find.item_id","ng-model-options": "{ debounce: 300 }", "ng-change": "find.clearFindedData(); find.loadItems()"
+          / span.input-group-btn
+          /   = button_tag "", type: :button, class: "btn-primary", "ng-click": "find.loadItems()",
+          /     "ng-disabled": "!find.item_id", "uib-tooltip": "Нажмите для поиска",
+          /     "tooltip-append-to-body": true do
+          /     = fa_icon "search"
       = render partial: 'templates/select_item_for_find_existing_inv_item_template'
     uib-tab heading="Поиск по инвентарному номеру" classes="btn-sm" select="find.clearFindedData(); find.clearSearchData()"
       .form-group
