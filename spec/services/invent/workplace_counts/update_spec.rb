@@ -17,7 +17,7 @@ module Invent
         loaded_workplace_count['users_attributes'] << ***REMOVED***_user
         loaded_workplace_count
       end
-      subject { Update.new(workplace_count.workplace_count_id, new_workplace_count) }
+      subject { Update.new(user, workplace_count.workplace_count_id, new_workplace_count) }
 
       it 'assign @data to workplace_count object' do
         subject.run

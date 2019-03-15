@@ -37,21 +37,21 @@ module Invent
       end
     end
 
-    describe 'POST #create_list' do
-      let(:file) do
-        Rack::Test::UploadedFile.new(Rails.root.join('spec', 'files', 'old_pc_config.txt'), 'text/plain')
-      end
+    # describe 'POST #create_list' do
+    #   let(:file) do
+    #     Rack::Test::UploadedFile.new(Rails.root.join('spec', 'files', 'old_pc_config.txt'), 'text/plain')
+    #   end
 
-      it 'creates instance of the WorkplaceCounts::CreateList' do
-        post :create_list, params: { file: file }
-        expect(assigns(:create_list)).to be_instance_of WorkplaceCounts::CreateList
-      end
+    #   it 'creates instance of the WorkplaceCounts::CreateList' do
+    #     post :create_list, params: { file: file }
+    #     expect(assigns(:create_list)).to be_instance_of WorkplaceCounts::CreateList
+    #   end
 
-      it 'calls :run method' do
-        expect_any_instance_of(WorkplaceCounts::CreateList).to receive(:run)
-        post :create_list
-      end
-    end
+    #   it 'calls :run method' do
+    #     expect_any_instance_of(WorkplaceCounts::CreateList).to receive(:run)
+    #     post :create_list
+    #   end
+    # end
 
     describe 'GET #show' do
       let(:user) { create(:***REMOVED***_user) }

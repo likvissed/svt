@@ -294,10 +294,10 @@ module Invent
     def prevent_update
       return unless warehouse_item
 
-      if model_id_changed?
-        cannot_update_due_warehouse_item_for(:model)
-      elsif item_model_changed?
+      if item_model_changed?
         cannot_update_due_warehouse_item_for(:item_model)
+      elsif model_id_changed?
+        cannot_update_due_warehouse_item_for(:model)
       elsif type_id_changed?
         cannot_update_due_warehouse_item_for(:type)
       end

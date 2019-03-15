@@ -7,7 +7,7 @@ module Invent
       let(:user) { attributes_for(:user, role_id: role.id).except(:id_tn, :division, :email, :login, :fullname) }
       let(:***REMOVED***_user) { attributes_for(:***REMOVED***_user).except(:id_tn, :division, :email, :login, :fullname) }
       let(:workplace_count) { attributes_for(:active_workplace_count, users_attributes: [user, ***REMOVED***_user]) }
-      subject { Create.new(workplace_count) }
+      subject { Create.new(create(:user), workplace_count) }
 
       include_examples 'run methods', 'save_workplace'
       it 'assign @data to WorkplaceCount instance' do

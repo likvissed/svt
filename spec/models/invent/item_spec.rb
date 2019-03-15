@@ -432,7 +432,7 @@ module Invent
 
       context 'when warehouse_item does not exist' do
         it 'allows update any attribute' do
-          expect { subject.update(item_model: 'new_item_model') }.to change { subject.item_model }.to('new_item_model')
+          expect { subject.update(item_model: 'new_item_model', model: nil) }.to change { subject.reload.item_model }.to('new_item_model')
         end
       end
 
@@ -453,11 +453,11 @@ module Invent
 
         context 'and when item_model was changed' do
           it 'does not update item' do
-            expect { subject.update(item_model: 'new_item_model') }.not_to change { subject.reload.item_model }
+            expect { subject.update(item_model: 'new_item_model', model: nil) }.not_to change { subject.reload.item_model }
           end
 
           it 'adds :cannot_update_item_due_warehouse_item' do
-            subject.update(item_model: 'new_item_model')
+            subject.update(item_model: 'new_item_model', model: nil)
 
             expect(subject.errors.details[:item_model]).to include(error: :cannot_update_due_warehouse_item)
           end
@@ -589,21 +589,21 @@ module Invent
       context 'when model is set' do
         let!(:item) { create(:item, :with_property_values, type_name: :printer) }
         before { item.item_model = 'new_printer_model' }
-    
+
         it 'sets empty string to item_model' do
           item.save
-    
+
           expect(item.reload.item_model).to be_empty
         end
       end
-    
+
       context 'when model is empty' do
         let!(:item) { create(:item, :with_property_values, type_name: :printer, model: nil, item_model: 'old_printer_model') }
         before { item.item_model = 'new_printer_model' }
-    
+
         it 'does not set empty string to item_model' do
           item.save
-    
+
           expect(item.reload.item_model).to eq 'new_printer_model'
         end
       end
