@@ -85,4 +85,7 @@ class DBConn{
     return $this->dbh->commit();
   }
 
+  public function debug() {
+    return $this->stmt->debugDumpParams();
+  }  
 }

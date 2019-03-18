@@ -8,8 +8,8 @@ $env = $argv[1] . '_invent';
 $order_id = $argv[2];
 $consumer = $argv[3];
 $date = $argv[4];
-$invent_params = json_decode($argv[5], true);;
-$warehouse_params = json_decode($argv[6], true);;
+$invent_params = json_decode($argv[5], true);
+$warehouse_params = json_decode($argv[6], true);
 $database = yaml_parse_file('config/database.yml');
 
 $con = new DBConn ($database[$env]);
@@ -33,6 +33,9 @@ if (!empty($invent_params)) {
   ON
     invent_item.item_id = warehouse_inv_item_to_operations.invent_item_id AND invent_item.item_id IN (";
 
+  // print_r($query);
+  // return;
+
   $i = 0;
   foreach($invent_params as $par) {
     $query .= ':item_id' . $i . ',';
@@ -53,7 +56,7 @@ if (!empty($invent_params)) {
   LEFT OUTER JOIN
     invent_property
   ON
-    invent_property.property_id = invent_property_value.property_id AND invent_property.mandatory = true
+    invent_property.property_id = invent_property_value.property_id
   LEFT OUTER JOIN
     invent_property_list
   ON
@@ -79,13 +82,19 @@ if (!empty($invent_params)) {
   ON
     invent_workplace_count.workplace_count_id = invent_workplace.workplace_count_id
   WHERE
-    warehouse_orders.id = :order_id
+    warehouse_orders.id = :order_id AND invent_property.mandatory = true
   ORDER BY
     invent_item.item_id";
 
   $con->prepare_query($query);
   $con->bind(':order_id', $order_id);
   $i = 0;
+
+  // print_r($con);
+  // return;
+  // // var_dump($con);
+  // exit;
+
   foreach($invent_params as $par) {
     $con->bind(":item_id$i", $par['item_id']);
     $i++;
@@ -93,9 +102,9 @@ if (!empty($invent_params)) {
   $sql_invent_data = $con->row_set();
 
   // print_r($sql_invent_data);
+  // print_r($con->debug());
   // return;
 }
-
 
 if (!empty($warehouse_params)) {
   $query = "
@@ -165,6 +174,7 @@ $result = array();
 $i = 0;
 foreach($sql_invent_data as $row_data) {
   $index = get_result_index($row_data, $result);
+
   if (is_null($index)) {
     $index = $i;
     $result[$index] = array();
@@ -199,10 +209,12 @@ foreach($sql_invent_data as $row_data) {
   if (!isset($result[$index]['property_values'])) {
     $result[$index]['property_values'] = array();
   }
-
+ 
   array_push($result[$index]['property_values'], get_prop_val_object($row_data));
+  // var_dump($result[$index]['property_values'] );
+  
 }
-
+// exit; 
 foreach($sql_warehouse_data as $row_data) {
   $obj = array();
   $obj['warehouse_type'] = 'without_invent_num';
@@ -222,16 +234,17 @@ foreach($sql_warehouse_data as $row_data) {
 
   array_push($result, $obj);
 }
-
+//!!!
 function get_prop_val_object($data) {
   $value = $data['list_val'] ? $data['list_val'] : $data['str_val'] ;
 
   return array(
     'property' => $data['property'],
     'value' => $value
+  
   );
 }
-
+ 
 function get_result_index($current_row, $result) {
   $index = null;
 
@@ -291,7 +304,9 @@ $table->setBorderForCellRange($border, 1, 1, $rows, $cols);
 $cell = $table->getCell(1, 2);
 
 $i = 0;
+
 foreach($result as $data) {
+
   $cell = $table->getCell($i + 1, 1);
   $cell->setBackgroundColor('#dddddd');
 
@@ -302,13 +317,18 @@ foreach($result as $data) {
     $table->writeToCell($i + 1, 2, $data['type'], $fontBold);
     if ($data['type'] != 'Системный блок') {
       $table->writeToCell($i + 1, 2, ' ' . $data['item_model'], $fontBold);
+      
     }
     $table->writeToCell($i + 1, 2, "\n", $fontBold);
     foreach($data['property_values'] as $prop_val) {
+      
       $table->writeToCell($i + 1, 2, $prop_val['property'] . ': ' . $prop_val['value'] . "\n", $table_font);
     }
     $table->writeToCell($i + 1, 3, $data['count'], $table_font);
 
+  // var_dump($sql_consumer_data[0]['fio']);
+  // exit;
+    
     $nested_table = $cell->addTable();
     $nested_table->addRows(4, 0.5);
     $nested_table->addColumnsList(array(6, 6));
@@ -353,6 +373,9 @@ $table->addRows(4, 1);
 $table->addColumnsList(array(10.6, 7.3));
 
 $cell = $table->getCell(1, 2);
+
+// var_dump($sql_consumer_data[0]['fio']);
+// exit;
 
 $table->writeToCell(1, 1, 'Корпус ' . $common_data['building'], $footer_font);
 $table->writeToCell(1, 2, 'Комната ' . $common_data['room'], $footer_font);
