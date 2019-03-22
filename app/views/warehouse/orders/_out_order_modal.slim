@@ -28,6 +28,10 @@ script type="text/ng-template" id="editOutOrderModal.slim"
         = text_field_tag "order[request_num]", "", class: "form-control", autocomplete: "off", "ng-model": "edit.order.request_num"
 
       .form-group
+        = label_tag "order[invent_num]", "Инвентарный номер", class: "control-label"
+        = text_field_tag "order[invent_num]", "", class: "form-control", autocomplete: "off", "ng-model": "edit.order.invent_num"
+
+      .form-group
         h4
           ' Позиции
           span ng-if="!edit.extra.visibleCount"
@@ -59,3 +63,5 @@ script type="text/ng-template" id="editOutOrderModal.slim"
       = button_tag class: "btn-success btn-sm", "ng-click": "edit.ok()" do
         div ng-if="edit.order.id" Обновить
         div ng-if="!edit.order.id" Создать
+
+

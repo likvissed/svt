@@ -109,7 +109,7 @@ if (!empty($invent_params)) {
 if (!empty($warehouse_params)) {
   $query = "
   SELECT
-    warehouse_orders.request_num, warehouse_operations.*, iss_reference_buildings.name as building, iss_reference_rooms.name as room, invent_workplace_count.division as division, netadmin.user_iss.tel
+    warehouse_orders.invent_num AS order_num, warehouse_orders.request_num, warehouse_operations.*, iss_reference_buildings.name as building, iss_reference_rooms.name as room, invent_workplace_count.division as division, netadmin.user_iss.tel
   FROM
     warehouse_orders
   INNER JOIN
@@ -219,6 +219,7 @@ foreach($sql_warehouse_data as $row_data) {
   $obj = array();
   $obj['warehouse_type'] = 'without_invent_num';
   $obj['request_num'] = $row_data['request_num'];
+  $obj['order_num'] = $row_data['order_num'];
   $obj['item_type'] = $row_data['item_type'];
   $obj['item_model'] = $row_data['item_model'];
   $obj['count'] = abs($row_data['shift']);
@@ -348,7 +349,7 @@ foreach($result as $data) {
     $table->writeToCell($i + 1, 3, $data['count'], $table_font);
 
     $nested_table = $cell->addTable();
-    $nested_table->addRows(3, 0.5);
+    $nested_table->addRows(4, 0.5);
     $nested_table->addColumnsList(array(6, 6));
     $nested_table->setBorderForCellRange($border, 1, 1, $rows, $cols);
     $nested_table->writeToCell(1, 1, ' ');
@@ -357,6 +358,8 @@ foreach($result as $data) {
     $nested_table->writeToCell(2, 2, ' ');
     $nested_table->writeToCell(3, 1, 'Заявка № ' . $data['request_num'], $table_font);
     $nested_table->writeToCell(3, 2, 'Сер. № ' . $data['serial_num'], $table_font);
+    $nested_table->writeToCell(4, 1, ' ');
+    $nested_table->writeToCell(4, 2, 'Инв. № ' . $data['order_num'], $table_font);
   }
 
   $cell = $table->getCell($i + 1, 3);

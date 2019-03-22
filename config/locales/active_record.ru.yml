@@ -91,6 +91,7 @@ ru:
         inv_workplace: 'Рабочее место'
         invent_workplace_id: 'ID рабочего места'
         consumer: 'ФИО (или таб. №) работника'
+        invent_num: 'Инвентарный номер'
         consumer_dept: 'Отдел'
         operation: 'Тип ордера'
         status: 'Статус ордера'

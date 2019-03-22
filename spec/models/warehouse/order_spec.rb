@@ -35,6 +35,33 @@ module Warehouse
       it { is_expected.to validate_presence_of(:invent_workplace_id) }
     end
 
+    describe 'order.invent_num.valid?' do
+      context 'when warehouse_type without' do
+        let(:used_item) { create(:used_item, warehouse_type: 'without_invent_num') }
+        let(:operation) { create(:order_operation, item_id: used_item.id) }
+        subject { build(:order, operations: [operation]) }
+
+        it { is_expected.to validate_presence_of(:invent_num) }
+      end
+
+      context 'when warehouse_type with' do
+        let(:used_item) { create(:used_item) }
+        let(:operation) { create(:order_operation, item_id: used_item.id) }
+        subject { build(:order, operations: [operation]) }
+
+        it { is_expected.to_not validate_presence_of(:invent_num) }
+      end
+
+      context 'when warehouse_type with and without' do
+        let(:used_item1) { create(:used_item, warehouse_type: 'without_invent_num') }
+        let(:used_item2) { create(:used_item) }
+        let(:operation) { [create(:order_operation, item_id: used_item1.id), create(:order_operation, item_id: used_item2.id)] }
+        subject { build(:order, operations: operation) }
+
+        it { is_expected.to validate_presence_of(:invent_num) }
+      end
+    end
+
     # context 'when operation is :in' do
     #   before { subject.dont_calculate_status = true }
 
