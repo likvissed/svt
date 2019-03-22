@@ -321,7 +321,7 @@ import { app } from '../../app/app';
    */
   Workplace.prototype.setFirstActiveTab = function(item) {
     // Если удаляется неактивный таб, ничего не делать
-    if (item && item != this.InventItem.data.item) { return false; }
+    if (item && item != this.InventItem.data.item || this.workplace.items_attributes.length == 0) { return false; }
 
     // Если удаляется активный там и он последний в списке, установить активным первый таб
     if (this.workplace.items_attributes.slice(-1).pop() == item) {

@@ -8,7 +8,6 @@ import { app } from '../../app/app';
   EditInventItemCtrl.$inject = ['$uibModal', 'InventItem', 'WorkplaceItem', 'Config', 'Flash'];
 
   function EditInventItemCtrl($uibModal, InventItem, WorkplaceItem, Config, Flash) {
-    // this.additional = WorkplaceItem.getAdditional();
     this.$uibModal = $uibModal;
     this.Item = InventItem;
     this.WorkplaceItem = WorkplaceItem;

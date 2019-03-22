@@ -88,7 +88,7 @@ div ng-controller="EditInventItemCtrl as edit"
       .form-group
         div ng-switch=true on="prop.property_type"
           div ng-switch-when="string"
-            = text_field_tag "", "", class: "form-control", "ng-disabled": "edit.additional.pcTypes | contains:edit.item_o.item.type.name",
+            = text_field_tag "", "", class: "form-control", "ng-disabled": "(edit.additional.pcTypes | contains:edit.item_o.item.type.name) && (edit.additional.pcAttrs | contains:edit.item_o.item.type.properties[$index].name)",
               "ng-model": "edit.item_o.item.property_values_attributes[$index].value"
 
           div ng-switch-when="list"
