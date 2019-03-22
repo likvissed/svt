@@ -35,7 +35,7 @@ module Invent
     before_save :set_default_model
     before_destroy :prevent_destroy, prepend: true, unless: -> { destroy_from_order }
     before_update :prevent_update
-    before_save :model_id_nil_if_model_item
+    # before_save :model_id_nil_if_model_item
 
     scope :item_id, ->(item_id) { where(item_id: item_id) }
     scope :type_id, ->(type_id) { where(type_id: type_id) }
@@ -267,9 +267,9 @@ module Invent
       self.model_id = nil if model_id.to_i.zero?
     end
 
-    def model_id_nil_if_model_item
-      self.item_model = '' unless model_id.to_i.zero?
-    end
+    # def model_id_nil_if_model_item
+    #   self.item_model = '' unless model_id.to_i.zero?
+    # end
 
     # Проверка, что все properties со свойством "mandatory: true" присутствуют.
     def check_mandatory
