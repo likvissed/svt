@@ -12,65 +12,65 @@
 
 ActiveRecord::Schema.define(version: 20171018041102) do
 
-  create_table "roles", force: :cascade, options: "ENGINE=InnoDB DEFAULT CHARSET=utf8" do |t|
-    t.string   "name",              limit: 64
-    t.string   "short_description", limit: 64
-    t.string   "long_description"
-    t.datetime "created_at",                   null: false
-    t.datetime "updated_at",                   null: false
-  end
-
-  create_table "standard_discrepancies", force: :cascade, options: "ENGINE=InnoDB DEFAULT CHARSET=utf8" do |t|
-    t.integer  "item_id"
-    t.integer  "property_id"
-    t.integer  "property_value_id"
-    t.integer  "event"
-    t.string   "new_value"
-    t.datetime "created_at",        null: false
-    t.datetime "updated_at",        null: false
-    t.index ["item_id"], name: "index_standard_discrepancies_on_item_id", using: :btree
-    t.index ["property_id"], name: "fk_rails_d1c19a836e", using: :btree
-    t.index ["property_value_id"], name: "index_standard_discrepancies_on_property_value_id", using: :btree
-  end
-
-  create_table "standard_log_details", force: :cascade, options: "ENGINE=InnoDB DEFAULT CHARSET=utf8" do |t|
-    t.integer  "log_id"
-    t.integer  "property_id"
-    t.string   "old_detail"
-    t.string   "new_detail"
-    t.datetime "created_at",  null: false
-    t.datetime "updated_at",  null: false
-    t.index ["log_id"], name: "index_standard_log_details_on_log_id", using: :btree
-    t.index ["property_id"], name: "index_standard_log_details_on_property_id", using: :btree
-  end
-
-  create_table "standard_logs", force: :cascade, options: "ENGINE=InnoDB DEFAULT CHARSET=utf8" do |t|
-    t.integer  "item_id"
-    t.string   "username"
-    t.integer  "event"
+  create_table "roles", id: :integer, force: :cascade, options: "ENGINE=InnoDB DEFAULT CHARSET=utf8" do |t|
+    t.string "name", limit: 64
+    t.string "short_description", limit: 64
+    t.string "long_description"
     t.datetime "created_at", null: false
     t.datetime "updated_at", null: false
-    t.index ["item_id"], name: "index_standard_logs_on_item_id", using: :btree
   end
 
-  create_table "users", force: :cascade, options: "ENGINE=InnoDB DEFAULT CHARSET=utf8" do |t|
-    t.integer  "id_tn",                                       null: false
-    t.integer  "tn",                                          null: false
-    t.string   "fullname"
-    t.string   "phone",               limit: 10, default: ""
-    t.string   "encrypted_password",             default: "", null: false
-    t.integer  "role_id"
+  create_table "standard_discrepancies", id: :integer, force: :cascade, options: "ENGINE=InnoDB DEFAULT CHARSET=utf8" do |t|
+    t.integer "item_id"
+    t.integer "property_id"
+    t.integer "property_value_id"
+    t.integer "event"
+    t.string "new_value"
+    t.datetime "created_at", null: false
+    t.datetime "updated_at", null: false
+    t.index ["item_id"], name: "index_standard_discrepancies_on_item_id"
+    t.index ["property_id"], name: "fk_rails_d1c19a836e"
+    t.index ["property_value_id"], name: "index_standard_discrepancies_on_property_value_id"
+  end
+
+  create_table "standard_log_details", id: :integer, force: :cascade, options: "ENGINE=InnoDB DEFAULT CHARSET=utf8" do |t|
+    t.integer "log_id"
+    t.integer "property_id"
+    t.string "old_detail"
+    t.string "new_detail"
+    t.datetime "created_at", null: false
+    t.datetime "updated_at", null: false
+    t.index ["log_id"], name: "index_standard_log_details_on_log_id"
+    t.index ["property_id"], name: "index_standard_log_details_on_property_id"
+  end
+
+  create_table "standard_logs", id: :integer, force: :cascade, options: "ENGINE=InnoDB DEFAULT CHARSET=utf8" do |t|
+    t.integer "item_id"
+    t.string "username"
+    t.integer "event"
+    t.datetime "created_at", null: false
+    t.datetime "updated_at", null: false
+    t.index ["item_id"], name: "index_standard_logs_on_item_id"
+  end
+
+  create_table "users", id: :integer, force: :cascade, options: "ENGINE=InnoDB DEFAULT CHARSET=utf8" do |t|
+    t.integer "id_tn", null: false
+    t.integer "tn", null: false
+    t.string "fullname"
+    t.string "phone", limit: 10, default: ""
+    t.string "encrypted_password", default: "", null: false
+    t.integer "role_id"
     t.datetime "remember_created_at"
-    t.integer  "sign_in_count",                  default: 0,  null: false
+    t.integer "sign_in_count", default: 0, null: false
     t.datetime "current_sign_in_at"
     t.datetime "last_sign_in_at"
-    t.string   "current_sign_in_ip"
-    t.string   "last_sign_in_ip"
-    t.datetime "created_at",                                  null: false
-    t.datetime "updated_at",                                  null: false
-    t.index ["id_tn"], name: "index_users_on_id_tn", using: :btree
-    t.index ["role_id"], name: "index_users_on_role_id", using: :btree
-    t.index ["tn"], name: "index_users_on_tn", using: :btree
+    t.string "current_sign_in_ip"
+    t.string "last_sign_in_ip"
+    t.datetime "created_at", null: false
+    t.datetime "updated_at", null: false
+    t.index ["id_tn"], name: "index_users_on_id_tn"
+    t.index ["role_id"], name: "index_users_on_role_id"
+    t.index ["tn"], name: "index_users_on_tn"
   end
 
   add_foreign_key "standard_discrepancies", "invent_property", column: "property_id", primary_key: "property_id"
