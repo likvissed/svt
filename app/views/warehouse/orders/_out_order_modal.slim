@@ -27,9 +27,10 @@ script type="text/ng-template" id="editOutOrderModal.slim"
         = label_tag "order[request_num]", "№ заявки в личном кабинете", class: "control-label"
         = text_field_tag "order[request_num]", "", class: "form-control", autocomplete: "off", "ng-model": "edit.order.request_num"
 
-      .form-group
+      .form-group ng-class="edit.errorClass('order[invent_num]')"
         = label_tag "order[invent_num]", "Инвентарный номер", class: "control-label"
         = text_field_tag "order[invent_num]", "", class: "form-control", autocomplete: "off", "ng-model": "edit.order.invent_num"
+        span.help-block ng-show="edit.form['order[invent_num]'].$invalid" ng-bind="edit.errorMessage('order[invent_num]')"
 
       .form-group
         h4
