@@ -1,4 +1,6 @@
 class UserIssesController < ApplicationController
+  skip_before_action :authenticate_user!, only: :items
+
   def index
     @index = UserIsses::Index.new(params[:search_key])
 
@@ -11,5 +13,14 @@ class UserIssesController < ApplicationController
 
   def users_from_division
     render json: UserIss.select(:id_tn, :fio).order(:fio).where(dept: params[:division])
+  end
+
+  def items
+    @workplaces = Invent::Workplace.where(id_tn: params[:user_iss_id]).includes(items: :model)
+    result = @workplaces
+               .as_json(include: { items: { except: %i[create_time modify_time], methods: :short_item_model } })
+               .map { |wp| wp['items'] }.flatten
+
+    render json: result
   end
 end

@@ -126,6 +126,8 @@ Rails.application.routes.draw do
   resources :user_isses, only: :index do
     # Получить список пользователей указанного отдела
     get 'users_from_division/:division', to: 'user_isses#users_from_division', on: :collection
+    # Получить список техники привязанной за пользователем
+    get :items, to: :items
   end
 
   get 'locations/load_rooms/:building_id', to: 'locations#rooms_for_building'

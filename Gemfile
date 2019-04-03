@@ -66,8 +66,9 @@ gem 'redis', '~> 3.0'
 # gem 'bcrypt', '~> 3.1.7'
 
 group :test do
-  gem 'shoulda-matchers'
   gem 'database_cleaner'
+  gem 'json_spec'
+  gem 'shoulda-matchers'
 end
 
 group :development, :test do
