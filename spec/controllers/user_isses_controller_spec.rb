@@ -33,10 +33,12 @@ RSpec.describe UserIssesController, type: :controller do
       end
     end
 
-    it 'has :short_item_model attribute' do
-      get :items, params: { user_iss_id: user_iss_id_tn }, format: :json
+    %i[short_item_model type].each do |attr|
+      it "has #{attr} attributes" do
+        get :items, params: { user_iss_id: user_iss_id_tn }, format: :json
 
-      expect(response.body).to have_json_path('0/short_item_model')
+        expect(response.body).to have_json_path("0/#{attr}")
+      end
     end
   end
 end

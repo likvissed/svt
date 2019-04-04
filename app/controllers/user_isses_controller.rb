@@ -16,9 +16,15 @@ class UserIssesController < ApplicationController
   end
 
   def items
-    @workplaces = Invent::Workplace.where(id_tn: params[:user_iss_id]).includes(items: :model)
+    @workplaces = Invent::Workplace.where(id_tn: params[:user_iss_id]).includes(items: %i[type model])
     result = @workplaces
-               .as_json(include: { items: { except: %i[create_time modify_time], methods: :short_item_model } })
+               .as_json(include: {
+                 items: {
+                   include: :type,
+                   except: %i[create_time modify_time],
+                   methods: :short_item_model
+                 }
+               })
                .map { |wp| wp['items'] }.flatten
 
     render json: result
