@@ -53,7 +53,7 @@ import { app } from '../../app/app';
       templateUrl: 'editSupplyModal.slim',
       controller: 'EditSupplyCtrl',
       controllerAs: 'edit',
-      size: 'md',
+      size: 'lg',
       backdrop: 'static'
     });
   }

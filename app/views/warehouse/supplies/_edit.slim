@@ -11,12 +11,12 @@ script type="text/ng-template" id="editSupplyModal.slim"
             "ng-click": "edit.reloadSupply()"
     .modal-body
       .row
-        .col-lg-12
+        .col-lg-8
           .form-group ng-class="edit.errorClass('supply[name]')"
             = label_tag "supply[name]", "Наименование", class: "control-label"
             = text_field_tag "supply[name]", "", class: "form-control", "ng-model": "edit.supply.name"
             span.help-block ng-show="edit.form['supply[name]'].$invalid" ng-bind="edit.errorMessage('supply[name]')"
-        .col-lg-12
+        .col-lg-8
           .form-group ng-class="edit.errorClass('supply[date]')"
             = label_tag "supply[date]", "Дата поставки", class: "control-label"
             = text_field_tag "supply[date]", "edit.supply.date", class: "form-control",
@@ -24,9 +24,10 @@ script type="text/ng-template" id="editSupplyModal.slim"
               "ng-focus": "edit.openDatePicker()", "is-open": "edit.date.openDatePicker",
               "popup-placement": "bottom-left", "show-button-bar": false
             span.help-block ng-show="edit.form['supply[date]'].$invalid" ng-bind="edit.errorMessage('supply[date]')"
-      .form-group
-        = label_tag "supply[supplyer]", "Поставщик", class: "control-label"
-        = text_field_tag "supply[supplyer]", "", class: "form-control", "ng-model": "edit.supply.supplyer"
+        .col-lg-8
+          .form-group ng-class="edit.errorClass('supply[supplyer]')"
+            = label_tag "supply[supplyer]", "Поставщик", class: "control-label"
+            = text_field_tag "supply[supplyer]", "", class: "form-control", "ng-model": "edit.supply.supplyer"
       .form-group
         = label_tag "supply[comment]", "Комментарий", class: "control-label"
         = text_area_tag "supply[comment]", "", class: "form-control", rows: "3", "ng-model": "edit.supply.comment"
