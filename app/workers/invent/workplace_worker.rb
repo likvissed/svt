@@ -21,6 +21,6 @@ class Invent::WorkplaceWorker
 
   # Заморозить временные РМ, у которых прошел срок работы.
   def freezing_temporary_workplaces
-    Invent::Workplace.where(status: :temporary, freezing_time: Time.zone.now).update_all(status: :freezed)
+    Invent::Workplace.where(status: 'temporary').where('freezing_time <= ?', Time.zone.now).update_all(status: :freezed)
   end
 end
