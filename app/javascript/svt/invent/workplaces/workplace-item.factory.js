@@ -104,6 +104,24 @@ import { app } from '../../app/app';
     }
 
     /**
+     * Создать объект property_value для свойств property, у которых он отсутствует.
+     *
+     * @param item
+     */
+    function _createPropertyValues(item) {
+      item.type.properties.forEach((prop, index) => {
+        if (item.property_values_attributes.find((prop_val) => prop_val.property_id === prop.property_id)) {
+          return true;
+        };
+
+        let newPropVal = PropertyValue.getTemplatePropertyValue();
+        newPropVal.property_id = prop.property_id;
+        _createFilteredList(item, index, prop);
+        item.property_values_attributes.splice(index, 0, newPropVal);
+      });
+    }
+
+    /**
      * Очистить аттрибут value элементов массива property_values_attributes и удалить повторяющиеся свойства из
      * property_values_attributes и properties.
      *
@@ -278,6 +296,26 @@ import { app } from '../../app/app';
       }
     }
 
+    /**
+     * Сравнить массивы properties и property_values на на количество свойств.
+     *
+     * @param item
+     */
+    function _isPropsOrPropValsNeedToClone(item) {
+      const props_result = item.type.properties.reduce((res, prop) => {
+        res[prop.name] = (res[prop.name] || 0) + 1;
+        return res
+      }, {});
+
+      const prop_vals_result = item.property_values_attributes.reduce((res, prop_val) => {
+        const prop = item.type.properties.find((el) => el.property_id == prop_val.property_id);
+        res[prop.name] = (res[prop.name] || 0) + 1;
+        return res;
+      }, {});
+
+      return JSON.stringify(props_result) !== JSON.stringify(prop_vals_result);
+    }
+
     return {
       /**
        * Установить шаблон объекта техники.
@@ -337,9 +375,10 @@ import { app } from '../../app/app';
         // дисков для системного блока). Необходимо создать копии соответсвующих элементов массива
         // properties и поместить их в этот же массив. Иначе пользователь увидит, например, только один
         // жесткий диск.
-        if (item.property_values_attributes.length != item.type.properties.length) {
+        if (_isPropsOrPropValsNeedToClone(item)) {
           _cloneProperties(item);
-        }
+          _createPropertyValues(item);
+        };
 
         _setModel(item);
 
