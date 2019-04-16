@@ -97,6 +97,7 @@ module Invent
       left_outer_joins(:workplace).where(invent_workplace: { location_room_id: room_id })
     end
     scope :priority, ->(priority) { where(priority: priority) }
+    scope :workplace_count_id, ->(workplace_count_id) { left_outer_joins(:workplace).where(invent_workplace: { workplace_count_id: workplace_count_id }) }
 
     attr_accessor :disable_filters
     attr_accessor :destroy_from_order

@@ -40,7 +40,7 @@ module Invent
       def filtering_params
         filters = JSON.parse(params[:filters])
         filters['for_statuses'] = data[:filters][:statuses].select { |filter| filter[:default] }.as_json if need_init_filters?
-        filters.slice('item_id', 'type_id', 'invent_num', 'item_model', 'responsible', 'properties', 'for_statuses', 'location_building_id', 'location_room_id', 'priority')
+        filters.slice('item_id', 'type_id', 'invent_num', 'item_model', 'responsible', 'properties', 'for_statuses', 'location_building_id', 'location_room_id', 'priority', 'workplace_count_id')
       end
 
       def limit_records
@@ -89,6 +89,7 @@ module Invent
                                        .select('iss_reference_sites.name as site_name, iss_reference_buildings.*')
                                        .left_outer_joins(:iss_reference_site)
         data[:filters][:priorities] = item_priorities
+        data[:filters][:divisions] = WorkplaceCount.select(:workplace_count_id, :division).order('CAST(division AS SIGNED)')
       end
 
       def label_status(item, text)

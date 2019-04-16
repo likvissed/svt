@@ -225,11 +225,17 @@ import { app } from '../../app/app';
    * @param item
    */
   InventItemsTableCtrl.prototype.dataForAstraea = function(item) {
+    let tn;
+
+    if (item.workplace.user_iss) {
+      tn = item.workplace.user_iss.tn;
+    }
+
     let data = {
       item_id: item.item_id,
       invent_num: item.invent_num,
       id_tn: item.workplace.id_tn,
-      tn: item.workplace.user_iss.tn,
+      tn: tn,
       workplace_id: item.workplace_id
     }
 
