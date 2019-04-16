@@ -8,6 +8,7 @@ module Warehouse
       status 'processing'
       consumer_dept { inv_workplace.try(:division) }
       comment ''
+      invent_num 765_000
       skip_validator true
 
       transient do
