@@ -120,8 +120,9 @@ module Warehouse
       end
 
       context 'when operation is :write_off' do
+        let(:user) { create(:shatunova_user) }
         let!(:w_item) { create(:used_item, inv_item: inv_item) }
-        subject { CreateByInvItem.new(current_user, inv_item, :write_off) }
+        subject { CreateByInvItem.new(user, inv_item, :write_off) }
 
         its(:run) { is_expected.to be_truthy }
 

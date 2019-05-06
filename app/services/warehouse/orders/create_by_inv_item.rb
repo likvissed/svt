@@ -49,6 +49,7 @@ module Warehouse
       def init_write_off_order
         @order = Order.new(operation: :write_off)
         authorize @order, :create_write_off?
+        @order.skip_validator = true
         @order.set_creator(current_user)
         @order_state = Orders::WriteOff::ProcessingState.new(@order)
       end
