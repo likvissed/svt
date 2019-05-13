@@ -43,7 +43,10 @@ script type="text/ng-template" id="execOrder.slim"
             = label_tag "order[tel]", "Телефон", class: "control-label"
             = text_field_tag "order[tel]", "", class: "form-control", autocomplete: "off", "ng-model": "exec.order.consumer_obj.tel",
               disabled: true
-
+        .row
+          .col-sm-10
+            = label_tag "order['fio_user_iss']", "Ответственный за ВТ"
+            = text_field_tag "order['fio_user_iss']", "", class: "form-control", autocomplete: "off", "ng-value": "exec.order.fio_user_iss", disabled: true
         .form-group
           h4 Позиции
           table.table.table-condensed.table-tbody-striped
@@ -66,7 +69,7 @@ script type="text/ng-template" id="execOrder.slim"
                 td.text-center ng-if="exec.order.operation == 'in'"
                   input type="checkbox" ng-model="op.to_write_off" ng-disabled="exec.isOperationDone(op)"
                 td ng-bind="op.item_type || op.item.item_type || op.inv_items[0].type.short_description"
-                td ng-bind="op.inv_items | inventNumsToStr"
+                td ng-bind="(op.inv_items | inventNumsToStr) || op.invent_num_order"
                 td ng-bind="op.shift | positiveVal"
                 td ng-bind="op.item_model || op.item.item_model || op.inv_items[0].full_item_model"
                 td ng-bind="op.stockman_fio | fioInitials"

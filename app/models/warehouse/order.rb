@@ -23,6 +23,7 @@ module Warehouse
     validate :at_least_one_operation
     validate :validate_in_order, if: -> { in? }
     validate :validate_write_off_order, if: -> { write_off? }
+    validate :present_user_iss
 
     after_initialize :set_initial_status, if: -> { new_record? }
     before_validation :set_consumer, if: -> { consumer_fio.blank? || consumer_id_tn.blank? }
@@ -98,6 +99,13 @@ module Warehouse
     end
 
     protected
+
+    # Проверка: существует ли ответственный для существующего рабочего места
+    def present_user_iss
+      return if !inv_workplace || inv_workplace&.user_iss
+
+      errors.add(:base, :absence_responsible)
+    end
 
     def presence_consumer
       return if consumer_fio.present? || errors.details[:consumer].any?

@@ -42,8 +42,8 @@ module Warehouse
 
       def transform_to_json
         data[:order] = @order.as_json(
-          include: [
-            :consumer,
+          include: {
+            consumer: {},
             operations: {
               methods: %i[formatted_date to_write_off],
               include: [
@@ -53,17 +53,24 @@ module Warehouse
                   methods: :full_item_model
                 }
               ]
+            },
+            inv_workplace: {
+              include: :user_iss
             }
-          ]
+          }
         )
-
         data[:order]['operations_attributes'] = data[:order]['operations']
+
+        data[:order]['fio_user_iss'] = data[:order]['inv_workplace']['user_iss']['fio']
+        data[:order].delete('inv_workplace')
+
         data[:order].delete('operations')
         data[:order]['consumer'] ||= @order.consumer_from_history
 
         data[:order]['operations_attributes'].each do |op|
           next unless op['item']
 
+          op['invent_num_order'] = @order.invent_num ## op['inv_items'].any? ? op['inv_items'].first['invent_num'] : @order.invent_num
           op['inv_item_ids'] = op['inv_items'].map { |io| io['item_id'] }
         end
       end
