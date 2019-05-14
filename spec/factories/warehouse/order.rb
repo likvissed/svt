@@ -10,7 +10,7 @@ module Warehouse
       comment ''
       invent_num 765_000
       skip_validator true
-      invent_num 123
+      # invent_num 123
 
       transient do
         without_operations false

@@ -101,9 +101,11 @@ module Warehouse
             op.delete('inv_items')
             op.delete('inv_item_ids')
             op.delete('formatted_date')
+            op.delete('invent_num_order')
           end
 
           edit.data[:order].delete('consumer_obj')
+          edit.data[:order].delete('fio_user_iss')
           edit.data[:order]
         end
 

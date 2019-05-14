@@ -70,7 +70,7 @@ module Warehouse
         data[:order]['operations_attributes'].each do |op|
           next unless op['item']
 
-          op['invent_num_order'] = @order.invent_num ## op['inv_items'].any? ? op['inv_items'].first['invent_num'] : @order.invent_num
+          op['invent_num_order'] = @order.invent_num
           op['inv_item_ids'] = op['inv_items'].map { |io| io['item_id'] }
         end
       end
