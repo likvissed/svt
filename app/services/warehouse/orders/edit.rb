@@ -61,7 +61,8 @@ module Warehouse
         )
         data[:order]['operations_attributes'] = data[:order]['operations']
 
-        data[:order]['fio_user_iss'] = data[:order]['inv_workplace']['user_iss']['fio']
+        data[:order]['fio_user_iss'] = data[:order].dig('inv_workplace', 'user_iss', 'fio')
+
         data[:order].delete('inv_workplace')
 
         data[:order].delete('operations')
@@ -70,7 +71,6 @@ module Warehouse
         data[:order]['operations_attributes'].each do |op|
           next unless op['item']
 
-          op['invent_num_order'] = @order.invent_num
           op['inv_item_ids'] = op['inv_items'].map { |io| io['item_id'] }
         end
       end

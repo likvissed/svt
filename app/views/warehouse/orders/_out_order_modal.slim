@@ -50,7 +50,7 @@ script type="text/ng-template" id="editOutOrderModal.slim"
               td= fa_icon "times-circle lg", class: "pointer", "tooltip-placement": "left", "uib-tooltip": "Убрать позицию",
                 "ng-click": "edit.delPosition(op)", "ng-if": "op.status != 'done'"
               td ng-bind="op.item_type"
-              td ng-bind="op.inv_items | inventNumsToStr"
+              td ng-bind="(op.inv_items | inventNumsToStr) || exec.order.invent_num"
               td ng-bind="op.item_model"
               td
                 input type="text" ng-model="edit.order.createShiftGetterSetter(op)" ng-model-options="{ getterSetter: true }" class="form-control" ng-disabled="op.status == 'done'"
