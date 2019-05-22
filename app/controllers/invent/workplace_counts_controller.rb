@@ -1,105 +1,49 @@
 module Invent
   class WorkplaceCountsController < ApplicationController
-    before_action :check_access, except: :generate_pdf
-
     def index
       respond_to do |format|
         format.html
         format.json do
-          @index = WorkplaceCounts::Index.new
+          workplace_count = {}
+          workplace_count[:array] = WorkplaceCount.select('invent_workplace_count.*')
+                                      .includes(:users)
+                                      .left_outer_joins(:workplaces)
+                                      .order('CAST(division AS UNSIGNED INTEGER)')
+                                      .limit(params[:length])
+                                      .offset(params[:start])
+                                      .left_outer_joins(:workplaces)
+                                      .group(:workplace_count_id)
+                                      .select('SUM(CASE WHEN invent_workplace.status = 3 THEN 1 ELSE 0 END) as freezed ')
+                                      .select('SUM(CASE WHEN invent_workplace.status = 0 THEN 1 ELSE 0 END) as confirmed ')
+                                      .select('SUM(CASE WHEN invent_workplace.status = 1 THEN 1 ELSE 0 END) as pending_verification ')
+                                      .as_json(
+                                        include: :users
+                                      ).each do |division|
 
-          if @index.run
-            render json: @index.data
-          else
-            render json: { full_messages: I18n.t('controllers.app.unprocessable_entity') }, status: 422
-          end
+                                        # Фио ответственного
+                                        division['user_fullname'] = division['users'].present? ? division['users'].map { |us| us['fullname'] } : 'Ответственный не найден'
+
+                                        # Телефон
+                                        division['user_phone'] = division['users'].present? ? division['users'].map { |ph| ph['phone'] } : 'Телефон не найден'
+
+                                        # Время доступа
+                                        division['user_time'] = division['time_start'].strftime('%d.%m.%Y') + ' - ' + division['time_end'].strftime('%d.%m.%Y')
+
+                                        # Проверка статуса (Доступ открыт или закрыт)
+                                        division['status_name'] = division['time_start'] <= Time.zone.now && Time.zone.now <= division['time_end'] ? 'Доступ открыт' : 'Доступ закрыт'
+
+                                        division.delete('users')
+                                        division.delete('time_start')
+                                        division.delete('time_end')
+                                      end
+          workplace_count[:recordsTotal] = WorkplaceCount.count
+          workplace_count[:recordsFiltered] = WorkplaceCount.count
+
+        # Rails.logger.info "wpC #{query}".yellow
+
+          render json: workplace_count
         end
       end
-    end
-
-    def create
-      @create = WorkplaceCounts::Create.new(current_user, workplace_count_params)
-
-      if @create.run
-        render json: { full_message: I18n.t('controllers.invent/workplace_count.created', dept: @create.data.division) }
-      else
-        render json: @create.error, status: 422
-      end
-    end
-
-    # def create_list
-    #   @create_list = WorkplaceCounts::CreateList.new(params[:file])
-
-    #   if @create_list.run
-    #     render json: { full_message: I18n.t('controllers.invent/workplace_count.list_created') }
-    #   else
-    #     render json: { full_message: @create_list.errors.full_messages.join('. ') }, status: 422
-    #   end
-    # end
-
-    def show
-      @show = WorkplaceCounts::Show.new(params[:workplace_count_id])
-
-      if @show.run
-        render json: @show.data
-      else
-        render json: { full_message: @show.error[:full_message] }, status: 422
-      end
-    end
-
-    def update
-      @update = WorkplaceCounts::Update.new(current_user, params[:workplace_count_id], workplace_count_params)
-
-      if @update.run
-        render json: { full_message: I18n.t('controllers.invent/workplace_count.updated', dept: @update.data.division) }
-      else
-        render json: @update.error, status: 422
-      end
-    end
-
-    def destroy
-      @workplace_count = WorkplaceCount.find(params[:workplace_count_id])
-      authorize @workplace_count
-
-      if @workplace_count.destroy
-        render json: { full_message: I18n.t('controllers.invent/workplace_count.destroyed') }
-      else
-        render json: { full_message: "Ошибка. #{@workplace_count.errors.full_messages.join(', ')}" }, status: 422
-      end
-    end
-
-    def generate_pdf
-      @division_report = WorkplaceCounts::DivisionReport.new(current_user, params[:division])
-
-      if @division_report.run
-        send_data @division_report.data.read,
-                  filename: "#{params[:division]}.rtf",
-                  type: 'application/rtf',
-                  disposition: 'attachment'
-      else
-        render json: { full_message: I18n.t('controllers.app.unprocessable_entity') }, status: 422
-      end
-    end
-
-    protected
-
-    def workplace_count_params
-      params.require(:workplace_count).permit(
-        :workplace_count_id,
-        :division,
-        :time_start,
-        :time_end,
-        users_attributes: %i[
-          id
-          tn
-          phone
-          _destroy
-        ]
-      )
-    end
-
-    def check_access
-      authorize [:invent, :workplace_count], :ctrl_access?
     end
   end
 end

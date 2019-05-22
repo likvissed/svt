@@ -1,8 +1,39 @@
+
 = title "Инвентаризация"
+.container ng-controller="WorkplaceCountsController as wpCount"
+  .row
+      .well
+        table.table.table-hover
+          tr
+            th Отдел
+            th Ответственный
+            th Телефон
+            th Время доступа
+            th Статус
+            th Ожидают
+            th Подтверждено
+            th Заморожено
+            th
+            th
 
-.container ng-controller="WorkplaceCountIndexCtrl as wpCount"
-  .well
-    datatable-wrapper
-      table.table.table-striped.table-condensed datatable="" dt-options="wpCount.dtOptions" dt-columns="wpCount.dtColumns" dt-instance="wpCount.dtInstance" width="100%"
-
-  = render partial: 'modal'
+          tr ng-repeat="div in wpCount.divisions" 
+            td ng-bind="div.division"
+            td ng-bind="div.user_fullname"
+            td ng-bind="div.user_phone"
+            td ng-bind="div.user_time"
+            td  
+              span class='label label-success' ng-bind="div.status_name" ng-if="div.status_name  == 'Доступ открыт'"
+              span class="label label-warning" ng-bind="div.status_name" ng-if="div.status_name  == 'Доступ закрыт'"
+            td ng-bind="div.pending_verification"
+            td ng-bind="div.confirmed"
+            td ng-bind="div.freezed"
+            td
+              span class="glyphicon glyphicon-edit"  title="Редактировать запись"
+            td
+              span class="glyphicon glyphicon-trash" title="Удалить запись" class="text-danger"
+  .row
+    .col-sm-12
+      .animate-show ng-table-info="" info-attrs="wpCount.pagination" ng-if="wpCount.division"
+    .col-sm-12
+      ul{ uib-pagination="true" total-items="wpCount.pagination.filteredRecords" ng-model="wpCount.pagination.currentPage"
+        max-size="wpCount.pagination.maxSize" class="pagination-sm pull-right" ng-change="wpCount.loadWorkplaceCounts()" }
