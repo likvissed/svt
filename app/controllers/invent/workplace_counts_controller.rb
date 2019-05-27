@@ -33,17 +33,19 @@ module Invent
                                         division['status_name'] = division['time_start'] <= Time.zone.now && Time.zone.now <= division['time_end'] ? 'Доступ открыт' : 'Доступ закрыт'
 
                                         division.delete('users')
-                                        division.delete('time_start')
-                                        division.delete('time_end')
                                       end
           workplace_count[:recordsTotal] = WorkplaceCount.count
           workplace_count[:recordsFiltered] = WorkplaceCount.count
 
-        # Rails.logger.info "wpC #{query}".yellow
-
           render json: workplace_count
         end
       end
+    end
+
+    def edit
+      edit_workplace_count = WorkplaceCount.find(params[:workplace_count_id]).as_json(include: :users)
+
+      render json: edit_workplace_count
     end
   end
 end

@@ -1,5 +1,5 @@
 
-= title "Инвентаризация"
+= title "Инвентаризация"  
 .container ng-controller="WorkplaceCountsController as wpCount"
   .row
       .well
@@ -15,20 +15,19 @@
             th Заморожено
             th
             th
-
-          tr ng-repeat="div in wpCount.divisions" 
-            td ng-bind="div.division"
-            td ng-bind="div.user_fullname"
-            td ng-bind="div.user_phone"
-            td ng-bind="div.user_time"
+          tr ng-repeat="dept in wpCount.divisions" 
+            td ng-bind="dept.division"
+            td ng-bind="dept.user_fullname"
+            td ng-bind="dept.user_phone"
+            td ng-bind="dept.user_time"
             td  
-              span class='label label-success' ng-bind="div.status_name" ng-if="div.status_name  == 'Доступ открыт'"
-              span class="label label-warning" ng-bind="div.status_name" ng-if="div.status_name  == 'Доступ закрыт'"
-            td ng-bind="div.pending_verification"
-            td ng-bind="div.confirmed"
-            td ng-bind="div.freezed"
-            td
-              span class="glyphicon glyphicon-edit"  title="Редактировать запись"
+              span class='label label-success' ng-bind="dept.status_name" ng-if="dept.status_name  == 'Доступ открыт'"
+              span class="label label-warning" ng-bind="dept.status_name" ng-if="dept.status_name  == 'Доступ закрыт'"
+            td.text-center ng-bind="dept.pending_verification"
+            td.text-center ng-bind="dept.confirmed"
+            td.text-center ng-bind="dept.freezed"
+            td 
+              span ng-click="wpCount.EditWorkplaceCounts(dept.workplace_count_id)" class="glyphicon glyphicon-edit" title="Редактировать запись"
             td
               span class="glyphicon glyphicon-trash" title="Удалить запись" class="text-danger"
   .row
@@ -37,3 +36,4 @@
     .col-sm-12
       ul{ uib-pagination="true" total-items="wpCount.pagination.filteredRecords" ng-model="wpCount.pagination.currentPage"
         max-size="wpCount.pagination.maxSize" class="pagination-sm pull-right" ng-change="wpCount.loadWorkplaceCounts()" }
+= render partial: 'invent/workplace_counts/modal'
