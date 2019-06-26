@@ -236,7 +236,8 @@ import { app } from '../../app/app';
       invent_num: item.invent_num,
       id_tn: item.workplace.id_tn,
       tn: tn,
-      workplace_id: item.workplace_id
+      workplace_id: item.workplace_id,
+      type_id: item.type_id
     }
 
     return encodeURIComponent(JSON.stringify(data));
