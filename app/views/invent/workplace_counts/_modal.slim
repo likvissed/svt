@@ -5,37 +5,42 @@ script type="text/ng-template" id="EditWorkplaceCounts.slim"
         h4 ng-show="!edit.dept.workplace_count_id" Добавить отдел
         h4 ng-show="edit.dept.workplace_count_id" Редактировать отдел
     .modal-body
-      .form-group 
+      / pre
+      /   | {{edit.form['dept[division]'] | json}}
+      .form-group ng-class="edit.errorClass('dept[division]')"
         = label_tag "dept[division]", "Отдел", class: "control-label"
         = text_field_tag "dept[division]", "", class: "form-control", "ng-model": "edit.dept.division"
-      .form-group 
+        span.help-block ng-show="edit.form['dept[division]'].$invalid" ng-bind="edit.errorMessage('dept[division]')"
+      .form-group ng-class="edit.errorClass('dept[time_start]')" 
         = label_tag "dept[time_start]", "Дата начала ввода данных", class: "control-label"
-        = text_field_tag "dept[time_start]", "", class: "form-control", "ng-model": "edit.dept.time_start"
-      .form-group 
+        = text_field_tag "dept[time_start]", "edit.dept.time_start", class: "form-control", "ng-model": "edit.dept.time_start", "ng-click": "edit.date.DatePickerStart = true",
+          "is-open": "edit.date.DatePickerStart", "uib-datepicker-popup": "dd-MM-yyyy", "ng-model-options": "{ timezone: 'utc' }", "show-button-bar": "false"
+        span.help-block ng-show="edit.form['dept[time_start]'].$invalid" ng-bind="edit.errorMessage('dept[time_start]')"
+      .form-group ng-class="edit.errorClass('dept[time_end]')"
         = label_tag "dept[time_end]", "Дата окончания ввода данных", class: "control-label"
-        = text_field_tag "dept[time_end]", "", class: "form-control", "ng-model": "edit.dept.time_end"
-      / h4 Список ответственных
+        = text_field_tag "dept[time_end]", "edit.dept.time_end", class: "form-control", "ng-model": "edit.dept.time_end", "ng-click": "edit.date.DatePickerEnd = true",
+          "is-open": "edit.date.DatePickerEnd", "uib-datepicker-popup": "dd-MM-yyyy", "ng-model-options": "{ timezone: 'utc' }", "show-button-bar": "false"
+        span.help-block ng-show="edit.form['dept[time_end]'].$invalid" ng-bind="edit.errorMessage('dept[time_end]')"
       h4 
         | Список ответственных   
-        span class='glyphicon glyphicon-plus-sign'
+        i class="fa fa-plus-circle"  class="pointer" ng-click="edit.addResponsible()" uib-tooltip="Добавить ответственного"
+           
       .form-group 
-        table.table.table-condensed.table-striped ng-if="edit.dept.users"
+        table.table.table-condensed.table-striped ng-if="edit.dept.users_attributes"
           tr.b
             th Таб.номер
             th ФИО
             th Телефон
             th 
-          tr ng-repeat="user in edit.dept.users" 
+          tr ng-repeat="user in edit.dept.users_attributes" 
             td.col-sm-5 
-              = text_field_tag "user[id_tn]", "", class: "form-control", "ng-model": "user.id_tn", "ng-disabled": "edit.dept.workplace_count_id"
+              = text_field_tag "user[tn]", "", class: "form-control", "ng-model": "user.tn", "ng-disabled": "edit.dept.workplace_count_id && user.id"
             td 
-              = text_field_tag "user[fullanme]", "", class: "form-control", "ng-model": "user.fullname", "ng-disabled": "edit.dept.workplace_count_id"
+              = text_field_tag "user[fullanme]", "", class: "form-control", "ng-model": "user.fullname", "ng-disabled": "true"
             td.col-sm-5 
               = text_field_tag "user[phone]", "", class: "form-control", "ng-model": "user.phone"
             td 
-              span class='glyphicon glyphicon-minus-sign'
-      pre
-        | {{ edit.dept | json }}
+              i class="fa fa-minus-circle" ng-click="edit.deleteResponsible($index)" uib-tooltip="Удалить ответственного" class="pointer"
     .modal-footer
       = button_tag "Готово", class: "btn-success btn-sm", "ng-click": "edit.save()"
       = button_tag "Закрыть", class: "btn-default btn-sm", "ng-click": "edit.close()"
