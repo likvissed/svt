@@ -9,6 +9,7 @@ module Warehouse
       consumer_dept { inv_workplace.try(:division) }
       comment ''
       skip_validator true
+      invent_num 123
 
       transient do
         without_operations false

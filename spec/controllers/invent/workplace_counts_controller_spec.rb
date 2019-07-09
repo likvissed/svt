@@ -78,93 +78,31 @@ module Invent
     end
 
     describe 'POST #create ' do
-      let(:user_id) { WorkplaceCount.last.workplace_responsibles.first.user_id }
-      let(:user_attr) { User.find(user_id) }
-      let(:user_iss_attr) { UserIss.find_by(tn: user.tn) }
+      let(:workplace_count) { attributes_for(:active_workplace_count) }
+      let(:params) { { workplace_count: workplace_count } }
 
-      shared_examples 'increments workplace_count' do
-        it 'increments count of workplace_count' do
-          expect { post :create, params: params }.to change(WorkplaceCount, :count).by(1)
+      it 'calls :run method' do
+        expect_any_instance_of(WorkplaceCounts::Create).to receive(:run)
+        post :create, params: params
+      end
+
+      context 'when method :run returns true' do
+        before { allow_any_instance_of(WorkplaceCounts::Create).to receive(:run).and_return(true) }
+
+        it 'response with success status' do
+          post :create, params: params
+
+          expect(response.status).to eq(200)
         end
       end
 
-      shared_examples 'users_attributes empty' do
-        let(:workplace_count_error) { attributes_for(:active_workplace_count) }
+      context 'when method :run returns false' do
+        before { allow_any_instance_of(WorkplaceCounts::Create).to receive(:run).and_return(false) }
 
-        it 'response with error status 422' do
-          post :create, params: { workplace_count: workplace_count_error }
+        it 'response with error status' do
+          post :create, params: params
 
           expect(response.status).to eq(422)
-        end
-      end
-
-      shared_examples 'user phone is changing' do
-        context 'when the phone is entered manually' do
-          before { allow(user).to receive(:phone).and_return('50-30') }
-
-          it 'changes phone in User' do
-            post :create, params: params
-
-            expect(user.phone).to eq User.find_by(tn: user.tn).phone
-          end
-        end
-
-        context 'when phone is empty' do
-          before { allow(user).to receive(:phone).and_return(nil) }
-
-          it 'the phone is taken from UserIss' do
-            post :create, params: params
-
-            expect(User.find_by(tn: user.tn).phone).to eq UserIss.find_by(tn: user.tn).tel
-          end
-        end
-      end
-
-      shared_examples 'attributes id_tn and fullname' do
-        it 'creates user with attribute id_tn' do
-          post :create, params: params
-
-          expect(user_attr.id_tn).to eq user_iss_attr.id_tn
-        end
-
-        it 'creates user with attribute fullname' do
-          post :create, params: params
-
-          expect(user_attr.fullname).to eq user_iss_attr.fio
-        end
-      end
-
-      context 'when creates workplace_count with new user' do
-        let(:user) { build(:***REMOVED***_user) }
-        let(:workplace_count) { attributes_for(:active_workplace_count, users_attributes: [user.as_json], user_ids: ['']) }
-        let(:params) { { workplace_count: workplace_count } }
-
-        include_examples 'increments workplace_count'
-        include_examples 'users_attributes empty'
-        include_examples 'user phone is changing'
-        include_examples 'attributes id_tn and fullname'
-
-        it 'creates user with role :***REMOVED***_user' do
-          post :create, params: params
-
-          expect(user_attr.role_id).to eq Role.find_by(name: '***REMOVED***_user').id
-        end
-      end
-
-      context 'when creates workplace_count with exists user' do
-        let(:user) { create(:***REMOVED***_user) }
-        let(:workplace_count) { attributes_for(:active_workplace_count, users_attributes: [user.as_json], user_ids: ['']) }
-        let(:params) { { workplace_count: workplace_count } }
-
-        include_examples 'increments workplace_count'
-        include_examples 'users_attributes empty'
-        include_examples 'user phone is changing'
-        include_examples 'attributes id_tn and fullname'
-
-        it 'does not change Id user' do
-          post :create, params: params
-
-          expect(user_id).to eq user.id
         end
       end
     end

@@ -39,8 +39,9 @@ script type="text/ng-template" id="EditWorkplaceCounts.slim"
               = text_field_tag "user[fullanme]", "", class: "form-control", "ng-model": "user.fullname", "ng-disabled": "true"
             td.col-sm-5 
               = text_field_tag "user[phone]", "", class: "form-control", "ng-model": "user.phone"
-            td 
-              i class="fa fa-minus-circle" ng-click="edit.deleteResponsible($index)" uib-tooltip="Удалить ответственного" class="pointer"
+            td
+              h4 
+                i class="fa fa-minus-circle" ng-click="edit.deleteResponsible($index)" uib-tooltip="Удалить ответственного" class="pointer"
     .modal-footer
       = button_tag "Готово", class: "btn-success btn-sm", "ng-click": "edit.save()"
       = button_tag "Закрыть", class: "btn-default btn-sm", "ng-click": "edit.close()"

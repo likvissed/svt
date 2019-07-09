@@ -4,6 +4,8 @@ module Invent
       def initialize(workplace_count_id, workplace_count_params)
         @workplace_count_id = workplace_count_id
         @workplace_count_params = workplace_count_params
+
+        super
       end
 
       def run
@@ -44,9 +46,9 @@ module Invent
       def update_workplace_count
         return true if @workplace_count.update_attributes(@workplace_count_params)
         # Сбор ошибок
-        @error = {}
-        @error[:object] = @workplace_count.errors
-        @error[:full_message] = @workplace_count.errors.full_messages.join('. ')
+
+        error[:object] = @workplace_count.errors
+        error[:full_message] = @workplace_count.errors.full_messages.join('. ')
         raise 'Данные не обновлены'
       end
     end

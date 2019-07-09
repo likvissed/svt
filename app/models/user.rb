@@ -12,9 +12,10 @@ class User < ApplicationRecord
   belongs_to :role
   belongs_to :user_iss, foreign_key: 'id_tn'
 
-  validates :tn, presence: true, uniqueness: true
+  validates :tn, numericality: { only_integer: true }, presence: true, uniqueness: true, reduce: true
   validates :role, presence: true
   # validates :id_tn, uniqueness: { message: :tn_already_exists }
+  validate :user_not_found, if: -> { errors.details.empty? }
 
   after_validation :replace_nil
   before_save :truncate_phone
@@ -64,6 +65,11 @@ class User < ApplicationRecord
   # Проверяет, в системе ли пользователь
   def online?
     updated_at > self.class.online_time && sign_in_count.positive?
+  end
+
+  def user_not_found
+    return if UserIss.find_by(tn: tn)
+    errors.add(:tn, :user_not_found, tn: tn)
   end
 
   protected

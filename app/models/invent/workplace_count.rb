@@ -19,7 +19,5 @@ module Invent
     def add_at_least_one_responsible
       errors.add(:base, :add_at_least_one_responsible)
     end
-
-    # Rails.logger.info "user #{data}".red
   end
 end

@@ -68,38 +68,19 @@ module Invent
     end
 
     def create
-      if workplace_count_params.key?('users_attributes')
-        data = workplace_count_params
-        data[:users_attributes].each do |user_attr|
-          user = UserIss.find_by(tn: user_attr['tn'])
-          user_attr[:role_id] = Role.find_by(name: '***REMOVED***_user').id
-          next unless user
+      create_workplace_count = WorkplaceCounts::Create.new(workplace_count_params)
 
-          user_attr[:id] = User.find_by(tn: user_attr['tn']).try(:id)
-          data[:user_ids].push(user_attr[:id])
-          user_attr[:id_tn] = user.id_tn
-          user_attr[:fullname] = user.fio
-
-          user_attr[:phone] = user_attr[:phone].blank? ? user.tel : user_attr[:phone]
-        end
-      end
-
-      create_workplace_count = WorkplaceCount.new(data)
-
-      if create_workplace_count.save
+      if create_workplace_count.run
         render json: create_workplace_count
       else
-        error = {}
-        error[:object] = create_workplace_count.errors
-        error[:full_message] = create_workplace_count.errors.full_messages.join('. ')
-
-        render json: error, status: 422
+        Rails.logger.info "err #{create_workplace_count.error}".red
+        render json: create_workplace_count.error, status: 422
       end
     end
 
     def update
       update_workplace_count = WorkplaceCounts::Update.new(params[:workplace_count_id], workplace_count_params)
-      Rails.logger.info "update_workplace_count #{update_workplace_count.inspect}".green
+
       if update_workplace_count.run
         render json: update_workplace_count
       else
