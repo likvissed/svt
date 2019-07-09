@@ -23,7 +23,6 @@ module Invent
         subject.valid?
         expect(subject.errors.details[:base]).to include(error: :add_at_least_one_responsible)
       end
-
     end
 
     context 'when users is present' do

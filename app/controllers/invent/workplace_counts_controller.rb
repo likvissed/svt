@@ -71,9 +71,8 @@ module Invent
       create_workplace_count = WorkplaceCounts::Create.new(workplace_count_params)
 
       if create_workplace_count.run
-        render json: create_workplace_count
+        render json: { full_message: I18n.t('controllers.invent/workplace_count.created', dept: workplace_count_params[:division]) }
       else
-        Rails.logger.info "err #{create_workplace_count.error}".red
         render json: create_workplace_count.error, status: 422
       end
     end
@@ -82,7 +81,7 @@ module Invent
       update_workplace_count = WorkplaceCounts::Update.new(params[:workplace_count_id], workplace_count_params)
 
       if update_workplace_count.run
-        render json: update_workplace_count
+        render json: { full_message: I18n.t('controllers.invent/workplace_count.updated', dept: workplace_count_params[:division]) }
       else
         render json: update_workplace_count.error, status: 422
       end
@@ -92,7 +91,7 @@ module Invent
       delete_workplace_count = WorkplaceCount.find(params[:workplace_count_id])
 
       if delete_workplace_count.destroy
-        render json: delete_workplace_count
+        render json: { full_message: I18n.t('controllers.invent/workplace_count.destroyed') }
       else
         error = {}
         error[:full_message] = delete_workplace_count.errors.full_messages.join('. ')

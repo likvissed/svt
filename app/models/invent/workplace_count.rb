@@ -13,7 +13,7 @@ module Invent
     scope :responsible_fullname, ->(responsible_fullname) { left_outer_joins(:users).where('fullname LIKE ?', "%#{responsible_fullname}%") }
 
     validates :division, :time_start, :time_end, presence: true
-    validates :division, uniqueness: true, numericality: { only_integer: true }
+    validates :division, uniqueness: true, numericality: { only_integer: true }, reduce: true
     validate :add_at_least_one_responsible, if: -> { users.blank? && workplace_responsibles.blank? }
 
     def add_at_least_one_responsible

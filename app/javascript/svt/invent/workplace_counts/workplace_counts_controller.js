@@ -6,9 +6,9 @@ import { app } from '../../app/app';
 
 app.controller('WorkplaceCountsController', WorkplaceCountsController);
 
-WorkplaceCountsController.$inject = ['$http', 'TablePaginator', 'Config', '$uibModal', 'Error'];
+WorkplaceCountsController.$inject = ['$http', 'TablePaginator', 'Config', '$uibModal', 'Error', 'Flash'];
 
-function WorkplaceCountsController($http, TablePaginator, Config, $uibModal, Error) {
+function WorkplaceCountsController($http, TablePaginator, Config, $uibModal, Error, Flash) {
   this.$http = $http;
   this.Error = Error;
   this.TablePaginator = TablePaginator;
@@ -16,6 +16,7 @@ function WorkplaceCountsController($http, TablePaginator, Config, $uibModal, Err
   this.pagination = TablePaginator.config();
   this.loadWorkplaceCounts();
   this.$uibModal = $uibModal;
+  this.Flash = Flash;
 }
 
 // Загрузить список отделов  < index >
@@ -83,7 +84,8 @@ WorkplaceCountsController.prototype.deleteDept = function (dept) {
     this.$http.delete(`/invent/workplace_counts/ ${dept.workplace_count_id}.json`, {
       workplace_count: dept.workplace_count_id,
     }).then(
-      () => {
+      (response) => {
+        this.Flash.notice(response.data.full_message);
         this.loadWorkplaceCounts();
       },
       response => this.errorCallback(response),

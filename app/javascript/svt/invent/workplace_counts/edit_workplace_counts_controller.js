@@ -8,9 +8,9 @@ import { FormValidationController } from '../../shared/functions/form-validation
 
 app.controller('EditWorkplaceCountsController', EditWorkplaceCountsController);
 
-EditWorkplaceCountsController.$inject = ['$uibModalInstance', 'dept', '$http', 'Error'];
+EditWorkplaceCountsController.$inject = ['$uibModalInstance', 'dept', '$http', 'Error', 'Flash'];
 
-function EditWorkplaceCountsController($uibModalInstance, dept, $http, Error) {
+function EditWorkplaceCountsController($uibModalInstance, dept, $http, Error, Flash) {
   this.setFormName('dept');
   this.$http = $http;
   this.Error = Error;
@@ -20,6 +20,7 @@ function EditWorkplaceCountsController($uibModalInstance, dept, $http, Error) {
     DatePickerStart: false,
     DatePickerEnd: false,
   };
+  this.Flash = Flash;
 }
 // Унаследовать методы класса FormValidationController
 EditWorkplaceCountsController.prototype = Object.create(FormValidationController.prototype);
@@ -30,7 +31,8 @@ EditWorkplaceCountsController.prototype.save = function () {
     this.$http.put(`/invent/workplace_counts/${this.dept.workplace_count_id}.json`, {
       workplace_count: this.dept,
     }).then(
-      () => {
+      (response) => {
+        this.Flash.notice(response.data.full_message);
         this.$uibModalInstance.close();
       },
       (response, status) => {
@@ -43,7 +45,8 @@ EditWorkplaceCountsController.prototype.save = function () {
     this.$http.post('/invent/workplace_counts.json', {
       workplace_count: this.dept,
     }).then(
-      () => {
+      (response) => {
+        this.Flash.notice(response.data.full_message);
         this.$uibModalInstance.close();
       },
       (response, status) => {
