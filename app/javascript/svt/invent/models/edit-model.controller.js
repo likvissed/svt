@@ -20,7 +20,7 @@ import { FormValidationController } from '../../shared/functions/form-validation
     this.model = Model.model;
     this.types = Model.types;
     this.vendors = angular.copy(Vendors.vendors);
-
+    
     this._createModelPropertyListGetterSetter();
     this._addInitialValues();
   }
@@ -62,6 +62,7 @@ import { FormValidationController } from '../../shared/functions/form-validation
       type.properties.forEach((prop) => {
         if (!prop.property_lists) { return true; }
 
+        prop.property_lists.unshift(angular.copy(this.Model.toSelect.not_fixed));
         prop.property_lists.unshift(angular.copy(this.Model.toSelect.attr));
       });
     });

@@ -13,7 +13,7 @@ import { app } from '../../app/app';
     this.Config = Config;
     this.Flash = Flash;
     this.Error = Error;
-
+  
     this.toSelect = {
       type: {
         type_id: null,
@@ -26,7 +26,8 @@ import { app } from '../../app/app';
       attr: {
         property_list_id: null,
         short_description: 'Выберите аттрибут'
-      }
+      },
+      not_fixed: {}
     };
   }
 
@@ -36,6 +37,7 @@ import { app } from '../../app/app';
   };
 
   Model.prototype._initModel = function(data) {
+    this.toSelect.not_fixed = data.property_list_not_fixed;
     this.model = data.model;
     this.model.type = this.model.type_id ? data.types.find((el) => el.type_id == this.model.type_id) : this.toSelect.type;
     this.model.model_property_lists_attributes = data.model.model_property_lists_attributes || [];

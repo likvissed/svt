@@ -28,6 +28,8 @@ module Invent
       end
 
       def prepare_to_render
+        data[:property_list_not_fixed] = PropertyList.find_by(value: 'not_fixed')
+
         data[:model]['model_property_lists_attributes'] = data[:model]['model_property_lists']
         data[:model]['model_property_lists_attributes'].each do |prop_list|
           prop_list['id'] = prop_list['model_property_list_id']
