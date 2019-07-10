@@ -55,9 +55,14 @@ module Invent
 
           prepare_workplace
         else
+          Rails.logger.info "error: #{@workplace.items.inspect}".red
           workplace_errors = @workplace.errors.full_messages
-          operation_errors = @workplace.items.map { |item| item.errors.full_messages }
-          error[:full_message] = [workplace_errors, operation_errors].flatten.join('. ')
+          operation_errors = @workplace.items.map { |item| item.errors.full_messages}
+
+          # было так:
+          # error[:full_message] = [workplace_errors, operation_errors].flatten.join('. ')
+          error[:full_message] = [workplace_errors].flatten.join('. ')
+
           raise 'Данные не обновлены'
         end
       end

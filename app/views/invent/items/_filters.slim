@@ -88,7 +88,7 @@
     "ng-change": "table.changeFilter()", "ng-model-options": "{ debounce: 300 }"
 .col-sm-4.col-md-5.col-lg-3.col-xlg-3.col-fhd-2.multiline-buffer
   = text_field_tag "", "", class: "form-control input-sm", placeholder: "Инвентарный №", "ng-model": "table.selected.invent_num",
-     "ng-model-options": "{ debounce: 300 }", "ng-change": "table.changeFilter()"
+    "ng-model-options": "{ debounce: 300 }", "ng-change": "table.changeFilter()"
 .col-sm-4.col-md-5.col-lg-3.col-xlg-4.col-fhd-3.multiline-buffer
   div{ ng-dropdown-multiselect="" options="table.filters.statuses" selected-model="table.selected.for_statuses" extra-settings="table.statusFilter.settings"
     translation-texts="table.statusFilter.translations" events="table.statusFilter.events" }
@@ -122,3 +122,14 @@
     "ng-options": "priority as translated for (priority, translated) in table.filters.priorities"
 .col-sm-5.col-md-5.col-lg-3.col-xlg-2.col-fhd-2.multiline-buffer
   = button_tag "Батареи", type: :button, class: "btn btn-default btn-sm btn-block", "ng-click": "table.getBatteryStat()"
+.col-sm-5.col-md-4.col-xlg-3.col-fhd-2.multiline-buffer
+  .input-group.input-group-sm.form-input-sm.multiline-select
+    ui-select ng-model="table.selected.division" on-select="table.changeFilter()" theme="bootstrap"
+      ui-select-match placeholder="Отдел"
+        | {{ $select.selected.division }}
+      ui-select-choices repeat="obj in table.filters.divisions | filter: $select.search"
+        div ng-bind-html="obj.division | highlight: $select.search"
+    span.input-group-btn
+      = button_tag type: :button, class: "btn-default", "ng-click": "table.selected.division = ''; table.changeFilter()",
+        "uib-tooltip": "Очистить", "tooltip-append-to-body": true, "ng-disabled": "!table.selected.division" do
+        = fa_icon "times"

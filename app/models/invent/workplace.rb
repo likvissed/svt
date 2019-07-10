@@ -100,8 +100,10 @@ module Invent
         rm_net_print_verification(count_all_types, total_count)
       when 'rm_server'
         rm_server_verification(count_all_types)
+      when 'rm_equipment'
+        rm_equipment_verification(count_all_types)
       else
-        errors.add(:base, 'Неизвестнй тип рабочего места')
+        errors.add(:base, 'Неизвестный тип рабочего места')
       end
     end
 
@@ -230,6 +232,14 @@ module Invent
       errors.add(:base, :rm_server_forbid_notebook_and_tablet) if (count_all_types['notebook'] + count_all_types['tablet']) >= 1
       errors.add(:base, :rm_server_at_least_one_pc_or_allin1) if count_all_types['pc'].zero? && count_all_types['allin1'].zero?
       errors.add(:base, :rm_server_forbid_net_printer) if net_printer
+    end
+
+    # Для оборудования обязательно должна быть - хотя бы одина техника
+    def rm_equipment_verification(count_all_types)
+      return if count_all_types.any? { |_type, value| !value.zero? }
+
+      errors.add(:base, :wrong_rm_equipment_composition)
+      errors.add(:base, :rm_equipment_at_least_one_equipment)
     end
 
     # Проверка, пытается ли пользователь создать сетевой принтер.

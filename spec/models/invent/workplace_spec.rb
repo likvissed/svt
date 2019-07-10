@@ -535,5 +535,30 @@ module Invent
         its(:status_freezed?) { is_expected.to be_falsey }
       end
     end
+
+    describe '#rm_equipment_verification' do
+      context 'when :items present' do
+        subject { build(:workplace, :add_items, items: [:allin1], workplace_type: WorkplaceType.find_by(name: 'rm_equipment')) }
+
+        it 'save workplace' do
+          expect(subject).to be_valid
+        end
+      end
+      context 'when :items absence' do
+        subject { build(:workplace, workplace_type: WorkplaceType.find_by(name: 'rm_equipment')) }
+
+        it 'not save workplace - error :wrong_rm_equipment_composition' do
+          subject.invalid?
+
+          expect(subject.errors.details[:base]).to include(error: :wrong_rm_equipment_composition)
+        end
+
+        it 'not save workplace - error :rm_equipment_at_least_one_equipment' do
+          subject.invalid?
+
+          expect(subject.errors.details[:base]).to include(error: :rm_equipment_at_least_one_equipment)
+        end
+      end
+    end
   end
 end
