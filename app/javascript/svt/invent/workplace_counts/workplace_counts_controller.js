@@ -1,8 +1,7 @@
-
 import { app } from '../../app/app';
 
-// (function () {
-// 'use strict';
+(function () {
+'use strict';
 
 app.controller('WorkplaceCountsController', WorkplaceCountsController);
 
@@ -28,25 +27,21 @@ WorkplaceCountsController.prototype.loadWorkplaceCounts = function () {
       filters: this.filters,
     },
   }).then(
-    data => this.successCallback(data),
-    data => this.errorCallback(data),
+    (response) => {
+      this.divisions = response.data.array;
+      this.TablePaginator.setData(response.data);
+    },
+    (response) => {
+      this.Error.response(response, response.status);
+    },
   );
-};
-
-WorkplaceCountsController.prototype.successCallback = function (response) {
-  this.divisions = response.data.array;
-  this.TablePaginator.setData(response.data);
-};
-
-WorkplaceCountsController.prototype.errorCallback = function (response) {
-  this.Error.response(response, response.status);
 };
 
 // Загрузить данные отделов  < edit >
 WorkplaceCountsController.prototype.editWorkplaceCounts = function (workplaceCountId) {
   this.$http.get(`/invent/workplace_counts/${workplaceCountId}/edit.json`).then(
     data => this.openEditWorkplaceCounts(data.data),
-    data => this.errorCallback(data),
+    data => this.Error.response(data, data.status),
   );
 };
 
@@ -71,13 +66,12 @@ WorkplaceCountsController.prototype.openEditWorkplaceCounts = function (dept) {
 WorkplaceCountsController.prototype.newEditWorkplaceCounts = function () {
   this.$http.get('/invent/workplace_counts/new').then(
     data => this.openEditWorkplaceCounts(data.data),
-    data => this.errorCallback(data),
+    data => this.Error.response(data, data.status),
   );
 };
 
 // Удалить отдел  < destroy >
 WorkplaceCountsController.prototype.deleteDept = function (dept) {
-  // const question = confirm(`Вы действительно хотите удалить отдел «${dept.division}»?`);
   const question = `Вы действительно хотите удалить отдел «${dept.division}»?`;
 
   if (confirm(question)) {
@@ -88,14 +82,12 @@ WorkplaceCountsController.prototype.deleteDept = function (dept) {
         this.Flash.notice(response.data.full_message);
         this.loadWorkplaceCounts();
       },
-      response => this.errorCallback(response),
+      response => this.Error.response(response, response.status),
     );
   }
 };
 
-// Поиск
 WorkplaceCountsController.prototype.search = function () {
   this.loadWorkplaceCounts();
 };
-
-// })();
+})();

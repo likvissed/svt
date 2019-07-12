@@ -15,8 +15,7 @@
           table.table.table-striped.table-condensed
             thead
               tr
-                th 
-                  |   Отдел
+                th Отдел
                 th Ответственный
                 th Телефон
                 th Время доступа
@@ -33,8 +32,8 @@
                 td ng-bind="dept.user_phone"
                 td ng-bind="dept.user_time"
                 td  
-                  span class='label label-success' ng-bind="dept.status_name" ng-if="dept.status_name  == 'Доступ открыт'"
-                  span class="label label-warning" ng-bind="dept.status_name" ng-if="dept.status_name  == 'Доступ закрыт'"
+                  span class='label label-success' ng-bind="dept.status_name" ng-if="dept.status_name == 'Доступ открыт'"
+                  span class="label label-warning" ng-bind="dept.status_name" ng-if="dept.status_name == 'Доступ закрыт'"
                 td.text-center ng-bind="dept.pending_verification"
                 td.text-center ng-bind="dept.confirmed"
                 td.text-center ng-bind="dept.freezed"

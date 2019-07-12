@@ -15,7 +15,7 @@ class User < ApplicationRecord
   validates :tn, numericality: { only_integer: true }, presence: true, uniqueness: true, reduce: true
   validates :role, presence: true
   # validates :id_tn, uniqueness: { message: :tn_already_exists }
-  validate :user_not_found, if: -> { errors.details.empty? }
+  validate :presence_user_in_user_iss, if: -> { errors.details.empty? }
 
   after_validation :replace_nil
   before_save :truncate_phone
@@ -67,8 +67,9 @@ class User < ApplicationRecord
     updated_at > self.class.online_time && sign_in_count.positive?
   end
 
-  def user_not_found
+  def presence_user_in_user_iss
     return if UserIss.find_by(tn: tn)
+
     errors.add(:tn, :user_not_found, tn: tn)
   end
 

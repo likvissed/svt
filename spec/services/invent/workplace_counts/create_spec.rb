@@ -3,6 +3,7 @@ require 'feature_helper'
 module Invent
   module WorkplaceCounts
     RSpec.describe Create, type: :model do
+      let!(:current_user) { create(:user) }
       let(:user_new) { build(:***REMOVED***_user) }
       let(:workplace_count_params) { build(:active_workplace_count).as_json }
       before do
@@ -10,7 +11,7 @@ module Invent
         workplace_count_params[:users_attributes] = [user_new.as_json]
       end
 
-      subject { Create.new(workplace_count_params) }
+      subject { Create.new(current_user, workplace_count_params) }
 
       context 'when created valid workplace_count' do
         it 'increments count of workplace_count' do

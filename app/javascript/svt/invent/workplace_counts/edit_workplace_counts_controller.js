@@ -1,10 +1,8 @@
-
-
 import { app } from '../../app/app';
 import { FormValidationController } from '../../shared/functions/form-validation';
 
-// (function() {
-// 'use strict';
+(function() {
+'use strict';
 
 app.controller('EditWorkplaceCountsController', EditWorkplaceCountsController);
 
@@ -16,7 +14,9 @@ function EditWorkplaceCountsController($uibModalInstance, dept, $http, Error, Fl
   this.Error = Error;
   this.$uibModalInstance = $uibModalInstance;
   this.dept = dept;
-  this.date = { // Открыть календарь для выбора даты
+  
+  // Открыть календарь для выбора даты
+  this.date = { 
     DatePickerStart: false,
     DatePickerEnd: false,
   };
@@ -24,6 +24,7 @@ function EditWorkplaceCountsController($uibModalInstance, dept, $http, Error, Fl
 }
 // Унаследовать методы класса FormValidationController
 EditWorkplaceCountsController.prototype = Object.create(FormValidationController.prototype);
+EditWorkplaceCountsController.prototype.constructor = EditWorkplaceCountsController;
 
 EditWorkplaceCountsController.prototype.save = function () {
   if (this.dept.workplace_count_id) {
@@ -79,5 +80,4 @@ EditWorkplaceCountsController.prototype.deleteResponsible = function (index) {
   // удалить один элемент массива, начиная с index
   this.dept.users_attributes.splice(index, 1);
 };
-
-// })();
+})();

@@ -1,7 +1,8 @@
 module Invent
   module WorkplaceCounts
     class Create < Invent::ApplicationService
-      def initialize(workplace_count_params)
+      def initialize(current_user, workplace_count_params)
+        @current_user = current_user
         @workplace_count_params = workplace_count_params
 
         super
@@ -33,12 +34,13 @@ module Invent
           user_attr[:id_tn] = user.id_tn
           user_attr[:fullname] = user.fio
 
-          user_attr[:phone] = user_attr[:phone].blank? ? user.tel : user_attr[:phone]
+          user_attr[:phone] = user_attr[:phone].presence || user.tel
         end
       end
 
       def save_workplace_count
         workplace_count = WorkplaceCount.new(@workplace_count_params)
+        authorize workplace_count, :create?
 
         return true if workplace_count.save
 

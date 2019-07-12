@@ -47,7 +47,7 @@ module Invent
       end
     end
 
-    describe 'GET #edit ' do
+    describe 'GET #edit' do
       let(:user) { create(:***REMOVED***_user) }
       let!(:workplace_count) { create(:active_workplace_count, users: [user]) }
       let(:params) { { workplace_count_id: workplace_count.workplace_count_id } }
@@ -67,7 +67,7 @@ module Invent
       end
     end
 
-    describe 'GET #new ' do
+    describe 'GET #new' do
       %w[user_ids users_attributes].each do |attr|
         it "includes the filed '#{attr}'" do
           get :new
@@ -77,7 +77,7 @@ module Invent
       end
     end
 
-    describe 'POST #create ' do
+    describe 'POST #create' do
       let(:workplace_count) { attributes_for(:active_workplace_count) }
       let(:params) { { workplace_count: workplace_count } }
 

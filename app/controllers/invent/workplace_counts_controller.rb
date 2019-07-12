@@ -1,5 +1,7 @@
 module Invent
   class WorkplaceCountsController < ApplicationController
+    before_action :check_access, except: :generate_pdf
+
     def index
       respond_to do |format|
         format.html
@@ -40,7 +42,7 @@ module Invent
                                         division['user_time'] = division['time_start'].strftime('%d.%m.%Y') + ' - ' + division['time_end'].strftime('%d.%m.%Y')
 
                                         # Проверка статуса (Доступ открыт или закрыт)
-                                        division['status_name'] = division['time_start'] <= Time.zone.now && Time.zone.now <= division['time_end'] ? 'Доступ открыт' : 'Доступ закрыт'
+                                        division['status_name'] = Time.zone.now.between?(division['time_start'], division['time_end']) ? 'Доступ открыт' : 'Доступ закрыт'
 
                                         division.delete('users')
                                       end
@@ -51,6 +53,7 @@ module Invent
 
     def edit
       edit_workplace_count = WorkplaceCount.find(params[:workplace_count_id]).as_json(include: :users)
+
       edit_workplace_count['user_ids'] = []
       edit_workplace_count['users_attributes'] = edit_workplace_count['users']
       edit_workplace_count.delete('users')
@@ -68,7 +71,7 @@ module Invent
     end
 
     def create
-      create_workplace_count = WorkplaceCounts::Create.new(workplace_count_params)
+      create_workplace_count = WorkplaceCounts::Create.new(current_user, workplace_count_params)
 
       if create_workplace_count.run
         render json: { full_message: I18n.t('controllers.invent/workplace_count.created', dept: workplace_count_params[:division]) }
@@ -78,7 +81,7 @@ module Invent
     end
 
     def update
-      update_workplace_count = WorkplaceCounts::Update.new(params[:workplace_count_id], workplace_count_params)
+      update_workplace_count = WorkplaceCounts::Update.new(current_user, params[:workplace_count_id], workplace_count_params)
 
       if update_workplace_count.run
         render json: { full_message: I18n.t('controllers.invent/workplace_count.updated', dept: workplace_count_params[:division]) }
@@ -89,13 +92,25 @@ module Invent
 
     def destroy
       delete_workplace_count = WorkplaceCount.find(params[:workplace_count_id])
+      authorize delete_workplace_count, :destroy?
 
       if delete_workplace_count.destroy
         render json: { full_message: I18n.t('controllers.invent/workplace_count.destroyed') }
       else
-        error = {}
-        error[:full_message] = delete_workplace_count.errors.full_messages.join('. ')
-        render json: error, status: 422
+        render json: { full_message: delete_workplace_count.errors.full_messages.join('. ') }, status: 422
+      end
+    end
+
+    def generate_pdf
+      @division_report = WorkplaceCounts::DivisionReport.new(current_user, params[:division])
+
+      if @division_report.run
+        send_data @division_report.data.read,
+                  filename: "#{params[:division]}.rtf",
+                  type: 'application/rtf',
+                  disposition: 'attachment'
+      else
+        render json: { full_message: I18n.t('controllers.app.unprocessable_entity') }, status: 422
       end
     end
 
@@ -108,15 +123,19 @@ module Invent
         :time_start,
         :time_end,
         user_ids: [],
-        users_attributes: [
-          :id,
-          :id_tn,
-          :tn,
-          :fullname,
-          :phone,
-          :role_id
+        users_attributes: %i[
+          id
+          id_tn
+          tn
+          fullname
+          phone
+          role_id
         ]
       )
+    end
+
+    def check_access
+      authorize %i[invent workplace_count], :ctrl_access?
     end
   end
 end

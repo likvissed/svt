@@ -36,14 +36,14 @@ RSpec.describe User, type: :model do
     end
   end
 
-  describe '#user_not_found' do
+  describe '#presence_user_in_user_iss' do
     let(:tn) { 123_123_123_123 }
 
     context 'when array of errors is present' do
       before { subject.tn = tn }
 
-      it 'does not call method :user_not_found' do
-        expect(subject).not_to receive(:user_not_found)
+      it 'does not call method :presence_user_in_user_iss' do
+        expect(subject).not_to receive(:presence_user_in_user_iss)
 
         subject.valid?
       end

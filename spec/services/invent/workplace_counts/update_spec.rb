@@ -3,7 +3,8 @@ require 'feature_helper'
 module Invent
   module WorkplaceCounts
     RSpec.describe Update, type: :model do
-      let(:user) { build(:***REMOVED***_user) }
+      let!(:current_user) { create(:user) }
+      let(:new_user) { build(:***REMOVED***_user) }
       let(:workplace_count) do
         wc = build(:active_workplace_count)
         wc.save(validate: false)
@@ -11,9 +12,9 @@ module Invent
       end
       before do
         workplace_count[:user_ids] = []
-        workplace_count[:users_attributes] = [user.as_json]
+        workplace_count[:users_attributes] = [new_user.as_json.symbolize_keys]
       end
-      subject { Update.new(workplace_count['workplace_count_id'], workplace_count) }
+      subject { Update.new(current_user, workplace_count['workplace_count_id'], workplace_count) }
 
       describe '#run' do
         context 'with valid workplace_count params' do
@@ -54,6 +55,16 @@ module Invent
           it 'returns false' do
             expect(subject.run).to be false
           end
+        end
+
+        context 'when adds new user' do
+          include_examples 'user phone is changing'
+        end
+
+        context 'when adds present user' do
+          let(:new_user) { create(:***REMOVED***_user) }
+
+          include_examples 'user phone is changing'
         end
       end
     end
