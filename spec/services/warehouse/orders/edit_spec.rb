@@ -38,6 +38,10 @@ module Warehouse
         it 'adds consumer key' do
           expect(subject.data[:order]['consumer']).to eq subject.data[:order]['consumer_fio']
         end
+
+        it 'adds fio_user_iss key' do
+          expect(subject.data[:order]['fio_user_iss']).to eq order.inv_workplace.user_iss.fio
+        end
       end
 
       context 'when :check_unreg flag is set' do
@@ -75,6 +79,16 @@ module Warehouse
           it 'sets nil value to :unreg variable' do
             subject.run
             expect(subject.data[:order]['operations_attributes'].first['unreg']).to be_nil
+          end
+        end
+
+        context 'when inv_workplace absence' do
+          let(:order) { create(:order) }
+
+          it 'sets nil value to :fio_user_iss variable' do
+            subject.run
+
+            expect(subject.data[:order]['fio_user_iss']).to be_nil
           end
         end
       end

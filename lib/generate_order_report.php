@@ -109,7 +109,7 @@ if (!empty($invent_params)) {
 if (!empty($warehouse_params)) {
   $query = "
   SELECT
-    warehouse_orders.invent_num AS order_num, warehouse_orders.request_num, warehouse_operations.*, iss_reference_buildings.name as building, iss_reference_rooms.name as room, invent_workplace_count.division as division, netadmin.user_iss.tel
+    warehouse_orders.invent_num AS order_num, warehouse_orders.request_num, warehouse_operations.*, iss_reference_buildings.name as building, iss_reference_rooms.name as room, invent_workplace_count.division as division, netadmin.user_iss.tel, netadmin.user_iss.fio
   FROM
     warehouse_orders
   INNER JOIN
@@ -232,6 +232,8 @@ foreach($sql_warehouse_data as $row_data) {
     $common_data['division'] = $row_data['division'];
   if (!$common_data['tel'])
     $common_data['tel'] = $row_data['tel'];
+  if (!$common_data['fio'])
+    $common_data['fio'] = $row_data['fio'];
 
   array_push($result, $obj);
 }
@@ -372,7 +374,7 @@ foreach($result as $data) {
 $section->writeText('', $font, $tableFormat);
 
 $table = $section->addTable();
-$table->addRows(4, 1);
+$table->addRows(5, 1);
 $table->addColumnsList(array(10.6, 7.3));
 
 $cell = $table->getCell(1, 2);
@@ -384,9 +386,11 @@ $table->writeToCell(1, 1, 'Корпус ' . $common_data['building'], $footer_fo
 $table->writeToCell(1, 2, 'Комната ' . $common_data['room'], $footer_font);
 $table->writeToCell(2, 1, 'Подразделение ' . $common_data['division'], $footer_font);
 $table->writeToCell(2, 2, 'Телефон ' . $common_data['tel'], $footer_font);
-$table->writeToCell(3, 1, 'Фамилия ' . get_fio($sql_consumer_data[0]['fio']), $footer_font);
+$table->writeToCell(3, 1, 'Ответственный: ' . get_fio($common_data['fio']), $footer_font);
 $table->writeToCell(3, 2, 'Подпись  _____________________', $footer_font);
-$table->writeToCell(4, 2, $date, $footer_font);
+$table->writeToCell(4, 1, 'Получающий: ' . get_fio($sql_consumer_data[0]['fio']), $footer_font);
+$table->writeToCell(4, 2, 'Подпись  _____________________', $footer_font);
+$table->writeToCell(5, 2, $date, $footer_font);
 // $table->writeToCell(4, 2, '"_____" ________________ 20 г.', $footer_font);
 
 $rtf->sendRtf($dept);

@@ -103,9 +103,11 @@ module Warehouse
               op.delete('inv_items')
               op.delete('inv_item_ids')
               op.delete('formatted_date')
+              op.delete('invent_num_order')
             end
 
             edit.data[:order].delete('consumer_obj')
+            edit.data[:order].delete('fio_user_iss')
             edit.data[:order]
           end
           before do
@@ -120,8 +122,9 @@ module Warehouse
       end
 
       context 'when operation is :write_off' do
+        let(:user) { create(:shatunova_user) }
         let!(:w_item) { create(:used_item, inv_item: inv_item) }
-        subject { CreateByInvItem.new(current_user, inv_item, :write_off) }
+        subject { CreateByInvItem.new(user, inv_item, :write_off) }
 
         its(:run) { is_expected.to be_truthy }
 

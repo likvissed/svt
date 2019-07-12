@@ -24,4 +24,4 @@ script type="text/ng-template" id="editWriteOffOrderModal.slim"
       = button_tag class: "btn-success btn-sm", "ng-click": "edit.ok()" do
         div ng-if="edit.order.id" Обновить
         div ng-if="!edit.order.id" Создать
-      = button_tag "Создать и исполнить", class: "btn-success btn-sm", "ng-click": "edit.ok(true)", "ng-if": "!edit.order.id"
+      / = button_tag "Создать и исполнить", class: "btn-success btn-sm", "ng-click": "edit.ok(true)", "ng-if": "!edit.order.id"

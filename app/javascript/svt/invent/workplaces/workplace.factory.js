@@ -146,9 +146,9 @@ import { app } from '../../app/app';
           this.workplace = data.wp_data;
           this.users = data.prop_data.users;
 
+          this._setTemplates(data);
           this._setProperties(data);
           this._addObjects();
-          this._setTemplates(data);
 
           this.workplace.division = this.divisions.find((el) => {
             if (el.workplace_count_id == this.workplace.workplace_count_id) { return true; }
@@ -162,9 +162,9 @@ import { app } from '../../app/app';
           this.workplace = data.workplace;
           this.users = [];
 
+          this._setTemplates(data);
           this._setProperties(data);
           this._addObjects();
-          this._setTemplates(data);
 
           this.workplace.division = this.divisions[0];
         }, (response, status) => {

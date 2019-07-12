@@ -33,7 +33,8 @@ import { app } from '../../app/app';
         statuses: [],
         priorities: { '': 'Все приоритеты' },
         buildings: [],
-        rooms: []
+        rooms: [],
+        divisions: []
       },
       // Данные, которые будут отправлены на сервер
       _selected = {
@@ -46,7 +47,8 @@ import { app } from '../../app/app';
         priority: Object.keys(_filters.priorities)[0],
         building: '',
         room: '',
-        properties: []
+        properties: [],
+        division: ''
       };
 
     function _addProperty() {
@@ -80,9 +82,11 @@ import { app } from '../../app/app';
       getFiltersToSend: function() {
         let obj = angular.copy(_selected);
 
+        obj.workplace_count_id = obj.division.workplace_count_id;
         obj.location_building_id = obj.building.building_id;
         obj.location_room_id = obj.room.room_id;
 
+        delete obj.division;
         delete obj.building;
         delete obj.room;
 
