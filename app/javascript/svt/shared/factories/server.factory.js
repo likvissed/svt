@@ -139,6 +139,10 @@ import { app } from '../../app/app';
           query: {
             method: 'GET',
             isArray: false
+          },
+          edit: {
+            method: 'GET',
+            url: '/warehouse/items/:id/edit.json'
           }
         }),
         Order: $resource('/warehouse/orders/:id.json', {}, {

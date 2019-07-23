@@ -1,0 +1,17 @@
+script type="text/ng-template" id="WarehousePropertyValueEditCtrl.slim"
+  .modal-header
+    h4 Редактирование техники
+  .modal-body
+    .form-group
+      = button_tag "Загрузить данные из файла", type: :button, class: "btn-default", "ng-click": "edit.runManuallyPcDialog()"
+    .row.item-row.table-block ng-repeat="prop in edit.items.type.properties track by $index"
+      .col-md-9.col-lg-10.col-xlg-9
+        .form-group
+          label ng-bind="prop.short_description"
+      .col-md-15.col-lg-14.col-xlg-15
+        .form-group
+          = text_field_tag "", "", class: "form-control", "ng-model": "edit.items.property_values_attributes[$index].value", "ng-disabled": true
+  .modal-footer
+    = button_tag "Сохранить", type: :button, class: "btn-success"
+    = button_tag "Закрыть", type: :button, class: "btn-default", "ng-click": "edit.close()"
+= render :partial => 'invent/workplaces/manually_pc_modal'

@@ -6,9 +6,9 @@ import { app } from '../../app/app';
   app
     .controller('WarehouseItemsCtrl', WarehouseItemsCtrl);
 
-  WarehouseItemsCtrl.$inject = ['$uibModal', 'ActionCableChannel', 'TablePaginator', 'WarehouseItems', 'WarehouseOrder', 'WarehouseSupply', 'Flash', 'Error', 'Server'];
+  WarehouseItemsCtrl.$inject = ['$uibModal', 'ActionCableChannel', 'TablePaginator', 'WarehouseItems', 'WarehouseOrder', 'WarehouseSupply', 'Flash', 'Error', 'Server', 'Config'];
 
-  function WarehouseItemsCtrl($uibModal, ActionCableChannel, TablePaginator, WarehouseItems, WarehouseOrder, WarehouseSupply, Flash, Error, Server) {
+  function WarehouseItemsCtrl($uibModal, ActionCableChannel, TablePaginator, WarehouseItems, WarehouseOrder, WarehouseSupply, Flash, Error, Server, Config) {
     this.$uibModal = $uibModal;
     this.ActionCableChannel = ActionCableChannel;
     this.Items = WarehouseItems;
@@ -20,6 +20,8 @@ import { app } from '../../app/app';
     this.pagination = TablePaginator.config();
     this.selectedFilters = this.Items.selectedTableFilters;
     this.filters = this.Items.filters;
+    this.Config = Config;
+    this.TablePaginator = TablePaginator;
 
     this._loadItems(true);
     this._initActionCable();
@@ -258,4 +260,31 @@ import { app } from '../../app/app';
       (response, status) => this.Error.response(response, status)
     );
   };
+
+  WarehouseItemsCtrl.prototype.EditItem = function(item) {
+    return this.Server.Warehouse.Item.edit(
+      {
+        start: this.TablePaginator.startNum(),
+        length: this.Config.global.uibPaginationConfig.itemsPerPage,
+        id: item.id
+      },
+      (response) => this.openEditItem(response),
+      (response, status) => this.Error.response(response, status)
+    ).$promise;
+  };
+  
+  WarehouseItemsCtrl.prototype.openEditItem = function(data) {
+    this.data = data;
+    this.$uibModal.open({
+      templateUrl: 'WarehousePropertyValueEditCtrl.slim',
+      controller: 'WarehousePropertyValueCtrl',
+      controllerAs: 'edit',
+      backdrop: 'static',
+      size: 'md',
+      resolve: {
+        item: () => data
+      }
+    });
+  };
+
 })();

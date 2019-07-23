@@ -15,6 +15,16 @@ module Warehouse
       end
     end
 
+    def edit
+      edit_item = Items::Edit.new(params[:id])
+
+      if edit_item.run
+        render json: edit_item.data
+      else
+        render json: { full_message: I18n.t('controllers.app.unprocessable_entity') }, status: 422
+      end
+    end
+
     # def destroy
     #   @destroy = Items::Destroy.new(current_user, params[:id])
 
