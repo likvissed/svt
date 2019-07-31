@@ -16,7 +16,7 @@ import { runInThisContext } from 'vm';
     this.Server = Server;
     this.TablePaginator = TablePaginator;
     this.Config = Config;
-    this.items = item;
+    this.item = item;
     this.$uibModalInstance = $uibModalInstance;
     this.PropertyValue = PropertyValue;
     this.WorkplaceItem = WorkplaceItem;
@@ -24,8 +24,6 @@ import { runInThisContext } from 'vm';
   }
   
   WarehousePropertyValueCtrl.prototype.runManuallyPcDialog = function() {
-    
-    this.WorkplaceItem.setAdditional('pcAttrs', this.items.file_depending);
     this.$uibModal.open({
       animation: this.Config.global.modalAnimation,
       templateUrl: 'manuallyPcDialog.slim',
@@ -34,9 +32,23 @@ import { runInThisContext } from 'vm';
       size: 'md',
       backdrop: 'static',
       resolve: {
-        item: () => this.items
+        item: () => this.item
       }
     });
+  };
+
+  WarehousePropertyValueCtrl.prototype.save = function() {
+    this.Server.Warehouse.Item.update(
+      { id: this.item.id },
+      { item: this.item },
+      (response) => {
+        this.Flash.notice(response.full_message),
+        this.$uibModalInstance.close();
+      },
+      (response, status) => {
+        this.Error.response(response, status);
+      }
+    );
   };
 
   WarehousePropertyValueCtrl.prototype.close = function() {

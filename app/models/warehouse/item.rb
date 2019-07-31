@@ -5,11 +5,14 @@ module Warehouse
     has_many :operations, inverse_of: :item, dependent: :nullify
     has_many :supplies, through: :operations, source: :operationable, source_type: 'Warehouse::Supply'
     has_many :orders, through: :operations, source: :operationable, source_type: 'Warehouse::Order'
-    has_many :item_property_values, dependent: :destroy, inverse_of: :item, foreign_key: 'warehouse_item_id'
+    has_many :property_values, -> { left_outer_joins(:property).order('invent_property.property_order').includes(:property) },
+             inverse_of: :item, dependent: :destroy, foreign_key: 'warehouse_item_id'
 
     belongs_to :inv_item, class_name: 'Invent::Item', foreign_key: 'invent_item_id', optional: true
     belongs_to :inv_type, class_name: 'Invent::Type', foreign_key: 'invent_type_id', optional: true
     belongs_to :inv_model, class_name: 'Invent::Model', foreign_key: 'invent_model_id', optional: true
+
+    accepts_nested_attributes_for :property_values, allow_destroy: true
 
     validates :warehouse_type, :item_type, :item_model, presence: true
     validates :inv_item, uniqueness: true, allow_nil: true

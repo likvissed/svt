@@ -34,6 +34,29 @@ module Invent
         false
       end
 
+      # Получить список типов оборудования с их свойствами и возможными значениями.
+      def load_types
+        data[:eq_types] = Type
+                            .includes(:models, properties: { property_lists: :model_property_lists })
+                            .where('name != "unknown"')
+      end
+
+      # Преобразовать в json формат с необходимыми полями.
+      def prepare_eq_types_to_render
+        data[:eq_types] = data[:eq_types].as_json(
+          include: [
+            :models,
+            properties: {
+              include: {
+                property_lists: {
+                  include: :model_property_lists
+                }
+              }
+            }
+          ]
+        )
+      end
+
       protected
 
       # Получить список отделов, доступных на редактирование для указанного пользователя.
@@ -53,13 +76,6 @@ module Invent
       # ввода данных.
       def time_not_passed?(time_start, time_end)
         Time.zone.today >= time_start && Time.zone.today <= time_end
-      end
-
-      # Получить список типов оборудования с их свойствами и возможными значениями.
-      def load_types
-        data[:eq_types] = Type
-                            .includes(:models, properties: { property_lists: :model_property_lists })
-                            .where('name != "unknown"')
       end
 
       def load_workplace_types
@@ -108,22 +124,6 @@ module Invent
         data[:date_props] = Property::DATE_PROPS
         data[:single_pc_items] = Type::SINGLE_PC_ITEMS
         data[:type_with_files] = Type::TYPE_WITH_FILES
-      end
-
-      # Преобразовать в json формат с необходимыми полями.
-      def prepare_eq_types_to_render
-        data[:eq_types] = data[:eq_types].as_json(
-          include: [
-            :models,
-            properties: {
-              include: {
-                property_lists: {
-                  include: :model_property_lists
-                }
-              }
-            }
-          ]
-        )
       end
     end
   end

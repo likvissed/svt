@@ -57,6 +57,7 @@ import { app } from '../../app/app';
         this.WorkplaceItem.setAdditional('secretExceptions', data.prop_data.secret_exceptions);
         this.WorkplaceItem.setAdditional('statusesForChangeItem', data.prop_data.move_item_types);
         this.WorkplaceItem.setAdditional('dateProperties', data.prop_data.date_props);
+        this.WorkplaceItem.getTypesItem(this.data.item);
         this.WorkplaceItem.addProperties(this.data.item);
       },
       (response, status) => this.Error.response(response, status)

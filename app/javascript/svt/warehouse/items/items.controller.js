@@ -6,9 +6,9 @@ import { app } from '../../app/app';
   app
     .controller('WarehouseItemsCtrl', WarehouseItemsCtrl);
 
-  WarehouseItemsCtrl.$inject = ['$uibModal', 'ActionCableChannel', 'TablePaginator', 'WarehouseItems', 'WarehouseOrder', 'WarehouseSupply', 'Flash', 'Error', 'Server', 'Config'];
+  WarehouseItemsCtrl.$inject = ['$uibModal', 'ActionCableChannel', 'TablePaginator', 'WarehouseItems', 'WarehouseOrder', 'WarehouseSupply', 'Flash', 'Error', 'Server', 'Config', 'WorkplaceItem'];
 
-  function WarehouseItemsCtrl($uibModal, ActionCableChannel, TablePaginator, WarehouseItems, WarehouseOrder, WarehouseSupply, Flash, Error, Server, Config) {
+  function WarehouseItemsCtrl($uibModal, ActionCableChannel, TablePaginator, WarehouseItems, WarehouseOrder, WarehouseSupply, Flash, Error, Server, Config, WorkplaceItem) {
     this.$uibModal = $uibModal;
     this.ActionCableChannel = ActionCableChannel;
     this.Items = WarehouseItems;
@@ -22,6 +22,7 @@ import { app } from '../../app/app';
     this.filters = this.Items.filters;
     this.Config = Config;
     this.TablePaginator = TablePaginator;
+    this.WorkplaceItem = WorkplaceItem;
 
     this._loadItems(true);
     this._initActionCable();
@@ -268,13 +269,22 @@ import { app } from '../../app/app';
         length: this.Config.global.uibPaginationConfig.itemsPerPage,
         id: item.id
       },
-      (response) => this.openEditItem(response),
+      (response) => {
+        this.item = response.item;
+        this.item.type_id = this.item.invent_type_id;
+        delete(item.invent_type_id);
+        
+        this.WorkplaceItem.setTypes(response.prop_data.eq_types);
+        this.WorkplaceItem.setAdditional('pcAttrs', response.prop_data.file_depending);
+        this.WorkplaceItem.getTypesItem(this.item);
+
+        this.openEditItem(this.item);
+      },
       (response, status) => this.Error.response(response, status)
     ).$promise;
   };
   
   WarehouseItemsCtrl.prototype.openEditItem = function(data) {
-    this.data = data;
     this.$uibModal.open({
       templateUrl: 'WarehousePropertyValueEditCtrl.slim',
       controller: 'WarehousePropertyValueCtrl',

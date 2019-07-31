@@ -226,10 +226,10 @@ import { app } from '../../app/app';
 
       // Для модели, введенной вручную, позволить пользователю вводить данные свойства вручную.
       if (!item.model_id || item.model_id == -1 || filteredList.length != 1)
-        filteredList = PropertyValue
-          .getTemplateSelectProp(prop.short_description, PropertyValue.isPropListPlus(prop))
-          .concat(filteredList);
-
+      filteredList = PropertyValue
+      .getTemplateSelectProp(prop.short_description, PropertyValue.isPropListPlus(prop))
+      .concat(filteredList);
+      
       PropertyValue.setPropertyValue(item, prop_index, 'filteredList', filteredList);
     }
 
@@ -359,27 +359,33 @@ import { app } from '../../app/app';
        */
       getPriorities: function() { return priorities; },
       /**
-       * Добавить вспомогательные объекты к указанному объекту item.
-       *
-       * @param item - экземпляр техники
+       * Получить массив типов техники и свойств
        */
-      addProperties: function(item) {
+      getTypesItem: function(item) {
         let eq_value = eqTypes.find((type) => type.type_id == item.type_id);
-
+        
         if (!eq_value) { return false; }
-
+        
         item.type = angular.copy(eq_value);
         item.priorities = this.getPriorities();
+
         // Если длина массивов property_values_attributes и properties отличается, значит текущий
         // экземпляр техники имеет несколько значений для некоторых свойств (например, несколько жестких
         // дисков для системного блока). Необходимо создать копии соответсвующих элементов массива
         // properties и поместить их в этот же массив. Иначе пользователь увидит, например, только один
         // жесткий диск.
+
         if (_isPropsOrPropValsNeedToClone(item)) {
           _cloneProperties(item);
           _createPropertyValues(item);
         };
-
+      },
+      /**
+       * Добавить вспомогательные объекты к указанному объекту item.
+       *
+       * @param item - экземпляр техники
+       */
+      addProperties: function(item) {
         _setModel(item);
 
         item.type.properties.forEach((prop, index) => {
@@ -539,7 +545,7 @@ import { app } from '../../app/app';
           (response) => Flash.notice(response.full_message),
           (response, status) => Error.response(response, status)
         ).$promise;
-      }
+        }
     };
   }
 })();

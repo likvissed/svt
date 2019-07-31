@@ -18,6 +18,6 @@ module Invent
     has_many :property_values, dependent: :destroy
     has_many :property_lists, dependent: :destroy
     has_many :model_property_lists, dependent: :restrict_with_error
-    has_many :item_property_values, class_name: 'Warehouse::ItemPropertyValue', foreign_key: 'property_id', dependent: :destroy
+    has_many :warehause_property_values, class_name: 'Warehouse::PropertyValue', foreign_key: 'property_id', dependent: :destroy
   end
 end

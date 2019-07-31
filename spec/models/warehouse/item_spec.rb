@@ -4,6 +4,7 @@ module Warehouse
   RSpec.describe Item, type: :model do
     it { is_expected.to have_many(:operations).dependent(:nullify) }
     it { is_expected.to have_many(:supplies).through(:operations).class_name('Warehouse::Supply').source(:operationable) }
+    it { is_expected.to have_many(:property_values).inverse_of(:item).dependent(:destroy).with_foreign_key('warehouse_item_id').order('invent_property.property_order') }
     it { is_expected.to have_many(:orders).through(:operations).class_name('Warehouse::Order').source(:operationable) }
     it { is_expected.to belong_to(:inv_item).class_name('Invent::Item').with_foreign_key('invent_item_id') }
     it { is_expected.to belong_to(:inv_type).class_name('Invent::Type').with_foreign_key('invent_type_id') }

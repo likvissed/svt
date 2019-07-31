@@ -25,6 +25,16 @@ module Warehouse
       end
     end
 
+    def update
+      update_item = Items::Update.new(params[:id], item_params)
+
+      if update_item.run
+        render json: { full_message: I18n.t('controllers.warehouse/item.updated') }
+      else
+        render json: update_item.error, status: 422
+      end
+    end
+
     # def destroy
     #   @destroy = Items::Destroy.new(current_user, params[:id])
 
@@ -34,5 +44,11 @@ module Warehouse
     #     render json: { full_message: @destroy.error[:full_message] }, status: 422
     #   end
     # end
+
+    protected
+
+    def item_params
+      params.require(:item).permit(policy(Item).permitted_attributes)
+    end
   end
 end

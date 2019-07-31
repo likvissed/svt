@@ -46,17 +46,17 @@ module Warehouse
       item_type Invent::Type.find_by(name: :notebook).name
     end
 
-    factory :item_property_values, parent: :used_item, class: Item do
+    factory :item_with_property_values, parent: :used_item, class: Item do
       after(:build) do |item|
-        item.item_model = 'Asus 123H'
-        item.invent_type_id = Invent::Type.find_by(name: :notebook).type_id
-        item.item_type = Invent::Type.find_by(name: :notebook).name
+        item.item_model = 'HP R321'
+        item.invent_type_id = Invent::Type.find_by(name: :pc).type_id
+        item.item_type = Invent::Type.find_by(name: :pc).name
 
-        item.item_property_values << build(:item_property_value, warehouse_item_id: item.id, property_id: Invent::Property.find_by(name: :mb).property_id, value: 'P5Q_SE2')
-        item.item_property_values << build(:item_property_value, warehouse_item_id: item.id, property_id: Invent::Property.find_by(name: :ram).property_id, value: '3')
-        item.item_property_values << build(:item_property_value, warehouse_item_id: item.id, property_id: Invent::Property.find_by(name: :cpu).property_id, value: 'Intel(R) Core(TM)2 Quad CPU Q8300 @ 2.50GHz')
-        item.item_property_values << build(:item_property_value, warehouse_item_id: item.id, property_id: Invent::Property.find_by(name: :hdd).property_id, value: 'WDC WD5000AAKS-00UU3A0')
-        item.item_property_values << build(:item_property_value, warehouse_item_id: item.id, property_id: Invent::Property.find_by(name: :video).property_id, value: 'NVIDIA GeForce GTS 250')
+        item.property_values << build(:mb_property_values, warehouse_item_id: item.id)
+        item.property_values << build(:ram_property_values, warehouse_item_id: item.id)
+        item.property_values << build(:cpu_property_values, warehouse_item_id: item.id)
+        item.property_values << build(:hdd_property_values, warehouse_item_id: item.id)
+        item.property_values << build(:video_property_values, warehouse_item_id: item.id)
       end
     end
   end
