@@ -268,11 +268,60 @@ module Invent
     end
 
     describe '#build_property_values' do
+      let(:warehouse_item) { create(:expanded_item) }
       context 'when type is not exist' do
         subject { build(:item, type: nil) }
 
         it 'returns nil' do
-          expect(subject.build_property_values).to be_nil
+          expect(subject.build_property_values(warehouse_item, true)).to be_nil
+        end
+      end
+
+      context 'when created item which has additional properties' do
+        let(:notebook_type) { Type.find_by(name: :notebook) }
+        subject { build(:item, type: notebook_type) }
+
+        context 'when adds item with filled :value' do
+          let(:warehouse_item_with_prop_val) { create(:item_with_property_values) }
+          let(:ram) { Property.find_by(name: 'ram') }
+
+          before { subject.build_property_values(warehouse_item_with_prop_val, true) }
+
+          it 'create property_values with all properties' do
+            subject.save(validate: false)
+
+            subject.property_values.each do |prop_val|
+              expect(subject.property_values.find_by(property_id: prop_val.property_id).property_id).to eq prop_val.property_id
+            end
+          end
+
+          it 'create property_value with filled :value' do
+            subject.save(validate: false)
+
+            warehouse_item_with_prop_val.property_values.each do |prop_val|
+              if prop_val.property_id == ram.property_id
+                expect(subject.property_values.find_by(property_id: prop_val.property_id).value).to eq("#{prop_val.value} Гб")
+              else
+                expect(subject.property_values.find_by(property_id: prop_val.property_id).value).to eq prop_val.value
+              end
+            end
+          end
+
+          it 'increment count of PropertyValue' do
+            expect { subject.save(validate: false) }.to change { PropertyValue.count }.by(notebook_type.properties.count)
+          end
+        end
+
+        context 'and when adds item with blank value for property_value' do
+          before { subject.build_property_values(warehouse_item, true) }
+
+          it 'fills with empty values' do
+            subject.save(validate: false)
+
+            notebook_type.properties.each_with_index do |_prop, index|
+              expect(subject.property_values[index].value).to eq('')
+            end
+          end
         end
       end
 
@@ -281,7 +330,7 @@ module Invent
 
         context 'and when model exists' do
           subject { build(:item, type: printer_type) }
-          before { subject.build_property_values }
+          before { subject.build_property_values(warehouse_item, true) }
 
           it 'creates one property_value for each property' do
             expect(subject.property_values.size).to eq printer_type.properties.size
@@ -301,7 +350,7 @@ module Invent
 
         context 'and when model is not exist' do
           subject { build(:item, type: printer_type, model: nil) }
-          before { subject.build_property_values }
+          before { subject.build_property_values(warehouse_item, true) }
 
           it 'creates one property_value for each property' do
             expect(subject.property_values.size).to eq printer_type.properties.size

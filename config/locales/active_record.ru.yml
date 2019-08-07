@@ -179,6 +179,9 @@ ru:
           without_invent_num: 'Без инв. №'
           with_invent_num: 'С инв. №'
 
+      warehouse/item/property_values:
+        value: "Значение свойств техники"
+
       user:
         tn: Табельный номер
         role: Роль

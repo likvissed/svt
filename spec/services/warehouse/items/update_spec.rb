@@ -5,12 +5,13 @@ module Warehouse
     RSpec.describe Update, type: :model do
       describe '#run' do
         let(:property) { Invent::Property.all }
+        let(:current_user) { create(:user) }
 
         let(:new_item) do
           edit = Edit.new(item.id)
           edit.run
 
-          edit.data[:item][:property_values_attributes] = [param_property_value].as_json
+          edit.data[:item][:property_values_attributes] = Array.wrap(param_property_value).as_json
           edit.data[:item][:property_values_attributes].each do |prop_val|
             prop_val['id'] = prop_val['warehouse_property_value_id']
             prop_val.delete('warehouse_property_value_id')
@@ -20,7 +21,7 @@ module Warehouse
           item_params.as_json
         end
 
-        subject { Update.new(item.id, new_item) }
+        subject { Update.new(current_user, item.id, new_item) }
 
         context 'when property_values for item present' do
           let!(:item) { create(:item_with_property_values) }
@@ -30,7 +31,7 @@ module Warehouse
           include_examples 'add new property_value'
           include_examples 'property_value invalid'
 
-          context 'and when attribute updated' do
+          context 'and when properties updated' do
             let(:new_value) { 'P5QPL-AM' }
             let(:param_property_value) { item.property_values.find_by(property_id: property.find_by(name: 'mb').property_id) }
             before { param_property_value.value = new_value }
@@ -42,7 +43,7 @@ module Warehouse
             end
           end
 
-          context 'and when attribute deleted' do
+          context 'and when property deleted' do
             let(:param_property_value) { item.property_values.find_by(property_id: property.find_by(name: 'hdd').property_id).as_json }
             before { param_property_value['_destroy'] = 1 }
 
@@ -54,6 +55,19 @@ module Warehouse
 
             it 'decrease count of PropertyValue' do
               expect { subject.run }.to change { PropertyValue.count }.by(-1)
+            end
+          end
+
+          context 'and when all properties delete for item' do
+            let(:param_property_value) { item.property_values.as_json }
+            before do
+              param_property_value.each do |prop_val|
+                prop_val['_destroy'] = 1
+              end
+            end
+
+            it 'decrease count of PropertyValue' do
+              expect { subject.run }.to change { PropertyValue.count }.by(-5)
             end
           end
         end

@@ -1,7 +1,8 @@
 module Warehouse
   module Items
     class Update < Warehouse::ApplicationService
-      def initialize(item_id, item_params)
+      def initialize(current_user, item_id, item_params)
+        @current_user = current_user
         @item_id = item_id
         @item_params = item_params
 
@@ -24,6 +25,7 @@ module Warehouse
 
       def find_item
         @item = Item.find(@item_id)
+        authorize @item, :update?
       end
 
       def update_item_params

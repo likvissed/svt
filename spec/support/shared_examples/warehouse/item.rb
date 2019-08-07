@@ -74,7 +74,7 @@ module Warehouse
 
   shared_examples 'property_value invalid' do
     context 'absent value property_id in property_value' do
-      let(:param_property_value) { { property_id: nil, value: '' } }
+      let(:param_property_value) { { property_id: nil, value: 'HP 2100' } }
 
       its(:run) { is_expected.to be_falsey }
     end

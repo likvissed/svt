@@ -5,5 +5,7 @@ module Warehouse
 
     belongs_to :item, foreign_key: 'warehouse_item_id', optional: false
     belongs_to :property, class_name: 'Invent::Property', foreign_key: 'property_id', optional: false
+
+    validates :value, presence: true
   end
 end

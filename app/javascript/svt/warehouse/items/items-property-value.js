@@ -55,4 +55,11 @@ import { runInThisContext } from 'vm';
     this.$uibModalInstance.dismiss();
   };
 
+  WarehousePropertyValueCtrl.prototype.destroyPropertyValues = function() {
+    this.item.property_values_attributes.forEach((prop_val_value) => {
+      prop_val_value.value = '';
+      prop_val_value._destroy = 1;
+    });
+  };
+
 })();

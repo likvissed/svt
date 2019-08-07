@@ -1,5 +1,7 @@
 module Warehouse
   class ItemsController < Warehouse::ApplicationController
+    before_action :check_access, only: %i[edit update]
+
     def index
       respond_to do |format|
         format.html
@@ -26,7 +28,7 @@ module Warehouse
     end
 
     def update
-      update_item = Items::Update.new(params[:id], item_params)
+      update_item = Items::Update.new(current_user, params[:id], item_params)
 
       if update_item.run
         render json: { full_message: I18n.t('controllers.warehouse/item.updated') }
@@ -46,6 +48,10 @@ module Warehouse
     # end
 
     protected
+
+    def check_access
+      authorize %i[warehouse item], :ctrl_access?
+    end
 
     def item_params
       params.require(:item).permit(policy(Item).permitted_attributes)

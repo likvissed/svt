@@ -1,5 +1,13 @@
 module Warehouse
   class ItemPolicy < Warehouse::ApplicationPolicy
+    def ctrl_access?
+      not_for_***REMOVED***_user
+    end
+
+    def update?
+      for_worker
+    end
+
     def permitted_attributes
       [
         :id,

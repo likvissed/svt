@@ -18,6 +18,8 @@ module Warehouse
     it { is_expected.to validate_numericality_of(:count).is_greater_than_or_equal_to(0) }
     it { is_expected.to validate_numericality_of(:count_reserved).is_greater_than_or_equal_to(0) }
 
+    it { is_expected.to accept_nested_attributes_for(:property_values).allow_destroy(true) }
+
     context 'when warehouse_type is :with_invent_num' do
       subject { build(:new_item, count: 4, inv_type: Invent::Type.find_by(name: :pc), item_model: 'UNIT') }
 
