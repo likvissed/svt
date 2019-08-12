@@ -41,13 +41,20 @@ module Warehouse
     end
   end
 
-  shared_examples 'value for key file_depending' do
+  shared_examples 'value for keys :file_depending and :type_with_files' do
     let(:constant_property) { Invent::Property::FILE_DEPENDING }
+    let(:constant_type) { Invent::Type::TYPE_WITH_FILES }
 
     it 'sets attribute file_depending value of constant' do
       subject.run
 
       expect(subject.data[:prop_data][:file_depending]).to eq(constant_property)
+    end
+
+    it 'sets attribute type_with_files value of constant' do
+      subject.run
+
+      expect(subject.data[:prop_data][:type_with_files]).to eq(constant_type)
     end
   end
 

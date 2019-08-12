@@ -13,7 +13,7 @@ module Warehouse
           include_examples 'field is not blank'
           include_examples 'check key prop_data'
           include_examples 'calls service Invent::LkInvents::InitProperties'
-          include_examples 'value for key file_depending'
+          include_examples 'value for keys :file_depending and :type_with_files'
 
           it 'property_values for item is blank' do
             expect(subject).to receive(:new_property_values)
@@ -42,6 +42,7 @@ module Warehouse
 
             it 'sets value attribute for each property_value' do
               subject.run
+
               subject.data[:item]['property_values_attributes'].each do |value|
                 expect(value['value']).to eq('')
               end
@@ -58,7 +59,7 @@ module Warehouse
           include_examples 'field is not blank'
           include_examples 'check key prop_data'
           include_examples 'calls service Invent::LkInvents::InitProperties'
-          include_examples 'value for key file_depending'
+          include_examples 'value for keys :file_depending and :type_with_files'
 
           it 'property_values not receive :new_property_values' do
             expect(subject).not_to receive(:new_property_values)

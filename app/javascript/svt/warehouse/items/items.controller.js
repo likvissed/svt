@@ -6,9 +6,9 @@ import { app } from '../../app/app';
   app
     .controller('WarehouseItemsCtrl', WarehouseItemsCtrl);
 
-  WarehouseItemsCtrl.$inject = ['$uibModal', 'ActionCableChannel', 'TablePaginator', 'WarehouseItems', 'WarehouseOrder', 'WarehouseSupply', 'Flash', 'Error', 'Server', 'Config', 'WorkplaceItem'];
+  WarehouseItemsCtrl.$inject = ['$uibModal', 'ActionCableChannel', 'TablePaginator', 'WarehouseItems', 'WarehouseOrder', 'WarehouseSupply', 'Flash', 'Error', 'Server', 'Config', 'WorkplaceItem', 'InventItem'];
 
-  function WarehouseItemsCtrl($uibModal, ActionCableChannel, TablePaginator, WarehouseItems, WarehouseOrder, WarehouseSupply, Flash, Error, Server, Config, WorkplaceItem) {
+  function WarehouseItemsCtrl($uibModal, ActionCableChannel, TablePaginator, WarehouseItems, WarehouseOrder, WarehouseSupply, Flash, Error, Server, Config, WorkplaceItem, InventItem) {
     this.$uibModal = $uibModal;
     this.ActionCableChannel = ActionCableChannel;
     this.Items = WarehouseItems;
@@ -23,6 +23,7 @@ import { app } from '../../app/app';
     this.Config = Config;
     this.TablePaginator = TablePaginator;
     this.WorkplaceItem = WorkplaceItem;
+    this.InventItem = InventItem;
 
     this._loadItems(true);
     this._initActionCable();
@@ -276,25 +277,27 @@ import { app } from '../../app/app';
         
         this.WorkplaceItem.setTypes(response.prop_data.eq_types);
         this.WorkplaceItem.setAdditional('pcAttrs', response.prop_data.file_depending);
+        this.WorkplaceItem.setAdditional('pcTypes', response.prop_data.type_with_files);
         this.WorkplaceItem.getTypesItem(this.item);
-
+        
         this.openEditItem(this.item);
       },
       (response, status) => this.Error.response(response, status)
-    ).$promise;
-  };
-  
-  WarehouseItemsCtrl.prototype.openEditItem = function(data) {
-    this.$uibModal.open({
-      templateUrl: 'WarehousePropertyValueEditCtrl.slim',
-      controller: 'WarehousePropertyValueCtrl',
-      controllerAs: 'edit',
-      backdrop: 'static',
-      size: 'md',
-      resolve: {
-        item: () => data
-      }
-    });
+      ).$promise;
+    };
+    
+    WarehouseItemsCtrl.prototype.openEditItem = function(item) {
+      this.InventItem.setItem(item); // Для загрузки свойств техники
+      this.$uibModal.open({
+        templateUrl: 'WarehousePropertyValueEditCtrl.slim',
+        controller: 'WarehousePropertyValueCtrl',
+        controllerAs: 'edit',
+        backdrop: 'static',
+        size: 'md',
+        resolve: {
+          item: () => item
+        }
+      });
   };
 
 })();

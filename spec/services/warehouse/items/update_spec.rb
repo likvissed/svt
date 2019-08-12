@@ -57,19 +57,6 @@ module Warehouse
               expect { subject.run }.to change { PropertyValue.count }.by(-1)
             end
           end
-
-          context 'and when all properties delete for item' do
-            let(:param_property_value) { item.property_values.as_json }
-            before do
-              param_property_value.each do |prop_val|
-                prop_val['_destroy'] = 1
-              end
-            end
-
-            it 'decrease count of PropertyValue' do
-              expect { subject.run }.to change { PropertyValue.count }.by(-5)
-            end
-          end
         end
 
         context 'when property_values for item is empty' do

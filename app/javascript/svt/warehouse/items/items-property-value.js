@@ -7,9 +7,9 @@ import { runInThisContext } from 'vm';
   app
     .controller('WarehousePropertyValueCtrl', WarehousePropertyValueCtrl);
 
-  WarehousePropertyValueCtrl.$inject = ['$uibModal', 'TablePaginator', 'Flash', 'Error', 'Server', 'Config', 'item', 'WorkplaceItem', 'PropertyValue', '$uibModalInstance'];
+  WarehousePropertyValueCtrl.$inject = ['$uibModal', 'TablePaginator', 'Flash', 'Error', 'Server', 'Config', 'item', 'WorkplaceItem', 'PropertyValue', '$uibModalInstance', 'InventItem'];
 
-  function WarehousePropertyValueCtrl($uibModal, TablePaginator, Flash, Error, Server, Config, item, WorkplaceItem, PropertyValue, $uibModalInstance) {
+  function WarehousePropertyValueCtrl($uibModal, TablePaginator, Flash, Error, Server, Config, item, WorkplaceItem, PropertyValue, $uibModalInstance, InventItem) {
     this.$uibModal = $uibModal;
     this.Flash = Flash;
     this.Error = Error;
@@ -21,6 +21,7 @@ import { runInThisContext } from 'vm';
     this.PropertyValue = PropertyValue;
     this.WorkplaceItem = WorkplaceItem;
     this.additional = this.WorkplaceItem.getAdditional();
+    this.InventItem = InventItem;
   }
   
   WarehousePropertyValueCtrl.prototype.runManuallyPcDialog = function() {
@@ -35,6 +36,7 @@ import { runInThisContext } from 'vm';
         item: () => this.item
       }
     });
+    this.InventItem.setItem(this.item);
   };
 
   WarehousePropertyValueCtrl.prototype.save = function() {
@@ -54,12 +56,4 @@ import { runInThisContext } from 'vm';
   WarehousePropertyValueCtrl.prototype.close = function() {
     this.$uibModalInstance.dismiss();
   };
-
-  WarehousePropertyValueCtrl.prototype.destroyPropertyValues = function() {
-    this.item.property_values_attributes.forEach((prop_val_value) => {
-      prop_val_value.value = '';
-      prop_val_value._destroy = 1;
-    });
-  };
-
 })();

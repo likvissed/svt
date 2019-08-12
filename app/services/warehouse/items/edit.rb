@@ -39,6 +39,7 @@ module Warehouse
       def load_properties
         data[:prop_data] = {}
         data[:prop_data][:file_depending] = Invent::Property::FILE_DEPENDING
+        data[:prop_data][:type_with_files] = Invent::Type::TYPE_WITH_FILES
 
         properties = Invent::LkInvents::InitProperties.new(current_user)
 
