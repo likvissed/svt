@@ -32,7 +32,7 @@ module Warehouse
       end
 
       def load_types
-        data[:eq_types] = Invent::Type.where('name != "unknown"')
+        data[:eq_types] = Invent::Type.all
       end
     end
   end

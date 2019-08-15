@@ -74,7 +74,7 @@ module Invent
 
       def load_filters
         data[:filters] = {}
-        data[:filters][:types] = Type.where('name != "unknown"')
+        data[:filters][:types] = Type.all
         # data[:filters][:properties] = Property.group(:name).includes(:property_lists).as_json(include: :property_lists)
         data[:filters][:properties] = PropertyToType
                                         .select('type_id, property_id, t.short_description as type_description, p.long_description, p.property_type')

@@ -38,7 +38,6 @@ module Invent
       def load_types
         data[:eq_types] = Type
                             .includes(:models, properties: { property_lists: :model_property_lists })
-                            .where('name != "unknown"')
       end
 
       # Преобразовать в json формат с необходимыми полями.

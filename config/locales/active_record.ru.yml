@@ -181,6 +181,7 @@ ru:
 
       warehouse/item/property_values:
         value: "Значение свойств техники"
+        unknown_property_type: "Неизвестный тип свойства"
 
       user:
         tn: Табельный номер
