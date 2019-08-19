@@ -1,26 +1,21 @@
 module Invent
   module WorkplaceCounts
-    # Редактирование доступа для отдела.
     class Update < Invent::ApplicationService
-      # workplace_count_id - id отдела
-      # strong_params - данные, прошедшие фильтрацию.
-      def initialize(current_user, workplace_count_id, strong_params)
+      def initialize(current_user, workplace_count_id, workplace_count_params)
         @current_user = current_user
         @workplace_count_id = workplace_count_id
-        @wpc_params = strong_params
+        @workplace_count_params = workplace_count_params
 
         super
       end
 
       def run
-        @data = WorkplaceCount.includes(:users).find(@workplace_count_id)
-        authorize @data, :update?
-
-        update_workplace
-        broadcast_users
+        find_workplace_count
+        users_attributes if @workplace_count_params.key?(:users_attributes)
+        update_workplace_count
 
         true
-      rescue ActiveRecord::RecordInvalid, RuntimeError => e
+      rescue RuntimeError => e
         Rails.logger.error e.inspect.red
         Rails.logger.error e.backtrace[0..5].inspect
 
@@ -29,12 +24,33 @@ module Invent
 
       protected
 
-      # Сохранить отдел
-      def update_workplace
-        return true if data.update_attributes(@wpc_params)
+      def find_workplace_count
+        @workplace_count = WorkplaceCount.find(@workplace_count_id)
+        authorize @workplace_count, :update?
+      end
 
-        error[:object] = data.errors
-        error[:full_message] = data.errors.full_messages.join('. ') + data.wp_resp_errors.join('. ')
+      def users_attributes
+        @workplace_count_params[:users_attributes].each do |user_attr|
+          user = UserIss.find_by(tn: user_attr[:tn])
+          user_attr[:phone] = user_attr[:phone].presence || user.tel if user
+
+          if user_attr[:id].blank?
+            user_attr[:role_id] = Role.find_by(name: '***REMOVED***_user').id
+            next unless user
+
+            user_attr[:id] = User.find_by(tn: user_attr[:tn]).try(:id)
+            user_attr[:id_tn] = user.id_tn
+            user_attr[:fullname] = user.fio
+          end
+          @workplace_count_params[:user_ids].push(user_attr[:id])
+        end
+      end
+
+      def update_workplace_count
+        return true if @workplace_count.update_attributes(@workplace_count_params)
+
+        error[:object] = @workplace_count.errors
+        error[:full_message] = @workplace_count.errors.full_messages.join('. ')
         raise 'Данные не обновлены'
       end
     end

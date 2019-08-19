@@ -21,7 +21,7 @@ Rails.application.routes.draw do
   # Инвентаризация
   namespace :invent do
     # Отделы
-    resources :workplace_counts, param: :workplace_count_id, except: :edit do
+    resources :workplace_counts, param: :workplace_count_id do #, except: :edit
       collection do
         # Сформировать файл со списком РМ и их составом
         get 'generate_pdf/:division', to: 'workplace_counts#generate_pdf', constraints: { division: /\d+/ }

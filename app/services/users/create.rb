@@ -27,7 +27,7 @@ module Users
 
       error[:object] = user.errors
       error[:full_message] = user.errors.full_messages.join('. ')
-      raise 'Пользоватлеь не сохранен'
+      raise 'Пользователь не сохранен'
     end
   end
 end

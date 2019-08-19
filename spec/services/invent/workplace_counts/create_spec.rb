@@ -3,39 +3,55 @@ require 'feature_helper'
 module Invent
   module WorkplaceCounts
     RSpec.describe Create, type: :model do
-      let(:role) { create(:***REMOVED***_user_role) }
-      let(:user) { attributes_for(:user, role_id: role.id).except(:id_tn, :division, :email, :login, :fullname) }
-      let(:***REMOVED***_user) { attributes_for(:***REMOVED***_user).except(:id_tn, :division, :email, :login, :fullname) }
-      let(:workplace_count) { attributes_for(:active_workplace_count, users_attributes: [user, ***REMOVED***_user]) }
-      subject { Create.new(create(:user), workplace_count) }
-
-      include_examples 'run methods', 'save_workplace'
-      it 'assign @data to WorkplaceCount instance' do
-        subject.run
-        expect(subject.data).to be_instance_of WorkplaceCount
+      let!(:current_user) { create(:user) }
+      let(:user_new) { build(:***REMOVED***_user) }
+      let(:workplace_count_params) { build(:active_workplace_count).as_json }
+      before do
+        workplace_count_params[:user_ids] = []
+        workplace_count_params[:users_attributes] = [user_new.as_json]
       end
 
-      context 'with valid params' do
-        its(:run) { is_expected.to be_truthy }
+      subject { Create.new(current_user, workplace_count_params) }
 
-        it 'broadcasts to users' do
-          expect(subject).to receive(:broadcast_users)
-          subject.run
+      context 'when created valid workplace_count' do
+        it 'increments count of workplace_count' do
+          expect { subject.run }.to change { WorkplaceCount.count }.by(1)
         end
 
-        it 'broadcasts to users' do
-          expect(subject).to receive(:broadcast_users)
-          subject.run
+        it 'returns true' do
+          expect(subject.run).to be true
+        end
+
+        it 'increments count of User' do
+          expect { subject.run }.to change { User.count }.by(1)
         end
       end
 
-      context 'with invalid params' do
-        let(:workplace_count) { attributes_for(:active_workplace_count) }
+      context 'when the phone is entered manually' do
+        let(:user) { create(:***REMOVED***_user) }
+        before do
+          user.phone = '11-22'
+          workplace_count_params[:users_attributes] = [user.as_json.symbolize_keys]
+        end
 
-        its(:run) { is_expected.to be_falsey }
-        it 'includes object and full_message keys into the @error object' do
+        it 'сhange the phone in User' do
           subject.run
-          expect(subject.error).to include(:object, :full_message)
+
+          expect(user.phone).to eq User.find_by(tn: user.tn).phone
+        end
+      end
+
+      context 'when users_attributes is blank' do
+        before { workplace_count_params[:users_attributes] = [] }
+
+        it 'returns with error :add_at_least_one_responsible' do
+          subject.run
+
+          expect(subject.error).to include(:object, full_message: 'Необходимо добавить ответственного')
+        end
+
+        it 'returns false' do
+          expect(subject.run).to be false
         end
       end
     end

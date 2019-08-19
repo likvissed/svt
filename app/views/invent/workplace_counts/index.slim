@@ -1,8 +1,50 @@
-= title "Инвентаризация"
 
-.container ng-controller="WorkplaceCountIndexCtrl as wpCount"
+= title "Инвентаризация"  
+.container ng-controller="WorkplaceCountsController as wpCount"
   .well
-    datatable-wrapper
-      table.table.table-striped.table-condensed datatable="" dt-options="wpCount.dtOptions" dt-columns="wpCount.dtColumns" dt-instance="wpCount.dtInstance" width="100%"
-
-  = render partial: 'modal'
+    .table-block
+      .row
+        .multiline-buffer.col-lg-3.col-md-4.col-sm-5
+          = button_tag "Добавить", type: :button, class: "btn-primary btn-sm btn-block", "ng-click": "wpCount.newEditWorkplaceCounts()"
+        .multiline-buffer.col-sm-5.col-sm-offset-8.col-md-4.col-md-offset-11.col-lg-3.col-lg-offset-14
+          = text_field_tag "", "", class:"form-control input-sm", placeholder:"Отдел", "ng-model": "wpCount.filters.division", "ng-change": "wpCount.search()"
+        .multiline-buffer.col-lg-4.col-md-5.col-sm-6
+          = text_field_tag "", "", class:"form-control input-sm", placeholder:"ФИО Ответственного", "ng-model": "wpCount.filters.responsible_fullname", "ng-change": "wpCount.search()"
+      .row
+        .col-sm-24
+          table.table.table-striped.table-condensed
+            thead
+              tr
+                th Отдел
+                th Ответственный
+                th Телефон
+                th Время доступа
+                th Статус
+                th Ожидают
+                th Подтверждено
+                th Заморожено
+                th
+                th
+            tbody
+              tr ng-repeat="dept in wpCount.divisions" 
+                td ng-bind="dept.division"
+                td ng-bind="dept.user_fullname"
+                td ng-bind="dept.user_phone"
+                td ng-bind="dept.user_time"
+                td  
+                  span class='label label-success' ng-bind="dept.status_name" ng-if="dept.status_name == 'Доступ открыт'"
+                  span class="label label-warning" ng-bind="dept.status_name" ng-if="dept.status_name == 'Доступ закрыт'"
+                td.text-center ng-bind="dept.pending_verification"
+                td.text-center ng-bind="dept.confirmed"
+                td.text-center ng-bind="dept.freezed"
+                td
+                  i class="fa fa-pencil-square-o" ng-click="wpCount.editWorkplaceCounts(dept.workplace_count_id)" uib-tooltip="Редактировать запись" class="pointer"
+                td
+                  i class="fa fa-trash-o" uib-tooltip="Удалить запись" class="text-danger" ng-click="wpCount.deleteDept(dept)" class="pointer"
+      .row
+        .col-sm-12
+          .animate-show ng-table-info="" info-attrs="wpCount.pagination" ng-if="wpCount.divisions"
+        .col-sm-12
+          ul{ uib-pagination="true" total-items="wpCount.pagination.filteredRecords" ng-model="wpCount.pagination.currentPage"
+            max-size="wpCount.pagination.maxSize" class="pagination-sm pull-right" ng-change="wpCount.loadWorkplaceCounts()" }
+= render partial: 'invent/workplace_counts/modal'
