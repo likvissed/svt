@@ -52,7 +52,9 @@ import { app } from '../../app/app';
       return this.workplace.location_site_id == el.site_id;
     });
 
-    this.workplace.items_attributes.forEach((item) => { this.Item.getTypesItem(item); this.Item.addProperties(item) } );
+    this.workplace.items_attributes.forEach((item) => {
+      this.Item.getTypesItem(item); this.Item.addProperties(item) 
+    });
   };
 
   /**

@@ -7,20 +7,17 @@ import { runInThisContext } from 'vm';
   app
     .controller('WarehousePropertyValueCtrl', WarehousePropertyValueCtrl);
 
-  WarehousePropertyValueCtrl.$inject = ['$uibModal', 'TablePaginator', 'Flash', 'Error', 'Server', 'Config', 'item', 'WorkplaceItem', 'PropertyValue', '$uibModalInstance', 'InventItem'];
+  WarehousePropertyValueCtrl.$inject = ['$uibModal', 'Flash', 'Error', 'Server', 'Config', 'item', 'WorkplaceItem', '$uibModalInstance', 'InventItem'];
 
-  function WarehousePropertyValueCtrl($uibModal, TablePaginator, Flash, Error, Server, Config, item, WorkplaceItem, PropertyValue, $uibModalInstance, InventItem) {
+  function WarehousePropertyValueCtrl($uibModal, Flash, Error, Server, Config, item, WorkplaceItem, $uibModalInstance, InventItem) {
     this.$uibModal = $uibModal;
     this.Flash = Flash;
     this.Error = Error;
     this.Server = Server;
-    this.TablePaginator = TablePaginator;
     this.Config = Config;
     this.item = item;
     this.$uibModalInstance = $uibModalInstance;
-    this.PropertyValue = PropertyValue;
-    this.WorkplaceItem = WorkplaceItem;
-    this.additional = this.WorkplaceItem.getAdditional();
+    this.additional = WorkplaceItem.getAdditional();
     this.InventItem = InventItem;
   }
   

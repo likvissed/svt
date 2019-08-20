@@ -263,8 +263,8 @@ import { app } from '../../app/app';
     );
   };
 
-  WarehouseItemsCtrl.prototype.EditItem = function(item) {
-    return this.Server.Warehouse.Item.edit(
+  WarehouseItemsCtrl.prototype.editItem = function(item) {
+    this.Server.Warehouse.Item.edit(
       {
         start: this.TablePaginator.startNum(),
         length: this.Config.global.uibPaginationConfig.itemsPerPage,
@@ -283,8 +283,8 @@ import { app } from '../../app/app';
         this.openEditItem(this.item);
       },
       (response, status) => this.Error.response(response, status)
-      ).$promise;
-    };
+    );
+  };
     
     WarehouseItemsCtrl.prototype.openEditItem = function(item) {
       this.InventItem.setItem(item); // Для загрузки свойств техники

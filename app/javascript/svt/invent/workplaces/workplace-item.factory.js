@@ -225,10 +225,11 @@ import { app } from '../../app/app';
       let filteredList = $filter('inventPropList')(prop.property_lists, item.model_id);
 
       // Для модели, введенной вручную, позволить пользователю вводить данные свойства вручную.
-      if (!item.model_id || item.model_id == -1 || filteredList.length != 1)
-      filteredList = PropertyValue
-      .getTemplateSelectProp(prop.short_description, PropertyValue.isPropListPlus(prop))
-      .concat(filteredList);
+      if (!item.model_id || item.model_id == -1 || filteredList.length != 1) {
+        filteredList = PropertyValue
+          .getTemplateSelectProp(prop.short_description, PropertyValue.isPropListPlus(prop))
+          .concat(filteredList);
+      }
       
       PropertyValue.setPropertyValue(item, prop_index, 'filteredList', filteredList);
     }
