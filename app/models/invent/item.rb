@@ -296,10 +296,10 @@ module Invent
     end
 
     def prevent_destroy
-      op = warehouse_operations.find(&:processing?)
-      return unless op
+      order = warehouse_orders.find(&:processing?)
+      return unless order
 
-      errors.add(:base, :cannot_destroy_with_processing_operation, order_id: op.operationable.id)
+      errors.add(:base, :cannot_destroy_with_processing_operation, order_id: order.id)
       throw(:abort)
     end
 

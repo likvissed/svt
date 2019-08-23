@@ -100,9 +100,9 @@ module Warehouse
     end
 
     def prevent_destroy
-      op = operations.find(&:processing?)
-      if op
-        errors.add(:base, :cannot_destroy_with_processing_operation, order_id: op.operationable.id)
+      order = orders.find(&:processing?)
+      if order
+        errors.add(:base, :cannot_destroy_with_processing_operation, order_id: order.id)
         throw(:abort)
       elsif count_reserved.positive?
         errors.add(:base, :cannot_destroy_with_count_reserved)
