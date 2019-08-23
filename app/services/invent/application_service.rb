@@ -29,8 +29,9 @@ class Invent::ApplicationService < ApplicationService
   # Подготовить технику для редактирования
   def prepare_to_edit_item(item)
     item['id'] = item['item_id']
+    item['is_open_order'] = item['warehouse_orders'].any? { |order| order['status'] == 'processing' } if item['warehouse_orders'].present?
     item['property_values_attributes'] = item['property_values']
-
+ 
     item.delete('item_id')
     item.delete('property_values')
 

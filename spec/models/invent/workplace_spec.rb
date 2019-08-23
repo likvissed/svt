@@ -18,6 +18,7 @@ module Invent
       before { subject.status = :temporary }
 
       it { is_expected.to validate_presence_of(:freezing_time) }
+      it { is_expected.to validate_presence_of(:comment) }
     end
 
     describe '#destroy_from_***REMOVED***' do

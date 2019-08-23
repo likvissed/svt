@@ -53,7 +53,8 @@ import { app } from '../../app/app';
     });
 
     this.workplace.items_attributes.forEach((item) => {
-      this.Item.getTypesItem(item); this.Item.addProperties(item) 
+      this.Item.getTypesItem(item);
+      this.Item.addProperties(item);
     });
   };
 

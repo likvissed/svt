@@ -20,6 +20,7 @@ module Invent
               reduce: true, unless: :status_freezed?
     validates :id_tn, user_iss_by_id_tn: true, unless: -> { errors.any? || status_freezed? }
     validates :freezing_time, presence: true, if: -> { status == 'temporary' }
+    validates :comment, presence: true, if: -> { status == 'temporary' }
     validate :check_workplace_conditions, if: -> { workplace_type && !disabled_filters }
 
     before_destroy :check_items, prepend: true, unless: -> { hard_destroy }

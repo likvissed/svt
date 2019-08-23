@@ -206,7 +206,7 @@ module Warehouse
 
     # Проверяет, чтобы техника ордера относилась только к одному рабочему месту
     def uniqueness_of_workplace
-      length = operations.map { |op| op.inv_items.map(&:workplace_id) }.flatten.compact.uniq.length
+      length = operations.map { |op| op.inv_items.map(&:workplace_id) if op.status_was == 'processing' || op.processing? }.flatten.compact.uniq.length
       return if [0, 1].include?(length)
 
       errors.add(:base, :uniq_workplace)

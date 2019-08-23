@@ -65,8 +65,12 @@ module ServiceMacros
       prop_val['id'] = nil
       prop_val['item_id'] = nil
     end
-
+    
     wp.data['items_attributes'] << new_mon
+ 
+    wp.data['items_attributes'].each do |item|
+      item.delete('warehouse_orders')
+    end
     wp.data
   end
 end

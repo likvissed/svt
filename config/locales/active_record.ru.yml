@@ -36,6 +36,7 @@ ru:
           disapproved: "Отклонено"
           freezed: "Заморожено"
           temporary: "Временное РМ"
+        comment: 'Комментарий'
 
       invent/workplace/items:
         base: ""

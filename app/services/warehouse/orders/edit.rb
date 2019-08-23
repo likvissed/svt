@@ -77,7 +77,12 @@ module Warehouse
 
       def check_hosts
         data[:order]['operations_attributes'].each do |op|
-          invent_num = op['inv_items'].any? ? op['inv_items'].first['invent_num'] : nil
+          invent_num = if op['inv_items'].any?
+                         Invent::Type::NAME_TYPE_OF_HOST.include?(op['inv_items'].first['type']['name']) ? op['inv_items'].first['invent_num'] : nil
+                       else
+                         nil
+                       end
+          
           host_data = HostIss.by_invent_num(invent_num)
           op['unreg'] = host_data ? host_data['class'].to_i == 4 : nil
         end
