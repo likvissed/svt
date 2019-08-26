@@ -42,11 +42,12 @@ module Invent
             :workplace_count,
             :iss_reference_room,
             items: {
-              include: {
+              include: [
+                :warehouse_orders,
                 property_values: {
                   include: :property
                 }
-              }
+              ]
             }
           ]
         )

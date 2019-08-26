@@ -21,6 +21,8 @@ module Invent
 
       def init_model
         data[:model] = Model.new
+
+        data[:property_list_not_fixed] = PropertyList.find_by(value: 'not_fixed')
         data[:model_property_list] = data[:model].model_property_lists.build
       end
     end

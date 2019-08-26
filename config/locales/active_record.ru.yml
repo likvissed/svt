@@ -36,6 +36,7 @@ ru:
           disapproved: "Отклонено"
           freezed: "Заморожено"
           temporary: "Временное РМ"
+        comment: 'Комментарий'
 
       invent/workplace/items:
         base: ""
@@ -178,6 +179,10 @@ ru:
         warehouse_types:
           without_invent_num: 'Без инв. №'
           with_invent_num: 'С инв. №'
+
+      warehouse/item/property_values:
+        value: "Значение свойств техники"
+        unknown_property_type: "Неизвестный тип свойства"
 
       user:
         tn: Табельный номер

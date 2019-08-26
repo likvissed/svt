@@ -32,7 +32,7 @@ module Warehouse
         end
 
         it 'loads all types of equipment' do
-          expect(subject.data[:eq_types].count).to eq Invent::Type.count - 1
+          expect(subject.data[:eq_types].count).to eq Invent::Type.count
         end
 
         it 'sets 1 to the shift attribute' do

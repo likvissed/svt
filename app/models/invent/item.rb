@@ -194,19 +194,31 @@ module Invent
     end
 
     # Сгенерировать массив объектов значений свойств.
-    def build_property_values(skip_validations = false)
+    def build_property_values(w_item, skip_validations)
       return unless type
 
-      self.property_values = type.properties.map do |prop|
-        prop_list = model.property_list_for(prop) if model && Property::LIST_PROPS.include?(prop.property_type)
+      array_property_id = w_item.property_values.map(&:property_id)
 
+      type.properties.each do |prop|
+        add_inv_property_value(prop, '', skip_validations) unless array_property_id.include?(prop.property_id)
+
+        w_item.property_values.where(property_id: prop.property_id).find_each do |prop_val|
+          add_inv_property_value(prop, prop_val.value, skip_validations)
+        end
+      end
+    end
+
+    def add_inv_property_value(property, value, skip_validations = false)
+      prop_list = model.property_list_for(property) if model && Property::LIST_PROPS.include?(property.property_type)
+
+      property_values.push(
         PropertyValue.new(
-          property: prop,
+          property: property,
           property_list: prop_list,
-          value: '',
+          value: value,
           skip_validations: skip_validations
         )
-      end
+      )
     end
 
     # Проверяет необходимость замены батарей для ИБП.
@@ -284,10 +296,10 @@ module Invent
     end
 
     def prevent_destroy
-      op = warehouse_operations.find(&:processing?)
-      return unless op
+      order = warehouse_orders.find(&:processing?)
+      return unless order
 
-      errors.add(:base, :cannot_destroy_with_processing_operation, order_id: op.operationable.id)
+      errors.add(:base, :cannot_destroy_with_processing_operation, order_id: order.id)
       throw(:abort)
     end
 

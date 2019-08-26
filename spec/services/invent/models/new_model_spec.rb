@@ -3,6 +3,8 @@ require 'feature_helper'
 module Invent
   module Models
     RSpec.describe NewModel, type: :model do
+      include_examples 'includes field property_list_not_fixed'
+
       it 'adds :model and :types keys to the data variable' do
         subject.run
         expect(subject.data).to include(:model, :types)

@@ -4,6 +4,7 @@ module Warehouse
   RSpec.describe Item, type: :model do
     it { is_expected.to have_many(:operations).dependent(:nullify) }
     it { is_expected.to have_many(:supplies).through(:operations).class_name('Warehouse::Supply').source(:operationable) }
+    it { is_expected.to have_many(:property_values).inverse_of(:item).dependent(:destroy).with_foreign_key('warehouse_item_id').order('invent_property.property_order') }
     it { is_expected.to have_many(:orders).through(:operations).class_name('Warehouse::Order').source(:operationable) }
     it { is_expected.to belong_to(:inv_item).class_name('Invent::Item').with_foreign_key('invent_item_id') }
     it { is_expected.to belong_to(:inv_type).class_name('Invent::Type').with_foreign_key('invent_type_id') }
@@ -16,6 +17,8 @@ module Warehouse
 
     it { is_expected.to validate_numericality_of(:count).is_greater_than_or_equal_to(0) }
     it { is_expected.to validate_numericality_of(:count_reserved).is_greater_than_or_equal_to(0) }
+
+    it { is_expected.to accept_nested_attributes_for(:property_values).allow_destroy(true) }
 
     context 'when warehouse_type is :with_invent_num' do
       subject { build(:new_item, count: 4, inv_type: Invent::Type.find_by(name: :pc), item_model: 'UNIT') }

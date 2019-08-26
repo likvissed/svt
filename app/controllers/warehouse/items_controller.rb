@@ -1,5 +1,7 @@
 module Warehouse
   class ItemsController < Warehouse::ApplicationController
+    before_action :check_access, only: %i[edit update]
+
     def index
       respond_to do |format|
         format.html
@@ -15,6 +17,26 @@ module Warehouse
       end
     end
 
+    def edit
+      edit_item = Items::Edit.new(params[:id])
+
+      if edit_item.run
+        render json: edit_item.data
+      else
+        render json: { full_message: I18n.t('controllers.app.unprocessable_entity') }, status: 422
+      end
+    end
+
+    def update
+      update_item = Items::Update.new(current_user, params[:id], item_params)
+
+      if update_item.run
+        render json: { full_message: I18n.t('controllers.warehouse/item.updated') }
+      else
+        render json: update_item.error, status: 422
+      end
+    end
+
     # def destroy
     #   @destroy = Items::Destroy.new(current_user, params[:id])
 
@@ -24,5 +46,15 @@ module Warehouse
     #     render json: { full_message: @destroy.error[:full_message] }, status: 422
     #   end
     # end
+
+    protected
+
+    def check_access
+      authorize %i[warehouse item], :ctrl_access?
+    end
+
+    def item_params
+      params.require(:item).permit(policy(Item).permitted_attributes)
+    end
   end
 end

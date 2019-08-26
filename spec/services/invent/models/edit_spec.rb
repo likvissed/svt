@@ -18,6 +18,8 @@ module Invent
 
       its(:run) { is_expected.to be_truthy }
 
+      include_examples 'includes field property_list_not_fixed'
+
       it 'adds :model and :types keys to the data variable' do
         subject.run
         expect(subject.data).to include(:model, :types)
@@ -43,18 +45,6 @@ module Invent
         subject.data[:model]['model_property_lists_attributes'].each do |prop_list|
           expect(prop_list).to include('id')
         end
-      end
-
-      it 'includes key :property_list_not_fixed' do
-        subject.run
-
-        expect(subject.data).to include(:property_list_not_fixed)
-      end
-
-      it 'attribute :property_list_id match of PropertyList' do
-        subject.run
-
-        expect(subject.data[:property_list_not_fixed].property_list_id).to eq PropertyList.find_by(value: 'not_fixed').property_list_id
       end
     end
   end

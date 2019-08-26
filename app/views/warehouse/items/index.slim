@@ -29,6 +29,7 @@
               tr
                 th
                 th
+                th
                 th Тип техники
                 th ID
                 th Модель
@@ -42,6 +43,9 @@
                 td
                   input{ type="checkbox" ng-model="item.added_to_order" ng-true-value="true" ng-false-value="false" ng-click="table.togglePosition(item)"
                     ng-disabled="(!table.isItemInStock(item) && !table.isItemInOrder(item)) || table.isItemInDoneOp(item)" }
+                td
+                  = render partial: 'edit'
+                  spen class="fa fa-pencil-square-o" uib-tooltip="Редактировать технику" class="pointer" ng-click="table.editItem(item)" ng-if="item.inv_type.name == 'allin1' || item.inv_type.name == 'pc' || item.inv_type.name == 'notebook'"
                 td
                   ng-warehouse-item-supply-popover
                 td.col-sm-3 ng-bind="item.item_type"

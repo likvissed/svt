@@ -238,6 +238,17 @@ module Warehouse
         end
 
         it { is_expected.not_to be_valid }
+
+        context 'and when for one operation the status changes :done' do
+          let(:user) { create(:***REMOVED***_user)}
+          before do
+            operations.first.status = 'done'
+            operations.first.stockman_fio = user.fullname
+            subject.consumer_fio = user.fullname
+          end
+
+          it { is_expected.to be_valid }
+        end
       end
 
       context 'when items belongs to the same workplace' do

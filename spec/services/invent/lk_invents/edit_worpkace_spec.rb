@@ -21,9 +21,9 @@ module Invent
             expect(subject.data).to include('location_room_name', 'items_attributes')
           end
 
-          it 'fills each items_attribute at least with %w[id property_values_attributes] keys' do
+          it 'fills each items_attribute at least with %w[warehouse_orders id property_values_attributes] keys' do
             subject.data['items_attributes'].each do |item|
-              expect(item).to include('id', 'property_values_attributes')
+              expect(item).to include('warehouse_orders', 'id', 'property_values_attributes')
             end
           end
 

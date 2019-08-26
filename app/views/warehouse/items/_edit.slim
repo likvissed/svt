@@ -1,0 +1,13 @@
+script type="text/ng-template" id="WarehousePropertyValueEditCtrl.slim"
+  .modal-header
+    h4 Редактирование техники
+  .modal-body
+    .row.item-row
+      .pull-right
+        .form-group.col-lg-15
+          = button_tag "Загрузить данные из файла", type: :button, class: "btn-default", "ng-click": "edit.runManuallyPcDialog()" 
+    = render :partial => 'invent/items/property_values'
+  .modal-footer
+    = button_tag "Сохранить", type: :button, class: "btn-success", "ng-click": "edit.save()"
+    = button_tag "Закрыть", type: :button, class: "btn-default", "ng-click": "edit.close()"
+= render :partial => 'invent/workplaces/manually_pc_modal'

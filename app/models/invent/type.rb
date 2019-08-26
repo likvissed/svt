@@ -15,6 +15,8 @@ module Invent
     TYPE_WITH_FILES = %w[pc allin1 notebook].freeze
     # Список типов оборудования, которые не могут быть включены в состав серверного РМ
     REJECTED_SERVER_TYPES = %w[notebook tablet].freeze
+    # Типы оборудования, которые могут регистрироваться в сети
+    NAME_TYPE_OF_HOST = %w[pc printer mfu print_server ups allin1 notebook].freeze
 
     has_many :items, dependent: :destroy
     has_many :property_to_types, dependent: :destroy

@@ -39,5 +39,25 @@ module Warehouse
       status :non_used
       inv_item nil
     end
+
+    factory :expanded_item, parent: :used_item, class: Item do
+      item_model 'Asus 123H'
+      invent_type_id Invent::Type.find_by(name: :notebook).type_id
+      item_type Invent::Type.find_by(name: :notebook).name
+    end
+
+    factory :item_with_property_values, parent: :used_item, class: Item do
+      after(:build) do |item|
+        item.item_model = 'HP R321'
+        item.invent_type_id = Invent::Type.find_by(name: :pc).type_id
+        item.item_type = Invent::Type.find_by(name: :pc).name
+
+        item.property_values << build(:mb_property_values, warehouse_item_id: item.id)
+        item.property_values << build(:ram_property_values, warehouse_item_id: item.id)
+        item.property_values << build(:cpu_property_values, warehouse_item_id: item.id)
+        item.property_values << build(:hdd_property_values, warehouse_item_id: item.id)
+        item.property_values << build(:video_property_values, warehouse_item_id: item.id)
+      end
+    end
   end
 end
