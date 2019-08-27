@@ -4,8 +4,12 @@ module Warehouse
       not_for_***REMOVED***_user
     end
 
+    def edit?
+      record.new?
+    end
+
     def update?
-      for_worker
+      for_worker if record.new?
     end
 
     def permitted_attributes

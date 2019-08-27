@@ -20,5 +20,18 @@ module Warehouse
 
       include_examples 'policy for worker'
     end
+
+    permissions :update? do
+      let(:model) { create(:new_item) }
+
+      include_examples 'policy for worker'
+      include_examples 'status for item is non_used'
+    end
+
+    permissions :edit? do
+      let(:model) { create(:new_item) }
+
+      include_examples 'status for item is non_used'
+    end
   end
 end

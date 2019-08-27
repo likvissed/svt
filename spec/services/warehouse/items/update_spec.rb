@@ -24,7 +24,7 @@ module Warehouse
         subject { Update.new(current_user, item.id, new_item) }
 
         context 'when property_values for item present' do
-          let!(:item) { create(:item_with_property_values) }
+          let!(:item) { create(:item_with_property_values, status: 'non_used') }
 
           its(:run) { is_expected.to be_truthy }
 
@@ -60,7 +60,7 @@ module Warehouse
         end
 
         context 'when property_values for item is empty' do
-          let!(:item) { create(:expanded_item) }
+          let!(:item) { create(:new_item) }
           let(:param_property_value) { { property_id: property.find_by(name: 'video').property_id, value: '' } }
 
           its(:run) { is_expected.to be_truthy }
