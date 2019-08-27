@@ -5,7 +5,8 @@ module Warehouse
     RSpec.describe Edit, type: :model do
       describe '#run' do
         context 'when absent property_values for item' do
-          let(:item) { create(:expanded_item) }
+          let(:item) { create(:new_item) }
+
           subject { Edit.new(item.id) }
 
           its(:run) { is_expected.to be_truthy }
@@ -51,7 +52,7 @@ module Warehouse
         end
 
         context 'when present property_values for item' do
-          let(:item) { create(:item_with_property_values) }
+          let(:item) { create(:item_with_property_values, status: 'non_used') }
           subject { Edit.new(item.id) }
 
           its(:run) { is_expected.to be_truthy }

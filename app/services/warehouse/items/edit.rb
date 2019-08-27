@@ -24,8 +24,10 @@ module Warehouse
       protected
 
       def load_item
-        data[:item] = Item.includes(:inv_type, :property_values)
-                        .find(@item_id)
+        data[:item] = Item.includes(:inv_type, :property_values).find(@item_id)
+        authorize data[:item], :edit?
+
+        data[:item] = data[:item]
                         .as_json(
                           include: [
                             :inv_type,
