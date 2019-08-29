@@ -20,7 +20,7 @@ import { FormValidationController } from '../../shared/functions/form-validation
     this.model = Model.model;
     this.types = Model.types;
     this.vendors = angular.copy(Vendors.vendors);
-    
+
     this._createModelPropertyListGetterSetter();
     this._addInitialValues();
   }

@@ -14,11 +14,11 @@ function EditWorkplaceCountsController($uibModalInstance, dept, $http, Error, Fl
   this.Error = Error;
   this.$uibModalInstance = $uibModalInstance;
   this.dept = dept;
-  
+
   // Открыть календарь для выбора даты
-  this.date = { 
+  this.date = {
     DatePickerStart: false,
-    DatePickerEnd: false,
+    DatePickerEnd  : false
   };
   this.Flash = Flash;
 }
@@ -30,7 +30,7 @@ EditWorkplaceCountsController.prototype.save = function () {
   if (this.dept.workplace_count_id) {
     //  < update >
     this.$http.put(`/invent/workplace_counts/${this.dept.workplace_count_id}.json`, {
-      workplace_count: this.dept,
+      workplace_count: this.dept
     }).then(
       (response) => {
         this.Flash.notice(response.data.full_message);
@@ -39,12 +39,12 @@ EditWorkplaceCountsController.prototype.save = function () {
       (response, status) => {
         this.Error.response(response, status);
         this.errorResponse(response);
-      },
+      }
     );
   } else {
     //  < create >
     this.$http.post('/invent/workplace_counts.json', {
-      workplace_count: this.dept,
+      workplace_count: this.dept
     }).then(
       (response) => {
         this.Flash.notice(response.data.full_message);
@@ -53,7 +53,7 @@ EditWorkplaceCountsController.prototype.save = function () {
       (response, status) => {
         this.Error.response(response, status);
         this.errorResponse(response);
-      },
+      }
     );
   }
 };
@@ -65,12 +65,12 @@ EditWorkplaceCountsController.prototype.close = function () {
 // Добавить нового ответственного для отдела
 EditWorkplaceCountsController.prototype.addResponsible = function () {
   const addUser = {
-    id: '',
-    id_tn: '',
-    tn: '',
+    id      : '',
+    id_tn   : '',
+    tn      : '',
     fullname: '',
-    phone: '',
-    role_id: '',
+    phone   : '',
+    role_id : ''
   };
   this.dept.users_attributes.push(addUser);
 };

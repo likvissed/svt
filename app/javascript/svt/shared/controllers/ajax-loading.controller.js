@@ -11,12 +11,13 @@ import { app } from '../../app/app';
    * @class SVT.AjaxLoadingCtrl
    */
   function AjaxLoadingCtrl($scope, myHttpInterceptor) {
-    this.requests = myHttpInterceptor.getRequestsCount; // Число запросов
+    // Число запросов
+    this.requests = myHttpInterceptor.getRequestsCount;
 
     // Настройка ajax запросов, посланных с помощью jQuery (например, в datatables).
     $.ajaxSetup({
       beforeSend: () => myHttpInterceptor.incCount(),
-      complete: () => {
+      complete  : () => {
         myHttpInterceptor.decCount();
 
         this.requests = myHttpInterceptor.getRequestsCount;

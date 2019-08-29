@@ -18,11 +18,11 @@ import { app } from '../../app/app';
 
     this.selectedTableFilters = {
       show_only_presence: true,
-      status: '',
-      item_type: '',
-      barcode: '',
-      invent_num: '',
-      invent_item_id: ''
+      status            : '',
+      item_type         : '',
+      barcode           : '',
+      invent_num        : '',
+      invent_item_id    : ''
     };
     this.filters = {
       selStatusFilter: { '': 'Все состояния' }
@@ -32,11 +32,11 @@ import { app } from '../../app/app';
   WarehouseItems.prototype.loadItems = function(init) {
     return this.Server.Warehouse.Item.query(
       {
-        start: this.TablePaginator.startNum(),
-        length: this.Config.global.uibPaginationConfig.itemsPerPage,
-        init_filters: init,
-        filters: this.selectedTableFilters,
-        selected_order_id: this.Order.order.id,
+        start            : this.TablePaginator.startNum(),
+        length           : this.Config.global.uibPaginationConfig.itemsPerPage,
+        init_filters     : init,
+        filters          : this.selectedTableFilters,
+        selected_order_id: this.Order.order.id
       },
       (response) => {
         // Список элементов склада
@@ -57,6 +57,7 @@ import { app } from '../../app/app';
   WarehouseItems.prototype.findSelected = function() {
     if (this.Order.order.operations_attributes.length == 0) {
       this.items.map((item) => item.added_to_order = false)
+
       return;
     }
 

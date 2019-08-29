@@ -52,11 +52,11 @@ import { FormValidationController } from '../../shared/functions/form-validation
    */
   VendorsCtrl.prototype.newVendor = function() {
     this.$uibModal.open({
-      templateUrl: 'editVendorModal.slim',
-      controller: 'EditVendorCtrl',
+      templateUrl : 'editVendorModal.slim',
+      controller  : 'EditVendorCtrl',
       controllerAs: 'edit',
-      size: 'md',
-      backdrop: 'static'
+      size        : 'md',
+      backdrop    : 'static'
     });
   }
 
@@ -66,7 +66,7 @@ import { FormValidationController } from '../../shared/functions/form-validation
    * @param vendor
    */
   VendorsCtrl.prototype.destroyVendor = function(vendor) {
-    let confirm_str = "Вы действительно хотите удалить вендор \"" + vendor.vendor_name + "\"? Удаление вендора приведет к удалению всех связанных с ним моделей.";
+    let confirm_str = `Вы действительно хотите удалить вендор "${vendor.vendor_name}"? Удаление вендора приведет к удалению всех связанных с ним моделей.`;
 
     if (!confirm(confirm_str)) { return false; }
 
@@ -110,7 +110,7 @@ import { FormValidationController } from '../../shared/functions/form-validation
   };
 
 
- //Закрыть окно
+ // Закрыть окно
   EditVendorCtrl.prototype.cancel = function() {
     this.$uibModalInstance.dismiss();
   }

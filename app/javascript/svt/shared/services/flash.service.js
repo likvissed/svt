@@ -15,7 +15,7 @@ import { app } from '../../app/app';
 
     this.flash = {
       notice: '',
-      alert:  ''
+      alert : ''
     };
   }
 

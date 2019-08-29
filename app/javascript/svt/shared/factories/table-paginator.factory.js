@@ -11,9 +11,9 @@ import { app } from '../../app/app';
   function TablePaginator(Config) {
     let _pagination = {
       filteredRecords: 0,
-      totalRecords: 0,
-      currentPage: 1,
-      maxSize: 5
+      totalRecords   : 0,
+      currentPage    : 1,
+      maxSize        : 5
     };
 
     return {

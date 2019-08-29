@@ -18,30 +18,30 @@ import { app } from '../../app/app';
          */
         Workplace: $resource('/invent/workplaces/:workplace_id.json', {}, {
           query: {
-            method: 'GET',
+            method : 'GET',
             isArray: false
           },
           list: {
-            method: 'GET',
+            method : 'GET',
             isArray: false,
-            url: '/invent/workplaces/list_wp.json'
+            url    : '/invent/workplaces/list_wp.json'
           },
           new: {
             method: 'GET',
-            url: '/invent/workplaces/new.json'
+            url   : '/invent/workplaces/new.json'
           },
           edit: {
             method: 'GET',
-            url: '/invent/workplaces/:id/edit.json'
+            url   : '/invent/workplaces/:id/edit.json'
           },
-          update: { method: 'PUT' },
+          update : { method: 'PUT' },
           confirm: {
             method: 'PUT',
-            url: '/invent/workplaces/confirm'
+            url   : '/invent/workplaces/confirm'
           },
           hardDelete: {
             method: 'DELETE',
-            url: '/invent/workplaces/:workplace_id/hard_destroy'
+            url   : '/invent/workplaces/:workplace_id/hard_destroy'
           }
         }),
         /**
@@ -51,57 +51,57 @@ import { app } from '../../app/app';
         /**
          * Ресурс модели экземпляров техники.
          */
-        Item: $resource('/invent/items/:item_id.json', {}, {
+        Item          : $resource('/invent/items/:item_id.json', {}, {
           query: {
-            method: 'GET',
+            method : 'GET',
             isArray: false
           },
           edit: {
             method: 'GET',
-            url: '/invent/items/:item_id/edit.json'
+            url   : '/invent/items/:item_id/edit.json'
           },
           busy: {
             method: 'GET',
-            url: '/invent/items/busy'
+            url   : '/invent/items/busy'
           },
           avaliable: {
-            method: 'GET',
-            url: '/invent/items/avaliable/:type_id',
+            method : 'GET',
+            url    : '/invent/items/avaliable/:type_id',
             isArray: true
           },
           pcConfigFromAudit: {
             method: 'GET',
-            url: '/invent/items/pc_config_from_audit/:invent_num'
+            url   : '/invent/items/pc_config_from_audit/:invent_num'
           },
           pcConfigFromUser: {
-            method: 'POST',
-            url: '/invent/items/pc_config_from_user.json',
-            headers: { 'Content-Type': undefined },
+            method          : 'POST',
+            url             : '/invent/items/pc_config_from_user.json',
+            headers         : { 'Content-Type': undefined },
             transformRequest: angular.identity
           },
           toStock: {
             method: 'POST',
-            url: '/invent/items/to_stock'
+            url   : '/invent/items/to_stock'
           },
           toWriteOff: {
             method: 'POST',
-            url: '/invent/items/to_write_off'
+            url   : '/invent/items/to_write_off'
           },
           update: { method: 'PUT' }
         }),
         Vendor: $resource('/invent/vendors/:vendor_id.json', {}),
-        Model: $resource('/invent/models/:model_id.json', {}, {
+        Model : $resource('/invent/models/:model_id.json', {}, {
           query: {
-            method: 'GET',
+            method : 'GET',
             isArray: false
           },
           newModel: {
             method: 'GET',
-            url: '/invent/models/new'
+            url   : '/invent/models/new'
           },
           edit: {
             method: 'GET',
-            url: '/invent/models/:model_id/edit'
+            url   : '/invent/models/:model_id/edit'
           },
           update: { method: 'PUT' }
         })
@@ -111,8 +111,8 @@ import { app } from '../../app/app';
        */
       UserIss: $resource('/user_isses/:id.json', {}, {
         usersFromDivision: {
-          method: 'GET',
-          url: ' /user_isses/users_from_division/:division',
+          method : 'GET',
+          url    : ' /user_isses/users_from_division/:division',
           isArray: true
         }
       }),
@@ -121,113 +121,113 @@ import { app } from '../../app/app';
        */
       User: $resource('/users/:id.json', {}, {
         query: {
-          method: 'GET',
+          method : 'GET',
           isArray: false
         },
         newUser: {
           method: 'GET',
-          url: '/users/new'
+          url   : '/users/new'
         },
         edit: {
           method: 'GET',
-          url: '/users/:id/edit'
+          url   : '/users/:id/edit'
         },
         update: { method: 'PUT' }
       }),
       Warehouse: {
         Item: $resource('/warehouse/items/:id.json', {}, {
           query: {
-            method: 'GET',
+            method : 'GET',
             isArray: false
           },
           edit: {
             method: 'GET',
-            url: '/warehouse/items/:id/edit.json'
+            url   : '/warehouse/items/:id/edit.json'
           },
           update: { method: 'PUT' }
         }),
         Order: $resource('/warehouse/orders/:id.json', {}, {
           query: {
-            method: 'GET',
-            url: '/warehouse/orders/:operation.json',
+            method : 'GET',
+            url    : '/warehouse/orders/:operation.json',
             isArray: false
           },
           newOrder: {
-            method: 'GET',
-            url: '/warehouse/orders/new',
+            method : 'GET',
+            url    : '/warehouse/orders/new',
             isArray: false
           },
           edit: {
             method: 'GET',
-            url: '/warehouse/orders/:id/edit.json'
+            url   : '/warehouse/orders/:id/edit.json'
           },
           print: {
             method: 'GET',
-            url: '/warehouse/orders/:id/print'
+            url   : '/warehouse/orders/:id/print'
           },
           prepareToDeliver: {
             method: 'POST',
-            url: '/warehouse/orders/:id/prepare_to_deliver.json'
+            url   : '/warehouse/orders/:id/prepare_to_deliver.json'
           },
           saveIn: {
             method: 'POST',
-            url: '/warehouse/orders/create_in'
+            url   : '/warehouse/orders/create_in'
           },
           saveOut: {
             method: 'POST',
-            url: '/warehouse/orders/create_out'
+            url   : '/warehouse/orders/create_out'
           },
           saveWriteOff: {
             method: 'POST',
-            url: '/warehouse/orders/create_write_off'
+            url   : '/warehouse/orders/create_write_off'
           },
           updateIn: {
             method: 'PUT',
-            url: '/warehouse/orders/:id/update_in'
+            url   : '/warehouse/orders/:id/update_in'
           },
           updateOut: {
             method: 'PUT',
-            url: '/warehouse/orders/:id/update_out'
+            url   : '/warehouse/orders/:id/update_out'
           },
           updateWriteOff: {
             method: 'PUT',
-            url: '/warehouse/orders/:id/update_write_off'
+            url   : '/warehouse/orders/:id/update_write_off'
           },
           confirm: {
             method: 'PUT',
-            url: '/warehouse/orders/:id/confirm'
+            url   : '/warehouse/orders/:id/confirm'
           },
           executeIn: {
             method: 'POST',
-            url: '/warehouse/orders/:id/execute_in'
+            url   : '/warehouse/orders/:id/execute_in'
           },
           executeOut: {
             method: 'POST',
-            url: '/warehouse/orders/:id/execute_out'
+            url   : '/warehouse/orders/:id/execute_out'
           },
           executeWriteOff: {
             method: 'POST',
-            url: '/warehouse/orders/:id/execute_write_off'
+            url   : '/warehouse/orders/:id/execute_write_off'
           }
         }),
         Supply: $resource('/warehouse/supplies/:id.json', {}, {
-          query: { isArray: false },
+          query    : { isArray: false },
           newSupply: {
-            method: 'GET',
-            url: '/warehouse/supplies/new',
+            method : 'GET',
+            url    : '/warehouse/supplies/new',
             isArray: false
           },
           edit: {
             method: 'GET',
-            url: '/warehouse/supplies/:id/edit.json'
+            url   : '/warehouse/supplies/:id/edit.json'
           },
           update: { method: 'PUT' }
         })
       },
       Location: $resource('', {}, {
         rooms: {
-          method: 'GET',
-          url: ' /locations/load_rooms/:building_id',
+          method : 'GET',
+          url    : ' /locations/load_rooms/:building_id',
           isArray: true
         }
       }),

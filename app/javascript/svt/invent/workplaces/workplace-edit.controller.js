@@ -7,7 +7,7 @@ import { app } from '../../app/app';
 
   WorkplaceEditCtrl.$inject = ['$timeout', '$uibModal', 'Workplace', 'WorkplaceItem', 'InventItem', 'Flash', 'Config'];
 
-    /**
+  /**
    * Редактирование данных о РМ. Подтверждение/отклонение введенных данных.
    *
    * @class SVT.WorkplaceEditCtrl
@@ -67,7 +67,7 @@ import { app } from '../../app/app';
   WorkplaceEditCtrl.prototype.formatLabel = function(id_tn) {
     if (!this.users) { return ''; }
 
-    for (let i = 0; i < this.users.length; i ++) {
+    for (let i = 0; i < this.users.length; i++) {
       if (id_tn === this.users[i].id_tn) {
         return this.users[i].fio;
       }
@@ -114,12 +114,14 @@ import { app } from '../../app/app';
    */
   WorkplaceEditCtrl.prototype.showSelectItemType = function() {
     let modalInstance = this.$uibModal.open({
-      animation: this.Config.global.modalAnimation,
-      templateUrl: 'newItem.slim',
-      controller: 'SelectItemTypeCtrl',
+
+      animation   : this.Config.global.modalAnimation,
+      templateUrl : 'newItem.slim',
+      controller  : 'SelectItemTypeCtrl',
       controllerAs: 'select',
-      size: 'md',
-      backdrop: 'static',
+      size        : 'md',
+      backdrop    : 'static',
+
       resolve: {
         data: () => {
           return { eq_types: this.eq_types };
@@ -160,7 +162,7 @@ import { app } from '../../app/app';
    * @param item
    */
   WorkplaceEditCtrl.prototype.destroyItem = function(item) {
-    let confirm_str = "ВНИМАНИЕ! Техника будет удалена без возможности восстановления! Вы действительно хотите удалить " + item.type.short_description + "?";
+    let confirm_str = `ВНИМАНИЕ! Техника будет удалена без возможности восстановления! Вы действительно хотите удалить  "${item.type.short_description}"?`;
 
     if (!confirm(confirm_str)) { return false; }
 
@@ -173,7 +175,7 @@ import { app } from '../../app/app';
    * @param id
    */
   WorkplaceEditCtrl.prototype.destroyWp = function() {
-    let confirm_str = "ВНИМАНИЕ! Вместе с рабочим местом будет удалена вся входящая в него техника! Вы действительно хотите удалить рабочее место?";
+    let confirm_str = 'ВНИМАНИЕ! Вместе с рабочим местом будет удалена вся входящая в него техника! Вы действительно хотите удалить рабочее место?';
 
     if (!confirm(confirm_str)) { return false; }
 
@@ -186,7 +188,7 @@ import { app } from '../../app/app';
    * @param item
    */
   WorkplaceEditCtrl.prototype.sendItemToStock = function(item) {
-    let confirm_str = "ВНИМАНИЕ! Техника будет перемещена на склад! Вы действительно хотите переместить на склад " + item.type.short_description + "?";
+    let confirm_str = `ВНИМАНИЕ! Техника будет перемещена на склад! Вы действительно хотите переместить на склад ${item.type.short_description}?`;
 
     if (!confirm(confirm_str)) { return false; }
 
@@ -199,7 +201,7 @@ import { app } from '../../app/app';
    * @param item
    */
   WorkplaceEditCtrl.prototype.sendItemToWriteOff = function(item) {
-    let confirm_str = "ВНИМАНИЕ! Техника будет перемещена на склад и помечена на списание! Вы действительно хотите переместить на склад " + item.type.short_description + " и создать ордер на списание?";
+    let confirm_str = `ВНИМАНИЕ! Техника будет перемещена на склад и помечена на списание! Вы действительно хотите переместить на склад ${item.type.short_description} и создать ордер на списание?`;
 
     if (!confirm(confirm_str)) { return false; }
 

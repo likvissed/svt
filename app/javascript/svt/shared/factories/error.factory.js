@@ -27,7 +27,7 @@ import { app } from '../../app/app';
           descr;
 
         code = (response && response.status) ? parseInt(response.status): parseInt(status);
-        switch(code) {
+        switch (code) {
           case 401:
             Flash.alert('Ваш сеанс закончился. Пожалуйста, войдите в систему снова.');
             break;
@@ -37,20 +37,21 @@ import { app } from '../../app/app';
           case 404:
             Flash.alert('Запись не найдена.');
             break;
-          case 422:
+          case 422: {
             let message = response.data ? response.data.full_message : response.full_message;
 
             if (message) {
               Flash.alert(message);
             } else {
-              descr = (response && response.statusText) ? ' (' + response.statusText + ')' : '';
-              Flash.alert('Ошибка. Код: ' + code + descr + '. Обратитесь к администратору (тел. ***REMOVED***).');
+              descr = (response && response.statusText) ? ` ( ${response.statusText} )` : '';
+              Flash.alert(`Ошибка. Код: ${code} ${descr}. Обратитесь к администратору (тел. ***REMOVED***).`);
             }
 
             break;
+          }
           default:
-            descr = (response && response.statusText) ? ' (' + response.statusText + ')' : '';
-            Flash.alert('Ошибка. Код: ' + code + descr + '. Обратитесь к администратору (тел. ***REMOVED***).');
+            descr = (response && response.statusText) ? ` ( ${response.statusText} )` : '';
+            Flash.alert(`Ошибка. Код: ${code} ${descr}. Обратитесь к администратору (тел. ***REMOVED***).`);
             break;
         }
       }

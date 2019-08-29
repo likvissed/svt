@@ -18,16 +18,16 @@ import { app } from '../../app/app';
     /**
      * Увеличить счетчик запросов.
      */
-    let incCount = () => this.requests.count ++;
+    let incCount = () => this.requests.count++;
 
     /**
      * Уменьшить счетчик запросов.
      */
-    let decCount = () => this.requests.count --;
+    let decCount = () => this.requests.count--;
 
     return {
       getRequestsCount: this.requests,
-      incCount: function() {
+      incCount        : function() {
         incCount();
       },
       decCount: function() {

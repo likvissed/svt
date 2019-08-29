@@ -10,7 +10,7 @@ import { app } from '../../app/app';
 
   function fileUpload(){
     return {
-      link: function(scope, element, attrs) {
+      link: function(scope, element) {
         element.on('change', function(event) {
           // Сохраняется сам файл, а также имя файла в массив данных
           scope.manually.setPcFile(event.target.files[0]);

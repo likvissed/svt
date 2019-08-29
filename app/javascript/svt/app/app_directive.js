@@ -22,33 +22,40 @@ import { app } from './app';
   function disableLink() {
     return {
       restrict: 'A',
+
       link: function(scope, element, attrs) {
-        let checkLink = function(data) {
-          if (data)
+        let checkLink = (data) => {
+          if (data) {
             element.on('click', function(event) {
               event.preventDefault();
             });
-          else
+          } else {
             element.off().on('click', function() {
               return true;
             })
+          }
         };
 
-        scope.$watch(attrs.disableLink, function(newValue, oldValue) {
+        scope.$watch(attrs.disableLink, function(newValue) {
           checkLink(newValue);
         });
       }
     }
   }
 
-  // Скомпилировать представление таблиц DataTable
-  // Нужно для работы директивы newRecord, так как на момент добавления этой директивы DOM уже скомпилирован
+  /**
+   * Скомпилировать представление таблиц DataTable
+   * Нужно для работы директивы newRecord, так как на момент добавления этой директивы DOM уже скомпилирован
+   */
   function datatableWrapper($timeout, $compile) {
     return {
       restrict: 'E',
+
       transclude: true,
+
       template: '<ng-transclude></ng-transclude>',
-      link: function(scope, element, attrs) {
+
+      link: function(scope, element) {
         function compileElements() {
           $timeout(function() {
             $compile(element.find('.new-record'))(scope);
@@ -82,15 +89,20 @@ import { app } from './app';
     };
   }
 
-  // Для таблицы DataTable добавить кнопку "Добавить", если у пользователя есть доступ
-  // Необходимо добавить в атрибут id имя контроллера, на который отправится запрос
+  /**
+   * Для таблицы DataTable добавить кнопку "Добавить", если у пользователя есть доступ
+   * Необходимо добавить в атрибут id имя контроллера, на который отправится запрос
+   */
   function newRecord() {
     return {
       restrict: 'C',
-      //template: '<button class="btn-sm btn btn-primary btn-block"
-      // ng-click="contactPage.showContactModal()">Добавить</button>'
+
+      /**
+       * template: '<button class="btn-sm btn btn-primary btn-block"
+       * ng-click="contactPage.showContactModal()">Добавить</button>'
+       */
       templateUrl: function(element, attrs) {
-        return '/link/new_record.json?ctrl_name=' + attrs.id;
+        return `/link/new_record.json?ctrl_name= ${attrs.id}`;
       }
     }
   }
@@ -99,8 +111,9 @@ import { app } from './app';
   function typeaheadOpenOnFocus($parse, $timeout) {
     return {
       require: 'ngModel',
-      link: function(scope, element, attrs) {
-        element.on('click', function(event) {
+
+      link: function(scope, element) {
+        element.on('click', function() {
           let
             ctrl = element.controller('ngModel'),
             prev = ctrl.$modelValue || '';
@@ -122,9 +135,9 @@ import { app } from './app';
   function ngTableInfo ($timeout, Config) {
     return {
       scope: {
-        infoAttrs: "="
+        infoAttrs: '='
       },
-      link: function(scope, element, attrs) {
+      link: function(scope, element) {
         let
           // Индекс начальной записи
           startRecord,
@@ -137,19 +150,21 @@ import { app } from './app';
 
         function setEl() {
           totalPages = Math.ceil(scope.infoAttrs.filteredRecords / Config.global.uibPaginationConfig.itemsPerPage);
-          startRecord  = (scope.infoAttrs.currentPage - 1) * Config.global.uibPaginationConfig.itemsPerPage + 1;
-          endRecord  = startRecord + Config.global.uibPaginationConfig.itemsPerPage - 1;
-          // Для последней страницы, если индекс конечной записи не совпадает с общим числом записей, значит общее число записей меньше, чем в индексе.
-          // Установить новый индекс конечной записи
+          startRecord = (scope.infoAttrs.currentPage - 1) * Config.global.uibPaginationConfig.itemsPerPage + 1;
+          endRecord = startRecord + Config.global.uibPaginationConfig.itemsPerPage - 1;
+          /**
+           * Для последней страницы, если индекс конечной записи не совпадает с общим числом записей, значит общее число записей меньше, чем в индексе.
+           * Установить новый индекс конечной записи
+           */
           if (endRecord != scope.infoAttrs.filteredRecords && totalPages == scope.infoAttrs.currentPage) {
             endRecord = scope.infoAttrs.filteredRecords;
           }
 
-          result = 'Записи с ' + startRecord + ' по ' + endRecord + ' из ' + scope.infoAttrs.filteredRecords;
+          result = `Записи с ${startRecord} по ${endRecord} из ${scope.infoAttrs.filteredRecords}`;
 
           // Если число отфильтрованных записей не совпадает с числом всех записей, вывести это на экран.
           if (scope.infoAttrs.filteredRecords != scope.infoAttrs.totalRecords) {
-            result += ' (выборка из ' + scope.infoAttrs.totalRecords + ' записей)'
+            result += ` (выборка из ${scope.infoAttrs.totalRecords} записей)`
           }
 
           element.text(result);

@@ -24,10 +24,10 @@ import { app } from '../../app/app';
   FindExistingItemService.prototype.loadBusyItems = function(type_id, invent_num, item_id, division) {
     return this.Server.Invent.Item.busy(
       {
-        type_id: type_id,
+        type_id   : type_id,
         invent_num: invent_num,
-        item_id: item_id,
-        division: division
+        item_id   : item_id,
+        division  : division
       },
       (response) => {
         this.items = response.items;

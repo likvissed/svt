@@ -101,11 +101,11 @@ import { app } from '../../app/app';
   WarehouseOrder.prototype.loadOrders = function(operation, init = false) {
     return this.Server.Warehouse.Order.query(
       {
-        start: this.TablePaginator.startNum(),
-        length: this.Config.global.uibPaginationConfig.itemsPerPage,
-        operation: operation,
+        start       : this.TablePaginator.startNum(),
+        length      : this.Config.global.uibPaginationConfig.itemsPerPage,
+        operation   : operation,
         init_filters: init,
-        filters: this.Filters.getFiltersToSend()
+        filters     : this.Filters.getFiltersToSend()
       },
       (response) => {
         // Список всех ордеров
@@ -117,7 +117,7 @@ import { app } from '../../app/app';
           this.Filters.set(response.filters);
         }
       },
-      (response, status) => this.Error.response(response, status),
+      (response, status) => this.Error.response(response, status)
     ).$promise;
   };
 
@@ -131,11 +131,11 @@ import { app } from '../../app/app';
   WarehouseOrder.prototype.loadOrder = function(order_id, onlyOrder = false, checkUnreg = false) {
     return this.Server.Warehouse.Order.edit(
       {
-        id: order_id,
+        id         : order_id,
         check_unreg: checkUnreg
       },
       (data) => this._processingData(data, onlyOrder),
-      (response, status) => this.Error.response(response, status),
+      (response, status) => this.Error.response(response, status)
     ).$promise;
   };
 
@@ -187,8 +187,8 @@ import { app } from '../../app/app';
    */
   WarehouseOrder.prototype._setConsumer = function() {
     this.order.consumer_id_tn = this.order.consumer ? angular.copy(this.order.consumer.id_tn) : null;
-    this.order.consumer_fio =  this.order.consumer ? angular.copy(this.order.consumer.fio) : null;
-    this.order.consumer_tn =  this.order.consumer ? angular.copy(this.order.consumer.tn) : null;
+    this.order.consumer_fio = this.order.consumer ? angular.copy(this.order.consumer.fio) : null;
+    this.order.consumer_tn = this.order.consumer ? angular.copy(this.order.consumer.tn) : null;
   };
 
   /**
@@ -206,10 +206,9 @@ import { app } from '../../app/app';
       this.order.operations_attributes.push(this.Operation.generate(warehouseType, item));
     }
 
-    this.additional.visibleCount ++;
+    this.additional.visibleCount++;
   };
   /**
-
    * Удалить объект operation из ордера.
    *
    * @param operation
@@ -222,7 +221,7 @@ import { app } from '../../app/app';
       this.order.operations_attributes.splice(index, 1);
     }
 
-    this.additional.visibleCount --;
+    this.additional.visibleCount--;
   };
 
   /**

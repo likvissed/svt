@@ -57,14 +57,14 @@ import { FormValidationController } from '../../shared/functions/form-validation
   ExecOrderController.prototype._executeOut = function() {
     this.Order.prepareToDeliver()
       .then(
-        (response) => {
+        () => {
           this.clearErrors();
           let modalInstance = this.$uibModal.open({
-            templateUrl: 'deliveryOfItems.slim',
-            controller: 'DeliveryItemsCtrl',
+            templateUrl : 'deliveryOfItems.slim',
+            controller  : 'DeliveryItemsCtrl',
             controllerAs: 'delivery',
-            size: 'lg',
-            backdrop: 'static'
+            size        : 'lg',
+            backdrop    : 'static'
           });
 
           modalInstance.result.then(() => this.cancel());
@@ -161,7 +161,8 @@ import { FormValidationController } from '../../shared/functions/form-validation
   ExecOrderController.prototype.printOrder = function() {
     let sendData = this.Order.getObjectToSend();
 
-    window.open('/warehouse/orders/' + this.order.id + '/print?order=' + encodeURIComponent(JSON.stringify(sendData)), '_blank');
+    window.open(`/warehouse/orders/${this.order.id}/print?order= ${encodeURIComponent(JSON.stringify(sendData))}`, '_blank');
+
   };
 
   /**

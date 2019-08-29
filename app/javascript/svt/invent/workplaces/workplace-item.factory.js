@@ -25,21 +25,21 @@ import { app } from '../../app/app';
       // Дополнительные данные
       additional = {
         // Активный таб
-        activeTab: 0,
+        activeTab            : 0,
         // Типы ПК, для которых необходимы параметры pcAttrs.
-        pcTypes: [],
+        pcTypes              : [],
         // Параметра СБ/моноблока/ноутбука, которые загружаются от Аудита или из файла конфигурации ПК.
-        pcAttrs: [],
+        pcAttrs              : [],
         // Список типов оборудования, которые не могут встречаться дважды или пересекаться между собой в рамках одного рабочего места.
-        singleItems: [],
+        singleItems          : [],
         // Разрешенные форматы загружаемого файла.
-        fileFormats: [''],
+        fileFormats          : [''],
         // Доп. описание модели
-        model_descr: 'Под моделью понимается совокупность наименования производителя указанного вами оборудования (обычно самая большая надпись на корпусе), а также наименования конкретного вида оборудования. Например, Zalman Z3, Samsung S23C350 и т.п.',
+        model_descr          : 'Под моделью понимается совокупность наименования производителя указанного вами оборудования (обычно самая большая надпись на корпусе), а также наименования конкретного вида оборудования. Например, Zalman Z3, Samsung S23C350 и т.п.',
         // Статусы обозначающие перемещение техники
         statusesForChangeItem: [],
         // Типы свойств, обозначающие дату
-        dateProperties: []
+        dateProperties       : []
       };
 
     /**
@@ -67,9 +67,11 @@ import { app } from '../../app/app';
      * @param item - экземпляр техники
      */
     function _cloneProperties(item) {
-      // Объект, содержащий количество значений для каждого свойства.
-      // Ключ - property_id свойства
-      // Значение - количество вхождений в массив property_values_attributes
+    /**
+     * Объект, содержащий количество значений для каждого свойства.
+     * Ключ - property_id свойства
+     * Значение - количество вхождений в массив property_values_attributes
+     */
       let counterObj = {};
 
       // Заполняем объект counterObj
@@ -77,12 +79,14 @@ import { app } from '../../app/app';
         counterObj[prop_val_value.property_id] = (counterObj[prop_val_value.property_id] || 0) + 1
       });
 
-      // Для каждого свойства, значение которого встречается больше одного раза, создать копию этого
-      // свойства и добавить в массив, который эти свойства и хранит.
+    /**
+     * Для каждого свойства, значение которого встречается больше одного раза, создать копию этого
+     * свойства и добавить в массив, который эти свойства и хранит.
+     */
       angular.forEach(counterObj, function(counter_value, counter_key) {
         if (counter_value <= 1) { return true; }
 
-        for (let i = 1; i < counter_value; i ++) {
+        for (let i = 1; i < counter_value; i++) {
           let
             // Копия объекта с совпадающим property_id
             tmpProp = null,
@@ -94,11 +98,13 @@ import { app } from '../../app/app';
 
             tmpProp = prop_val;
             tmpIndex = prop_index;
+
             return false;
           });
 
-          if (tmpProp && tmpIndex)
+          if (tmpProp && tmpIndex) {
             item.type.properties.splice(tmpIndex + 1, 0, tmpProp);
+          }
         }
       });
     }
@@ -112,7 +118,7 @@ import { app } from '../../app/app';
       item.type.properties.forEach((prop, index) => {
         if (item.property_values_attributes.find((prop_val) => prop_val.property_id === prop.property_id)) {
           return true;
-        };
+        }
 
         let newPropVal = PropertyValue.getTemplatePropertyValue();
         newPropVal.property_id = prop.property_id;
@@ -129,11 +135,13 @@ import { app } from '../../app/app';
      */
     function _clearPropertyValues(item) {
       let
-        // Объект, необходимый для "запоминания" первого экземпляра свойства с типом multiple = true (Например,
-        // первый жесткий диск из списка жестких дисков).
+      /**
+       * Объект, необходимый для "запоминания" первого экземпляра свойства с типом multiple = true (Например,
+       * первый жесткий диск из списка жестких дисков).
+       */
         virtualObj = {
           // Индекс элемента (если 0, первый элемент экземпляра свойства с типом multiple = true)
-          index: 0,
+          index      : 0,
           // property_id свойства элемента.
           property_id: 0
         },
@@ -157,12 +165,14 @@ import { app } from '../../app/app';
             return true;
           }
 
-          // Если property_id совпадают значит это уже не первый элемент, который мы встретили. Значит его нужно
-          // будет либо удалить из массива, либо скрыть, установив _destroy = 1
-          // Если не совпадают - значит это первый элемент текущего экземпляра свойства. Для него необходимо
-          // создать копию, а сам элемент скрыть.
+        /**
+         * Если property_id совпадают значит это уже не первый элемент, который мы встретили. Значит его нужно
+         * будет либо удалить из массива, либо скрыть, установив _destroy = 1
+         * Если не совпадают - значит это первый элемент текущего экземпляра свойства. Для него необходимо
+         * создать копию, а сам элемент скрыть.
+         */
           if (virtualObj.property_id == value.property_id) {
-            virtualObj.index ++;
+            virtualObj.index++;
           } else {
             virtualObj.property_id = angular.copy(value.property_id);
             virtualObj.index = 0
@@ -177,9 +187,11 @@ import { app } from '../../app/app';
             copiedProp.push(tmpProp);
             copiedPropVal.push(value);
 
-            // Если virtualObj.index == 0, значит этот элемент первый в массиве. Значит создадим копию этого
-            // элемента, чтобы вывести пользователю для заполнения, а сам элемент скроем. Остальные элементы
-            // массива будут только скрыты с флагом _destroy = 1.
+          /**
+           * Если virtualObj.index == 0, значит этот элемент первый в массиве. Значит создадим копию этого
+           * элемента, чтобы вывести пользователю для заполнения, а сам элемент скроем. Остальные элементы
+           * массива будут только скрыты с флагом _destroy = 1.
+           */
             if (!virtualObj.index) {
               tmpPropValue = PropertyValue.getTemplatePropertyValue();
               tmpPropValue.property_id = tmpProp.property_id;
@@ -187,8 +199,7 @@ import { app } from '../../app/app';
               copiedProp.push(angular.copy(item.type.properties[index]));
               copiedPropVal.push(tmpPropValue);
             }
-          } else {
-            if (virtualObj.index) {
+          } else if (virtualObj.index) {
               return true;
             } else {
               value.value = '';
@@ -196,7 +207,6 @@ import { app } from '../../app/app';
               copiedProp.push(angular.copy(item.type.properties[index]));
               copiedPropVal.push(angular.copy(value));
             }
-          }
         } else {
           value.value = '';
 
@@ -218,8 +228,9 @@ import { app } from '../../app/app';
      * @param prop - элемент массива property
      */
     function _createFilteredList(item, prop_index, prop) {
-      if (!(PropertyValue.isPropList(prop) || PropertyValue.isPropListPlus(prop)))
+      if (!(PropertyValue.isPropList(prop) || PropertyValue.isPropListPlus(prop))) {
         return false;
+      }
 
       // Массив данных с сервера для конкретного свойства
       let filteredList = $filter('inventPropList')(prop.property_lists, item.model_id);
@@ -230,7 +241,7 @@ import { app } from '../../app/app';
           .getTemplateSelectProp(prop.short_description, PropertyValue.isPropListPlus(prop))
           .concat(filteredList);
       }
-      
+
       PropertyValue.setPropertyValue(item, prop_index, 'filteredList', filteredList);
     }
 
@@ -266,11 +277,12 @@ import { app } from '../../app/app';
             // Для первого элемента просто заполнить поле value
             if (index == 0) {
               PropertyValue.setPropertyValue(item, new_index, 'value', audit_value);
+
               return true;
             }
 
             // Меняем индекс, чтобы новые элементы появлялись после предыдущих, а не перед ними
-            new_index ++;
+            new_index++;
 
             // Создать копию объекта property
             item.type.properties.splice(new_index, 0, prop_obj);
@@ -305,12 +317,14 @@ import { app } from '../../app/app';
     function _isPropsOrPropValsNeedToClone(item) {
       const props_result = item.type.properties.reduce((res, prop) => {
         res[prop.name] = (res[prop.name] || 0) + 1;
+
         return res
       }, {});
 
       const prop_vals_result = item.property_values_attributes.reduce((res, prop_val) => {
         const prop = item.type.properties.find((el) => el.property_id == prop_val.property_id);
         res[prop.name] = (res[prop.name] || 0) + 1;
+
         return res;
       }, {});
 
@@ -336,50 +350,52 @@ import { app } from '../../app/app';
        * @param name - имя параметра
        * @param value - устанавливаемое значение
        */
-      setAdditional: function(name, value) { additional[name] = value; },
+      setAdditional  : function(name, value) { additional[name] = value; },
       /**
        * Получить объект, содержащий дополнительные параметры.
        */
-      getAdditional: function() { return additional; },
+      getAdditional  : function() { return additional; },
       /**
        * Записать массив типов техники.
        *
        * @param types - добавляемый массив типов.
        */
-      setTypes: function(types) { eqTypes = [selectEqType].concat(types); },
+      setTypes       : function(types) { eqTypes = [selectEqType].concat(types); },
       /**
        * Получить массив типов техники.
        */
-      getTypes: function() { return eqTypes },
+      getTypes       : function() { return eqTypes },
       /**
        * Записать объект с приоритетами исполнения техники
        */
-      setPriorities: function(data) { angular.extend(priorities, data); },
+      setPriorities  : function(data) { angular.extend(priorities, data); },
       /**
        * Получить объект с приоритетами исполнения техники
        */
-      getPriorities: function() { return priorities; },
+      getPriorities  : function() { return priorities; },
       /**
        * Получить массив типов техники и свойств
        */
-      getTypesItem: function(item) {
+      getTypesItem   : function(item) {
         let eq_value = eqTypes.find((type) => type.type_id == item.type_id);
-        
+
         if (!eq_value) { return false; }
-        
+
         item.type = angular.copy(eq_value);
         item.priorities = this.getPriorities();
 
-        // Если длина массивов property_values_attributes и properties отличается, значит текущий
-        // экземпляр техники имеет несколько значений для некоторых свойств (например, несколько жестких
-        // дисков для системного блока). Необходимо создать копии соответсвующих элементов массива
-        // properties и поместить их в этот же массив. Иначе пользователь увидит, например, только один
-        // жесткий диск.
+      /**
+       * Если длина массивов property_values_attributes и properties отличается, значит текущий
+       * экземпляр техники имеет несколько значений для некоторых свойств (например, несколько жестких
+       * дисков для системного блока). Необходимо создать копии соответсвующих элементов массива
+       * properties и поместить их в этот же массив. Иначе пользователь увидит, например, только один
+       * жесткий диск.
+       */
 
         if (_isPropsOrPropValsNeedToClone(item)) {
           _cloneProperties(item);
           _createPropertyValues(item);
-        };
+        }
       },
       /**
        * Добавить вспомогательные объекты к указанному объекту item.
@@ -413,7 +429,7 @@ import { app } from '../../app/app';
       /**
        * Создать массив filteredList на основании выбранной модели и типа оборудования.
        */
-      createFilteredList: _createFilteredList,
+      createFilteredList : _createFilteredList,
       /**
        * Очистить аттрибут value элементов массива property_values_attributes и удалить повторяющиеся свойства из
        * property_values_attributes и properties.
@@ -422,13 +438,13 @@ import { app } from '../../app/app';
       /**
        * Установить значения свойств (CPU, HDD, ...) для ПК.
        */
-      setPcProperties: _setPcProperties,
+      setPcProperties    : _setPcProperties,
       /**
        * Проверить наличие значения в массиве singleItems.
        *
        * value - проверяемое значение
        */
-      isUniqType: function(value) {
+      isUniqType         : function(value) {
         return additional.singleItems.includes(value);
       },
       /**
@@ -469,6 +485,7 @@ import { app } from '../../app/app';
         additional.pcAttrs.forEach(function(attr_value) {
           if (!matchedObj[attr_value]) {
             error = true;
+
             return false;
           }
 
@@ -486,6 +503,7 @@ import { app } from '../../app/app';
           return false;
         } else {
           _setPcProperties(item, matchedObj);
+
           return true;
         }
       },
@@ -515,7 +533,7 @@ import { app } from '../../app/app';
       /**
        * Установить объект model и model_id к указанному item. Создать полный массив models, из которого пользователь будет выбирать модель.
        */
-      setModel: _setModel,
+      setModel           : _setModel,
       /**
        * Добавить новый элемент к массиву property_values_attributes элемента item.
        *
@@ -532,7 +550,7 @@ import { app } from '../../app/app';
        * @param data - данные для заполнения объекта item
        * @param workplace_id - ID рабочего места
        */
-      setItemAttributes: function(item, data, workplace_id) {
+      setItemAttributes    : function(item, data, workplace_id) {
         Object.keys(templateItem).forEach(function(key) { item[key] = data[key]; });
 
         item.workplace_id = workplace_id;

@@ -17,7 +17,7 @@ import { app } from '../../app/app';
     this.warehouseType = 'with_invent_num';
     this.manuallyItem = {
       item_model: '',
-      item_type: ''
+      item_type : ''
     };
     // Инвентарный номер выбранного типа техники
     this.invent_num = '';
@@ -50,17 +50,19 @@ import { app } from '../../app/app';
   ItemsForOrderController.prototype.ok = function() {
     if (this.warehouseType == 'with_invent_num' && !this.FindExistingItemService.selectedItem) {
       this.Flash.alert('Необходимо указать инвентарный номер (или ID) и выбрать технику');
+
       return false;
     }
 
     if (this.warehouseType == 'without_invent_num' && !this.manuallyItem.item_model && !this.manuallyItem.item_type) {
       this.Flash.alert('Необходимо указать тип и наименование техники');
+
       return false;
     }
 
     let result = {
       warehouseType: this.warehouseType,
-      item: this.warehouseType == 'with_invent_num' ? this.FindExistingItemService.selectedItem : this.manuallyItem
+      item         : this.warehouseType == 'with_invent_num' ? this.FindExistingItemService.selectedItem : this.manuallyItem
     };
 
     this.$uibModalInstance.close(result);

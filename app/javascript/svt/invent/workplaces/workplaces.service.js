@@ -31,11 +31,11 @@ import { app } from '../../app/app';
   Workplaces.prototype.loadWorkplaces = function(init) {
     return this.Server.Invent.Workplace.query(
       {
-        start: this.TablePaginator.startNum(),
-        length: this.Config.global.uibPaginationConfig.itemsPerPage,
+        start       : this.TablePaginator.startNum(),
+        length      : this.Config.global.uibPaginationConfig.itemsPerPage,
         init_filters: this._isNeedToInitFilters(init),
-        filters: this.Filter.get(),
-        sort: this.sorting
+        filters     : this.Filter.get(),
+        sort        : this.sorting
       },
       (response) => {
         // Список РМ
@@ -54,10 +54,10 @@ import { app } from '../../app/app';
   Workplaces.prototype.loadListWorkplaces = function(init) {
     return this.Server.Invent.Workplace.list(
       {
-        start: this.TablePaginator.startNum(),
-        length: this.Config.global.uibPaginationConfig.itemsPerPage,
+        start       : this.TablePaginator.startNum(),
+        length      : this.Config.global.uibPaginationConfig.itemsPerPage,
         init_filters: this._isNeedToInitFilters(init),
-        filters: this.Filter.get()
+        filters     : this.Filter.get()
       },
       (response) => {
         // Список РМ
@@ -84,9 +84,9 @@ import { app } from '../../app/app';
     this.workplaces.forEach((el) => {
       items = [];
 
-      el.items.forEach(function(value) { items.push('<li>' + value + '</li>'); });
-      el.renderData = '<span>' + el.workplace + '</span><br>';
-      composition = items.length == 0 ? 'Состав отсутствует' : 'Состав:<ul>' + items.join('') + '</ul>';
+      el.items.forEach(function(value) { items.push(`<li> ${value} </li>`); });
+      el.renderData = `<span> ${el.workplace}</span><br>`;
+      composition = items.length == 0 ? 'Состав отсутствует' : `Состав:<ul> ${items.join('')} </ul>`;
       el.renderData += composition;
     });
   }

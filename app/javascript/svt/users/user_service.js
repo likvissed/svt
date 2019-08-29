@@ -16,7 +16,7 @@ import { app } from '../app/app';
 
     this.toSelect = {
       role: {
-        id: null,
+        id               : null,
         short_description: 'Выберите роль'
       }
     };
