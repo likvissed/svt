@@ -26,7 +26,7 @@ module Warehouse
 
       def init_order
         data[:order] = Order.new(operation: @operation)
-        authorize data[:order], :new? if current_user
+        # authorize data[:order], :new? if current_user
 
         shift = @operation == :in ? 1 : -1
         data[:operation] = data[:order].operations.build(shift: shift)

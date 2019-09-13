@@ -1,6 +1,6 @@
 module Warehouse
   class ItemsController < Warehouse::ApplicationController
-    before_action :check_access, only: %i[edit update]
+    before_action :check_access
 
     def index
       respond_to do |format|
