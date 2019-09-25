@@ -41,14 +41,16 @@ module Invent
         @ups.find_each do |ups|
           arr_el = data.find { |i| i[:id] == ups.property_values.find_by(property: @property_battery_type).property_list_id }
 
-          battery_count = ups.property_values.find_by(property: @property_battery_count)&.property_list&.value.to_i
-          battery_module = ups.property_values.find_by(property: @property_battery_module)&.value.to_i
+          if arr_el.present?
+            battery_count = ups.property_values.find_by(property: @property_battery_count)&.property_list&.value.to_i
+            battery_module = ups.property_values.find_by(property: @property_battery_module)&.value.to_i
 
-          count = battery_count + battery_module
-          arr_el[:total_count] += count
-          next unless ups.need_battery_replacement?
+            count = battery_count + battery_module
+            arr_el[:total_count] += count
+            next unless ups.need_battery_replacement?
 
-          arr_el[:to_replace_count] += count
+            arr_el[:to_replace_count] += count
+          end
         end
       end
     end
