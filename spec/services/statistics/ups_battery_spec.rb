@@ -44,6 +44,16 @@ module Invent
       it 'calculates count of batteries which need to replace' do
         expect(subject.data.find { |el| el[:id] == battery_type_val.property_list_id }[:to_replace_count]).to eq to_replace_count
       end
+
+      context 'when property_values contains is blank property_list_id' do
+        let(:property) { Invent::Type.find_by(name: :ups).properties.find_by(name: :battery_type) }
+
+        before { ups.last.property_values.find_by(property: property).update(property_list_id: nil) }
+
+        it 'not all values ups contain the existing property_list_id' do
+          expect(ups.all? { |up| subject.data.any? { |el| el[:id] == up.property_values.find_by(property: property).property_list_id } }).to be_falsey
+        end
+      end
     end
   end
 end
