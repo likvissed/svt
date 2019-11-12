@@ -7,7 +7,6 @@ import { app } from './app';
 
   DefaultDataTableCtrl.$inject = ['DTDefaultOptions'];
 
-
   /**
    * Основные настройки таблиц angular-datatable.
    *

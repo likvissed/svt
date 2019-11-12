@@ -61,7 +61,6 @@ import { app } from '../../app/app';
   WorkplaceTableCtrl.prototype.destroyWp = function(id) {
     let confirm_str = `Вы действительно хотите удалить рабочее место "${id}"?`;
 
-
     if (!confirm(confirm_str)) { return false; }
 
     this.Server.Invent.Workplace.delete(

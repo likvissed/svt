@@ -7,7 +7,6 @@ import { app } from '../../app/app';
 
   ModelsCtrl.$inject = ['$uibModal', '$rootScope', 'Model', 'ActionCableChannel', 'TablePaginator', 'Server', 'Config', 'Flash', 'Error'];
 
-
   function ModelsCtrl($uibModal, $rootScope, Model, ActionCableChannel, TablePaginator, Server, Config, Flash, Error) {
     this.$uibModal = $uibModal;
     this.$rootScope = $rootScope;
@@ -182,7 +181,6 @@ import { app } from '../../app/app';
    */
   ModelsCtrl.prototype.destroyModel = function(model) {
     let confirm_str = `Вы действительно хотите удалить модель "${model.item_model}"?`;
-
 
     if (!confirm(confirm_str)) { return false; }
 
