@@ -44,8 +44,11 @@ import { app } from '../../app/app';
    * Проверить, нужно ли сбросить фильтр. Нужно в том случае, если выбран фильтр по вендору, но после этого выбранный вендор был удален.
    */
   ModelsCtrl.prototype._checkCurrentVendorFilter = function() {
-    // Выходим из функции, если фильтр не выбран или если после удаления вендора текущий фильтр до сих пор находится в списке существующих
-    // вендоров (значит был удален вендор, который не был в активном фильтре)
+  /**
+   * Выходим из функции, если фильтр не выбран или если после удаления вендора текущий фильтр до сих пор находится в списке существующих
+   * вендоров (значит был удален вендор, который не был в активном фильтре)
+   */
+
     if (!this.selectedTableFilters.vendor || this.filters.vendors.find((el) => this.selectedTableFilters.vendor.vendor_id == el.vendor_id)) {
       return true;
     }
@@ -77,10 +80,10 @@ import { app } from '../../app/app';
   ModelsCtrl.prototype._loadModels = function(init) {
     this.Server.Invent.Model.query(
       {
-        start: this.TablePaginator.startNum(),
-        length: this.Config.global.uibPaginationConfig.itemsPerPage,
+        start       : this.TablePaginator.startNum(),
+        length      : this.Config.global.uibPaginationConfig.itemsPerPage,
         init_filters: init,
-        filters: this._getFiltersToSend()
+        filters     : this._getFiltersToSend()
       },
       (response) => {
         this.models = response.data;
@@ -102,11 +105,11 @@ import { app } from '../../app/app';
    */
   ModelsCtrl.prototype._openEditModal = function() {
     this.$uibModal.open({
-      templateUrl: 'editModelModal.slim',
-      controller: 'EditModelCtrl',
+      templateUrl : 'editModelModal.slim',
+      controller  : 'EditModelCtrl',
       controllerAs: 'edit',
-      size: 'md',
-      backdrop: 'static'
+      size        : 'md',
+      backdrop    : 'static'
     });
   };
 
@@ -116,7 +119,7 @@ import { app } from '../../app/app';
    * @param filter_type
    */
   ModelsCtrl.prototype.clearFilter = function(filter_type) {
-    switch(filter_type) {
+    switch (filter_type) {
       case 'vendor':
         delete(this.selectedTableFilters.vendor);
         this.selectedTableFilters.vendor_id = null;
@@ -178,7 +181,8 @@ import { app } from '../../app/app';
    * @param model
    */
   ModelsCtrl.prototype.destroyModel = function(model) {
-    let confirm_str = "Вы действительно хотите удалить модель \"" + model.item_model + "\"?";
+    let confirm_str = `Вы действительно хотите удалить модель "${model.item_model}"?`;
+
 
     if (!confirm(confirm_str)) { return false; }
 

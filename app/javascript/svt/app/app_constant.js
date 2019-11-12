@@ -10,15 +10,15 @@ import { app } from './app';
     // Глобальные настройки
     global: {
       // Анимация модальных окон
-      modalAnimation: true,
+      modalAnimation     : true,
       // При обновлении таблицы DataTables не сбрасывать нумерацию страниц.
-      reloadPaging: false,
+      reloadPaging       : false,
       uibPaginationConfig: {
-        nextText: 'След.',
-        previousText: 'Пред.',
-        rotate: true,
+        nextText           : 'След.',
+        previousText       : 'Пред.',
+        rotate             : true,
         boundaryLinkNumbers: true,
-        itemsPerPage: 25
+        itemsPerPage       : 25
       },
       uibDatepickerConfig: {
         // Показывать/скрывать номер недели в году

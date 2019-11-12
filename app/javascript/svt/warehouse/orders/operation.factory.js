@@ -87,7 +87,7 @@ import { app } from '../../app/app';
        * @param warehouseType
        * @param item - Для Order: для операции 'in' это invent_item; для операции 'out' это warehouse_item. Для Supply - параметры для warehouse_item и operation.
        */
-      generate: function(warehouseType, item) {
+      generate   : function(warehouseType, item) {
         if (_templateOperation.operationable_type == 'Warehouse::Order') {
           return _generateOrder(warehouseType, item);
         } else if (_templateOperation.operationable_type == 'Warehouse::Supply') {

@@ -18,8 +18,11 @@ import { app } from '../../app/app';
     this.Workplace = Workplace;
     // Тип техники: новая или б/у
     this.itemType = '';
-    // Отдел необходим для ограничения выборки техники (в окне поиска техники)
-    // $scope.division = this.Workplace.workplace.division.division;
+
+    /**
+     * Отдел необходим для ограничения выборки техники (в окне поиска техники)
+     * $scope.division = this.Workplace.workplace.division.division;
+     */
 
     this.SelectedItem.clearSelectedItem();
     $scope.$on('removeDuplicateInvItems', (event, data) => {
@@ -48,12 +51,10 @@ import { app } from '../../app/app';
       if (this.Workplace.validateType(this.selectedType)) {
         this.$uibModalInstance.close(this.selectedType);
       }
-    } else {
-      if (this.SelectedItem.selectedItem) {
+    } else if (this.SelectedItem.selectedItem) {
         this.$uibModalInstance.close(this.SelectedItem.selectedItem);
       } else {
         this.Flash.alert('Необходимо выбрать технику.');
-      }
     }
   };
 

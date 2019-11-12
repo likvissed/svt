@@ -35,7 +35,7 @@ import { app } from '../../app/app';
   WarehouseItemsCtrl.prototype._initActionCable = function() {
     let consumer = new this.ActionCableChannel('Warehouse::ItemsChannel');
 
-    consumer.subscribe((data) => {
+    consumer.subscribe(() => {
       // this.closeOrder();
       this._loadItems();
     });
@@ -70,14 +70,14 @@ import { app } from '../../app/app';
    */
   WarehouseItemsCtrl.prototype._openOrderModal = function(type) {
     let modalInstance = this.$uibModal.open({
-      templateUrl: `edit${type}OrderModal.slim`,
-      controller: `Edit${type}OrderController`,
+      templateUrl : `edit${type}OrderModal.slim`,
+      controller  : `Edit${type}OrderController`,
       controllerAs: 'edit',
-      size: 'md',
-      backdrop: 'static'
+      size        : 'md',
+      backdrop    : 'static'
     });
 
-    modalInstance.result.then((result) => this.closeOrder());
+    modalInstance.result.then(() => this.closeOrder());
   };
 
   /**
@@ -87,12 +87,12 @@ import { app } from '../../app/app';
    */
   WarehouseItemsCtrl.prototype._openSupplyModal = function(item) {
     this.$uibModal.open({
-      templateUrl: 'showSupplyModal.slim',
-      controller: 'ShowSupplyCtrl',
+      templateUrl : 'showSupplyModal.slim',
+      controller  : 'ShowSupplyCtrl',
       controllerAs: 'show',
-      size: 'md',
-      backdrop: 'static',
-      resolve: {
+      size        : 'md',
+      backdrop    : 'static',
+      resolve     : {
         data: { item: item }
       }
     });
@@ -202,7 +202,7 @@ import { app } from '../../app/app';
    * @param item
    */
   WarehouseItemsCtrl.prototype.destroyItem = function(item) {
-    let confirm_str = "Вы действительно хотите удалить \"" + item.item_type + "\" со склада?";
+    let confirm_str = `Вы действительно хотите удалить "${item.item_type}" со склада?`;
 
     if (!confirm(confirm_str)) { return false; }
 
@@ -249,7 +249,7 @@ import { app } from '../../app/app';
    * Удалить ордер.
    */
   WarehouseItemsCtrl.prototype.destroyOrder = function() {
-    let confirm_str = "Вы действительно хотите удалить ордер \"" + this.selectedOrder.id + "\"?";
+    let confirm_str = `Вы действительно хотите удалить ордер "${this.selectedOrder.id}"?`;
 
     if (!confirm(confirm_str)) { return false; }
 
@@ -266,35 +266,37 @@ import { app } from '../../app/app';
   WarehouseItemsCtrl.prototype.editItem = function(item) {
     this.Server.Warehouse.Item.edit(
       {
-        start: this.TablePaginator.startNum(),
+        start : this.TablePaginator.startNum(),
         length: this.Config.global.uibPaginationConfig.itemsPerPage,
-        id: item.id
+        id    : item.id
       },
       (response) => {
         this.item = response.item;
         this.item.type_id = this.item.invent_type_id;
         delete(item.invent_type_id);
-        
+
         this.WorkplaceItem.setTypes(response.prop_data.eq_types);
         this.WorkplaceItem.setAdditional('pcAttrs', response.prop_data.file_depending);
         this.WorkplaceItem.setAdditional('pcTypes', response.prop_data.type_with_files);
         this.WorkplaceItem.getTypesItem(this.item);
-        
+
         this.openEditItem(this.item);
       },
       (response, status) => this.Error.response(response, status)
     );
   };
-    
+
     WarehouseItemsCtrl.prototype.openEditItem = function(item) {
-      this.InventItem.setItem(item); // Для загрузки свойств техники
+      // Для загрузки свойств техники
+      this.InventItem.setItem(item);
+
       this.$uibModal.open({
-        templateUrl: 'WarehousePropertyValueEditCtrl.slim',
-        controller: 'WarehousePropertyValueCtrl',
+        templateUrl : 'WarehousePropertyValueEditCtrl.slim',
+        controller  : 'WarehousePropertyValueCtrl',
         controllerAs: 'edit',
-        backdrop: 'static',
-        size: 'md',
-        resolve: {
+        backdrop    : 'static',
+        size        : 'md',
+        resolve     : {
           item: () => item
         }
       });

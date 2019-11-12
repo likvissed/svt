@@ -1,5 +1,5 @@
 import { app } from '../../app/app';
-import { runInThisContext } from 'vm';
+// import { runInThisContext } from 'vm';
 
 (function () {
   'use strict';
@@ -20,16 +20,16 @@ import { runInThisContext } from 'vm';
     this.additional = WorkplaceItem.getAdditional();
     this.InventItem = InventItem;
   }
-  
+
   WarehousePropertyValueCtrl.prototype.runManuallyPcDialog = function() {
     this.$uibModal.open({
-      animation: this.Config.global.modalAnimation,
-      templateUrl: 'manuallyPcDialog.slim',
-      controller: 'ManuallyPcDialogCtrl',
+      animation   : this.Config.global.modalAnimation,
+      templateUrl : 'manuallyPcDialog.slim',
+      controller  : 'ManuallyPcDialogCtrl',
       controllerAs: 'manually',
-      size: 'md',
-      backdrop: 'static',
-      resolve: {
+      size        : 'md',
+      backdrop    : 'static',
+      resolve     : {
         item: () => this.item
       }
     });
@@ -41,7 +41,7 @@ import { runInThisContext } from 'vm';
       { id: this.item.id },
       { item: this.item },
       (response) => {
-        this.Flash.notice(response.full_message),
+        this.Flash.notice(response.full_message);
         this.$uibModalInstance.close();
       },
       (response, status) => {

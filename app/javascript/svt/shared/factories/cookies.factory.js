@@ -23,15 +23,15 @@ import { app } from '../../app/app';
         case 'workplace':
           obj = {
             // Фильтр по отделам
-            tableDivisionFilter: '0',
+            tableDivisionFilter    : '0',
             // Фильтр по статусам
-            tableStatusFilter: 'all',
+            tableStatusFilter      : 'all',
             // Фильтр по типам
-            tableTypeFilter: '0',
+            tableTypeFilter        : '0',
             // Фильтр списка РМ по отделам
             tableListDivisionFilter: '0',
             // Флаг, определяющий, как показывать РМ: в виде списка или таблицы
-            tableListTypeFilter: false
+            tableListTypeFilter    : false
           };
           break;
       }

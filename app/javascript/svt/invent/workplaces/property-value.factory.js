@@ -12,9 +12,9 @@ import { app } from '../../app/app';
       templatePropertyValue = {},
       templateSelectProp = [
         // Для строки "Выберите тип"
-        { property_list_id: -1, short_description: ''},
+        { property_list_id: -1, short_description: '' },
         // Для строки "Ввести вручную..."
-        { property_list_id: null, short_description: ''}
+        { property_list_id: null, short_description: '' }
       ];
 
     return {
@@ -34,13 +34,13 @@ import { app } from '../../app/app';
        *
        * @param prop - объект property
        */
-      isPropList: function(prop) { return prop.property_type == 'list'; },
+      isPropList              : function(prop) { return prop.property_type == 'list'; },
       /**
        * Проверить тип указанного свойства. (Вернуть true, если тип 'list_plus')
        *
        * @param prop - объект property
        */
-      isPropListPlus: function(prop) { return prop.property_type == 'list_plus'; },
+      isPropListPlus          : function(prop) { return prop.property_type == 'list_plus'; },
       /**
        * Получить элемент массива property_values_attributes.
        *
@@ -48,7 +48,7 @@ import { app } from '../../app/app';
        * @param prop_index - индекс элемента в массиве property_values_attributes
        * @param name - имя ключа
        */
-      getPropertyValue: function(item, prop_index, name) {
+      getPropertyValue        : function(item, prop_index, name) {
         return item.property_values_attributes[prop_index][name];
       },
       /**
@@ -74,7 +74,8 @@ import { app } from '../../app/app';
 
         // arr[0].short_description = 'Выберите ' + name.toLowerCase();
         arr[0].short_description = 'Выбрать из списка';
-        listFlag ? arr[1].short_description = 'Ввести ' + name.toLowerCase() + ' вручную...' : arr.pop();
+
+        listFlag ? arr[1].short_description = `Ввести ${name.toLowerCase()} вручную...` : arr.pop();
 
         return arr;
       },

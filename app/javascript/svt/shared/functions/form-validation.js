@@ -18,8 +18,9 @@ function FormValidationController() {
 FormValidationController.prototype._setValidations = function(array, flag) {
   angular.forEach(array, (value, key) => {
     value.forEach((message) => {
-      if (this.form[this._formName + '[' + key + ']'])
-        this.form[this._formName + '[' + key + ']'].$setValidity(message, flag);
+      if (this.form[`${this._formName}[${key}]`]) {
+        this.form[`${this._formName}[${key}]`].$setValidity(message, flag);
+      }
     });
   });
 };

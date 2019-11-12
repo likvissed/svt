@@ -45,7 +45,7 @@ import { app } from '../../app/app';
    */
   WarehouseSupply.prototype.addPosition = function(data) {
     this.supply.operations_attributes.push(this.Operation.generate(null, data));
-    this.additional.visibleCount ++;
+    this.additional.visibleCount++;
   };
 
   /**
@@ -71,6 +71,6 @@ import { app } from '../../app/app';
       this.supply.operations_attributes.splice(index, 1);
     }
 
-    this.additional.visibleCount --;
+    this.additional.visibleCount--;
   };
 })();

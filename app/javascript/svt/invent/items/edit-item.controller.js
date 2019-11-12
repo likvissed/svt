@@ -35,12 +35,15 @@ import { app } from '../../app/app';
   EditInventItemCtrl.prototype.runManuallyPcDialog = function() {
     this.$uibModal.open({
       animation: this.Config.global.modalAnimation,
-      templateUrl: 'manuallyPcDialog.slim',
-      controller: 'ManuallyPcDialogCtrl',
+
+      templateUrl : 'manuallyPcDialog.slim',
+      controller  : 'ManuallyPcDialogCtrl',
       controllerAs: 'manually',
-      size: 'md',
-      backdrop: 'static',
+      size        : 'md',
+      backdrop    : 'static',
+
       resolve: {
+
         item: () => this.item_o.item
       }
     });
@@ -57,6 +60,6 @@ import { app } from '../../app/app';
    * Заполнить конфигурацию ПК дефолтными данными.
    */
   EditInventItemCtrl.prototype.FillWithDefaultData = function() {
-    this.Item.FillPcWithDefaultData();
+    this.Item.fillPcWithDefaultData();
   };
 })();

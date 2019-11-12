@@ -21,10 +21,10 @@ import { app } from '../../app/app';
   InventItemsTable.prototype.init = function(init = false) {
     return this.Server.Invent.Item.query(
       {
-        start: this.TablePaginator.startNum(),
-        length: this.Config.global.uibPaginationConfig.itemsPerPage,
+        start       : this.TablePaginator.startNum(),
+        length      : this.Config.global.uibPaginationConfig.itemsPerPage,
         init_filters: init,
-        filters: this.Filters.getFiltersToSend()
+        filters     : this.Filters.getFiltersToSend()
       },
       (response) => {
         // Список всей техники

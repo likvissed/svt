@@ -12,22 +12,24 @@ import { app } from '../../app/app';
     this.Error = Error;
     this.filters = {
       // флаг указывает, инициализированы ли фильтры
-      init: false,
+      init    : false,
       statuses: { '': 'Все статусы' },
-      types: [{
-        workplace_type_id: '',
-        short_description: 'Все типы'
-      }]
+      types   : [
+        {
+          workplace_type_id: '',
+          short_description: 'Все типы'
+        }
+      ]
     };
     this.selectedTableFilters = {
-      invent_num: '',
-      workplace_id: '',
+      invent_num       : '',
+      workplace_id     : '',
       workplace_type_id: this.filters.types[0].workplace_type_id,
-      division: '',
-      status: '',
-      fullname: '',
-      building: '',
-      room: ''
+      division         : '',
+      status           : '',
+      fullname         : '',
+      building         : '',
+      room             : ''
     };
   }
 

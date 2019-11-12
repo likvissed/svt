@@ -26,7 +26,7 @@ import { app } from '../../app/app';
       },
       shift: this.Operation.getTemplate().shift,
       model: {
-        model_id: 0,
+        model_id  : 0,
         item_model: ''
       }
     };
@@ -35,11 +35,11 @@ import { app } from '../../app/app';
 
   EditSupplyOperationCtrl.prototype._setDefaultResult = function(operation) {
     this.result.type = {
-      type_id: operation ? operation.item.invent_type_id : 0,
+      type_id          : operation ? operation.item.invent_type_id : 0,
       short_description: operation ? operation.item.item_type : ''
     };
     this.result.model = {
-      model_id: operation ? operation.item.invent_model_id : 0,
+      model_id  : operation ? operation.item.invent_model_id : 0,
       item_model: operation ? operation.item.item_model : ''
     };
     this.result.shift = operation ? operation.shift : this.Operation.getTemplate().shift;

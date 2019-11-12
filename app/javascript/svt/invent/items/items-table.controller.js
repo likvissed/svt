@@ -30,12 +30,12 @@ import { app } from '../../app/app';
     this.statusFilter = {
       settings: {
         buttonClasses: 'btn btn-default btn-sm btn-block',
-        dynamicTitle: false
+        dynamicTitle : false
       },
       translations: {
-        buttonDefaultText: 'Статусы',
-        checkAll: 'Выбрать всё',
-        uncheckAll: 'Сбросить всё',
+        buttonDefaultText      : 'Статусы',
+        checkAll               : 'Выбрать всё',
+        uncheckAll             : 'Сбросить всё',
         dynamicButtonTextSuffix: 'статусы'
       },
       events: {
@@ -116,7 +116,10 @@ import { app } from '../../app/app';
    * @param item
    */
   InventItemsTableCtrl.prototype.destroyItem = function(item) {
-    let confirm_str = "Вы действительно хотите удалить " + item.type.short_description + " \"" + item.model + "\"?";
+    if (item.model === null) {
+      item.model = '';
+    }
+    let confirm_str = `Вы действительно хотите удалить ${item.type.short_description} "'${item.model}" '?`;
 
     if (!confirm(confirm_str)) { return false; }
 
@@ -139,12 +142,12 @@ import { app } from '../../app/app';
     this.Item.edit(item.item_id).then(
       () => {
         this.$uibModal.open({
-          animation: this.Config.global.modalAnimation,
-          templateUrl: 'editItem.slim',
-          controller: 'EditInventItemModalCtrl',
+          animation   : this.Config.global.modalAnimation,
+          templateUrl : 'editItem.slim',
+          controller  : 'EditInventItemModalCtrl',
           controllerAs: 'modal',
-          size: 'md',
-          backdrop: 'static'
+          size        : 'md',
+          backdrop    : 'static'
         });
       }
     );
@@ -192,7 +195,7 @@ import { app } from '../../app/app';
    * Определяет, разрешить ли фильтр "Exact" для фильтра, указанного по индексу.
    */
   InventItemsTableCtrl.prototype.isAllowExactFilter = function(index) {
-    let filter = this.selected.properties[index];
+    const filter = this.selected.properties[index];
 
     if (!filter.property_to_type.property) { return false; }
 
@@ -208,12 +211,12 @@ import { app } from '../../app/app';
     this.Statistics.get('ups_battery').then(
       () => {
         this.$uibModal.open({
-          animation: this.Config.global.modalAnimation,
-          templateUrl: 'statisticsUps.slim',
-          controller: 'StatisticsCtrl',
+          animation   : this.Config.global.modalAnimation,
+          templateUrl : 'statisticsUps.slim',
+          controller  : 'StatisticsCtrl',
           controllerAs: 'stat',
-          size: 'md',
-          backdrop: 'static'
+          size        : 'md',
+          backdrop    : 'static'
         });
       }
     )
@@ -231,13 +234,13 @@ import { app } from '../../app/app';
       tn = item.workplace.user_iss.tn;
     }
 
-    let data = {
-      item_id: item.item_id,
-      invent_num: item.invent_num,
-      id_tn: item.workplace.id_tn,
-      tn: tn,
+    const data = {
+      item_id     : item.item_id,
+      invent_num  : item.invent_num,
+      id_tn       : item.workplace.id_tn,
+      tn          : tn,
       workplace_id: item.workplace_id,
-      type_id: item.type_id
+      type_id     : item.type_id
     }
 
     return encodeURIComponent(JSON.stringify(data));

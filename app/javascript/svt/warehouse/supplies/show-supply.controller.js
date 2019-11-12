@@ -25,7 +25,7 @@ import { app } from '../../app/app';
     return item.id == this.selectedItem.id;
   };
 
-    /**
+  /**
    * Обновить данные поставки
    */
   ShowSupplyCtrl.prototype.reloadSupply = function() {

@@ -40,11 +40,11 @@ import { FormValidationController } from '../../shared/functions/form-validation
    */
   EditInOrderController.prototype._openFormToAddExistingItem = function() {
     let modalInstance = this.$uibModal.open({
-      templateUrl: 'existingItem.slim',
-      controller: 'ItemsForOrderController',
+      templateUrl : 'existingItem.slim',
+      controller  : 'ItemsForOrderController',
       controllerAs: 'select',
-      size: 'md',
-      backdrop: 'static',
+      size        : 'md',
+      backdrop    : 'static'
     });
 
     modalInstance.result.then((result) => {
@@ -55,18 +55,24 @@ import { FormValidationController } from '../../shared/functions/form-validation
   /**
    * Событие выбора отдела.
    */
-  // EditInOrderController.prototype.changeDivision = function() {
-  //   this.selectedConsumer = {};
-  //   this.Order.setConsumer();
-  //   this.Order.loadUsers();
-  // };
+
+  /**
+   * EditInOrderController.prototype.changeDivision = function() {
+   *   this.selectedConsumer = {};
+   *   this.Order.setConsumer();
+   *   this.Order.loadUsers();
+   * };
+   */
 
   /**
    * Установить параметры пользователя, сдающего технику
    */
-  // EditInOrderController.prototype.changeConsumer = function() {
-  //   this.Order.setConsumer(this.selectedConsumer);
-  // };
+
+  /**
+   * EditInOrderController.prototype.changeConsumer = function() {
+   *   this.Order.setConsumer(this.selectedConsumer);
+   * };
+   */
 
   /**
    * Функция для исправления бага в компоненте typeahead ui.bootstrap. Она возвращает ФИО выбранного пользователя вместо
@@ -77,7 +83,7 @@ import { FormValidationController } from '../../shared/functions/form-validation
   EditInOrderController.prototype.formatLabel = function(obj) {
     if (!this.extra.users) { return ''; }
 
-    for (let i = 0; i < this.extra.users.length; i ++) {
+    for (let i = 0; i < this.extra.users.length; i++) {
       if (obj.id_tn === this.extra.users[i].id_tn) {
         return this.extra.users[i].fio;
       }

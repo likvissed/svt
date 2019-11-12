@@ -7,48 +7,48 @@ import { app } from '../../app/app';
   function InventItemsTableFiltersFactory() {
     let
       _defaultProp = {
-        property_id: '',
+        property_id     : '',
         long_description: 'Выберите свойство'
       },
       _defaultPropList = {
-        property_list_id: '',
+        property_list_id : '',
         short_description: 'Выберите значение'
       },
       _propertyTemplate = {
-        property_id: '',
-        property_value: '',
+        property_id     : '',
+        property_value  : '',
         property_list_id: '',
-        exact: false,
+        exact           : false,
         property_to_type: _defaultProp
       },
       // Фильтры с вариантом выбора значений
       _filters = {
         types: [
           {
-            type_id: '',
+            type_id          : '',
             short_description: 'Все типы'
           }
         ],
         properties: [_defaultProp],
-        statuses: [],
+        statuses  : [],
         priorities: { '': 'Все приоритеты' },
-        buildings: [],
-        rooms: [],
-        divisions: []
+        buildings : [],
+        rooms     : [],
+        divisions : []
       },
       // Данные, которые будут отправлены на сервер
       _selected = {
-        item_id: '',
-        type_id: _filters.types[0].type_id,
-        invent_num: '',
-        responsible: '',
-        item_model: '',
+        item_id     : '',
+        type_id     : _filters.types[0].type_id,
+        invent_num  : '',
+        responsible : '',
+        item_model  : '',
         for_statuses: [],
-        priority: Object.keys(_filters.priorities)[0],
-        building: '',
-        room: '',
-        properties: [],
-        division: ''
+        priority    : Object.keys(_filters.priorities)[0],
+        building    : '',
+        room        : '',
+        properties  : [],
+        division    : ''
       };
 
     function _addProperty() {
@@ -102,7 +102,9 @@ import { app } from '../../app/app';
        */
       setPossibleValues: function(data, with_properties = false) {
         angular.forEach(_filters, function(arr, key) {
-          if (!data.hasOwnProperty(key)) { return true; }
+
+          // if (!data.hasOwnProperty(key)) { return true; }
+          if (!Object.prototype.hasOwnProperty.call(data, key)) { return true; }
 
           if (Array.isArray(this[key])) {
             this[key] = this[key].concat(data[key]);

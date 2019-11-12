@@ -10,36 +10,37 @@ import { app } from '../../app/app';
   ngWarehouseItemSupplyPopover.$inject = ['$compile'];
   ngWarehouseItemSupplyPopoverContent.$inject = ['$compile'];
 
-  function ngWarehouseItemSupplyPopover($compile) {
+  function ngWarehouseItemSupplyPopover() {
     return {
       restrict: 'E',
-      template: '<i class="fa fa-truck fa-fw pointer" uib-tooltip="Поставки" uib-popover-template="\'myPopoverTemplate.html\'" popover-title="Список поставок: {{item.item_type}}" popover-placement="right"></i>',
+      template: '<i class="fa fa-truck fa-fw pointer" uib-tooltip="Поставки" uib-popover-template="\'myPopoverTemplate.html\'" popover-title="Список поставок: {{item.item_type}}" popover-placement="right"></i>'
     }
   }
 
-  function ngWarehouseItemSupplyPopoverContent($compile) {
+  function ngWarehouseItemSupplyPopoverContent() {
+
     return {
-      restrict: 'E',
+      restrict  : 'E',
       controller: 'WarehouseItemsCtrl as items',
-      template: '\
-        <div ng-show="$parent.item.supplies.length != 0">\
-          <table class="table table-condensed">\
-            <tr ng-repeat="supply in $parent.item.supplies">\
-              <td class="col-fhd-1">\
-                <i class="fa fa-eye fa-fw pointer" uib-tooltip="Просмотреть поставку" ng-click="items.showSupply(supply, $parent.item)"></i>\
-              </td>\
-              <td class="col-fhd-23">\
-                {{supply.name}} от {{supply.date}}\
-                <span ng-show="supply.supplyer">\
-                  (Поставщик: {{supply.supplyer}})\
-                </span>\
-              </td>\
-            </tr>\
-          </table>\
-        </div>\
-        <div ng-show="$parent.item.supplies.length == 0">\
-          <h5>Данные о поставках отсутствуют</h5>\
-        </div>'
+      template  : '\n'+
+        '<div ng-show="$parent.item.supplies.length != 0"> \n' +
+          '<table class="table table-condensed">\n' +
+            '<tr ng-repeat="supply in $parent.item.supplies">\n' +
+              '<td class="col-fhd-1">\n' +
+                '<i class="fa fa-eye fa-fw pointer" uib-tooltip="Просмотреть поставку" ng-click="items.showSupply(supply, $parent.item)"></i>\n' +
+              '</td>\n' +
+              '<td class="col-fhd-23">\n' +
+                '{{supply.name}} от {{supply.date}}\n' +
+                '<span ng-show="supply.supplyer">\n' +
+                  '(Поставщик: {{supply.supplyer}})\n' +
+                '</span>\n' +
+              '</td>\n' +
+            '</tr>\n' +
+          '</table>\n' +
+        '</div>\n' +
+        '<div ng-show="$parent.item.supplies.length == 0">\n' +
+          '<h5>Данные о поставках отсутствуют</h5>\n' +
+        '</div>'
     }
   }
 })();

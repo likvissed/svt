@@ -10,9 +10,11 @@ import { app } from './app';
     .filter('inventPropList', function() {
       // Фильтровать по указанному model_id.
       return function(inputArray, model_id) {
-        // Если model_id не задан, вернуть целиком массив
-        // -1 - выберите ...
-        // null или 0 - ввести ... вручную
+        /**
+         * Если model_id не задан, вернуть целиком массив
+         * -1 - выберите ...
+         * null или 0 - ввести ... вручную
+         */
         if (!model_id || model_id == -1) { return inputArray; }
 
         let
@@ -54,8 +56,9 @@ import { app } from './app';
         if (!fullName) { return ''; }
 
         let arr = fullName.split(' ');
+        let point = '.';
 
-        return arr.shift() + ' ' + arr.map((el) => el[0].toUpperCase() + '.').join(' ');
+        return `${arr.shift()} ${arr.map((el) => el[0].toUpperCase() + point).join(' ')}`;
       }
     })
     .filter('positiveVal', function() {

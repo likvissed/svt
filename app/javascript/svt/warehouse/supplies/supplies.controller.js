@@ -21,7 +21,7 @@ import { app } from '../../app/app';
 
     this._loadSupplies();
     this._initActionCable();
-  };
+  }
 
   /**
    * Инициировать подключение к каналу OrdersChannel
@@ -35,7 +35,7 @@ import { app } from '../../app/app';
   WarehouseSuppliesCtrl.prototype._loadSupplies = function() {
     this.Server.Warehouse.Supply.query(
       {
-        start: this.TablePaginator.startNum(),
+        start : this.TablePaginator.startNum(),
         length: this.Config.global.uibPaginationConfig.itemsPerPage
       },
       (response) => {
@@ -50,11 +50,11 @@ import { app } from '../../app/app';
 
   WarehouseSuppliesCtrl.prototype._openEditModal = function() {
     this.$uibModal.open({
-      templateUrl: 'editSupplyModal.slim',
-      controller: 'EditSupplyCtrl',
+      templateUrl : 'editSupplyModal.slim',
+      controller  : 'EditSupplyCtrl',
       controllerAs: 'edit',
-      size: 'lg',
-      backdrop: 'static'
+      size        : 'lg',
+      backdrop    : 'static'
     });
   }
 
@@ -93,7 +93,7 @@ import { app } from '../../app/app';
    * @param supply
    */
   WarehouseSuppliesCtrl.prototype.destroySupply = function(supply) {
-    let confirm_str = "Вы действительно хотите удалить поставку \"" + supply.id + "\"?";
+    let confirm_str = `Вы действительно хотите удалить поставку № ${supply.id}?`;
 
     if (!confirm(confirm_str)) { return false; }
 

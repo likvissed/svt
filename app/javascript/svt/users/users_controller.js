@@ -26,7 +26,7 @@ import { FormValidationController } from '../shared/functions/form-validation';
     this.pagination = TablePaginator.config();
     this._loadUsers(true);
     this._initActionCable();
-  };
+  }
 
   UsersCtrl.prototype._getFiltersToSend = function() {
     let obj = angular.copy(this.selectedTableFilters);
@@ -47,10 +47,12 @@ import { FormValidationController } from '../shared/functions/form-validation';
 
     consumer.subscribe(() => this._loadUsers());
 
-    // this.$rootScope.$on('ModelsCtrl::UpdateTableFilters', function(event, vendors) {
-    //   self.filters.vendors = vendors;
-    //   self._checkCurrentVendorFilter();
-    // });
+  /**
+   * this.$rootScope.$on('ModelsCtrl::UpdateTableFilters', function(event, vendors) {
+   *   self.filters.vendors = vendors;
+   *   self._checkCurrentVendorFilter();
+   * });
+   */
   };
 
   /**
@@ -61,10 +63,10 @@ import { FormValidationController } from '../shared/functions/form-validation';
   UsersCtrl.prototype._loadUsers = function(init) {
     this.Server.User.query(
       {
-        start: this.TablePaginator.startNum(),
-        length: this.Config.global.uibPaginationConfig.itemsPerPage,
+        start       : this.TablePaginator.startNum(),
+        length      : this.Config.global.uibPaginationConfig.itemsPerPage,
         init_filters: init,
-        filters: this._getFiltersToSend()
+        filters     : this._getFiltersToSend()
       },
       (response) => {
         this.users = response.data;
@@ -84,11 +86,11 @@ import { FormValidationController } from '../shared/functions/form-validation';
    */
   UsersCtrl.prototype._openEditModal = function() {
     this.$uibModal.open({
-      templateUrl: 'editUserModal.slim',
-      controller: 'EditUserCtrl',
+      templateUrl : 'editUserModal.slim',
+      controller  : 'EditUserCtrl',
       controllerAs: 'edit',
-      size: 'md',
-      backdrop: 'static'
+      size        : 'md',
+      backdrop    : 'static'
     });
   };
 
@@ -134,7 +136,7 @@ import { FormValidationController } from '../shared/functions/form-validation';
    * @param user
    */
   UsersCtrl.prototype.destroyUser = function(user) {
-    let confirm_str = "Вы действительно хотите удалить пользователя \"" + user.fullname + "\"?";
+    let confirm_str = `Вы действительно хотите удалить пользователя "${user.fullname}"?`;
 
     if (!confirm(confirm_str)) { return false; }
 
@@ -165,7 +167,7 @@ import { FormValidationController } from '../shared/functions/form-validation';
   EditUserCtrl.prototype = Object.create(FormValidationController.prototype);
   EditUserCtrl.prototype.constructor = EditUserCtrl;
 
-  EditUserCtrl.prototype.setRole = function(role) {
+  EditUserCtrl.prototype.setRole = function() {
     this.user.role_id = this.user.role.id;
   };
 

@@ -3,12 +3,12 @@ import templateString from './search-user.component.html'
 
 app
   .component('searchUser', {
-    template: templateString,
-    controller: 'SearchUserController',
+    template    : templateString,
+    controller  : 'SearchUserController',
     controllerAs: 'su',
-    bindings: {
+    bindings    : {
       // Объект выбранного пользователя.
-      selectedUser: '=',
+      selectedUser : '=',
       // Флаг, отключающий поиск.
       disableSearch: '<'
     }

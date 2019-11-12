@@ -32,7 +32,7 @@ import { app } from '../../app/app';
    */
   WorkplaceListCtrl.prototype._loadWorkplaces = function(init) {
     this.Workplaces.loadListWorkplaces(init).then(
-      (response) => this.workplaces = this.Workplaces.workplaces
+      () => this.workplaces = this.Workplaces.workplaces
     );
   };
 
@@ -58,7 +58,7 @@ import { app } from '../../app/app';
    * @param id
    */
   WorkplaceListCtrl.prototype.destroyWp = function(id) {
-    let confirm_str = "Вы действительно хотите удалить рабочее место \"" + id + "\"?";
+    let confirm_str = `Вы действительно хотите удалить рабочее место "${id}"?`;
 
     if (!confirm(confirm_str)) { return false; }
 

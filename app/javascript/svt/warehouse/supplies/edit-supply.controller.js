@@ -58,12 +58,12 @@ import { FormValidationController } from '../../shared/functions/form-validation
    */
   EditSupplyCtrl.prototype.editPosition = function(operation) {
     let modalInstance = this.$uibModal.open({
-      templateUrl: 'editSupplyOperation.slim',
-      controller: 'EditSupplyOperationCtrl',
+      templateUrl : 'editSupplyOperation.slim',
+      controller  : 'EditSupplyOperationCtrl',
       controllerAs: 'op',
-      size: 'md',
-      backdrop: 'static',
-      resolve: { operation: operation }
+      size        : 'md',
+      backdrop    : 'static',
+      resolve     : { operation: operation }
     });
 
     modalInstance.result.then((data) => {

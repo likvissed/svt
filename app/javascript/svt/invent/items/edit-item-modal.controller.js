@@ -7,12 +7,12 @@ import { app } from '../../app/app';
 
   EditInventItemModalCtrl.$inject = ['$uibModalInstance', 'InventItem'];
 
-  function EditInventItemModalCtrl($uibModalInstance, InventItem, WorkplaceItem) {
+  function EditInventItemModalCtrl($uibModalInstance, InventItem) {
     this.$uibModalInstance = $uibModalInstance;
     this.Item = InventItem;
 
     this.item_o = InventItem.data;
-  };
+  }
 
   /**
    * Закрыть модальное окно.
@@ -21,7 +21,7 @@ import { app } from '../../app/app';
     this.$uibModalInstance.dismiss();
   };
 
-    /**
+  /**
    * Исполнить выбранные поля ордера.
    */
   EditInventItemModalCtrl.prototype.ok = function() {

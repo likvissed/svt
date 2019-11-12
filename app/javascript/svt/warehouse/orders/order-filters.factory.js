@@ -11,13 +11,13 @@ import { app } from '../../app/app';
         operations: { '': 'Все типы' }
       },
       selected = {
-        id: '',
+        id                 : '',
         invent_workplace_id: '',
-        invent_num: '',
-        division: '',
-        operation: '',
-        creator_fio: '',
-        consumer_fio: ''
+        invent_num         : '',
+        division           : '',
+        operation          : '',
+        creator_fio        : '',
+        consumer_fio       : ''
       };
 
     return {
@@ -25,8 +25,8 @@ import { app } from '../../app/app';
         filters.divisions = data.divisions;
         filters.operations = Object.assign(filters.operations, data.operations);
       },
-      getFilters: () => filters,
-      getSelected: () => selected,
+      getFilters      : () => filters,
+      getSelected     : () => selected,
       getFiltersToSend: () => {
         let obj = angular.copy(selected);
 

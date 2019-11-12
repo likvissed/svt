@@ -44,7 +44,7 @@ import { app } from '../../app/app';
       channelType = 'Archive';
     }
 
-    let consumer = new this.ActionCableChannel('Warehouse::' + channelType + 'OrdersChannel');
+    let consumer = new this.ActionCableChannel(`Warehouse:: ${channelType} OrdersChannel`);
     consumer.subscribe(() => this._loadOrders());
   };
 
@@ -64,11 +64,11 @@ import { app } from '../../app/app';
    */
   OrdersController.prototype._openEditModal = function() {
     this.$uibModal.open({
-      templateUrl: 'editInOrderModal.slim',
-      controller: 'EditInOrderController',
+      templateUrl : 'editInOrderModal.slim',
+      controller  : 'EditInOrderController',
       controllerAs: 'edit',
-      size: 'md',
-      backdrop: 'static'
+      size        : 'md',
+      backdrop    : 'static'
     });
   };
 
@@ -105,11 +105,11 @@ import { app } from '../../app/app';
 
     this.Order.loadOrder(order.id, false, checkUnreg).then(() => {
       this.$uibModal.open({
-        templateUrl: 'execOrder.slim',
-        controller: 'ExecOrderController',
+        templateUrl : 'execOrder.slim',
+        controller  : 'ExecOrderController',
         controllerAs: 'exec',
-        size: 'lg',
-        backdrop: 'static'
+        size        : 'lg',
+        backdrop    : 'static'
       });
     });
   };
@@ -120,7 +120,7 @@ import { app } from '../../app/app';
    * @param order
    */
   OrdersController.prototype.destroyOrder = function(order) {
-    let confirm_str = "Вы действительно хотите удалить ордер \"" + order.id + "\"?";
+    let confirm_str = `Вы действительно хотите удалить ордер "${order.id}"?`;
 
     if (!confirm(confirm_str)) { return false; }
 

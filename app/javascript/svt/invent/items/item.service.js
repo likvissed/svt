@@ -37,6 +37,7 @@ import { app } from '../../app/app';
   InventItem.prototype._getObjectToSend = function() {
     let obj = angular.copy(this.data.item);
     this.WorkplaceItem.delProperties(obj);
+
     return obj;
   };
 
@@ -94,7 +95,7 @@ import { app } from '../../app/app';
 
     return this.Server.Invent.Item.pcConfigFromUser(
       formData,
-      (response) => {},
+      () => ({}),
       (response, status) => this.Error.response(response, status)
     ).$promise;
   };
@@ -117,9 +118,10 @@ import { app } from '../../app/app';
   /**
    * Заполнить конфигурацию ПК дефолтными данными.
    */
-  InventItem.prototype.FillPcWithDefaultData = function() {
+  InventItem.prototype.fillPcWithDefaultData = function() {
     let result = this.additional.pcAttrs.reduce((res, el) => {
       res[el] = ['NO_DATA_MANUAL_INPUT'];
+
       return res;
     }, {});
 

@@ -7,7 +7,7 @@ import { app } from '../../app/app';
 
   ManuallyPcDialogCtrl.$inject = ['$uibModalInstance', 'Flash', 'Workplace', 'WorkplaceItem', 'InventItem', 'item'];
 
-    /**
+  /**
    * Ввод данных о составе СБ, Моноблока, Ноутбука вручную.
    *
    * @class SVT.WorkplaceEditCtrl
