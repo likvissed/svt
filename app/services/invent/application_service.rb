@@ -58,7 +58,13 @@ class Invent::ApplicationService < ApplicationService
       value_flag = true
     end
 
-    value ||= 'нет данных'
+    value = if value.blank?
+              'нет данных'
+            elsif %w[date replacement_date].include? prop_val['property']['name']
+              Time.zone.parse(value).strftime('%d.%m.%Y')
+            else
+              value
+            end
 
     result = "#{prop_val['property']['short_description']}: #{value}"
 
