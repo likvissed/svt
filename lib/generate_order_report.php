@@ -17,7 +17,7 @@ $con = new DBConn ($database[$env]);
 if (!empty($invent_params)) {
   $query = "
   SELECT
-    warehouse_orders.*, invent_item.*, warehouse_operations.item_model, invent_property_value.value as str_val, invent_property_list.short_description as list_val, invent_property.short_description as property, invent_type.short_description as type, iss_reference_buildings.name as building, iss_reference_rooms.name as room, invent_workplace_count.division as division, netadmin.user_iss.tel
+    warehouse_orders.*, invent_item.*, warehouse_operations.item_model, invent_property_value.value as str_val, invent_property_list.short_description as list_val, property.short_description as property, invent_type.short_description as type, iss_reference_buildings.name as building, iss_reference_rooms.name as room, invent_workplace_count.division as division, netadmin.user_iss.tel
   FROM
     warehouse_orders
   INNER JOIN
@@ -53,10 +53,10 @@ if (!empty($invent_params)) {
     invent_type
   ON
     invent_item.type_id = invent_type.type_id
-  LEFT OUTER JOIN
-    invent_property
-  ON
-    invent_property.property_id = invent_property_value.property_id
+  LEFT OUTER JOIN 
+    (SELECT * FROM invent_property WHERE mandatory = TRUE) property      
+  ON 
+    property.property_id = invent_property_value.property_id
   LEFT OUTER JOIN
     invent_property_list
   ON
@@ -82,7 +82,7 @@ if (!empty($invent_params)) {
   ON
     invent_workplace_count.workplace_count_id = invent_workplace.workplace_count_id
   WHERE
-    warehouse_orders.id = :order_id AND invent_property.mandatory = true
+    warehouse_orders.id = :order_id
   ORDER BY
     invent_item.item_id";
 
@@ -324,13 +324,15 @@ foreach($result as $data) {
     }
     $table->writeToCell($i + 1, 2, "\n", $fontBold);
     foreach($data['property_values'] as $prop_val) {
-      
-      $table->writeToCell($i + 1, 2, $prop_val['property'] . ': ' . $prop_val['value'] . "\n", $table_font);
+   
+      if (isset($prop_val['property'])) {
+        $table->writeToCell($i + 1, 2, $prop_val['property'] . ': ' . $prop_val['value'] . "\n", $table_font);
+      }
     }
     $table->writeToCell($i + 1, 3, $data['count'], $table_font);
 
-  // var_dump($sql_consumer_data[0]['fio']);
-  // exit;
+    // var_dump($sql_consumer_data[0]['fio']);
+    // exit;
     
     $nested_table = $cell->addTable();
     $nested_table->addRows(4, 0.5);
