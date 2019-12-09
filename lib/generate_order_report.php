@@ -17,7 +17,7 @@ $con = new DBConn ($database[$env]);
 if (!empty($invent_params)) {
   $query = "
   SELECT
-    warehouse_orders.*, invent_item.*, warehouse_operations.item_model, invent_property_value.value as str_val, invent_property_list.short_description as list_val, property.short_description as property, invent_type.short_description as type, iss_reference_buildings.name as building, iss_reference_rooms.name as room, invent_workplace_count.division as division, netadmin.user_iss.tel
+    warehouse_orders.*, invent_item.*, warehouse_operations.item_model, invent_property_value.value as str_val, invent_property_list.short_description as list_val, property.short_description as property, invent_type.short_description as type, iss_reference_buildings.name as building, iss_reference_rooms.name as room, invent_workplace_count.division as division, netadmin.user_iss.tel, netadmin.user_iss.fio
   FROM
     warehouse_orders
   INNER JOIN
@@ -196,6 +196,8 @@ foreach($sql_invent_data as $row_data) {
     $common_data['division'] = $row_data['division'];
   if (!$common_data['tel'])
     $common_data['tel'] = $row_data['tel'];
+  if (!$common_data['fio'])
+    $common_data['fio'] = $row_data['fio'];
 
   if (!isset($result[$index]['invent_num'])) {
     foreach ($invent_params as $par) {
