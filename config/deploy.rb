@@ -39,7 +39,7 @@ server 'dc', user: 'deployer', roles: %w[web app db]
 set :pty, true
 
 # Repo details
-set :rbenv_ruby, '2.3.1'
+set :rbenv_ruby, '2.5.5'
 set :repo_url, 'git@***REMOVED***.***REMOVED***.ru:***REMOVED***/***REMOVED***/svt.git'
 set :rbenv_map_bins, %w[rake gem bundle ruby rails]
 
