@@ -67,6 +67,12 @@ module Warehouse
         data[:operations_attributes].each do |op|
           op['inv_items_attributes'] = op['inv_items']
           op['inv_items_attributes'].each do |inv_item|
+            inv_item['property_values'].each do |prop_val|
+              if prop_val['value'].present? && %w[date replacement_date].include?(prop_val['property']['name'])
+                prop_val['value'] = Time.zone.parse(prop_val['value']).strftime('%d.%m.%Y')
+              end
+            end
+
             inv_item['id'] = inv_item['item_id']
             inv_item.delete('item_id')
           end
