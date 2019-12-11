@@ -1,17 +1,17 @@
 module Warehouse
   FactoryBot.define do
     factory :supply, class: Supply do
-      name 'Поставка'
-      supplyer 'Поставщик'
-      date Time.zone.now
+      name { 'Поставка' }
+      supplyer { 'Поставщик' }
+      date { Time.zone.now }
 
       transient do
-        without_operations false
-        skip_calculate_invent_nums false
+        without_operations { false }
+        skip_calculate_invent_nums { false }
       end
 
       trait :without_operations do
-        without_operations true
+        without_operations { true }
       end
 
       after(:build) do |supply, ev|

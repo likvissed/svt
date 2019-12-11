@@ -29,7 +29,6 @@ ActiveRecord::Schema.define(version: 20171018041102) do
     t.datetime "created_at", null: false
     t.datetime "updated_at", null: false
     t.index ["item_id"], name: "index_standard_discrepancies_on_item_id"
-    t.index ["property_id"], name: "fk_rails_d1c19a836e"
     t.index ["property_value_id"], name: "index_standard_discrepancies_on_property_value_id"
   end
 
@@ -73,5 +72,4 @@ ActiveRecord::Schema.define(version: 20171018041102) do
     t.index ["tn"], name: "index_users_on_tn"
   end
 
-  add_foreign_key "standard_discrepancies", "invent_property", column: "property_id", primary_key: "property_id"
 end

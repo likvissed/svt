@@ -1,22 +1,23 @@
 module Warehouse
   FactoryBot.define do
     factory :order, class: Order do
-      inv_workplace nil
-      creator_id_tn ***REMOVED***
+      inv_workplace { nil }
+      creator_id_tn { ***REMOVED*** }
       # validator_id_tn 5336
-      operation :in
-      status 'processing'
+      operation { :in }
+      status { 'processing' }
       consumer_dept { inv_workplace.try(:division) }
-      comment ''
-      invent_num 765_000
-      skip_validator true
+      comment { '' }
+      invent_num { 765_000 }
+      skip_validator { true }
+      invent_num { 123 }
 
       transient do
-        without_operations false
+        without_operations { false }
       end
 
       trait :without_operations do
-        without_operations true
+        without_operations { true }
       end
 
       trait :default_workplace do

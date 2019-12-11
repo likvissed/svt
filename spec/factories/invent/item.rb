@@ -1,20 +1,20 @@
 module Invent
   FactoryBot.define do
     factory :item, class: Item do
-      parent_id 0
+      parent_id { 0 }
       type { Type.find_by(name: type_name) }
-      workplace nil
-      location 'Location'
+      workplace { nil }
+      location { 'Location' }
       model { type.try(:models).try(:first) }
-      item_model ''
+      item_model { '' }
       sequence(:invent_num) { |i| 764_196 + i }
       sequence(:serial_num) { |i| 222_222 + i }
 
       transient do
         # Имя типа, указанное в таблице invent_type (поле name).
-        type_name nil
+        type_name { nil }
         # Массив объектов, ключ - имя свойства, значение - хэш { property_list: obj, value: '' }.
-        property_values []
+        property_values { [] }
       end
 
       # Ситуация, когда пользователь заполнил поля.

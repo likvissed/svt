@@ -7,13 +7,13 @@ module Invent
       iss_reference_site { IssReferenceSite.first }
       iss_reference_building { iss_reference_site.iss_reference_buildings.first }
       iss_reference_room { iss_reference_building.iss_reference_rooms.first }
-      comment ''
-      status :pending_verification
-      disabled_filters false
+      comment { '' }
+      status { :pending_verification }
+      disabled_filters { false }
 
       transient do
         # Отдел по умолчанию
-        dept ***REMOVED***
+        dept { ***REMOVED*** }
       end
 
       trait :rm_pk do
@@ -45,7 +45,7 @@ module Invent
           #
           # item.keys[0] - ключ хэша
           # item[item.keys[0]] - значение ключа
-          items []
+          items { [] }
         end
 
         after(:build) do |workplace, evaluator|
