@@ -44,7 +44,7 @@ import { app } from '../../app/app';
       channelType = 'Archive';
     }
 
-    let consumer = new this.ActionCableChannel(`Warehouse:: ${channelType} OrdersChannel`);
+    let consumer = new this.ActionCableChannel(`Warehouse::${channelType}OrdersChannel`);
     consumer.subscribe(() => this._loadOrders());
   };
 
