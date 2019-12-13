@@ -89,6 +89,9 @@
 .col-sm-4.col-md-5.col-lg-3.col-xlg-3.col-fhd-2.multiline-buffer
   = text_field_tag "", "", class: "form-control input-sm", placeholder: "Инвентарный №", "ng-model": "table.selected.invent_num",
     "ng-model-options": "{ debounce: 300 }", "ng-change": "table.changeFilter()"
+.col-sm-4.col-md-5.col-lg-3.col-xlg-3.col-fhd-3.multiline-buffer
+  = text_field_tag "", "", class: "form-control input-sm", placeholder: "Серийный №", "ng-model": "table.selected.serial_num",
+    "ng-model-options": "{ debounce: 300 }", "ng-change": "table.changeFilter()"
 .col-sm-4.col-md-5.col-lg-3.col-xlg-4.col-fhd-3.multiline-buffer
   div{ ng-dropdown-multiselect="" options="table.filters.statuses" selected-model="table.selected.for_statuses" extra-settings="table.statusFilter.settings"
     translation-texts="table.statusFilter.translations" events="table.statusFilter.events" }

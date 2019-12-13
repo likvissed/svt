@@ -41,6 +41,7 @@ import { app } from '../../app/app';
         item_id     : '',
         type_id     : _filters.types[0].type_id,
         invent_num  : '',
+        serial_num  : '',
         responsible : '',
         item_model  : '',
         for_statuses: [],
