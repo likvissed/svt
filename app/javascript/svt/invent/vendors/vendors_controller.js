@@ -109,11 +109,9 @@ import { FormValidationController } from '../../shared/functions/form-validation
     );
   };
 
-
  // Закрыть окно
   EditVendorCtrl.prototype.cancel = function() {
     this.$uibModalInstance.dismiss();
   }
-
 
 })();

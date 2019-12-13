@@ -49,11 +49,9 @@ import { app } from './app';
    */
   function datatableWrapper($timeout, $compile) {
     return {
-      restrict: 'E',
-
+      restrict  : 'E',
       transclude: true,
-
-      template: '<ng-transclude></ng-transclude>',
+      template  : '<ng-transclude></ng-transclude>',
 
       link: function(scope, element) {
         function compileElements() {

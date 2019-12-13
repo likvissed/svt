@@ -41,8 +41,7 @@ import { app } from '../../app/app';
       controllerAs: 'manually',
       size        : 'md',
       backdrop    : 'static',
-
-      resolve: {
+      resolve     : {
 
         item: () => this.item_o.item
       }
