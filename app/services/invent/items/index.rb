@@ -3,7 +3,7 @@ module Invent
     # Загрузить список техники, которая находится в работе в текущий момент.
     class Index < Invent::ApplicationService
       # Список фильтров по умолчанию для фильтра "Статусы"
-      DEFAULT_STATUS_FILTER = %w[waiting_take waiting_bring in_stock in_workplace].freeze
+      DEFAULT_STATUS_FILTER = %w[waiting_take waiting_bring prepared_to_swap in_stock in_workplace waiting_write_off written_off].freeze
 
       def initialize(params)
         @params = params
