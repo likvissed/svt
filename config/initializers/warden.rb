@@ -1,0 +1,1 @@
+Warden::Strategies.add(:authorize_strategy, AuthorizeStrategy)
