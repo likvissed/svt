@@ -104,7 +104,7 @@ class Invent::ApplicationService < ApplicationService
 
     new_property_values = []
     type['properties'].each do |prop|
-      item['property_values_attributes'].each { |prop_val| new_property_values.push(prop_val) if prop_val['property_id'] == prop['property_id'] }
+      new_property_values.concat(item['property_values_attributes'].find_all { |prop_val| prop_val['property_id'] == prop['property_id'] })
     end
 
     item['property_values_attributes'] = new_property_values
