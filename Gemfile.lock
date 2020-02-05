@@ -417,7 +417,6 @@ DEPENDENCIES
   tiny_tds
   tzinfo-data
   uglifier (>= 1.3.0)
-  warden
   web-console (>= 3.3.0)
   webpacker
 

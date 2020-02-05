@@ -21,7 +21,6 @@ gem 'devise'
 gem 'omniauth'
 gem 'pundit'
 gem 'rest-client'
-gem 'warden'
 
 # MySQL
 gem 'mysql2'

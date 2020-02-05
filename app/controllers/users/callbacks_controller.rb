@@ -15,7 +15,7 @@ class Users::CallbacksController < DeviseController
   end
 
   def authorize_error
-    flash[:alert] = 'Доступ запрещен'
+    set_flash_message(:alert, :failure)
     redirect_to new_user_session_path
   end
 end
