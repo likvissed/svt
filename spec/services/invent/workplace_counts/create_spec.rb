@@ -54,6 +54,30 @@ module Invent
           expect(subject.run).to be false
         end
       end
+
+      context 'when adds new user' do
+        let(:role_id_***REMOVED***_user) { Role.find_by(name: '***REMOVED***_user').id }
+        let(:user) { User.find_by(tn: user_new.tn) }
+
+        it 'assigned a new role as :***REMOVED***_user' do
+          subject.run
+
+          expect(user.role_id).to eq role_id_***REMOVED***_user
+        end
+      end
+
+      context 'when adds present user' do
+        let(:role_id_admin) { Role.find_by(name: 'admin').id }
+        let!(:tyulyakova_user) { create(:tyulyakova_user, role_id: role_id_admin) }
+
+        before { workplace_count_params[:users_attributes] = [tyulyakova_user.as_json.symbolize_keys] }
+
+        it 'not changed the role' do
+          subject.run
+
+          expect(User.find_by(tn: tyulyakova_user.tn).role_id).to eq role_id_admin
+        end
+      end
     end
   end
 end

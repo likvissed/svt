@@ -24,17 +24,24 @@ module Invent
 
       def users_attributes
         @workplace_count_params[:users_attributes].each do |user_attr|
-          user = UserIss.find_by(tn: user_attr[:tn])
-          user_attr[:role_id] = Role.find_by(name: '***REMOVED***_user').id
+          user_iss = UserIss.find_by(tn: user_attr[:tn])
 
-          next unless user
+          user = User.find_by(tn: user_attr[:tn])
 
-          user_attr[:id] = User.find_by(tn: user_attr[:tn]).try(:id)
+          user_attr[:role_id] = if user
+                                  user.role_id
+                                else
+                                  Role.find_by(name: '***REMOVED***_user').id
+                                end
+
+          next unless user_iss
+
+          user_attr[:id] = user.try(:id)
           @workplace_count_params[:user_ids].push(user_attr[:id])
-          user_attr[:id_tn] = user.id_tn
-          user_attr[:fullname] = user.fio
+          user_attr[:id_tn] = user_iss.id_tn
+          user_attr[:fullname] = user_iss.fio
 
-          user_attr[:phone] = user_attr[:phone].presence || user.tel
+          user_attr[:phone] = user_attr[:phone].presence || user_iss.tel
         end
       end
 
