@@ -33,7 +33,10 @@ module Warehouse
     scope :barcode, ->(barcode) { where(barcode: barcode) }
     scope :item_model, ->(item_model) { where('warehouse_items.item_model LIKE ?', "%#{item_model}%") }
     scope :invent_num, ->(invent_num) do
-      left_outer_joins(:inv_item).where('invent_item.invent_num LIKE ?', "%#{invent_num}%").limit(RECORD_LIMIT)
+      where("'#{invent_num}' BETWEEN warehouse_items.invent_num_start AND warehouse_items.invent_num_end")
+        .left_outer_joins(:inv_item)
+        .or(left_outer_joins(:inv_item).where('invent_item.invent_num LIKE ?', "%#{invent_num}%"))
+        .limit(RECORD_LIMIT)
     end
     scope :invent_item_id, ->(invent_item_id) { where(invent_item_id: invent_item_id) }
 

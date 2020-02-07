@@ -31,7 +31,7 @@ class Invent::ApplicationService < ApplicationService
     item['id'] = item['item_id']
     item['is_open_order'] = item['warehouse_orders'].any? { |order| order['status'] == 'processing' } if item['warehouse_orders'].present?
     item['property_values_attributes'] = item['property_values']
- 
+
     item.delete('item_id')
     item.delete('property_values')
 
@@ -78,7 +78,6 @@ class Invent::ApplicationService < ApplicationService
   # Создать значения для свойств типа list и list_plus (если значения отсутствуют)
   def generate_property_values_for_item(item)
     type = data[:prop_data][:eq_types].find { |t| t['type_id'] == item['type_id'] }
-    return if item['property_values_attributes'].size == type['properties'].size
 
     type['properties'].each do |prop|
       # Ищем отсутствующие свойства
@@ -96,5 +95,18 @@ class Invent::ApplicationService < ApplicationService
       new_prop_val['property_id'] = prop['property_id']
       item['property_values_attributes'] << new_prop_val
     end
+    order_property_values(item)
+  end
+
+  # Сортирует значения в property_values_attributes в соответствии с Property.order(:property_order)
+  def order_property_values(item)
+    type = data[:prop_data][:eq_types].find { |t| t['type_id'] == item['type_id'] }
+
+    new_property_values = []
+    type['properties'].each do |prop|
+      new_property_values.concat(item['property_values_attributes'].find_all { |prop_val| prop_val['property_id'] == prop['property_id'] })
+    end
+
+    item['property_values_attributes'] = new_property_values
   end
 end
