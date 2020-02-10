@@ -13,7 +13,7 @@ module Authorize
                                              grant_type: 'authorization_code',
                                              redirect_uri: ENV['REDIRECT_URI'],
                                              code: code
-                                             }))
+                                           }))
   end
 
   def get_user(access_token)
@@ -30,6 +30,6 @@ module Authorize
                                              client_secret: ENV['CLIENT_SECRET'],
                                              grant_type: 'refresh_token',
                                              refresh_token: refresh_token
-                                             }))
+                                           }))
   end
 end
