@@ -84,6 +84,16 @@ class ApplicationController < ActionController::Base
 
   private
 
+  # Чтобы после выхода редиректил на страницу входа
+  def after_sign_out_path_for(resource_or_scope)
+    new_user_session_path
+  end
+
+  # Куда перенаправлять после авторизации
+  def after_sign_in_path_for(resource_or_scope)
+    session['user_return_to'] || invent_workplaces_path
+  end
+
   # Определяем, какой layout выводить: для входа в систему или основной
   def layout
     is_a?(Devise::SessionsController) ? 'sign_in_app' : 'application'

@@ -2,46 +2,43 @@ require 'rails_helper'
 
 module Users
   RSpec.describe CallbacksController, type: :controller do
-    describe 'GET #open_id_***REMOVED***' do
+    before :each do
+      request.env['devise.mapping'] = Devise.mappings[:user]
+    end
+
+    describe 'GET #registration_user' do
+      before { get :registration_user, format: :html }
+
+      let(:auth_center_path) { "#{ENV['AUTHORIZATION_URI']}?client_id=#{ENV['CLIENT_ID']}&response_type=code&redirect_uri=#{ENV['REDIRECT_URI']}&state=#{session[:state]}" }
+
+      it 'redirect in auth-center' do
+        expect(response).to redirect_to auth_center_path
+      end
+
+      it 'receives a response with status 301' do
+        expect(response.status).to eq(302)
+      end
+
+      it 'check for session parameter state for session' do
+        expect(session[:state]).to be_present
+      end
+    end
+
+    describe 'POST #authorize_user' do
       context 'when attributes is valid' do
         sign_in_user
-
-        before { get :open_id_***REMOVED*** }
-
-        it 'assigns the user to @user' do
-          expect(assigns(:user)).to eq @user
-        end
-
-        it 'redirects to authenticated root path' do
-          expect(response).to redirect_to authenticated_root_path
-        end
-
-        it 'must have open_id params' do
-          expect(@request.env['omniauth.auth'].info.keys).to include('fullname', 'tn')
-        end
+        before { post :authorize_user, format: :json }
 
         it { should set_flash[:notice].to 'Вход в систему выполнен' }
       end
 
       context 'when attributes is invalid' do
-        sign_in_user(fullname: '')
+        before { post :authorize_user, params: { error: 'example error', state: '12345' }, format: :json }
 
-        before { get :open_id_***REMOVED*** }
+        it { should set_flash[:alert].to 'Доступ запрещен' }
 
-        context 'and when tn is set' do
-          context 'and when fullname is not set' do
-            it 'redirects to sign in path' do
-              expect(response).to redirect_to new_user_session_path
-            end
-
-            it { should set_flash[:alert].to 'Ошибка. Обратитесь к администратору, т.***REMOVED***' }
-          end
-        end
-
-        context 'and when tn is not set' do
-          it 'redirects to sign in path' do
-            expect(response).to redirect_to new_user_session_path
-          end
+        it 'redirects to sign in path' do
+          expect(response).to redirect_to new_user_session_path
         end
       end
     end

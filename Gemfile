@@ -20,6 +20,7 @@ gem 'sidekiq-scheduler'
 gem 'devise'
 gem 'omniauth'
 gem 'pundit'
+gem 'rest-client'
 
 # MySQL
 gem 'mysql2'

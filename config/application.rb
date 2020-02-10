@@ -28,6 +28,7 @@ module Inv
     config.autoload_paths << Rails.root.join('app', 'modules').to_s
     config.autoload_paths << Rails.root.join('app', 'states').to_s
     config.autoload_paths << Rails.root.join('lib', 'validators').to_s
+    config.autoload_paths << Rails.root.join('lib', 'strategy').to_s
 
     # Provides support for Cross-Origin Resource Sharing (CORS)
     config.middleware.insert_before 0, Rack::Cors do

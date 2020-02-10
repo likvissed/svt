@@ -1,10 +1,7 @@
 class User < ApplicationRecord
   self.table_name = "#{Rails.configuration.database_configuration[Rails.env]['database']}.users"
 
-  # Include default devise modules. Others available are:
-  # :confirmable, :lockable, :timeoutable and :omniauthable
-  devise :database_authenticatable, :trackable, :timeoutable, :omniauthable,
-         omniauth_providers: %i[open_id_***REMOVED*** check_***REMOVED***_auth], authentication_keys: [:login]
+  devise :database_authenticatable
 
   has_many :workplace_responsibles, class_name: 'Invent::WorkplaceResponsible', inverse_of: :user, dependent: :destroy
   has_many :workplace_counts, through: :workplace_responsibles, class_name: 'Invent::WorkplaceCount'
