@@ -46,17 +46,17 @@ script type="text/ng-template" id="deliveryOfItems.slim"
             div style="padding: 0 45px 15px 45px;"
               .row
                 .col-sm-12
-                  .form-group
+                  .form-group ng-class="delivery.errorClass('order[operations[{{$parent.$index}}].inv_items[{{$index}}].serial_num]')"
                     = label_tag "", "Серийный номер", class: "control-label"
-                    = text_field_tag "order[operations.inv_items.serial_num]", "", class: "form-control", autocomplete: "off",
+                    = text_field_tag "order[operations[{{$parent.$index}}].inv_items[{{$index}}].serial_num]", "", class: "form-control", autocomplete: "off",
                       "ng-model": "inv_item.serial_num"
+                    span.help-block ng-show="delivery.form['order[operations[{{$parent.$index}}].inv_items[{{$index}}].serial_num]'].$invalid" ng-bind="delivery.errorMessage('order[operations[{{$parent.$index}}].inv_items[{{$index}}].serial_num]')"
                 .col-sm-12
-                  .form-group ng-class="delivery.errorClass('order[operations.inv_items.invent_num]')"
+                  .form-group ng-class="delivery.errorClass('order[operations[{{$parent.$index}}].inv_items[{{$index}}].invent_num]')"
                     = label_tag "", "Инвентарный номер", class: "control-label"
-                    = text_field_tag "order[operations.inv_items.invent_num]", "", class: "form-control", autocomplete: "off",
+                    = text_field_tag "order[operations[{{$parent.$index}}].inv_items[{{$index}}].invent_num]", "", class: "form-control", autocomplete: "off",
                       "ng-model": "inv_item.invent_num"
-                    span.help-block ng-show="delivery.form['order[operations.inv_items.invent_num]'].$invalid" ng-bind="delivery.errorMessage('order[operations.inv_items.invent_num]')"
-
+                    span.help-block ng-show="delivery.form['order[operations[{{$parent.$index}}].inv_items[{{$index}}].invent_num]'].$invalid" ng-bind="delivery.errorMessage('order[operations[{{$parent.$index}}].inv_items[{{$index}}].invent_num]')"
               table.table.table-condensed
                 tr
                   td.col-sm-8

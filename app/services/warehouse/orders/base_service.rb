@@ -48,7 +48,12 @@ module Warehouse
       end
 
       def process_order_errors(order, with_operations = false)
-        error[:object] = order.errors
+        error[:object] = if order.operation == 'out'
+                           error_operations_for_index(order)
+                         else
+                           order.errors
+                         end
+
         error[:full_message] = if with_operations
                                  order_errors = order.errors.full_messages
                                  operation_errors = order.operations.map { |op| op.errors.full_messages }
@@ -56,6 +61,23 @@ module Warehouse
                                else
                                  order.errors.full_messages.join('. ')
                                end
+      end
+
+      def error_operations_for_index(order)
+        new_operations = order.operations.select { |op| op if op.status_changed? }
+        new_hash = {}
+
+        new_operations.each_with_index do |operation, ind|
+          operation.inv_items.each_with_index do |item, jnd|
+            item.errors.messages.each do |ms|
+              new_hash["operations[#{ind}].inv_items[#{jnd}].#{ms.first}"] = ms.last
+
+              new_hash.merge!(new_hash)
+            end
+          end
+        end
+
+        new_hash
       end
     end
   end

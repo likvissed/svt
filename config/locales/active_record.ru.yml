@@ -129,6 +129,7 @@ ru:
       warehouse/order/operations/inv_items:
         base: ''
         invent_num: 'Инвентарный номер'
+        serial_num: 'Серийный номер'
 
       warehouse/order/operations/inv_items/property_values:
         base: ''

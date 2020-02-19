@@ -27,6 +27,8 @@ module Invent
     belongs_to :model, optional: true
 
     validates :invent_num, presence: true, unless: -> { status == 'waiting_take' }
+    validates :serial_num, presence: true, if: -> { validate_serial_num_for_execute_out }
+
     validate :presence_model, :check_mandatory, if: -> { errors.details[:type].empty? && !disable_filters }
     validate :property_values_validation, if: -> { validate_prop_values }
     validate :invent_num_from_allowed_pool_of_numbers, if: -> { invent_num_changed? }
@@ -103,6 +105,7 @@ module Invent
     attr_accessor :disable_filters
     attr_accessor :destroy_from_order
     attr_accessor :validate_prop_values
+    attr_accessor :validate_serial_num_for_execute_out
 
     delegate :properties, to: :type
 

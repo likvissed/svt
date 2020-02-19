@@ -142,6 +142,14 @@ module Warehouse
 
             expect(sec_inv_item.reload.invent_num).to eq sec_item.invent_num_start.to_s
           end
+
+          context 'and when serial num is nil for type item in constant :NAME_FOR_MANDATORY_SERIAL_NUM' do
+            before do
+              order_params['operations_attributes'].each { |op| op['inv_items_attributes'].first[:serial_num] = nil if op['inv_items_attributes'] }
+            end
+
+            its(:run) { is_expected.to be_falsey }
+          end
         end
 
         context 'and when one of items does not have valid property' do
