@@ -76,6 +76,7 @@ module Warehouse
           op.calculate_item_count
           op.calculate_item_count_reserved
           op.inv_items.each do |inv_item|
+            inv_item.validate_serial_num_for_execute_out = true if Invent::Type::NAME_FOR_MANDATORY_SERIAL_NUM.include?(inv_item.type.name)
             inv_item.validate_prop_values = true
             inv_item.status = :in_workplace
           end
