@@ -11,6 +11,7 @@ module Warehouse
     belongs_to :inv_item, class_name: 'Invent::Item', foreign_key: 'invent_item_id', optional: true
     belongs_to :inv_type, class_name: 'Invent::Type', foreign_key: 'invent_type_id', optional: true
     belongs_to :inv_model, class_name: 'Invent::Model', foreign_key: 'invent_model_id', optional: true
+    belongs_to :location, foreign_key: 'location_id', optional: true
 
     accepts_nested_attributes_for :property_values, allow_destroy: true
 

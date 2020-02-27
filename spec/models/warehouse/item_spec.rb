@@ -9,6 +9,7 @@ module Warehouse
     it { is_expected.to belong_to(:inv_item).class_name('Invent::Item').with_foreign_key('invent_item_id') }
     it { is_expected.to belong_to(:inv_type).class_name('Invent::Type').with_foreign_key('invent_type_id') }
     it { is_expected.to belong_to(:inv_model).class_name('Invent::Model').with_foreign_key('invent_model_id') }
+    it { is_expected.to belong_to(:location).with_foreign_key('location_id') }
     it { is_expected.to validate_presence_of(:warehouse_type) }
     it { is_expected.to validate_presence_of(:item_type) }
     it { is_expected.to validate_presence_of(:item_model) }

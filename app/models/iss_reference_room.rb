@@ -2,6 +2,7 @@ class IssReferenceRoom < Netadmin
   self.table_name = "#{Rails.configuration.database_configuration["#{Rails.env}_netadmin"]['database']}.iss_reference_rooms"
 
   has_many :workplaces, class_name: 'Invent::Workplace', foreign_key: 'location_room_id'
+  has_many :locations, class_name: 'Warehouse::Location', foreign_key: 'room_id'
 
   belongs_to :iss_reference_building, foreign_key: 'building_id'
   belongs_to :room_security_category, foreign_key: 'security_category_id'
