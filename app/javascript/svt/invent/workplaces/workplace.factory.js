@@ -118,7 +118,7 @@ import { app } from '../../app/app';
     // Список площадок и корпусов
     this.iss_locations = [this.selectIssLocation].concat(data.prop_data.iss_locations);
 
-    // Значения категорий секретности комнат
+    // Категории секретности комнат
     this.rooms_security_categories = data.prop_data.rooms_security_categories;
     this.findBlankCategory();
 
@@ -388,7 +388,10 @@ import { app } from '../../app/app';
         room_name  : this.workplace.location_room_name,
         building_id: this.workplace.location_building_id
       },
-      (response) => this.workplace.room_category_id = response.category_id
+      (response) => {
+        this.workplace.room_category_id = response.category_id;
+        this.changeSecurityCategory();
+      }
     );
 
   };
