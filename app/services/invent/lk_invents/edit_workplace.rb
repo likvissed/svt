@@ -56,7 +56,7 @@ module Invent
       # Подготовка параметров для отправки пользователю.
       def prepare_to_render
         data['division'] = data['workplace_count']['division']
-        data['location_room_name'] = data['iss_reference_room']['name']
+        data['location_room'] = data['iss_reference_room']
         data['items_attributes'] = data['items']
 
         data.delete('items')

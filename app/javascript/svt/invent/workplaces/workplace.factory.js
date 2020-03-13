@@ -118,6 +118,13 @@ import { app } from '../../app/app';
     // Список площадок и корпусов
     this.iss_locations = [this.selectIssLocation].concat(data.prop_data.iss_locations);
 
+    // Значения категорий секретности комнат
+    this.rooms_security_categories = data.prop_data.rooms_security_categories;
+    this.findBlankCategory();
+
+    // Сообщение в справке для защищаемых помещений
+    this.message_for_security_category = data.prop_data.message_for_security_category;
+
     this.statuses = data.prop_data.statuses;
     this.divisions = data.prop_data.divisions;
 
@@ -156,6 +163,11 @@ import { app } from '../../app/app';
           this.workplace.division = this.divisions.find((el) => {
             if (el.workplace_count_id == this.workplace.workplace_count_id) { return true; }
           });
+
+          this.workplace.location_room_name = this.workplace.location_room.name;
+          this.workplace.room_category_id = this.workplace.location_room.security_category_id;
+
+          this.changeSecurityCategory();
         }, (response, status) => {
           this.Error.response(response, status);
         }).$promise;
@@ -170,6 +182,8 @@ import { app } from '../../app/app';
           this._addObjects();
 
           this.workplace.division = this.divisions[0];
+
+          this.workplace.room_category_id = this.workplace.no_secrecy.id;
         }, (response, status) => {
           this.Error.response(response, status);
         }).$promise;
@@ -349,5 +363,33 @@ import { app } from '../../app/app';
     }
 
     return true;
+  };
+
+  /**
+   * Найти объект для категории "Отсутствует"
+   */
+    Workplace.prototype.findBlankCategory = function() {
+      this.workplace.no_secrecy = this.rooms_security_categories.find((el) => el.category == 'Отсутствует')
+  };
+
+  /**
+   * Изменить значение секретности комнаты
+   */
+  Workplace.prototype.changeSecurityCategory = function() {
+    this.workplace.room_category = this.rooms_security_categories.find((el) => el.id == this.workplace.room_category_id);
+  };
+
+  /**
+   * Получить id категории для введенной комнаты и установить значение для категории
+   */
+  Workplace.prototype.setDefaultCategory = function() {
+    this.Server.Invent.Workplace.categoryForRoom(
+      {
+        room_name  : this.workplace.location_room_name,
+        building_id: this.workplace.location_building_id
+      },
+      (response) => this.workplace.room_category_id = response.category_id
+    );
+
   };
 })();

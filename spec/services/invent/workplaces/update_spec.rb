@@ -87,6 +87,7 @@ module Invent
           new_mon.delete('item_id')
           new_mon.delete('property_values')
 
+          wp.data.delete('location_room')
           wp.data['items_attributes'] << new_mon
           wp.data
         end

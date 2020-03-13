@@ -42,6 +42,10 @@ import { app } from '../../app/app';
           hardDelete: {
             method: 'DELETE',
             url   : '/invent/workplaces/:workplace_id/hard_destroy'
+          },
+          categoryForRoom: {
+            method: 'GET',
+            url   : '/invent/workplaces/category_for_room'
           }
         }),
         /**

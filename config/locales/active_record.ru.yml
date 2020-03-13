@@ -87,6 +87,7 @@ ru:
 
       iss_reference_room:
         name: "Номер комнаты"
+        security_category_id: "Категория помещения"
 
       warehouse/order:
         inv_workplace: 'Рабочее место'

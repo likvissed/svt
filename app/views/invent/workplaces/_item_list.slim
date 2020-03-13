@@ -1,13 +1,20 @@
 .row
-  .col-sm-24
-    h4 Состав рабочего места
-
+  .col-sm-24 
+    h4
+      | Состав рабочего места 
+      - if current_user.one_of_roles? :admin, :manager, :worker  
+        span.text-danger ng-if="wp.workplace.room_category_id != wp.workplace.no_secrecy.id"
+          = "(Категория помещения: «{{ wp.workplace.room_category.category }}»)"
 .row
   .col-sm-24
     uib-accordion ng-cloak="true"
       div uib-accordion-group="true" class="panel-default" is-open="status.open"
         uib-accordion-heading
-          | Справка
+          - if current_user.one_of_roles? :admin, :manager, :worker  
+            span ng-class="{'text-danger': wp.workplace.room_category_id != wp.workplace.no_secrecy.id}"
+              | Справка
+          - else
+            | Справка
           i.pull-right
             span ng-if="status.open"
               = fa_icon "chevron-down"
