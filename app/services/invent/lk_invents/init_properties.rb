@@ -21,6 +21,7 @@ module Invent
         load_item_move_types
         load_users if @division
         load_constants
+        load_security_categories
         prepare_eq_types_to_render
         load_priorities
 
@@ -123,6 +124,12 @@ module Invent
         data[:date_props] = Property::DATE_PROPS
         data[:single_pc_items] = Type::SINGLE_PC_ITEMS
         data[:type_with_files] = Type::TYPE_WITH_FILES
+        data[:message_for_security_category] = WorkplaceType::SECURITY_ROOM
+      end
+
+      # Загрузить все категории секретности
+      def load_security_categories
+        data[:rooms_security_categories] = RoomSecurityCategory.all
       end
     end
   end

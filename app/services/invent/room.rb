@@ -11,14 +11,16 @@ module Invent
 
     before_run :run_validations
 
-    def initialize(name, building_id)
+    def initialize(name, building_id, room_category_id)
       @name = name
       @building_id = building_id
+      @room_category_id = room_category_id
     end
 
     def run
       run_callbacks(:run) do
         create_room unless room
+        change_room_category
 
         true
       end
@@ -53,7 +55,11 @@ module Invent
     end
 
     def create_room
-      @data = IssReferenceRoom.create(building_id: @building_id, name: @name)
+      @data = IssReferenceRoom.create(building_id: @building_id, name: @name, room_security_category: RoomSecurityCategory.find_by(category: 'Отсутствует'))
+    end
+
+    def change_room_category
+      @data.update(security_category_id: @room_category_id)
     end
   end
 end

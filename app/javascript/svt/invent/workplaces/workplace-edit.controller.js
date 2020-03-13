@@ -40,6 +40,10 @@ import { app } from '../../app/app';
       this.users = this.Workplace.users;
       // Список возможных статусов РМ
       this.statuses = this.Workplace.statuses;
+      // Значения категорий секретности комнат
+      this.rooms_security_categories = this.Workplace.rooms_security_categories;
+      // Сообщение в справке для защищаемых помещений
+      this.message_for_security_category = this.Workplace.message_for_security_category;
 
       // Данные о рабочем месте
       this.workplace = this.Workplace.workplace;
@@ -96,10 +100,24 @@ import { app } from '../../app/app';
   };
 
   /**
+   * Установить начальное значение для корпуса при изменении площадки.
+   */
+  WorkplaceEditCtrl.prototype.setDefaultCategory = function(type) {
+    this.Workplace.setDefaultCategory(type);
+  };
+
+  /**
    * Отправить данные на сервер для сохранения.
    */
   WorkplaceEditCtrl.prototype.saveWorkplace = function() {
     this.Workplace.saveWorkplace();
+  };
+
+  /**
+   * Изменить значение секретности комнаты
+   */
+  WorkplaceEditCtrl.prototype.changeSecurityCategory = function() {
+    this.Workplace.changeSecurityCategory();
   };
 
   /**

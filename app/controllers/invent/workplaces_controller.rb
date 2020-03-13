@@ -123,6 +123,18 @@ module Invent
       send_file(Rails.root.join('public', 'downloads', 'SysInfo.exe'), disposition: 'attachment')
     end
 
+    def category_for_room
+      room = IssReferenceRoom.find_by(name: params[:room_name], building_id: params[:building_id])
+
+      category_id = if room.present?
+                      room.security_category_id
+                    else
+                      RoomSecurityCategory.find_by(category: 'Отсутствует').id
+                    end
+
+      render json: { category_id: category_id }
+    end
+
     protected
 
     def workplace_params

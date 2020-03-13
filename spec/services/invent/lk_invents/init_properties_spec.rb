@@ -9,7 +9,7 @@ module Invent
         let!(:workplace_count) { create(:active_workplace_count, users: [user]) }
         subject { InitProperties.new(user) }
 
-        include_examples 'run methods', %w[load_divisions load_types load_workplace_types load_workplace_specializations load_locations prepare_eq_types_to_render load_constants]
+        include_examples 'run methods', %w[load_divisions load_types load_workplace_types load_workplace_specializations load_locations prepare_eq_types_to_render load_constants load_security_categories]
 
         its(:data) { is_expected.not_to be_nil }
 
@@ -20,10 +20,10 @@ module Invent
         end
 
         context 'when @data is filling' do
-          let!(:data_keys) { %i[divisions eq_types wp_types specs iss_locations statuses move_item_types file_depending date_props single_pc_items type_with_files] }
+          let!(:data_keys) { %i[divisions eq_types wp_types specs iss_locations statuses move_item_types file_depending date_props single_pc_items type_with_files message_for_security_category] }
           before { subject.run }
 
-          it 'fills the @data hash with %i[divisions eq_types wp_types specs iss_locations statuses move_item_types file_depending date_props single_pc_items type_with_files] keys' do
+          it 'fills the @data hash with %i[divisions eq_types wp_types specs iss_locations statuses move_item_types file_depending date_props single_pc_items type_with_files message_for_security_category] keys' do
             expect(subject.data.keys).to include(*data_keys)
           end
 
@@ -45,6 +45,10 @@ module Invent
             expect(subject.data[:type_with_files]).to eq Type::TYPE_WITH_FILES
           end
 
+          it 'puts the Type::SECURITY_ROOM array into the :message_for_security_category key' do
+            expect(subject.data[:message_for_security_category]).to eq WorkplaceType::SECURITY_ROOM
+          end
+
           it_behaves_like '@data into init_properties_service is filleable'
         end
       end
@@ -55,10 +59,10 @@ module Invent
         its(:data) { is_expected.not_to be_nil }
 
         context 'when @data is filling' do
-          let!(:data_keys) { %i[eq_types wp_types specs iss_locations users] }
+          let!(:data_keys) { %i[eq_types wp_types specs iss_locations users rooms_security_categories] }
           before { subject.run }
 
-          it 'fills the @data hash with %i[divisions eq_types wp_types specs iss_locations] keys' do
+          it 'fills the @data hash with %i[divisions eq_types wp_types specs iss_locations rooms_security_categories] keys' do
             expect(subject.data.keys).to include(*data_keys)
           end
 

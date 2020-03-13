@@ -55,6 +55,7 @@ module ServiceMacros
       wp.data['workplace_specialization'] = nil
       wp.data['location_room_name'] = nil
     end
+    wp.data.delete('location_room')
 
     # Меняем состав рабочего места
     new_mon = wp.data['items_attributes'].deep_dup.last
@@ -65,9 +66,9 @@ module ServiceMacros
       prop_val['id'] = nil
       prop_val['item_id'] = nil
     end
-    
+
     wp.data['items_attributes'] << new_mon
- 
+
     wp.data['items_attributes'].each do |item|
       item.delete('warehouse_orders')
     end
