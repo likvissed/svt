@@ -186,6 +186,11 @@ ru:
         value: "Значение свойств техники"
         unknown_property_type: "Неизвестный тип свойства"
 
+      warehouse/item/location:
+        site_id: 'Площадка'
+        building_id: 'Корпус'
+        room_id: 'Комната'
+
       user:
         tn: Табельный номер
         role: Роль

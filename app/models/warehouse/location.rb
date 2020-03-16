@@ -7,5 +7,9 @@ module Warehouse
     belongs_to :iss_reference_room, foreign_key: 'room_id', optional: true
 
     has_one :warehouse_item, foreign_key: 'location_id', class_name: 'Warehouse::Item', dependent: :destroy
+
+    validates :site_id, presence: true
+    validates :building_id, presence: true
+    validates :room_id, presence: true
   end
 end

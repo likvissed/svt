@@ -286,20 +286,53 @@ import { app } from '../../app/app';
     );
   };
 
-    WarehouseItemsCtrl.prototype.openEditItem = function(item) {
-      // Для загрузки свойств техники
-      this.InventItem.setItem(item);
+  WarehouseItemsCtrl.prototype.openEditItem = function(item) {
+    // Для загрузки свойств техники
+    this.InventItem.setItem(item);
 
-      this.$uibModal.open({
-        templateUrl : 'WarehousePropertyValueEditCtrl.slim',
-        controller  : 'WarehousePropertyValueCtrl',
-        controllerAs: 'edit',
-        backdrop    : 'static',
-        size        : 'md',
-        resolve     : {
-          item: () => item
+    this.$uibModal.open({
+      templateUrl : 'WarehousePropertyValueEditCtrl.slim',
+      controller  : 'WarehousePropertyValueCtrl',
+      controllerAs: 'edit',
+      backdrop    : 'static',
+      size        : 'md',
+      resolve     : {
+        item: () => item
+      }
+    });
+  };
+
+  WarehouseItemsCtrl.prototype.editLocationItem = function(item) {
+    this.Server.Warehouse.Item.edit(
+      {
+        id: item.id
+      },
+      (response) => {
+        this.item = response.item;
+        this.iss_locations = response.prop_data.iss_locations;
+
+        this.openEditLocationItem(this.item, this.iss_locations);
+      },
+      (response, status) => this.Error.response(response, status)
+    );
+  };
+
+  WarehouseItemsCtrl.prototype.openEditLocationItem = function(item, location_sites) {
+    this.$uibModal.open({
+      templateUrl : 'WarehouseEditLocationItemCtrl.slim',
+      controller  : 'WarehouseLocationCtrl',
+      controllerAs: 'edit',
+      backdrop    : 'static',
+      size        : 'md',
+      resolve     : {
+        items: function() {
+          return {
+            item          : item,
+            location_sites: location_sites
+          };
         }
-      });
+      }
+    });
   };
 
 })();

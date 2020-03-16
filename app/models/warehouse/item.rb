@@ -13,7 +13,8 @@ module Warehouse
     belongs_to :inv_model, class_name: 'Invent::Model', foreign_key: 'invent_model_id', optional: true
     belongs_to :location, foreign_key: 'location_id', optional: true
 
-    accepts_nested_attributes_for :property_values, allow_destroy: true
+    accepts_nested_attributes_for :property_values, allow_destroy: true, reject_if: proc { |attr| attr['value'].blank? }
+    accepts_nested_attributes_for :location, allow_destroy: true, reject_if: proc { |attr| attr['site_id'].blank? }
 
     validates :warehouse_type, :item_type, :item_model, presence: true
     validates :inv_item, uniqueness: true, allow_nil: true
