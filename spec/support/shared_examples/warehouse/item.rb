@@ -86,4 +86,12 @@ module Warehouse
       its(:run) { is_expected.to be_falsey }
     end
   end
+
+  shared_examples 'add a location in item' do
+    it 'assign present location for item' do
+      subject.run
+
+      expect(item.reload.location_id).to eq location.id
+    end
+  end
 end

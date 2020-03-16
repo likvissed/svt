@@ -54,7 +54,9 @@ module Warehouse
     end
 
     def item_params
-      params.require(:item).permit(policy(Item).permitted_attributes)
+      w_item_params = params.require(:item).permit(policy(Item).permitted_attributes)
+      w_item_params[:location_attributes] = w_item_params.delete :location
+      w_item_params.permit!
     end
   end
 end

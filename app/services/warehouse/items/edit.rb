@@ -24,18 +24,21 @@ module Warehouse
       protected
 
       def load_item
-        data[:item] = Item.includes(:inv_type, :property_values).find(@item_id)
+        data[:item] = Item.includes(:inv_type, :property_values, :location).find(@item_id)
+
         authorize data[:item], :edit?
 
         data[:item] = data[:item]
                         .as_json(
                           include: [
                             :inv_type,
+                            :location,
                             property_values: {
                               include: :property
                             }
                           ]
                         )
+        data[:item]['location'] ||= Location.new.as_json
       end
 
       def load_properties
@@ -45,10 +48,12 @@ module Warehouse
 
         properties = Invent::LkInvents::InitProperties.new(current_user)
 
+        data[:prop_data][:iss_locations] = properties.load_locations
+
         raise 'Ошибка сервиса Invent::LkInvents::InitProperties' unless properties.load_types && properties.prepare_eq_types_to_render
 
         data[:prop_data][:eq_types] = properties.data[:eq_types].find do |type|
-          next unless type['name'] == data[:item]['inv_type']['name']
+          next unless data[:item]['inv_type'] && type['name'] == data[:item]['inv_type']['name']
 
           type['properties'] = type['properties'].select do |prop|
             data[:prop_data][:file_depending].include?(prop['name'])

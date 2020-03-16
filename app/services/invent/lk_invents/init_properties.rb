@@ -57,6 +57,22 @@ module Invent
         )
       end
 
+      # Получить список площадок и корпусов.
+      def load_locations
+        data[:iss_locations] = IssReferenceSite
+                                 .order(:sort_order)
+                                 .includes(iss_reference_buildings: :iss_reference_rooms)
+                                 .as_json(include: {
+                                            iss_reference_buildings: {
+                                              include: :iss_reference_rooms
+                                            }
+                                          })
+
+        data[:iss_locations].each do |loc|
+          loc['name'] = "#{loc['name']} (#{loc['long_name']})" unless loc['long_name'].to_s.empty?
+        end
+      end
+
       protected
 
       # Получить список отделов, доступных на редактирование для указанного пользователя.
@@ -89,18 +105,6 @@ module Invent
       # Получить список направлений.
       def load_workplace_specializations
         data[:specs] = WorkplaceSpecialization.all
-      end
-
-      # Получить список площадок и корпусов.
-      def load_locations
-        data[:iss_locations] = IssReferenceSite
-                                 .order(:sort_order)
-                                 .includes(:iss_reference_buildings)
-                                 .as_json(include: :iss_reference_buildings)
-
-        data[:iss_locations].each do |loc|
-          loc['name'] = "#{loc['name']} (#{loc['long_name']})" unless loc['long_name'].to_s.empty?
-        end
       end
 
       # Получить список возможных статусов РМ.
