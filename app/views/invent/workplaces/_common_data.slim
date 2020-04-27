@@ -44,12 +44,12 @@
       = label_tag :workplace_location_room, "Комната", class: "control-label"
       = text_field_tag "workplace[location_room]", "", class: "form-control", "ng-model": "wp.workplace.location_room_name", "ng-change": "wp.setDefaultCategory()",
           "ng-disabled": "wp.workplace.location_building_id == -1", "ng-value": "wp.workplace.location_room_name"
-      - if current_user.one_of_roles? :admin, :manager, :worker  
-        div
-          p
-          = label_tag :workplace_room_category_id, "Категория помещения", class: "control-label"
-          = select_tag "workplace[room_category_id]", "", class: "form-control", "ng-model": "wp.workplace.room_category_id", "ng-change": "wp.changeSecurityCategory()",
-            "ng-options": "rooms_security.id as rooms_security.category for rooms_security in wp.rooms_security_categories"
+      / - if current_user.one_of_roles? :admin, :manager, :worker
+      /   div
+      /     p
+      /     = label_tag :workplace_room_category_id, "Категория помещения", class: "control-label"
+      /     = select_tag "workplace[room_category_id]", "", class: "form-control", "ng-model": "wp.workplace.room_category_id", "ng-change": "wp.changeSecurityCategory()",
+      /       "ng-options": "rooms_security.id as rooms_security.category for rooms_security in wp.rooms_security_categories"
 - if !current_user.role? :***REMOVED***_user
   .row
     .col-sm-24
