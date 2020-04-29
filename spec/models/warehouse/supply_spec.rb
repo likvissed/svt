@@ -24,5 +24,17 @@ module Warehouse
         end
       end
     end
+
+    describe '#checked_location_for_items' do
+      let(:item_without_location) { create(:expanded_item) }
+      let(:operation) { build(:supply_operation, shift: 1, item: item_without_location) }
+      subject { build(:supply, operations: [operation], location_attr: true, value_location_item_type: item_without_location.item_type) }
+
+      it 'adds :must_add_a_location_for_the_item error' do
+        subject.valid?
+
+        expect(subject.errors.details[:base]).to include(error: :must_add_a_location_for_the_item, item_type: item_without_location.item_type)
+      end
+    end
   end
 end

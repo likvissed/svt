@@ -1,0 +1,29 @@
+<div class="form-group"> 
+    <div> <label> Площадка </label>
+    <select name="site_id" id="site_id" class="form-control ng-pristine ng-untouched ng-valid" ng-model="loc.selected_object.site" ng-change="loc.setLocationSite()" ng-options="loc_site.name disable when !loc_site.site_id for loc_site in loc.location_sites"> </select>
+  </div>
+</div>
+<div class="form-group"> 
+  <div>
+    <label> Корпус </label>
+    <select name="building_id" id="building_id" class="form-control ng-pristine ng-untouched ng-valid" ng-model="loc.selected_object.building" ng-change="loc.setLocationBuilding()" ng-disabled="!loc.selected_object.site.site_id" ng-options="loc_building as loc_building.name disable when !loc_building.building_id for loc_building in loc.selected_object.site.iss_reference_buildings"></select>
+  </div>
+</div>
+<div class="form-group"> 
+  <div>
+    <label> Комната </label>
+    <select name="room_id" id="room_id" class="form-control ng-pristine ng-untouched ng-valid" ng-model="loc.selected_object.room" ng-change="loc.setLocationRoom()" ng-disabled="!loc.selected_object.building.building_id" ng-options="loc_room.name disable when !loc_room.room_id for loc_room in loc.selected_object.building.iss_reference_rooms track by loc_room.room_id"></select>
+  </div>
+</div>
+<div class="form-group"> 
+  <div ng-if="loc.selected_object.room.room_id==-1" class="form-group">
+    <label> Введите новую комнату </label>
+    <input type="text" name="room_name" id="room_name" class="form-control ng-pristine ng-valid ng-empty ng-touched" ng-model="loc.selectedItem.location.name" ng-disabled="!loc.selected_object.building.building_id" ng-value="loc.selected_object.room.room_name">
+  </div>
+</div>
+<div class="form-group"> 
+  <div>
+    <label> Комментарий </label>
+    <input type="text" name="comment" id="comment" value="" class="form-control ng-pristine ng-untouched ng-valid" ng-model="loc.selectedItem.location.comment">
+  </div>
+</div>

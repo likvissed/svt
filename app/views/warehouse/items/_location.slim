@@ -2,35 +2,7 @@ script type="text/ng-template" id="WarehouseEditLocationItemCtrl.slim"
   .modal-header
     h4 Расположение техники
   .modal-body
-    .row
-      .col-sm-24
-        .form-group
-          = label_tag :site_id, "Площадка", class: "control-label"
-          = select_tag "site_id", "", class: "form-control", "ng-model": "edit.location_site", "ng-change": "edit.setLocationSite()",
-            "ng-options": "loc_site.name disable when !loc_site.site_id for loc_site in edit.location_sites"
-    .row
-      .col-sm-24
-        .form-group
-          = label_tag :building_id, "Корпус", class: "control-label"
-          = select_tag "building_id", "", class: "form-control", "ng-model": "edit.location_building",
-            "ng-disabled": "!edit.location_site.site_id", "ng-change": "edit.setLocationBuilding()",
-            "ng-options": "loc_building as loc_building.name disable when !loc_building.building_id for loc_building in edit.location_site.iss_reference_buildings"
-    .row
-      .col-sm-24
-        .form-group
-          = label_tag :room_id, "Комната", class: "control-label"
-          = select_tag "room_id", "", class: "form-control", "ng-model": "edit.location_room",
-              "ng-disabled": "!edit.location_building.building_id", "ng-change": "edit.setLocationRoom()",
-              "ng-options": "loc_room.name disable when !loc_room.room_id for loc_room in edit.location_building.iss_reference_rooms track by loc_room.room_id"
-        div ng-if="edit.location_room.room_id==-1"
-          .form-group
-            label Введите новую комнату
-            = text_field_tag "room_name", "", class: "form-control", "ng-model": "edit.item.location.name", "ng-disabled": "!edit.location_building.building_id", "ng-value": "edit.location_room.room_name"
-    .row
-      .col-sm-24
-        .form-group
-            = label_tag :comment, "Комментарий", class: "control-label"
-            = text_field_tag "comment", "", class: "form-control", "ng-model": "edit.item.location.comment", "ng-disabled": "!edit.location_site.site_id"
+    location-item selected-item="edit.item"
   .modal-footer
     = button_tag "Сохранить", type: :button, class: "btn-success", "ng-click": "edit.saveLocation()"
     = button_tag "Закрыть", type: :button, class: "btn-default", "ng-click": "edit.close()"

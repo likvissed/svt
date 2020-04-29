@@ -129,7 +129,7 @@ module Invent
       category_id = if room.present?
                       room.security_category_id
                     else
-                      RoomSecurityCategory.find_by(category: 'Отсутствует').id
+                      RoomSecurityCategory.missing_category.id
                     end
 
       render json: { category_id: category_id }

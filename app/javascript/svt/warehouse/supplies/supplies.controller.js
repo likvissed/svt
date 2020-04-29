@@ -103,4 +103,11 @@ import { app } from '../../app/app';
       (response, status) => this.Error.response(response, status)
     );
   };
+
+  /**
+   * События изменения страницы.
+   */
+  WarehouseSuppliesCtrl.prototype.changePage = function() {
+    this._loadSupplies();
+  };
 })();

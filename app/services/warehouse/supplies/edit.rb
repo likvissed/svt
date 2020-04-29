@@ -12,6 +12,7 @@ module Warehouse
       def run
         load_supply
         load_types
+        add_location
         transform_to_json
 
         true
@@ -25,7 +26,8 @@ module Warehouse
       protected
 
       def load_supply
-        data[:supply] = Supply.includes(operations: :item).find(@supply_id)
+        data[:supply] = Supply.includes(operations: { item: :location }).find(@supply_id)
+
         authorize data[:supply], :edit?
         data[:operation] = Operation.new(operationable: data[:supply], shift: 0)
       end
@@ -34,11 +36,19 @@ module Warehouse
         data[:eq_types] = Invent::Type.all
       end
 
+      def add_location
+        data[:location] = Location.new
+      end
+
       def transform_to_json
         data[:supply] = data[:supply].as_json(
           include: {
             operations: {
-              include: :item
+              include: {
+                item: {
+                  include: :location
+                }
+              }
             }
           }
         )

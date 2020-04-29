@@ -48,6 +48,10 @@ script type="text/ng-template" id="editSupplyOperation.slim"
     .form-group
       = label_tag "barcode", "Штрих-код производителя", class: "control-label"
       = text_field_tag "barcode", "", class: "form-control", "ng-model": "op.result.barcode"
+    .form-group
+      .text-center
+        label Расположение на складе:
+      location-item selected-item="op.result" 
 
   .modal-footer
     = button_tag class: "btn-success", "ng-click": "op.ok()", "ng-disabled": "op.disableButton()" do

@@ -55,7 +55,7 @@ module Invent
     end
 
     def create_room
-      @data = IssReferenceRoom.create(building_id: @building_id, name: @name, room_security_category: RoomSecurityCategory.find_by(category: 'Отсутствует'))
+      @data = IssReferenceRoom.create(building_id: @building_id, name: @name, room_security_category: RoomSecurityCategory.missing_category)
     end
 
     def change_room_category

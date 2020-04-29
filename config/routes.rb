@@ -99,6 +99,9 @@ Rails.application.routes.draw do
   # Склад
   namespace :warehouse do
     resources :items
+    # Получить информацию о всех расположениях
+    get 'load_locations', to: 'items#load_locations'
+    
     resources :orders, only: [:new, :edit, :destroy] do
       get 'in', to: 'orders#index_in', on: :collection
       get 'out', to: 'orders#index_out', on: :collection

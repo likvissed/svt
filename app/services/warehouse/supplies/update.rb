@@ -38,14 +38,26 @@ module Warehouse
 
         @supply_params[:operations_attributes].each do |op|
           item = op[:item]
+          location = item[:location]
+
           op[:item] = if item[:id]
                         Item.find(item[:id])
                       else
                         find_or_generate_item(op)
                       end
-
+          item = setting_location_attributes(item)
           op[:item].status = :non_used
-          op[:item].assign_attributes(item)
+
+          if item[:location_attributes].blank?
+            item[:location_attributes] = location
+            item.delete(:location_attributes) if item[:warehouse_type] == 'without_invent_num' && item[:location_attributes].nil?
+          end
+
+          if item[:warehouse_type] == 'with_invent_num' && item[:location_attributes].nil?
+            @supply.location_attr = true && @supply.value_location_item_type = item[:item_type]
+          else
+            op[:item].assign_attributes(item)
+          end
         end
       end
 
