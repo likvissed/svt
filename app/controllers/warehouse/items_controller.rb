@@ -37,6 +37,16 @@ module Warehouse
       end
     end
 
+    def load_locations
+      iss_locations = Invent::LkInvents::InitProperties.new(current_user).load_locations
+
+      if iss_locations.present?
+        render json: { iss_locations: iss_locations }
+      else
+        render json: { full_message: I18n.t('controllers.warehouse/item.load_locations') }, status: 422
+      end
+    end
+
     # def destroy
     #   @destroy = Items::Destroy.new(current_user, params[:id])
 

@@ -5,12 +5,13 @@ module Warehouse
     RSpec.describe Create, type: :model do
       let!(:user) { create(:user) }
       let(:type) { Invent::Type.find_by(name: :monitor) }
+      let(:location) { create(:location) }
       let(:model) { type.models.last }
-      let(:item_1_attr) { attributes_for(:new_item, invent_type_id: type.type_id, invent_model_id: model.model_id, item_type: type.short_description, item_model: model.item_model, count: 0) }
+      let(:item_1_attr) { attributes_for(:new_item, invent_type_id: type.type_id, invent_model_id: model.model_id, item_type: type.short_description, item_model: model.item_model, count: 0, location_id: location.id, location: location.as_json) }
       let(:operation_1) { attributes_for(:supply_operation, item: item_1_attr, shift: 10) }
-      let(:item_2_attr) { attributes_for(:new_item, warehouse_type: :without_invent_num, item_type: 'Клавиатура', item_model: 'ASUS', count: 0) }
+      let(:item_2_attr) { attributes_for(:new_item, warehouse_type: :without_invent_num, item_type: 'Клавиатура', item_model: 'ASUS', count: 0, location_id: location.id, location: location.as_json) }
       let(:operation_2) { attributes_for(:supply_operation, item: item_2_attr, shift: 20) }
-      let(:allowed_item_keys) { %i[invent_type_id invent_model_id warehouse_type item_type item_model barcode invent_num_start invent_num_end] }
+      let(:allowed_item_keys) { %i[invent_type_id invent_model_id warehouse_type item_type item_model barcode invent_num_start invent_num_end location_id location] }
       let(:supply_params) do
         supply = attributes_for(:supply)
         # Оставляем в item только параметры, разрешенные в strong_params

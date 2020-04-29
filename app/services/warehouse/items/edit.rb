@@ -48,8 +48,6 @@ module Warehouse
 
         properties = Invent::LkInvents::InitProperties.new(current_user)
 
-        data[:prop_data][:iss_locations] = properties.load_locations
-
         raise 'Ошибка сервиса Invent::LkInvents::InitProperties' unless properties.load_types && properties.prepare_eq_types_to_render
 
         data[:prop_data][:eq_types] = properties.data[:eq_types].find do |type|

@@ -148,7 +148,13 @@ import { app } from '../../app/app';
             method: 'GET',
             url   : '/warehouse/items/:id/edit.json'
           },
-          update: { method: 'PUT' }
+          update: {
+            method: 'PUT'
+          },
+          loadLocations: {
+            method: 'GET',
+            url   : '/warehouse/load_locations'
+          }
         }),
         Order: $resource('/warehouse/orders/:id.json', {}, {
           query: {

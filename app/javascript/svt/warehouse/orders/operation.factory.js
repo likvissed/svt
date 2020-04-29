@@ -30,6 +30,7 @@ import { app } from '../../app/app';
       op.item.barcode = data.barcode;
       op.item.invent_num_start = data.inventNumStart;
       op.item.invent_num_end = data.inventNumEnd;
+      op.item.location = data.location;
     }
 
     function _generateOrder(warehouseType, item) {

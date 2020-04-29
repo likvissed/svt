@@ -28,7 +28,8 @@ import { app } from '../../app/app';
       model: {
         model_id  : 0,
         item_model: ''
-      }
+      },
+      location: WarehouseSupply.location
     };
     this._setDefaultResult(operation);
   }
@@ -43,6 +44,11 @@ import { app } from '../../app/app';
       item_model: operation ? operation.item.item_model : ''
     };
     this.result.shift = operation ? operation.shift : this.Operation.getTemplate().shift;
+
+    // Если расположение не назначено, то присвоить пустые значения
+    if (operation) {
+      this.result.location = operation.item.location || angular.copy(this.result.location);
+    }
 
     if (operation) {
       this.result.warehouseType = operation.item.warehouse_type;
@@ -79,14 +85,35 @@ import { app } from '../../app/app';
    */
   EditSupplyOperationCtrl.prototype.disableButton = function() {
     if (this.result.warehouseType == 'with_invent_num') {
+      if (this.completedLocation()) {
       return this.result.type.type_id == 0 || this.result.shift == 0 ||
         // Случай, когда модель выбирают из списка
         (this.result.type.type_id != 0 && this.extra.eqModels.length > 1 && this.result.model.model_id == 0) ||
         // Случай, когда модель нужно ввести вручную
         (this.result.type.type_id != 0 && this.extra.eqModels.length == 1 && !this.result.model.item_model);
+      } else { return true; }
     } else if (this.result.warehouseType == 'without_invent_num') {
       return this.result.type.short_descirption == '' || this.result.model.item_model == '' || this.result.shift == 0;
     } else { return true; }
+  }
+
+  /**
+   * Проверка на заполненное расположение техники
+   */
+  EditSupplyOperationCtrl.prototype.completedLocation = function() {
+    if (!this.result.location.name) {
+      // Присвоить пустое значение в name, если его не существует, чтобы сравнить с .length
+      this.result.location.name = '';
+    }
+
+    if (this.result.location.room_id !== null && this.result.location.room_id !== -1) {
+      return true;
+    } else if (this.result.location.room_id == -1 && this.result.location.name.length != 0) {
+      // если задан ввод комнаты вручную
+      return true;
+    }
+
+    return false;
   }
 
   EditSupplyOperationCtrl.prototype.ok = function() {

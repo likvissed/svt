@@ -36,7 +36,7 @@ module Warehouse
         category_id = if room.present?
                         room.security_category_id
                       else
-                        RoomSecurityCategory.find_by(category: 'Отсутствует').id
+                        RoomSecurityCategory.missing_category.id
                       end
 
         @room = Invent::Room.new(@item_params['location_attributes']['name'], @item_params['location_attributes']['building_id'], category_id)

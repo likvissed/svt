@@ -309,27 +309,22 @@ import { app } from '../../app/app';
       },
       (response) => {
         this.item = response.item;
-        this.iss_locations = response.prop_data.iss_locations;
-
-        this.openEditLocationItem(this.item, this.iss_locations);
+        this.openEditLocationItem(this.item);
       },
       (response, status) => this.Error.response(response, status)
     );
   };
 
-  WarehouseItemsCtrl.prototype.openEditLocationItem = function(item, location_sites) {
+  WarehouseItemsCtrl.prototype.openEditLocationItem = function(item) {
     this.$uibModal.open({
       templateUrl : 'WarehouseEditLocationItemCtrl.slim',
-      controller  : 'WarehouseLocationCtrl',
+      controller  : 'WarehouseEditLocationCtrl',
       controllerAs: 'edit',
       backdrop    : 'static',
       size        : 'md',
       resolve     : {
         items: function() {
-          return {
-            item          : item,
-            location_sites: location_sites
-          };
+          return { item: item };
         }
       }
     });

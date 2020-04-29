@@ -97,7 +97,16 @@ module Warehouse
             :item_model,
             :barcode,
             :invent_num_start,
-            :invent_num_end
+            :invent_num_end,
+            :location_id,
+            location: %i[
+              id
+              site_id
+              building_id
+              room_id
+              comment
+              name
+            ]
           ]
         ]
       )
