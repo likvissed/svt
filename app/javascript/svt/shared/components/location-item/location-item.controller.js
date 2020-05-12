@@ -34,6 +34,8 @@ LocationItemCtrl.prototype.loadLocationSites = function() {
   this.Server.Warehouse.Item.loadLocations(
     (response) => {
       this.location_sites = response.iss_locations;
+      this.new_location = response.new_location;
+
       this.successCallback();
     },
     (response, status) => {
@@ -60,6 +62,9 @@ LocationItemCtrl.prototype.successCallback = function() {
  * Найти и присвоить уже существующие значения расположения в selected_object
  */
 LocationItemCtrl.prototype.findElementForLocation = function() {
+  // Назначить пустой объект Location для техники, если расположение отсутствует
+  if (!this.selectedItem.location) { this.selectedItem.location = this.new_location; }
+
   // find site
   this.selected_object.site = this.selectedItem.location.site_id ? (
     this.location_sites.find((el) => {

@@ -6,15 +6,16 @@ import { app } from '../../app/app';
   app
     .service('WarehouseItems', WarehouseItems);
 
-  WarehouseItems.$inject = ['WarehouseOrder', 'Server', 'TablePaginator', 'Config', 'Flash', 'Error'];
+  WarehouseItems.$inject = ['WarehouseOrder', 'Server', 'TablePaginator', 'Config', 'Flash', 'Error', '$uibModal'];
 
-  function WarehouseItems(WarehouseOrder, Server, TablePaginator, Config, Flash, Error) {
+  function WarehouseItems(WarehouseOrder, Server, TablePaginator, Config, Flash, Error, $uibModal) {
     this.Order = WarehouseOrder;
     this.Server = Server;
     this.TablePaginator = TablePaginator;
     this.Config = Config;
     this.Flash = Flash;
     this.Error = Error;
+    this.$uibModal = $uibModal;
 
     this.selectedTableFilters = {
       show_only_presence: true,
@@ -69,4 +70,44 @@ import { app } from '../../app/app';
       }
     });
   }
+
+  /**
+   * Открытие формы редактирования расположения техники
+   */
+  WarehouseItems.prototype.openEditLocationItem = function(item) {
+    this.$uibModal.open({
+      templateUrl : 'WarehouseEditLocationItemCtrl.slim',
+      controller  : 'WarehouseEditLocationCtrl',
+      controllerAs: 'edit',
+      backdrop    : 'static',
+      size        : 'md',
+      resolve     : {
+        items: function() {
+          return { item: item };
+        }
+      }
+    });
+  };
+
+  /**
+   * Проверка на заполненное расположение техники
+   */
+  WarehouseItems.prototype.completedLocation = function(location) {
+    if (!location) { return false }
+
+    if (!location.name) {
+      // Присвоить пустое значение в name, если его не существует, чтобы сравнить с .length
+      location.name = '';
+    }
+
+    if (location.room_id !== null && location.room_id !== -1) {
+      return true;
+    } else if (location.room_id == -1 && location.name.length != 0) {
+      // если задан ввод комнаты вручную
+      return true;
+    }
+
+    return false;
+  }
+
 })();

@@ -27,7 +27,7 @@ module Warehouse
       protected
 
       def load_order
-        @order = Order.includes(operations: [:item, inv_items: %i[model type]]).find(@order_id)
+        @order = Order.includes(operations: [item: :location, inv_items: %i[model type]]).find(@order_id)
         data[:operation] = Operation.new(operationable: @order, shift: 1)
       end
 
@@ -47,10 +47,14 @@ module Warehouse
             operations: {
               methods: %i[formatted_date to_write_off],
               include: [
-                :item,
-                inv_items: {
-                  include: %i[model type],
-                  methods: :full_item_model
+                {
+                  item: { include: :location }
+                },
+                {
+                  inv_items: {
+                    include: %i[model type],
+                    methods: :full_item_model
+                  }
                 }
               ]
             },
@@ -82,7 +86,7 @@ module Warehouse
                        else
                          nil
                        end
-          
+
           host_data = HostIss.by_invent_num(invent_num)
           op['unreg'] = host_data ? host_data['class'].to_i == 4 : nil
         end

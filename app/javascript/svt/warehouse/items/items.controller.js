@@ -309,25 +309,11 @@ import { app } from '../../app/app';
       },
       (response) => {
         this.item = response.item;
-        this.openEditLocationItem(this.item);
+        this.Items.openEditLocationItem(this.item);
       },
       (response, status) => this.Error.response(response, status)
     );
   };
 
-  WarehouseItemsCtrl.prototype.openEditLocationItem = function(item) {
-    this.$uibModal.open({
-      templateUrl : 'WarehouseEditLocationItemCtrl.slim',
-      controller  : 'WarehouseEditLocationCtrl',
-      controllerAs: 'edit',
-      backdrop    : 'static',
-      size        : 'md',
-      resolve     : {
-        items: function() {
-          return { item: item };
-        }
-      }
-    });
-  };
 
 })();

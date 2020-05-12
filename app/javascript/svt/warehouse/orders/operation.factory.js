@@ -42,9 +42,11 @@ import { app } from '../../app/app';
           op.inv_item_ids = [item.item_id];
           op.item_type = item.type.short_description;
           op.item_model = item.full_item_model;
+          op.location = item.location;
         } else {
           op.item_type = item.item_type;
           op.item_model = item.item_model;
+          op.location = item.location;
         }
       } else if (_orderOperation == 'out' || _orderOperation == 'write_off') {
         op.item_id = item.id;

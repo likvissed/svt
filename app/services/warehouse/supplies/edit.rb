@@ -12,7 +12,6 @@ module Warehouse
       def run
         load_supply
         load_types
-        add_location
         transform_to_json
 
         true
@@ -34,10 +33,6 @@ module Warehouse
 
       def load_types
         data[:eq_types] = Invent::Type.all
-      end
-
-      def add_location
-        data[:location] = Location.new
       end
 
       def transform_to_json

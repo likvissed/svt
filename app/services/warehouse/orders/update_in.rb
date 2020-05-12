@@ -32,14 +32,28 @@ module Warehouse
       protected
 
       def wrap_order_with_transactions
+        operations = @order_params['operations_attributes']
+
+        if operations.present?
+          @location_for_w_items = create_array_location_for_items(operations)
+
+          # Массив id техники, у которой необходимо удалить расположение
+          @array_delete_location = []
+          operations.each { |op| @array_delete_location.push(op['inv_item_ids'].first) if op['_destroy'] == 1 && op['inv_item_ids'].present? }
+        end
+
         assign_order_params
 
         Item.transaction do
           begin
             find_or_create_warehouse_items
+
             Invent::Item.transaction(requires_new: true) do
               update_inv_items
               save_order(@order)
+
+              assiged_location_for_w_items(@location_for_w_items) if @location_for_w_items.present?
+              delete_location_for_w_items if @array_delete_location.present?
             end
 
             true
@@ -83,6 +97,15 @@ module Warehouse
           elsif op._destroy
             op.inv_items.each { |inv_item| inv_item.update!(status: :in_workplace) }
           end
+        end
+      end
+
+      def delete_location_for_w_items
+        @array_delete_location.each do |id|
+          w_item = Item.find_by(invent_item_id: id)
+
+          w_item.location.destroy
+          w_item.update(location_id: 0)
         end
       end
     end
