@@ -6,9 +6,9 @@ import { FormValidationController } from '../../shared/functions/form-validation
 
   app.controller('ExecOrderController', ExecOrderController);
 
-  ExecOrderController.$inject = ['$uibModal', '$uibModalInstance', 'WarehouseOrder', 'Flash', 'Error', 'Server'];
+  ExecOrderController.$inject = ['$uibModal', '$uibModalInstance', 'WarehouseOrder', 'Flash', 'Error', 'Server', 'WarehouseItems'];
 
-  function ExecOrderController($uibModal, $uibModalInstance, WarehouseOrder, Flash, Error, Server) {
+  function ExecOrderController($uibModal, $uibModalInstance, WarehouseOrder, Flash, Error, Server, WarehouseItems) {
     this.setFormName('order');
 
     this.$uibModal = $uibModal;
@@ -17,6 +17,7 @@ import { FormValidationController } from '../../shared/functions/form-validation
     this.Flash = Flash;
     this.Error = Error;
     this.Server = Server;
+    this.Items = WarehouseItems;
 
     this.order = this.Order.order;
     this.Order.prepareToExec();
@@ -170,5 +171,13 @@ import { FormValidationController } from '../../shared/functions/form-validation
    */
   ExecOrderController.prototype.cancel = function() {
     this.$uibModalInstance.dismiss();
+  };
+
+  ExecOrderController.prototype.openEditLocationItem = function(op, $event) {
+    //  Для отмены дублирования события $compile в директиве ngExecInOrderTable
+    $event.stopImmediatePropagation();
+
+    // Для неисполненных позиций техники можно редактировать расположение
+    if (!op.date) { this.Items.openEditLocationItem(op.item); }
   };
 })();

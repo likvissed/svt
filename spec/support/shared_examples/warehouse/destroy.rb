@@ -72,4 +72,22 @@ module Warehouse
 
     its(:run) { is_expected.to be_falsey }
   end
+
+  shared_examples 'destroy location for item' do
+    let(:location) { create(:location) }
+    let(:warehouse_item_1) { create(:used_item, location: location) }
+    context 'item has location' do
+      before { item_1.warehouse_item = warehouse_item_1 }
+
+      it 'does destroy location' do
+        expect { subject.run }.to change(Location, :count).by(-1)
+      end
+
+      it 'update locaion_id for item' do
+        subject.run
+
+        expect(warehouse_item_1.reload.location_id).to eq 0
+      end
+    end
+  end
 end

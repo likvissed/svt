@@ -36,6 +36,12 @@ module Warehouse
       def in_order
         @order.inv_items.each { |inv_item| inv_item.update!(status: :in_workplace) }
         destroy_order
+
+        @order.inv_items.each do |inv_item|
+          next unless inv_item.warehouse_item
+          inv_item.warehouse_item.location.destroy if inv_item&.warehouse_item&.location
+          inv_item.warehouse_item.update(location_id: 0)
+        end
       end
 
       def out_order

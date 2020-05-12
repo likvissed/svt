@@ -39,9 +39,13 @@ module Warehouse
       context 'when warehouse_type has :without_invent_num value' do
         let(:used_item) { create(:used_item, warehouse_type: 'without_invent_num') }
         let(:operation) { create(:order_operation, item_id: used_item.id) }
-        subject { build(:order, operations: [operation]) }
+        subject { build(:order, operations: [operation], operation: 'out') }
 
         it { is_expected.to validate_presence_of(:invent_num) }
+
+        context 'and when operation is :in' do
+          include_examples 'does not pass verification presence_of(:invent_num) of operation :in'
+        end
       end
 
       context 'when warehouse_type has :with_invent_num value' do
@@ -56,9 +60,13 @@ module Warehouse
         let(:used_item1) { create(:used_item, warehouse_type: 'without_invent_num') }
         let(:used_item2) { create(:used_item) }
         let(:operation) { [create(:order_operation, item_id: used_item1.id), create(:order_operation, item_id: used_item2.id)] }
-        subject { build(:order, operations: operation) }
+        subject { build(:order, operations: operation, operation: 'out') }
 
         it { is_expected.to validate_presence_of(:invent_num) }
+
+        context 'and when operation is :in' do
+          include_examples 'does not pass verification presence_of(:invent_num) of operation :in'
+        end
       end
     end
 

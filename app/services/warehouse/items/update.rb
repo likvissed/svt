@@ -45,7 +45,7 @@ module Warehouse
       end
 
       def update_item_params
-        @item_params['location_attributes'].delete :name
+        @item_params['location_attributes'].delete 'name'
         return if @item.update(@item_params)
 
         error[:full_message] = @item.errors.full_messages.join('. ')

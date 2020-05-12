@@ -39,9 +39,10 @@ module Warehouse
 
     def load_locations
       iss_locations = Invent::LkInvents::InitProperties.new(current_user).load_locations
+      new_location = Location.new
 
       if iss_locations.present?
-        render json: { iss_locations: iss_locations }
+        render json: { iss_locations: iss_locations, new_location: new_location }
       else
         render json: { full_message: I18n.t('controllers.warehouse/item.load_locations') }, status: 422
       end

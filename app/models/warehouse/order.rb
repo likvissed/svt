@@ -17,7 +17,7 @@ module Warehouse
     validates :validator_fio, presence: { message: :empty }, if: -> { out? && !skip_validator }
     validates :closed_time, presence: true, if: -> { done? }
     validates :invent_workplace_id, presence: true, if: -> { out? }
-    validates :invent_num, presence: true, if: -> { operations.any? { |oop| oop.item.present? && oop.item.warehouse_type == 'without_invent_num' } }
+    validates :invent_num, presence: true, if: -> { operation == 'out' && operations.any? { |oop| oop.item.present? && oop.item.warehouse_type == 'without_invent_num' } }
 
     validate :presence_consumer, if: -> { operations.any?(&:done?) && !write_off? }
     validate :at_least_one_operation

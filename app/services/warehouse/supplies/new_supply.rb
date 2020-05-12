@@ -11,7 +11,6 @@ module Warehouse
         init_supply
         init_operation
         load_types
-        add_location
 
         true
       rescue RuntimeError => e
@@ -34,10 +33,6 @@ module Warehouse
 
       def load_types
         data[:eq_types] = Invent::Type.all
-      end
-
-      def add_location
-        data[:location] = Location.new
       end
     end
   end

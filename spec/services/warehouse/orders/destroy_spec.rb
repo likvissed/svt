@@ -18,6 +18,7 @@ module Warehouse
         let!(:order) { create(:order, inv_workplace: workplace, operations: operations) }
 
         include_examples 'destroys order with nested models'
+        include_examples 'destroy location for item'
 
         it 'sets :in_workplace status to the each inv_item' do
           subject.run

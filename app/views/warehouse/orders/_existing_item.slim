@@ -15,6 +15,10 @@ script type="text/ng-template" id="existingItem.slim"
 
     div ng-show="select.warehouseType == 'with_invent_num'"
       = render partial: 'templates/find_existing_invent_item'
+      .tab-content
+        .text-center
+          label Расположение на складе:
+        location-item selected-item="select.item"
 
     div ng-show="select.warehouseType == 'without_invent_num'"
       .form-group

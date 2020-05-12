@@ -33,7 +33,7 @@ import { app } from '../../app/app';
   WarehouseSupply.prototype.init = function(data) {
     this._initSupply(data.supply);
     this.Operation.setTemplate(data.operation);
-    this.location = data.location;
+
     this.additional.eqTypes = [{ type_id: 0, short_description: 'Выберите тип' }].concat(data.eq_types);
     this.additional.visibleCount = this.supply.operations_attributes.length || 0;
   };

@@ -38,7 +38,6 @@ module Warehouse
                             }
                           ]
                         )
-        data[:item]['location'] ||= Location.new.as_json
       end
 
       def load_properties
