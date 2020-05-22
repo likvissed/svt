@@ -84,22 +84,37 @@ module Warehouse
       end
     end
 
-    describe 'GET #load_locations' do
-      context 'when IssReferenceSite is present' do
-        it 'response value with locations' do
-          get :load_locations
+    describe 'GET #split' do
+      let(:item) { create(:new_item, count: 4, invent_num_end: 114) }
+      let(:location) { create(:location) }
+      let(:items_attributes) do
+        it = Hash[item.as_json.map { |key, value| [key.to_sym, value.to_i] }]
 
-          expect(response.status).to eq(200)
+        it['location'] = location.as_json
+        it['count_for_invent_num'] = 2
+
+        items = [it, it]
+        items
+      end
+      let(:params) { { id: item.id, items: items_attributes } }
+
+      context 'when method :run returns true' do
+        before { allow_any_instance_of(Items::Split).to receive(:run).and_return(true) }
+
+        it 'response with full_message' do
+          put :split, params: params
+
+          expect(JSON.parse(response.body)['full_message']).to eq('Разделение техники выполнено')
         end
       end
 
-      context 'when IssReferenceSite is empty' do
-        before { allow_any_instance_of(Invent::LkInvents::InitProperties).to receive(:load_locations).and_return(nil) }
+      context 'when method :run returns false' do
+        before { allow_any_instance_of(Items::Split).to receive(:run).and_return(false) }
 
-        it 'response with error status' do
-          get :load_locations
+        it 'response with full_message' do
+          put :split, params: params
 
-          expect(response.status).to eq(422)
+          expect(JSON.parse(response.body)['full_message']).to eq('Новое значение количества техники передано не было')
         end
       end
     end

@@ -10,6 +10,32 @@ module Warehouse
       let!(:item_2) { create(:new_item, warehouse_type: :without_invent_num, count: 10, barcode: barcode) }
       subject { Index.new(params) }
 
+      context 'when items with location' do
+        let(:location) { create(:location) }
+        let!(:items) { create_list(:used_item, 25, location: location) }
+        let(:site_name) { IssReferenceSite.find(location.site_id).name }
+        let(:building_name) { IssReferenceBuilding.find(location.building_id).name }
+        let(:room_name) { IssReferenceRoom.find(location.room_id).name }
+
+        it 'name for location is present' do
+          subject.run
+
+          expect(subject.data[:data].last['location_name']).to eq "Пл. '#{site_name}', корп. #{building_name}, комн. #{room_name}"
+        end
+
+        it 'includes :inv_item, :supplies and :location fields' do
+          subject.run
+
+          expect(subject.data[:data].last).to include('inv_item', 'supplies', 'location')
+        end
+      end
+
+      it 'name location is present' do
+        subject.run
+
+        expect(subject.data[:data].last['location_name']).to eq 'Не назначено'
+      end
+
       it 'loads items specified into length param' do
         subject.run
         expect(subject.data[:data].count).to eq params[:length].to_i
@@ -18,11 +44,6 @@ module Warehouse
       it 'adds :translated_used field' do
         subject.run
         expect(subject.data[:data].first).to include('translated_status')
-      end
-
-      it 'includes :inv_item and :supplies fields' do
-        subject.run
-        expect(subject.data[:data].last).to include('inv_item', 'supplies')
       end
 
       let(:operation) { build(:order_operation, item: items.first, shift: -1) }

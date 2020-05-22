@@ -66,7 +66,7 @@ module Warehouse
           start = @start - @order_items_to_result.size
         end
 
-        @items = @items.includes(:inv_item, :supplies).where.not(id: @exclude_items.map(&:id)).order(id: :desc).limit(limit).offset(start)
+        @items = @items.includes(:inv_item, :supplies, :location).where.not(id: @exclude_items.map(&:id)).order(id: :desc).limit(limit).offset(start)
       end
 
       def prepare_to_render
@@ -76,8 +76,20 @@ module Warehouse
                        @items
                      end
 
-        data[:data] = result_arr.as_json(include: %i[inv_item inv_type supplies]).each do |item|
+        data[:data] = result_arr.as_json(include: %i[inv_item inv_type supplies location]).each do |item|
           item['range_inv_nums'] = item['invent_num_end'].to_i.zero? ? '' : "#{item['invent_num_start']} - #{item['invent_num_end']}"
+
+          item['location_name'] = if item['location'].nil?
+                                    'Не назначено'
+                                  else
+                                    return 'Не назначено' unless item['location']['site_id'] && item['location']['building_id'] && item['location']['room_id']
+                                    site_name = IssReferenceSite.find(item['location']['site_id']).name
+                                    building_name = IssReferenceBuilding.find(item['location']['building_id']).name
+                                    room_name = IssReferenceRoom.find(item['location']['room_id']).name
+
+                                    "Пл. '#{site_name}', корп. #{building_name}, комн. #{room_name}"
+                                  end
+
           i_tr = Item.translate_enum(:status, item['status'])
           item['translated_status'] = case item['status']
                                       when 'non_used'

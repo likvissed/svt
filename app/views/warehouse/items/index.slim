@@ -34,6 +34,7 @@
                 th Тип техники
                 th ID
                 th Модель
+                th Расположение
                 th Инв. №
                 th Состояние
                 th На складе
@@ -50,12 +51,13 @@
                     span class="fa fa-pencil-square-o" uib-tooltip="Редактировать технику" class="pointer" ng-click="table.editItem(item)" ng-if="item.inv_type.name == 'allin1' || item.inv_type.name == 'pc' || item.inv_type.name == 'notebook'"
                 td
                   = render partial: 'location'
-                  span class="fa fa-home" uib-tooltip="Расположение техники" class="pointer" ng-click="table.editLocationItem(item)"
+                  span class="fa fa-home" uib-tooltip="Редактировать расположение" class="pointer" ng-click="table.editLocationItem(item)"
                 td
                   ng-warehouse-item-supply-popover
                 td.col-sm-3 ng-bind="item.item_type"
                 td.col-sm-2 ng-bind="item.inv_item.item_id"
                 td.col-sm-11 ng-bind="item.item_model"
+                td.col-sm-7 ng-bind="item.location_name"
                 td.col-sm-2 ng-bind="item.inv_item.invent_num || item.range_inv_nums"
                 td.col-sm-2 ng-bind-html="item.translated_status"
                 td.col-sm-2 ng-bind="item.count"

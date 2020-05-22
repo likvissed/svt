@@ -5,11 +5,11 @@ module Warehouse
     end
 
     def edit?
-      record.new?
+      for_worker
     end
 
     def update?
-      for_worker if record.new?
+      for_worker
     end
 
     def permitted_attributes

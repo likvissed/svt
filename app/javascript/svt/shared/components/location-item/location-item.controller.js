@@ -15,14 +15,18 @@ function LocationItemCtrl(Server, Error) {
     roomManually: { room_id: -1, name: 'Ввести комнату вручную...' }
   };
 
-  // Значения, содержащиеся в ng-model
   this.selected_object = {
     site    : '',
-    building: '',
-    room    : ''
+    building: ''
   };
 
+  // Наименование «Корпус - комната»  выбранного из расположения техники
+  if (!this.selectedItem.location) {
+    this.selectedItem.names_building_room = 'Не выбрано';
+  }
+
   this.loadLocationSites();
+
 }
 
 /**
@@ -31,7 +35,7 @@ function LocationItemCtrl(Server, Error) {
 LocationItemCtrl.prototype.loadLocationSites = function() {
   this.location_sites = [];
 
-  this.Server.Warehouse.Item.loadLocations(
+  this.Server.Warehouse.Location.loadLocations(
     (response) => {
       this.location_sites = response.iss_locations;
       this.new_location = response.new_location;
@@ -83,41 +87,58 @@ LocationItemCtrl.prototype.findElementForLocation = function() {
     this.selectedIss.building
   );
 
-  this.selected_object.room = {
-    room_id  : this.selectedItem.location.room_id,
-    room_name: ''
-  };
+  this.selectedItem.location.name = '';
+
+  // Назначить names_building_room
+  this.getNameBuildingRoom();
 };
 
 /**
- * Установить site_id для selectedItem.location и начальные значения для корпуса и комнаты
+ *  Получить для names_building_room наименование, как «Корпус - комната» из расположения техники
  */
+LocationItemCtrl.prototype.getNameBuildingRoom = function() {
+  this.selectedItem.names_building_room = this.selectedItem.location.building_id && this.selectedItem.location.room_id && this.selected_object.building ? (
+    this.getNameRoom()
+  ) : (
+    'Не выбрано'
+  );
+};
+
+/**
+ *  Получить наименование комнаты
+ */
+LocationItemCtrl.prototype.getNameRoom = function() {
+  // find room
+  let object_room = this.selected_object.building.iss_reference_rooms.find((el) => {
+    return this.selectedItem.location.room_id == el.room_id;
+  });
+
+  let room_name = this.selectedItem.location.room_id == -1 ? (
+    this.selectedItem.location.name
+  ) : (
+    object_room.name
+  );
+
+  // Если выбрали "Ввести комнату вручную", но в поле ввода еще не введен текст
+  if (room_name === '') {
+    return 'Не выбрано'
+  } else { return `${this.selected_object.building.name}-${room_name}` }
+
+};
+
 LocationItemCtrl.prototype.setLocationSite = function() {
-  this.selectedItem.location.site_id = angular.copy(this.selected_object.site.site_id);
+  this.findElementForLocation();
 
-  this.selected_object.building = this.selectedIss.building;
-  this.selected_object.room = this.selectedIss.room;
-
-  this.selectedItem.location.building_id = null;
-  this.selectedItem.location.room_id = null;
+  this.getNameBuildingRoom();
 };
 
-/**
- * Установить building_id для selectedItem.location и начальное значение для комнаты
- */
 LocationItemCtrl.prototype.setLocationBuilding = function() {
-  if (this.selected_object.building) {
-    this.selectedItem.location.building_id = angular.copy(this.selected_object.building.building_id);
-  }
-  this.selected_object.room = this.selectedIss.room;
-  this.selected_object.room.room_name = '';
-
   this.selectedItem.location.room_id = null;
+  this.findElementForLocation();
+
+  this.getNameBuildingRoom();
 };
 
-/**
- * Установить room_id для selectedItem.location
- */
 LocationItemCtrl.prototype.setLocationRoom = function() {
-  this.selectedItem.location.room_id = angular.copy(this.selected_object.room.room_id);
+  this.getNameBuildingRoom();
 };

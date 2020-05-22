@@ -75,12 +75,15 @@ import { app } from '../../app/app';
    * Открытие формы редактирования расположения техники
    */
   WarehouseItems.prototype.openEditLocationItem = function(item) {
+    let size_modal = 'md';
+
+    if (item.count > 1 && item.status == 'non_used') { size_modal = 'lg' }
     this.$uibModal.open({
       templateUrl : 'WarehouseEditLocationItemCtrl.slim',
       controller  : 'WarehouseEditLocationCtrl',
       controllerAs: 'edit',
       backdrop    : 'static',
-      size        : 'md',
+      size        : size_modal,
       resolve     : {
         items: function() {
           return { item: item };
