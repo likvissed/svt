@@ -93,6 +93,11 @@ import { app } from '../../app/app';
         (this.result.type.type_id != 0 && this.extra.eqModels.length == 1 && !this.result.model.item_model);
       } else { return true; }
     } else if (this.result.warehouseType == 'without_invent_num') {
+      // Если начали заполнять расположение, то необходимо его заполнить полностью
+      if (this.result.location !== null && this.result.location.site_id !== null) {
+        if (!this.Items.completedLocation(this.result.location)) { return true }
+      }
+
       return this.result.type.short_descirption == '' || this.result.model.item_model == '' || this.result.shift == 0;
     } else { return true; }
   }

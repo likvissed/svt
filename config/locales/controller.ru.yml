@@ -39,11 +39,14 @@ ru:
     warehouse/item:
       destroyed: 'Указанная техника удалена со склада'
       updated: 'Свойства техники обновлены'
-      load_locations: 'Данные расположений отсутствуют'
+      splited: 'Разделение техники выполнено'
+      not_splited: 'Новое значение количества техники передано не было'
     warehouse/supply:
       created: 'Поставка создана'
       updated: 'Поставка №%{supply_id} обновлена'
       destroyed: 'Поставка удалена'
+    warehouse/location:
+      load_locations: 'Данные расположений отсутствуют'
     user:
       created: 'Пользователь создан'
       updated: 'Пользователь обновлен'

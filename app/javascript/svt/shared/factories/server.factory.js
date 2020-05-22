@@ -151,9 +151,9 @@ import { app } from '../../app/app';
           update: {
             method: 'PUT'
           },
-          loadLocations: {
-            method: 'GET',
-            url   : '/warehouse/load_locations'
+          split: {
+            method: 'PUT',
+            url   : '/warehouse/items/:id/split'
           }
         }),
         Order: $resource('/warehouse/orders/:id.json', {}, {
@@ -232,15 +232,14 @@ import { app } from '../../app/app';
             url   : '/warehouse/supplies/:id/edit.json'
           },
           update: { method: 'PUT' }
+        }),
+        Location: $resource('', {}, {
+          loadLocations: {
+            method: 'GET',
+            url   : '/warehouse/locations/load_locations'
+          }
         })
       },
-      Location: $resource('', {}, {
-        rooms: {
-          method : 'GET',
-          url    : ' /locations/load_rooms/:building_id',
-          isArray: true
-        }
-      }),
       Statistics: $resource('/statistics', {}, {
         get: {
           isArray: true

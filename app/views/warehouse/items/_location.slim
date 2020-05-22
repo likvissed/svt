@@ -1,8 +1,33 @@
 script type="text/ng-template" id="WarehouseEditLocationItemCtrl.slim"
-  .modal-header
-    h4 Расположение техники
-  .modal-body
-    location-item selected-item="edit.item"
-  .modal-footer
-    = button_tag "Сохранить", type: :button, class: "btn-success", "ng-click": "edit.saveLocation()"
-    = button_tag "Закрыть", type: :button, class: "btn-default", "ng-click": "edit.close()"
+  form role="form" data-method="edit.method"
+    .modal-header
+      h4 Расположение техники
+    .modal-body
+      span ng-if="edit.hasMoreItem()"
+        .row
+          .col-sm-20.col-sm-offset-2
+            uib-tabset active="edit.activeTab"
+              uib-tab.animate-repeat index="item.activeTab" ng-repeat="item in edit.items_attributes track by $index" select="edit.updateLocation(item)"
+                uib-tab-heading 
+                  strong
+                    ' №
+                    span ng-bind="$index + 1"
+                    span ng-class="{'text-danger': item.names_building_room == 'Не выбрано'}"
+                      = " «{{ item.names_building_room }}»"
+
+                div.col-md-offset-17.col-md-24.col-sm-offset-13
+                  = button_tag "Удалить позицию техники", type: :button, class: "btn-default", "ng-click": "edit.reduceLocation($index)", "ng-disabled": "edit.items_attributes.length <= 1"
+                div.form-group
+                  label Количество техники
+                  = text_field_tag "", "", class: "form-control", "ng-model": "item.count_for_invent_num", type: :number, "ng-change": "edit.changeValidCountItems(item.count_for_invent_num, $index)"
+                location-item selected-item="item"
+
+              uib-tab.manage ng-click="edit.addLocation()" index="999999" uib-tooltip="Добавить расположение"
+                uib-tab-heading
+                  = fa_icon "plus-circle lg"
+
+      span ng-if="!edit.hasMoreItem()"
+        location-item selected-item="edit.item"
+    .modal-footer
+      = button_tag "Сохранить", type: :button, class: "btn-success", "ng-click": "edit.saveLocation()"
+      = button_tag "Закрыть", type: :button, class: "btn-default", "ng-click": "edit.close()"

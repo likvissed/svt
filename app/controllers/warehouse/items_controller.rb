@@ -18,7 +18,7 @@ module Warehouse
     end
 
     def edit
-      edit_item = Items::Edit.new(params[:id])
+      edit_item = Items::Edit.new(current_user, params[:id])
 
       if edit_item.run
         render json: edit_item.data
@@ -37,14 +37,13 @@ module Warehouse
       end
     end
 
-    def load_locations
-      iss_locations = Invent::LkInvents::InitProperties.new(current_user).load_locations
-      new_location = Location.new
+    def split
+      split_items = Items::Split.new(current_user, params[:id], params[:items])
 
-      if iss_locations.present?
-        render json: { iss_locations: iss_locations, new_location: new_location }
+      if split_items.run
+        render json: { full_message: I18n.t('controllers.warehouse/item.splited') }
       else
-        render json: { full_message: I18n.t('controllers.warehouse/item.load_locations') }, status: 422
+        render json: { full_message: I18n.t('controllers.warehouse/item.not_splited'), status: 422 }
       end
     end
 

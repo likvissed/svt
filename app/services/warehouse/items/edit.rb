@@ -1,7 +1,8 @@
 module Warehouse
   module Items
     class Edit < Warehouse::ApplicationService
-      def initialize(item_id)
+      def initialize(current_user, item_id)
+        @current_user = current_user
         @item_id = item_id
 
         super
