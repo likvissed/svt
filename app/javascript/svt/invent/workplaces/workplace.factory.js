@@ -33,7 +33,7 @@ import { app } from '../../app/app';
     // Поле select, предлагающее выбрать площадку
     this.selectIssLocation = { site_id: null, name: 'Выберите площадку' };
     // Поле select, предлагающее выбрать корпус
-    this.selectIssBuilding = { building_id: null, name: 'Выберите корпус' };
+    this.selectIssBuilding = { building_id: null, long_name: 'Выберите корпус' };
     // Копия объекта this.workplace, который отправится на сервер.
     this.workplaceCopy = null;
     this.additional = this.Item.getAdditional();
@@ -164,8 +164,10 @@ import { app } from '../../app/app';
             if (el.workplace_count_id == this.workplace.workplace_count_id) { return true; }
           });
 
-          this.workplace.location_room_name = this.workplace.location_room.name;
-          this.workplace.room_category_id = this.workplace.location_room.security_category_id;
+          if (this.workplace.location_room) {
+            this.workplace.location_room_name = this.workplace.location_room.name;
+            this.workplace.room_category_id = this.workplace.location_room.security_category_id;
+          }
 
           this.changeSecurityCategory();
         }, (response, status) => {
@@ -389,6 +391,7 @@ import { app } from '../../app/app';
         building_id: this.workplace.location_building_id
       },
       (response) => {
+        this.workplace.room_is_new = response.room_is_new;
         this.workplace.room_category_id = response.category_id;
         this.changeSecurityCategory();
       }

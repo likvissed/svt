@@ -49,7 +49,7 @@ module Warehouse
       end
 
       def filtering_params
-        JSON.parse(params[:filters]).slice('show_only_presence', 'status', 'item_type', 'barcode', 'item_model', 'invent_num', 'invent_item_id')
+        JSON.parse(params[:filters]).slice('show_only_presence', 'status', 'item_type', 'barcode', 'item_model', 'invent_num', 'invent_item_id', 'building_id', 'room_id')
       end
 
       def limit_records
@@ -79,16 +79,17 @@ module Warehouse
         data[:data] = result_arr.as_json(include: %i[inv_item inv_type supplies location]).each do |item|
           item['range_inv_nums'] = item['invent_num_end'].to_i.zero? ? '' : "#{item['invent_num_start']} - #{item['invent_num_end']}"
 
-          item['location_name'] = if item['location'].nil?
-                                    'Не назначено'
-                                  else
-                                    return 'Не назначено' unless item['location']['site_id'] && item['location']['building_id'] && item['location']['room_id']
-                                    site_name = IssReferenceSite.find(item['location']['site_id']).name
-                                    building_name = IssReferenceBuilding.find(item['location']['building_id']).name
-                                    room_name = IssReferenceRoom.find(item['location']['room_id']).name
+          item['location_name'] = 'Не назначено'
 
-                                    "Пл. '#{site_name}', корп. #{building_name}, комн. #{room_name}"
-                                  end
+          unless item['location'].nil?
+            site = IssReferenceSite.find_by(site_id: item['location']['site_id'])
+            building = IssReferenceBuilding.find_by(building_id: item['location']['building_id'])
+            room = IssReferenceRoom.find_by(room_id: item['location']['room_id'])
+
+            if site && building && room
+              item['location_name'] = "Пл. '#{site.name}', корп. #{building.name}, комн. #{room.name}"
+            end
+          end
 
           i_tr = Item.translate_enum(:status, item['status'])
           item['translated_status'] = case item['status']
@@ -110,6 +111,9 @@ module Warehouse
         data[:filters] = {}
         data[:filters][:item_types] = Item.pluck(:item_type).uniq
         data[:filters][:statuses] = Item.statuses.map { |key, _val| [key, Item.translate_enum(:status, key)] }.to_h
+        data[:filters][:buildings] = IssReferenceBuilding
+                                       .select('iss_reference_sites.name as site_name, iss_reference_buildings.*')
+                                       .left_outer_joins(:iss_reference_site)
       end
 
       def load_orders

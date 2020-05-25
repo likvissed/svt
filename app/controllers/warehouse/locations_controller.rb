@@ -2,6 +2,10 @@ module Warehouse
   class LocationsController < ApplicationController
     before_action :check_access
 
+    def rooms_for_building
+      render json: IssReferenceBuilding.find(params[:building_id]).iss_reference_rooms
+    end
+
     def load_locations
       iss_locations = Invent::LkInvents::InitProperties.new(current_user).load_locations
       new_location = Location.new

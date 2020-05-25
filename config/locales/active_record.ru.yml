@@ -187,9 +187,9 @@ ru:
         unknown_property_type: "Неизвестный тип свойства"
 
       warehouse/item/location:
-        site_id: 'Площадка'
-        building_id: 'Корпус'
-        room_id: 'Комната'
+        iss_reference_site: "Площадка"
+        iss_reference_building: "Корпус"
+        iss_reference_room: "Комната"
 
       user:
         tn: Табельный номер

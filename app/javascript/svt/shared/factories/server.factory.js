@@ -237,6 +237,11 @@ import { app } from '../../app/app';
           loadLocations: {
             method: 'GET',
             url   : '/warehouse/locations/load_locations'
+          },
+          rooms: {
+            method : 'GET',
+            url    : ' /warehouse/locations/load_rooms/:building_id',
+            isArray: true
           }
         })
       },

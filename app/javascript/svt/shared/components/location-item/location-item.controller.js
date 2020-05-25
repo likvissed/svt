@@ -114,10 +114,18 @@ LocationItemCtrl.prototype.getNameRoom = function() {
   });
 
   let room_name = this.selectedItem.location.room_id == -1 ? (
-    this.selectedItem.location.name
+    this.selectedItem.location
   ) : (
-    object_room.name
+    object_room
   );
+
+  if (room_name) {
+    room_name = room_name.name;
+  } else {
+    // Если room_id задан, но комнаты уже нет
+    room_name = 'Не выбрано'
+    this.selectedItem.location.room_id = null;
+  }
 
   // Если выбрали "Ввести комнату вручную", но в поле ввода еще не введен текст
   if (room_name === '') {

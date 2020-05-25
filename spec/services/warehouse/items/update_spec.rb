@@ -5,11 +5,11 @@ module Warehouse
     RSpec.describe Update, type: :model do
       describe '#run' do
         let(:property) { Invent::Property.all }
-        let(:current_user) { create(:user) }
+        let!(:current_user) { create(:user) }
         let(:location) { create(:location) }
 
         let(:new_item) do
-          edit = Edit.new(item.id)
+          edit = Edit.new(current_user, item.id)
           edit.run
 
           edit.data[:item][:property_values_attributes] = Array.wrap(param_property_value).as_json

@@ -42,7 +42,28 @@
 .col-sm-5.col-md-5.col-lg-3.col-xlg-3.col-fhd-2.multiline-buffer
   = text_field_tag "", "", class: "form-control input-sm", placeholder: "ID техники", "ng-model": "table.selectedFilters.invent_item_id",
     "ng-model-options": "{ debounce: 300 }", "ng-change": "table.reloadItems()"
-
+.col-sm-5.col-md-4.col-xlg-3.multiline-buffer
+  .input-group.input-group-sm.form-input-sm.multiline-select
+    ui-select ng-model="table.selectedFilters.building" on-select="table.reloadItems(); table.loadRooms()" theme="bootstrap"
+      ui-select-match placeholder="Корпус"
+        | {{ $select.selected.name }}
+      ui-select-choices group-by="'site_name'" repeat="obj in table.filters.buildings | filter: $select.search"
+        div ng-bind-html="obj.name | highlight: $select.search"
+    span.input-group-btn
+      = button_tag type: :button, class: "btn-default", "ng-click": "table.selectedFilters.building = ''; table.selectedFilters.room = ''; table.reloadItems(); table.clearRooms()",
+        "uib-tooltip": "Очистить", "tooltip-append-to-body": true, "ng-disabled": "!table.selectedFilters.building" do
+        = fa_icon "times"
+.col-sm-5.col-md-4.col-xlg-3.multiline-buffer
+  .input-group.input-group-sm.form-input-sm.multiline-select
+    ui-select ng-model="table.selectedFilters.room" on-select="table.reloadItems()" theme="bootstrap"
+      ui-select-match placeholder="Комната"
+        | {{ $select.selected.name }}
+      ui-select-choices repeat="obj in table.filters.rooms | filter: $select.search"
+        div ng-bind-html="obj.name | highlight: $select.search"
+    span.input-group-btn
+      = button_tag type: :button, class: "btn-default", "ng-click": "table.selectedFilters.room = ''; table.reloadItems()",
+        "uib-tooltip": "Очистить", "tooltip-append-to-body": true, "ng-disabled": "!table.selectedFilters.room" do
+        = fa_icon "times"
 .col-sm-6.col-md-5.col-lg-4.col-xlg-4.col-fhd-3.multiline-buffer
   = button_tag type: :button, class: "btn btn-default btn-block btn-sm", "ng-click": "table.showOnlyPresenceFilter()" do
     span ng-if="!table.selectedFilters.show_only_presence"

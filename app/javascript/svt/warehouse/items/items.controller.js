@@ -147,6 +147,26 @@ import { app } from '../../app/app';
   };
 
   /**
+   * Загрузить комнаты выбранного корпуса.
+   */
+  WarehouseItemsCtrl.prototype.loadRooms = function() {
+    this.clearRooms();
+
+    this.Server.Warehouse.Location.rooms(
+      { building_id: this.selectedFilters.building_id },
+      (data) => this.filters.rooms = data,
+      (response, status) => this.Error.response(response, status)
+    );
+  };
+
+  /**
+   * Очистить список комнат.
+   */
+  WarehouseItemsCtrl.prototype.clearRooms = function() {
+    delete(this.filters.rooms);
+  };
+
+  /**
    * Показать/скрыть технику, у которой разница count-count_reserved=0
    */
   WarehouseItemsCtrl.prototype.showOnlyPresenceFilter = function() {

@@ -101,6 +101,8 @@ Rails.application.routes.draw do
     # Получить информацию о всех расположениях
     get 'locations/load_locations', to: 'locations#load_locations'
 
+    get 'locations/load_rooms/:building_id', to: 'locations#rooms_for_building'
+
     resources :items
     # Разделить одну технику на множество с разным расположением на складе
     put 'items/:id/split', to: 'items#split'

@@ -37,19 +37,21 @@
       = label_tag :workplace_location_building_id, "Корпус", class: "control-label"
       = select_tag "workplace[location_building_id]", "", class: "form-control", "ng-model": "wp.workplace.location_building_id",
         "ng-disabled": "!wp.workplace.location_site.site_id", "ng-change": "wp.setDefaultLocation(); wp.setDefaultCategory()",
-        "ng-options": "loc_building.building_id as loc_building.name disable when !loc_building.building_id for loc_building in wp.workplace.location_site.iss_reference_buildings"
+        "ng-options": "loc_building.building_id as loc_building.long_name disable when !loc_building.building_id for loc_building in wp.workplace.location_site.iss_reference_buildings"
 .row
   .col-sm-24
     .form-group
       = label_tag :workplace_location_room, "Комната", class: "control-label"
       = text_field_tag "workplace[location_room]", "", class: "form-control", "ng-model": "wp.workplace.location_room_name", "ng-change": "wp.setDefaultCategory()",
           "ng-disabled": "wp.workplace.location_building_id == -1", "ng-value": "wp.workplace.location_room_name"
+      .text-success ng-if="wp.workplace.room_is_new == true && wp.workplace.location_room_name != ''"
+          = 'Новая комната'
       / - if current_user.one_of_roles? :admin, :manager, :worker
-      /   div
-      /     p
-      /     = label_tag :workplace_room_category_id, "Категория помещения", class: "control-label"
-      /     = select_tag "workplace[room_category_id]", "", class: "form-control", "ng-model": "wp.workplace.room_category_id", "ng-change": "wp.changeSecurityCategory()",
-      /       "ng-options": "rooms_security.id as rooms_security.category for rooms_security in wp.rooms_security_categories"
+        div
+          p
+          = label_tag :workplace_room_category_id, "Категория помещения", class: "control-label"
+          = select_tag "workplace[room_category_id]", "", class: "form-control", "ng-model": "wp.workplace.room_category_id", "ng-change": "wp.changeSecurityCategory()",
+            "ng-options": "rooms_security.id as rooms_security.category for rooms_security in wp.rooms_security_categories"
 - if !current_user.role? :***REMOVED***_user
   .row
     .col-sm-24

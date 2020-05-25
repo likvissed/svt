@@ -69,6 +69,14 @@ module Invent
                                           })
 
         data[:iss_locations].each do |loc|
+          loc['iss_reference_buildings'].each do |building|
+            building['long_name'] = if building['name'] != building['long_name'] && building['long_name'].present?
+                                      "#{building['name']} (#{building['long_name']})"
+                                    else
+                                      building['name']
+                                    end
+          end
+
           loc['name'] = "#{loc['name']} (#{loc['long_name']})" unless loc['long_name'].to_s.empty?
         end
       end

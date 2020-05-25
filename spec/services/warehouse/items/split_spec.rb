@@ -8,7 +8,7 @@ module Warehouse
         let(:item) { create(:item_with_property_values, status: 'non_used', count: 4, invent_num_end: 114) }
         let(:location) { create(:location) }
         let(:items_attributes) do
-          edit = Edit.new(item.id)
+          edit = Edit.new(current_user, item.id)
           edit.run
 
           edit.data[:item]['location'] = location.as_json
@@ -81,10 +81,10 @@ module Warehouse
         context 'when location and property_values for item is present' do
           let(:item) { create(:item_with_property_values, status: 'non_used', count: 5, invent_num_end: 115, location: location) }
           let!(:items_attributes) do
-            edit1 = Edit.new(item.id)
+            edit1 = Edit.new(current_user, item.id)
             edit1.run
 
-            edit2 = Edit.new(item.id)
+            edit2 = Edit.new(current_user, item.id)
             edit2.run
 
             edit1.data[:item]['location'] = location.as_json

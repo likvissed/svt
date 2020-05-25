@@ -41,6 +41,12 @@ module Warehouse
         .limit(RECORD_LIMIT)
     end
     scope :invent_item_id, ->(invent_item_id) { where(invent_item_id: invent_item_id) }
+    scope :building_id, ->(building_id) do
+      left_outer_joins(:location).where(warehouse_locations: { building_id: building_id })
+    end
+    scope :room_id, ->(room_id) do
+      left_outer_joins(:location).where(warehouse_locations: { room_id: room_id })
+    end
 
     enum warehouse_type: { without_invent_num: 1, with_invent_num: 2 }
     enum status: { non_used: 1, used: 2, waiting_write_off: 3, written_off: 4 }

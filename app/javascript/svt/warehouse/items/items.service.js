@@ -23,7 +23,9 @@ import { app } from '../../app/app';
       item_type         : '',
       barcode           : '',
       invent_num        : '',
-      invent_item_id    : ''
+      invent_item_id    : '',
+      building_id       : '',
+      room_id           : ''
     };
     this.filters = {
       selStatusFilter: { '': 'Все состояния' }
@@ -36,7 +38,7 @@ import { app } from '../../app/app';
         start            : this.TablePaginator.startNum(),
         length           : this.Config.global.uibPaginationConfig.itemsPerPage,
         init_filters     : init,
-        filters          : this.selectedTableFilters,
+        filters          : this.assignLocationToSend(),
         selected_order_id: this.Order.order.id
       },
       (response) => {
@@ -48,11 +50,28 @@ import { app } from '../../app/app';
         if (init) {
           // Данные для фильтров
           this.filters.selItemTypesFiler = response.filters.item_types;
+          this.filters.buildings = response.filters.buildings;
           this.filters.selStatusFilter = Object.assign(this.filters.selStatusFilter, response.filters.statuses);
         }
       },
       (response, status) => this.Error.response(response, status)
     ).$promise;
+  };
+
+  WarehouseItems.prototype.assignLocationToSend = function() {
+    this.selectedTableFilters.building_id = this.selectedTableFilters.building ? (
+      this.selectedTableFilters.building.building_id
+    ) : (
+      ''
+    )
+
+    this.selectedTableFilters.room_id = this.selectedTableFilters.room ? (
+      this.selectedTableFilters.room.room_id
+    ) : (
+      ''
+    )
+
+    return this.selectedTableFilters;
   };
 
   WarehouseItems.prototype.findSelected = function() {
