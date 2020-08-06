@@ -12,6 +12,10 @@ script type="text/ng-template" id="execOrder.slim"
       .pull-right
         .icon-block
           = render partial: 'templates/load_spinner'
+        .icon-block
+          h5
+            | Ордер создан: 
+            span ng-bind="exec.order.create_time | date:'dd.MM.yyyy'"
         .icon-block ng-if="exec.order.status == 'done' && exec.order.operation == 'out'"
           = fa_icon "print 2x fw", class: "pointer", "uib-tooltip": "Распечатать ордер", "tooltip-append-to-body": "true", "ng-click": "exec.printOrder()"
 
@@ -59,7 +63,8 @@ script type="text/ng-template" id="execOrder.slim"
                 th.col-sm-3 Тип
                 th.col-sm-3 Инв. №
                 th.col-sm-2 Кол-во
-                th.col-sm-9 Модель
+                th.col-sm-5 Модель
+                th.col-sm-3 Расположение                
                 th.col-sm-3 Исполнитель
                 th.col-sm-3 Дата
             tbody ng-repeat="op in exec.order.operations_attributes" ng-hide="op._destroy" ng-class="{ 'text-muted': exec.isOperationDone(op) }"
@@ -72,6 +77,8 @@ script type="text/ng-template" id="execOrder.slim"
                 td ng-bind="(op.inv_items | inventNumsToStr) || exec.order.invent_num"
                 td ng-bind="op.shift | positiveVal"
                 td ng-bind="op.item_model || op.item.item_model || op.inv_items[0].full_item_model"
+                td.text-center ng-if="exec.order.operation == 'in' && op.item_id"
+                  = button_tag "Изменить", type: :button, class: "btn-default btn-xs", "ng-click": "exec.openEditLocationItem(op, $event)"
                 td ng-bind="op.stockman_fio | fioInitials"
                 td ng-bind="op.formatted_date"
 
@@ -94,3 +101,4 @@ script type="text/ng-template" id="execOrder.slim"
         = button_tag "Исполнить", class: "btn-success btn-sm", "ng-click": "exec.ok()", "ng-if": "exec.order.operation == 'in' && exec.order.status != 'done'"
         = button_tag "Списать", class: "btn-success btn-sm", "ng-click": "exec.ok()", "ng-if": "exec.order.operation == 'write_off' && exec.order.status != 'done'"
         = button_tag "Закрыть", class: "btn-default btn-sm", "ng-click": "exec.cancel()"
+  = render partial: '/warehouse/items/location'

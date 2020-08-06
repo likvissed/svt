@@ -147,6 +147,26 @@ import { app } from '../../app/app';
   };
 
   /**
+   * Загрузить комнаты выбранного корпуса.
+   */
+  WarehouseItemsCtrl.prototype.loadRooms = function() {
+    this.clearRooms();
+
+    this.Server.Warehouse.Location.rooms(
+      { building_id: this.selectedFilters.building_id },
+      (data) => this.filters.rooms = data,
+      (response, status) => this.Error.response(response, status)
+    );
+  };
+
+  /**
+   * Очистить список комнат.
+   */
+  WarehouseItemsCtrl.prototype.clearRooms = function() {
+    delete(this.filters.rooms);
+  };
+
+  /**
    * Показать/скрыть технику, у которой разница count-count_reserved=0
    */
   WarehouseItemsCtrl.prototype.showOnlyPresenceFilter = function() {
@@ -286,20 +306,34 @@ import { app } from '../../app/app';
     );
   };
 
-    WarehouseItemsCtrl.prototype.openEditItem = function(item) {
-      // Для загрузки свойств техники
-      this.InventItem.setItem(item);
+  WarehouseItemsCtrl.prototype.openEditItem = function(item) {
+    // Для загрузки свойств техники
+    this.InventItem.setItem(item);
 
-      this.$uibModal.open({
-        templateUrl : 'WarehousePropertyValueEditCtrl.slim',
-        controller  : 'WarehousePropertyValueCtrl',
-        controllerAs: 'edit',
-        backdrop    : 'static',
-        size        : 'md',
-        resolve     : {
-          item: () => item
-        }
-      });
+    this.$uibModal.open({
+      templateUrl : 'WarehousePropertyValueEditCtrl.slim',
+      controller  : 'WarehousePropertyValueCtrl',
+      controllerAs: 'edit',
+      backdrop    : 'static',
+      size        : 'md',
+      resolve     : {
+        item: () => item
+      }
+    });
   };
+
+  WarehouseItemsCtrl.prototype.editLocationItem = function(item) {
+    this.Server.Warehouse.Item.edit(
+      {
+        id: item.id
+      },
+      (response) => {
+        this.item = response.item;
+        this.Items.openEditLocationItem(this.item);
+      },
+      (response, status) => this.Error.response(response, status)
+    );
+  };
+
 
 })();

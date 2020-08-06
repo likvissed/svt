@@ -25,7 +25,8 @@ module Warehouse
       protected
 
       def load_supply
-        data[:supply] = Supply.includes(operations: :item).find(@supply_id)
+        data[:supply] = Supply.includes(operations: { item: :location }).find(@supply_id)
+
         authorize data[:supply], :edit?
         data[:operation] = Operation.new(operationable: data[:supply], shift: 0)
       end
@@ -38,7 +39,11 @@ module Warehouse
         data[:supply] = data[:supply].as_json(
           include: {
             operations: {
-              include: :item
+              include: {
+                item: {
+                  include: :location
+                }
+              }
             }
           }
         )

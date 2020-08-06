@@ -5,10 +5,11 @@ module Warehouse
     RSpec.describe Update, type: :model do
       describe '#run' do
         let(:property) { Invent::Property.all }
-        let(:current_user) { create(:user) }
+        let!(:current_user) { create(:user) }
+        let(:location) { create(:location) }
 
         let(:new_item) do
-          edit = Edit.new(item.id)
+          edit = Edit.new(current_user, item.id)
           edit.run
 
           edit.data[:item][:property_values_attributes] = Array.wrap(param_property_value).as_json
@@ -16,6 +17,10 @@ module Warehouse
             prop_val['id'] = prop_val['warehouse_property_value_id']
             prop_val.delete('warehouse_property_value_id')
           end
+
+          edit.data[:item]['location_attributes'] = location
+          edit.data[:item].delete('location')
+          edit.data[:item]['location_id'] = location.id
 
           item_params = edit.data[:item]
           item_params.as_json
@@ -30,6 +35,8 @@ module Warehouse
 
           include_examples 'add new property_value'
           include_examples 'property_value invalid'
+          include_examples 'add a location in item'
+          include_examples 'include data[:item]'
 
           context 'and when properties updated' do
             let(:new_value) { 'P5QPL-AM' }
@@ -67,6 +74,8 @@ module Warehouse
 
           include_examples 'add new property_value'
           include_examples 'property_value invalid'
+          include_examples 'add a location in item'
+          include_examples 'include data[:item]'
         end
       end
     end

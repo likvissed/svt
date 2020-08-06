@@ -30,6 +30,7 @@ import { app } from '../../app/app';
       op.item.barcode = data.barcode;
       op.item.invent_num_start = data.inventNumStart;
       op.item.invent_num_end = data.inventNumEnd;
+      op.item.location = data.location;
     }
 
     function _generateOrder(warehouseType, item) {
@@ -41,9 +42,11 @@ import { app } from '../../app/app';
           op.inv_item_ids = [item.item_id];
           op.item_type = item.type.short_description;
           op.item_model = item.full_item_model;
+          op.location = item.location;
         } else {
           op.item_type = item.item_type;
           op.item_model = item.item_model;
+          op.location = item.location;
         }
       } else if (_orderOperation == 'out' || _orderOperation == 'write_off') {
         op.item_id = item.id;

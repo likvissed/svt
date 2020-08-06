@@ -186,6 +186,11 @@ ru:
         value: "Значение свойств техники"
         unknown_property_type: "Неизвестный тип свойства"
 
+      warehouse/item/location:
+        iss_reference_site: "Площадка"
+        iss_reference_building: "Корпус"
+        iss_reference_room: "Комната"
+
       user:
         tn: Табельный номер
         role: Роль
@@ -346,6 +351,7 @@ ru:
           attributes:
             base:
               operations_can_not_have_negative_value: 'Позиции не могут иметь отрицательное количество'
+              must_add_a_location_for_the_item: 'Необходимо добавить расположение для техники: %{item_type}'
 
         warehouse/operation:
           attributes:

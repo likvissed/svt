@@ -11,6 +11,7 @@ module Warehouse
 
       def run
         find_item
+        create_or_get_room_id
         update_item_params
 
         true
@@ -29,10 +30,13 @@ module Warehouse
       end
 
       def update_item_params
-        return if @item.update(@item_params)
+        if @item.update(@item_params)
+          data[:item] = @item
+        else
+          error[:full_message] = @item.errors.full_messages.join('. ')
 
-        error[:full_message] = @item.errors.full_messages.join('. ')
-        raise 'Данные не обновлены'
+          raise 'Данные не обновлены'
+        end
       end
     end
   end

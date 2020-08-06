@@ -86,4 +86,57 @@ module Warehouse
       its(:run) { is_expected.to be_falsey }
     end
   end
+
+  shared_examples 'add a location in item' do
+    it 'assign present location for item' do
+      subject.run
+
+      expect(item.reload.location_id).to eq location.id
+    end
+  end
+
+  shared_examples 'update :invent_num_start and :invent_num_end for items' do
+    it 'assign new invent_num_start and invent_num_end for items' do
+      subject.run
+
+      expect(Item.first.invent_num_start).to eq item.invent_num_start
+      expect(Item.first.invent_num_end).to eq item.invent_num_start + items_attributes.first['count_for_invent_num'] - 1
+
+      expect(Item.last.invent_num_start).to eq Item.first.invent_num_end + 1
+      expect(Item.last.invent_num_end).to eq Item.first.invent_num_end + items_attributes.last['count_for_invent_num']
+    end
+  end
+
+  shared_examples 'update :count for items' do
+    it 'assign new count for items' do
+      subject.run
+
+      expect(Item.first.count).to eq items_attributes.first['count_for_invent_num']
+      expect(Item.last.count).to eq items_attributes.last['count_for_invent_num']
+    end
+  end
+
+  shared_examples 'items_attributes is invalid' do
+    it 'adds error room is blank' do
+      subject.run
+
+      expect(subject.error[:full_message]).to eq 'Комната не может отсутствовать'
+    end
+
+    it 'not change count to item' do
+      expect { subject.run }.to_not change { Item.count }
+    end
+
+    it 'not change count to location' do
+      expect { subject.run }.to_not change { Location.count }
+    end
+  end
+
+  shared_examples 'include data[:item]' do
+    it 'assign present location for item' do
+      subject.run
+
+      expect(subject.data).to include(:item)
+    end
+  end
 end

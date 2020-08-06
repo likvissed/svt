@@ -15,4 +15,10 @@ module Warehouse
       expect { order.destroy }.not_to change(Operation, :count)
     end
   end
+
+  shared_examples 'does not pass verification presence_of(:invent_num) of operation :in' do
+    before { subject.operation = 'in' }
+
+    it { is_expected.to_not validate_presence_of(:invent_num) }
+  end
 end

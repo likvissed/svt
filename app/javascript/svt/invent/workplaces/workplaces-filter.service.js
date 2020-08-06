@@ -66,7 +66,7 @@ import { app } from '../../app/app';
    */
   WorkplacesFilter.prototype.loadRooms = function() {
     this.clearRooms();
-    this.Server.Location.rooms(
+    this.Server.Warehouse.Location.rooms(
       { building_id: this.selectedTableFilters.building.building_id },
       (data) => this.filters.rooms = data,
       (response, status) => this.Error.response(response, status)

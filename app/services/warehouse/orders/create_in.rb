@@ -64,6 +64,8 @@ module Warehouse
         Item.transaction do
           begin
             Array.wrap(@order_params).each do |param|
+              @location_for_w_items = create_array_location_for_items(param['operations_attributes']) if param['operations_attributes'].present?
+
               init_order(param)
 
               return false unless fill_order_arr
@@ -100,6 +102,7 @@ module Warehouse
         @order.transaction(requires_new: true) do
           begin
             find_or_create_warehouse_items
+            assiged_location_for_w_items(@location_for_w_items) if @location_for_w_items.present?
             @orders_arr << @order
 
             true

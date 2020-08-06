@@ -40,6 +40,36 @@ module Warehouse
         end
       end
 
+      def create_array_location_for_items(operations)
+        array_locations = []
+
+        operations.each do |op|
+          if op['inv_item_ids'].present? && op['location'].present?
+            value = {}
+            value[:id_inv_item] = op['inv_item_ids'].first
+            value[:location] = op['location'].as_json
+
+            array_locations.push(value)
+          end
+
+          op.delete(:location)
+        end
+
+        array_locations
+      end
+
+      def assiged_location_for_w_items(array_locations)
+        array_locations.each do |item_for_location|
+          w_item = Item.find_by(invent_item_id: item_for_location[:id_inv_item])
+
+          item_params = w_item.as_json
+          item_params['location_attributes'] = item_for_location[:location]
+
+          # Присвоить расположение для техники
+          Items::Update.new(@current_user, w_item.id, item_params).run
+        end
+      end
+
       def save_order(order)
         return if order.save
 

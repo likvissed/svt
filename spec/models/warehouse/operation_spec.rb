@@ -5,7 +5,6 @@ module Warehouse
     it { is_expected.to have_many(:inv_item_to_operations).dependent(:destroy) }
     it { is_expected.to have_many(:inv_items).through(:inv_item_to_operations).class_name('Invent::Item') }
     it { is_expected.to belong_to(:item) }
-    it { is_expected.to belong_to(:location) }
     it { is_expected.to belong_to(:stockman).class_name('UserIss').with_foreign_key('stockman_id_tn') }
     it { is_expected.to belong_to(:operationable) }
     it { is_expected.to validate_presence_of(:item_type) }

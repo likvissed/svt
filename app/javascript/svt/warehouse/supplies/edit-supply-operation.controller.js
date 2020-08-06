@@ -5,12 +5,13 @@ import { app } from '../../app/app';
 
   app.controller('EditSupplyOperationCtrl', EditSupplyOperationCtrl);
 
-  EditSupplyOperationCtrl.$inject = ['$uibModalInstance', 'operation', 'WarehouseSupply', 'WarehouseOperation', 'Error', 'Server'];
+  EditSupplyOperationCtrl.$inject = ['$uibModalInstance', 'operation', 'WarehouseSupply', 'WarehouseOperation', 'WarehouseItems', 'Error', 'Server'];
 
-  function EditSupplyOperationCtrl($uibModalInstance, operation, WarehouseSupply, WarehouseOperation, Error, Server) {
+  function EditSupplyOperationCtrl($uibModalInstance, operation, WarehouseSupply, WarehouseOperation, WarehouseItems, Error, Server) {
     this.$uibModalInstance = $uibModalInstance;
     this.Supply = WarehouseSupply;
     this.Operation = WarehouseOperation;
+    this.Items = WarehouseItems;
     this.Error = Error;
     this.Server = Server;
 
@@ -28,7 +29,8 @@ import { app } from '../../app/app';
       model: {
         model_id  : 0,
         item_model: ''
-      }
+      },
+      location: WarehouseSupply.location
     };
     this._setDefaultResult(operation);
   }
@@ -43,6 +45,10 @@ import { app } from '../../app/app';
       item_model: operation ? operation.item.item_model : ''
     };
     this.result.shift = operation ? operation.shift : this.Operation.getTemplate().shift;
+
+    if (operation) {
+      this.result.location = operation.item.location;
+    }
 
     if (operation) {
       this.result.warehouseType = operation.item.warehouse_type;
@@ -79,12 +85,19 @@ import { app } from '../../app/app';
    */
   EditSupplyOperationCtrl.prototype.disableButton = function() {
     if (this.result.warehouseType == 'with_invent_num') {
+      if (this.Items.completedLocation(this.result.location)) {
       return this.result.type.type_id == 0 || this.result.shift == 0 ||
         // Случай, когда модель выбирают из списка
         (this.result.type.type_id != 0 && this.extra.eqModels.length > 1 && this.result.model.model_id == 0) ||
         // Случай, когда модель нужно ввести вручную
         (this.result.type.type_id != 0 && this.extra.eqModels.length == 1 && !this.result.model.item_model);
+      } else { return true; }
     } else if (this.result.warehouseType == 'without_invent_num') {
+      // Если начали заполнять расположение, то необходимо его заполнить полностью
+      if (this.result.location !== null && this.result.location.site_id !== null) {
+        if (!this.Items.completedLocation(this.result.location)) { return true }
+      }
+
       return this.result.type.short_descirption == '' || this.result.model.item_model == '' || this.result.shift == 0;
     } else { return true; }
   }

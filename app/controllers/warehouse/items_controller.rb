@@ -18,7 +18,7 @@ module Warehouse
     end
 
     def edit
-      edit_item = Items::Edit.new(params[:id])
+      edit_item = Items::Edit.new(current_user, params[:id])
 
       if edit_item.run
         render json: edit_item.data
@@ -34,6 +34,26 @@ module Warehouse
         render json: { full_message: I18n.t('controllers.warehouse/item.updated') }
       else
         render json: update_item.error, status: 422
+      end
+    end
+
+    def split
+      split_items = Items::Split.new(current_user, params[:id], params[:items])
+
+      if split_items.run
+        render json: { full_message: I18n.t('controllers.warehouse/item.splited') }
+      else
+        render json: split_items.error, status: 422
+      end
+    end
+
+    def create
+      create_item = Items::Create.new(current_user, item_params)
+
+      if create_item.run
+        render json: { full_message: I18n.t('controllers.warehouse/item.create') }
+      else
+        render json: create_item.error, status: 422
       end
     end
 
@@ -54,7 +74,9 @@ module Warehouse
     end
 
     def item_params
-      params.require(:item).permit(policy(Item).permitted_attributes)
+      w_item_params = params.require(:item).permit(policy(Item).permitted_attributes)
+      w_item_params[:location_attributes] = w_item_params.delete :location
+      w_item_params.permit!
     end
   end
 end

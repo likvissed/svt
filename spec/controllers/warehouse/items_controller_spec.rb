@@ -83,5 +83,40 @@ module Warehouse
         end
       end
     end
+
+    describe 'GET #split' do
+      let(:item) { create(:new_item, count: 4, invent_num_end: 114) }
+      let(:location) { create(:location) }
+      let(:items_attributes) do
+        it = Hash[item.as_json.map { |key, value| [key.to_sym, value.to_i] }]
+
+        it['location'] = location.as_json
+        it['count_for_invent_num'] = 2
+
+        items = [it, it]
+        items
+      end
+      let(:params) { { id: item.id, items: items_attributes } }
+
+      context 'when method :run returns true' do
+        before { allow_any_instance_of(Items::Split).to receive(:run).and_return(true) }
+
+        it 'response with full_message' do
+          put :split, params: params
+
+          expect(JSON.parse(response.body)['full_message']).to eq('Разделение техники выполнено')
+        end
+      end
+
+      context 'when method :run returns false' do
+        before { allow_any_instance_of(Items::Split).to receive(:run).and_return(false) }
+
+        it 'response with full_message' do
+          put :split, params: params
+
+          expect(response.status).to eq(422)
+        end
+      end
+    end
   end
 end

@@ -40,7 +40,11 @@ module Invent
 
       # Возвращает строку, содержащую расположение РМ.
       def wp_location_string(wp)
-        "Пл. '#{wp['iss_reference_site']['name']}', корп. '#{wp['iss_reference_building']['name']}', комн. '#{wp['iss_reference_room']['name']}'"
+        if wp['iss_reference_room'].nil?
+          'Не назначено'
+        else
+          "Пл. '#{wp['iss_reference_site']['name']}', корп. '#{wp['iss_reference_building']['name']}', комн. '#{wp['iss_reference_room']['name']}'"
+        end
       end
 
       def fill_swap_arr

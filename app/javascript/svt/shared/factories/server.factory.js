@@ -148,7 +148,13 @@ import { app } from '../../app/app';
             method: 'GET',
             url   : '/warehouse/items/:id/edit.json'
           },
-          update: { method: 'PUT' }
+          update: {
+            method: 'PUT'
+          },
+          split: {
+            method: 'PUT',
+            url   : '/warehouse/items/:id/split'
+          }
         }),
         Order: $resource('/warehouse/orders/:id.json', {}, {
           query: {
@@ -226,15 +232,19 @@ import { app } from '../../app/app';
             url   : '/warehouse/supplies/:id/edit.json'
           },
           update: { method: 'PUT' }
+        }),
+        Location: $resource('', {}, {
+          loadLocations: {
+            method: 'GET',
+            url   : '/warehouse/locations/load_locations'
+          },
+          rooms: {
+            method : 'GET',
+            url    : ' /warehouse/locations/load_rooms/:building_id',
+            isArray: true
+          }
         })
       },
-      Location: $resource('', {}, {
-        rooms: {
-          method : 'GET',
-          url    : ' /locations/load_rooms/:building_id',
-          isArray: true
-        }
-      }),
       Statistics: $resource('/statistics', {}, {
         get: {
           isArray: true

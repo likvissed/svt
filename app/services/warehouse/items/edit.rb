@@ -1,7 +1,8 @@
 module Warehouse
   module Items
     class Edit < Warehouse::ApplicationService
-      def initialize(item_id)
+      def initialize(current_user, item_id)
+        @current_user = current_user
         @item_id = item_id
 
         super
@@ -24,13 +25,15 @@ module Warehouse
       protected
 
       def load_item
-        data[:item] = Item.includes(:inv_type, :property_values).find(@item_id)
+        data[:item] = Item.includes(:inv_type, :property_values, :location).find(@item_id)
+
         authorize data[:item], :edit?
 
         data[:item] = data[:item]
                         .as_json(
                           include: [
                             :inv_type,
+                            :location,
                             property_values: {
                               include: :property
                             }
@@ -48,7 +51,7 @@ module Warehouse
         raise 'Ошибка сервиса Invent::LkInvents::InitProperties' unless properties.load_types && properties.prepare_eq_types_to_render
 
         data[:prop_data][:eq_types] = properties.data[:eq_types].find do |type|
-          next unless type['name'] == data[:item]['inv_type']['name']
+          next unless data[:item]['inv_type'] && type['name'] == data[:item]['inv_type']['name']
 
           type['properties'] = type['properties'].select do |prop|
             data[:prop_data][:file_depending].include?(prop['name'])
@@ -57,9 +60,11 @@ module Warehouse
       end
 
       def new_property_values
-        data[:item]['property_values'] = data[:prop_data][:file_depending].map do |value|
+        property_ids = Invent::Property.order(:property_order).where(name: data[:prop_data][:file_depending]).pluck(:property_id)
+
+        data[:item]['property_values'] = property_ids.map do |id|
           PropertyValue.new(
-            property_id: Invent::Property.find_by(name: value).property_id,
+            property_id: id,
             warehouse_item_id: data[:item]['id'],
             value: ''
           ).as_json

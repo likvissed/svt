@@ -33,5 +33,11 @@ module Warehouse
 
       include_examples 'status for item is non_used'
     end
+
+    permissions :create? do
+      let(:model) { create(:new_item) }
+
+      include_examples 'policy for worker'
+    end
   end
 end

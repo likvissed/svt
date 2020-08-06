@@ -11,8 +11,10 @@ module Warehouse
     belongs_to :inv_item, class_name: 'Invent::Item', foreign_key: 'invent_item_id', optional: true
     belongs_to :inv_type, class_name: 'Invent::Type', foreign_key: 'invent_type_id', optional: true
     belongs_to :inv_model, class_name: 'Invent::Model', foreign_key: 'invent_model_id', optional: true
+    belongs_to :location, foreign_key: 'location_id', optional: true
 
-    accepts_nested_attributes_for :property_values, allow_destroy: true
+    accepts_nested_attributes_for :property_values, allow_destroy: true, reject_if: proc { |attr| attr['value'].blank? }
+    accepts_nested_attributes_for :location, allow_destroy: true, reject_if: proc { |attr| attr['site_id'].blank? }
 
     validates :warehouse_type, :item_type, :item_model, presence: true
     validates :inv_item, uniqueness: true, allow_nil: true
@@ -39,6 +41,12 @@ module Warehouse
         .limit(RECORD_LIMIT)
     end
     scope :invent_item_id, ->(invent_item_id) { where(invent_item_id: invent_item_id) }
+    scope :building_id, ->(building_id) do
+      left_outer_joins(:location).where(warehouse_locations: { building_id: building_id })
+    end
+    scope :room_id, ->(room_id) do
+      left_outer_joins(:location).where(warehouse_locations: { room_id: room_id })
+    end
 
     enum warehouse_type: { without_invent_num: 1, with_invent_num: 2 }
     enum status: { non_used: 1, used: 2, waiting_write_off: 3, written_off: 4 }

@@ -4,12 +4,16 @@ module Warehouse
       not_for_***REMOVED***_user
     end
 
+    def create?
+      for_worker
+    end
+
     def edit?
-      record.new?
+      for_worker
     end
 
     def update?
-      for_worker if record.new?
+      for_worker
     end
 
     def permitted_attributes
@@ -28,8 +32,17 @@ module Warehouse
         :count_reserved,
         :invent_num_start,
         :invent_num_end,
+        :location_id,
         :create_time,
         :modify_time,
+        location: %i[
+          id
+          site_id
+          building_id
+          room_id
+          comment
+          name
+        ],
         property_values_attributes: %i[
           id
           warehouse_item_id

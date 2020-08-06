@@ -98,7 +98,15 @@ Rails.application.routes.draw do
 
   # Склад
   namespace :warehouse do
+    # Получить информацию о всех расположениях
+    get 'locations/load_locations', to: 'locations#load_locations'
+
+    get 'locations/load_rooms/:building_id', to: 'locations#rooms_for_building'
+
     resources :items
+    # Разделить одну технику на множество с разным расположением на складе
+    put 'items/:id/split', to: 'items#split'
+    
     resources :orders, only: [:new, :edit, :destroy] do
       get 'in', to: 'orders#index_in', on: :collection
       get 'out', to: 'orders#index_out', on: :collection
@@ -130,7 +138,6 @@ Rails.application.routes.draw do
     get :items, to: :items
   end
 
-  get 'locations/load_rooms/:building_id', to: 'locations#rooms_for_building'
   resource :statistics, only: :show
 
   mount ActionCable.server, at: '/cable'

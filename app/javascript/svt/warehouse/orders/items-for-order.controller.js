@@ -5,13 +5,14 @@ import { app } from '../../app/app';
 
   app.controller('ItemsForOrderController', ItemsForOrderController)
 
-  ItemsForOrderController.$inject = ['$scope', '$uibModalInstance', 'WarehouseOrder', 'FindExistingItemService', 'Flash'];
+  ItemsForOrderController.$inject = ['$scope', '$uibModalInstance', 'WarehouseOrder', 'FindExistingItemService', 'Flash', 'WarehouseItems'];
 
-  function ItemsForOrderController($scope, $uibModalInstance, WarehouseOrder, FindExistingItemService, Flash) {
+  function ItemsForOrderController($scope, $uibModalInstance, WarehouseOrder, FindExistingItemService, Flash, WarehouseItems) {
     this.$uibModalInstance = $uibModalInstance;
     this.Order = WarehouseOrder;
     this.FindExistingItemService = FindExistingItemService;
     this.Flash = Flash;
+    this.Items = WarehouseItems;
 
     this.eqTypes = WarehouseOrder.additional.eqTypes;
     this.warehouseType = 'with_invent_num';
@@ -19,6 +20,8 @@ import { app } from '../../app/app';
       item_model: '',
       item_type : ''
     };
+    this.item = {};
+
     // Инвентарный номер выбранного типа техники
     this.invent_num = '';
     // Отдел необходим для ограничения выборки техники (в окне поиска техники)
@@ -48,10 +51,17 @@ import { app } from '../../app/app';
   };
 
   ItemsForOrderController.prototype.ok = function() {
-    if (this.warehouseType == 'with_invent_num' && !this.FindExistingItemService.selectedItem) {
-      this.Flash.alert('Необходимо указать инвентарный номер (или ID) и выбрать технику');
+    if (this.warehouseType == 'with_invent_num') {
+      if (!this.FindExistingItemService.selectedItem) {
+        this.Flash.alert('Необходимо указать инвентарный номер (или ID) и выбрать технику');
 
-      return false;
+        return false;
+      }
+      if (!this.Items.completedLocation(this.item.location)) {
+        this.Flash.alert('Необходимо назначить расположение: площадка, корпус, комната');
+
+        return false;
+      }
     }
 
     if (this.warehouseType == 'without_invent_num' && !this.manuallyItem.item_model && !this.manuallyItem.item_type) {
@@ -64,6 +74,9 @@ import { app } from '../../app/app';
       warehouseType: this.warehouseType,
       item         : this.warehouseType == 'with_invent_num' ? this.FindExistingItemService.selectedItem : this.manuallyItem
     };
+
+    // Присвоение выбранного расположения
+    result.item.location = this.item.location;
 
     this.$uibModalInstance.close(result);
   };

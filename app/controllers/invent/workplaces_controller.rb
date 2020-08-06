@@ -125,14 +125,16 @@ module Invent
 
     def category_for_room
       room = IssReferenceRoom.find_by(name: params[:room_name], building_id: params[:building_id])
+      room_is_new = false
 
       category_id = if room.present?
                       room.security_category_id
                     else
-                      RoomSecurityCategory.find_by(category: 'Отсутствует').id
+                      room_is_new = true if params[:room_name] != ''
+                      RoomSecurityCategory.missing_category.id
                     end
 
-      render json: { category_id: category_id }
+      render json: { category_id: category_id, room_is_new: room_is_new }
     end
 
     protected

@@ -17,6 +17,7 @@ module Warehouse
         init_filters if need_init_filters?
         load_orders
         limit_records
+        load_locations
         prepare_to_render
 
         true
@@ -49,7 +50,7 @@ module Warehouse
       end
 
       def filtering_params
-        JSON.parse(params[:filters]).slice('show_only_presence', 'status', 'item_type', 'barcode', 'item_model', 'invent_num', 'invent_item_id')
+        JSON.parse(params[:filters]).slice('show_only_presence', 'status', 'item_type', 'barcode', 'item_model', 'invent_num', 'invent_item_id', 'building_id', 'room_id')
       end
 
       def limit_records
@@ -66,7 +67,11 @@ module Warehouse
           start = @start - @order_items_to_result.size
         end
 
-        @items = @items.includes(:inv_item, :supplies).where.not(id: @exclude_items.map(&:id)).order(id: :desc).limit(limit).offset(start)
+        @items = @items.includes(:inv_item, :inv_type, :supplies, :location).where.not(id: @exclude_items.map(&:id)).order(id: :desc).limit(limit).offset(start)
+      end
+
+      def load_locations
+        data[:locations] = Invent::LkInvents::InitProperties.new(current_user).load_locations
       end
 
       def prepare_to_render
@@ -76,8 +81,21 @@ module Warehouse
                        @items
                      end
 
-        data[:data] = result_arr.as_json(include: %i[inv_item inv_type supplies]).each do |item|
+        data[:data] = result_arr.as_json(include: %i[inv_item inv_type supplies location]).each do |item|
           item['range_inv_nums'] = item['invent_num_end'].to_i.zero? ? '' : "#{item['invent_num_start']} - #{item['invent_num_end']}"
+
+          item['location_name'] = 'Не назначено'
+
+          unless item['location'].nil?
+            site = data[:locations].find { |location| location['site_id'] == item['location']['site_id'] }
+            building = site['iss_reference_buildings'].find { |b| b['building_id'] == item['location']['building_id'] }
+            room = building['iss_reference_rooms'].find { |b| b['room_id'] == item['location']['room_id'] }
+
+            if room.present?
+              item['location_name'] = "Пл. '#{site['short_name']}', корп. #{building['name']}, комн. #{room['name']}"
+            end
+          end
+
           i_tr = Item.translate_enum(:status, item['status'])
           item['translated_status'] = case item['status']
                                       when 'non_used'
@@ -98,6 +116,9 @@ module Warehouse
         data[:filters] = {}
         data[:filters][:item_types] = Item.pluck(:item_type).uniq
         data[:filters][:statuses] = Item.statuses.map { |key, _val| [key, Item.translate_enum(:status, key)] }.to_h
+        data[:filters][:buildings] = IssReferenceBuilding
+                                       .select('iss_reference_sites.name as site_name, iss_reference_buildings.*')
+                                       .left_outer_joins(:iss_reference_site)
       end
 
       def load_orders

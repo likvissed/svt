@@ -3,7 +3,7 @@
     h4
       | Состав рабочего места 
       - if current_user.one_of_roles? :admin, :manager, :worker  
-        span.text-danger ng-if="wp.workplace.room_category_id != wp.workplace.no_secrecy.id"
+        span.text-danger ng-if="wp.workplace.room_category_id && wp.workplace.room_category_id != wp.workplace.no_secrecy.id"
           = "(Категория помещения: «{{ wp.workplace.room_category.category }}»)"
 .row
   .col-sm-24
@@ -11,7 +11,7 @@
       div uib-accordion-group="true" class="panel-default" is-open="status.open"
         uib-accordion-heading
           - if current_user.one_of_roles? :admin, :manager, :worker  
-            span ng-class="{'text-danger': wp.workplace.room_category_id != wp.workplace.no_secrecy.id}"
+            span ng-class="{'text-danger': wp.workplace.room_category_id && wp.workplace.room_category_id != wp.workplace.no_secrecy.id}"
               | Справка
           - else
             | Справка
