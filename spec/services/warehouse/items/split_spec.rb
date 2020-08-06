@@ -76,6 +76,12 @@ module Warehouse
             expect(Item.first.operations.first['item_id']).to eq item.id
             expect(Item.first.operations.first['shift']).to eq items_attributes.first['count_for_invent_num']
           end
+
+          context 'and when room_id is null' do
+            before { items_attributes.first['location']['room_id'] = nil }
+
+            include_examples 'items_attributes is invalid'
+          end
         end
 
         context 'when location and property_values for item is present' do
@@ -113,6 +119,12 @@ module Warehouse
             %i[site_id building_id room_id comment].each do |key|
               expect(location_for_item_2[key.to_s]).to eq location[key.to_s]
             end
+          end
+
+          context 'and when room_id is null' do
+            before { items_attributes.first['location']['room_id'] = nil }
+
+            include_examples 'items_attributes is invalid'
           end
         end
       end

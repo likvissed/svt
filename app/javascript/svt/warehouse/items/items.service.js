@@ -59,17 +59,8 @@ import { app } from '../../app/app';
   };
 
   WarehouseItems.prototype.assignLocationToSend = function() {
-    this.selectedTableFilters.building_id = this.selectedTableFilters.building ? (
-      this.selectedTableFilters.building.building_id
-    ) : (
-      ''
-    )
-
-    this.selectedTableFilters.room_id = this.selectedTableFilters.room ? (
-      this.selectedTableFilters.room.room_id
-    ) : (
-      ''
-    )
+    this.selectedTableFilters.building_id = this.selectedTableFilters.building ? this.selectedTableFilters.building.building_id : ''
+    this.selectedTableFilters.room_id = this.selectedTableFilters.room ? this.selectedTableFilters.room.room_id : ''
 
     return this.selectedTableFilters;
   };
@@ -118,7 +109,7 @@ import { app } from '../../app/app';
     if (!location) { return false }
 
     if (!location.name) {
-      // Присвоить пустое значение в name, если его не существует, чтобы сравнить с .length
+      // Присвоить пустое значение в name, если его не существует, чтобы сравнить длину строки с 0
       location.name = '';
     }
 

@@ -115,4 +115,28 @@ module Warehouse
       expect(Item.last.count).to eq items_attributes.last['count_for_invent_num']
     end
   end
+
+  shared_examples 'items_attributes is invalid' do
+    it 'adds error room is blank' do
+      subject.run
+
+      expect(subject.error[:full_message]).to eq 'Комната не может отсутствовать'
+    end
+
+    it 'not change count to item' do
+      expect { subject.run }.to_not change { Item.count }
+    end
+
+    it 'not change count to location' do
+      expect { subject.run }.to_not change { Location.count }
+    end
+  end
+
+  shared_examples 'include data[:item]' do
+    it 'assign present location for item' do
+      subject.run
+
+      expect(subject.data).to include(:item)
+    end
+  end
 end

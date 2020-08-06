@@ -17,6 +17,7 @@ module Warehouse
         init_filters if need_init_filters?
         load_orders
         limit_records
+        load_locations
         prepare_to_render
 
         true
@@ -66,7 +67,11 @@ module Warehouse
           start = @start - @order_items_to_result.size
         end
 
-        @items = @items.includes(:inv_item, :supplies, :location).where.not(id: @exclude_items.map(&:id)).order(id: :desc).limit(limit).offset(start)
+        @items = @items.includes(:inv_item, :inv_type, :supplies, :location).where.not(id: @exclude_items.map(&:id)).order(id: :desc).limit(limit).offset(start)
+      end
+
+      def load_locations
+        data[:locations] = Invent::LkInvents::InitProperties.new(current_user).load_locations
       end
 
       def prepare_to_render
@@ -82,12 +87,12 @@ module Warehouse
           item['location_name'] = 'Не назначено'
 
           unless item['location'].nil?
-            site = IssReferenceSite.find_by(site_id: item['location']['site_id'])
-            building = IssReferenceBuilding.find_by(building_id: item['location']['building_id'])
-            room = IssReferenceRoom.find_by(room_id: item['location']['room_id'])
+            site = data[:locations].find { |location| location['site_id'] == item['location']['site_id'] }
+            building = site['iss_reference_buildings'].find { |b| b['building_id'] == item['location']['building_id'] }
+            room = building['iss_reference_rooms'].find { |b| b['room_id'] == item['location']['room_id'] }
 
-            if site && building && room
-              item['location_name'] = "Пл. '#{site.name}', корп. #{building.name}, комн. #{room.name}"
+            if room.present?
+              item['location_name'] = "Пл. '#{site['short_name']}', корп. #{building['name']}, комн. #{room['name']}"
             end
           end
 

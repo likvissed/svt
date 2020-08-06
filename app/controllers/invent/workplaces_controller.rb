@@ -130,7 +130,7 @@ module Invent
       category_id = if room.present?
                       room.security_category_id
                     else
-                      room_is_new = true
+                      room_is_new = true if params[:room_name] != ''
                       RoomSecurityCategory.missing_category.id
                     end
 

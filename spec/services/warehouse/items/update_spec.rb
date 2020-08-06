@@ -36,6 +36,7 @@ module Warehouse
           include_examples 'add new property_value'
           include_examples 'property_value invalid'
           include_examples 'add a location in item'
+          include_examples 'include data[:item]'
 
           context 'and when properties updated' do
             let(:new_value) { 'P5QPL-AM' }
@@ -74,6 +75,7 @@ module Warehouse
           include_examples 'add new property_value'
           include_examples 'property_value invalid'
           include_examples 'add a location in item'
+          include_examples 'include data[:item]'
         end
       end
     end

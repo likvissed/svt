@@ -8,7 +8,6 @@ import { app } from '../../app/app';
   WarehouseEditLocationCtrl.$inject = ['$uibModalInstance', 'Flash', 'Error', 'Server', 'items', '$timeout'];
 
   function WarehouseEditLocationCtrl($uibModalInstance, Flash, Error, Server, items, $timeout) {
-
     this.$uibModalInstance = $uibModalInstance;
     this.Flash = Flash;
     this.Error = Error;
@@ -29,6 +28,8 @@ import { app } from '../../app/app';
    */
   WarehouseEditLocationCtrl.prototype.saveLocation = function() {
     if (this.items_attributes.length == 1) {
+      delete(this.item.location_obj);
+
       this.Server.Warehouse.Item.update(
         { id: this.item.id },
         { item: this.item },
@@ -41,6 +42,9 @@ import { app } from '../../app/app';
         }
       );
     } else if (this.validLocations()) {
+      delete(this.item.location_obj);
+      this.items_attributes.forEach(function (item) { delete(item.location_obj) });
+
       this.Server.Warehouse.Item.split(
         { id: this.item.id },
         { items: this.items_attributes },
@@ -124,7 +128,7 @@ import { app } from '../../app/app';
     this.items_attributes.splice(index, 1);
 
     // перезаписать все activeTab для корректного вывода вкладок, так как <item.activeTab == $index>
-    this.items_attributes.forEach(function (item, i) { item.activeTab = i; });
+    this.items_attributes.forEach((item, i) => item.activeTab = i);
 
     this.setActiveTab();
   };
@@ -133,11 +137,7 @@ import { app } from '../../app/app';
    * Подсчет суммарного значения во всех полях ввода для "Количество техники" на форме
    */
   WarehouseEditLocationCtrl.prototype.calculationValue = function() {
-    let count_items = 0;
-
-    this.items_attributes.forEach((item) => { count_items += parseInt(item.count_for_invent_num) });
-
-    return count_items;
+    return this.items_attributes.reduce((amount, item) => amount + item.count_for_invent_num, 0)
   };
 
   /**
@@ -171,9 +171,9 @@ import { app } from '../../app/app';
    *  2 - введенное значение <= 0 (+ запрет отрицательных чисел)
    *  3 - суммарное значение полей "Количество техники" уже превышает общее количество на складе
    */
-  WarehouseEditLocationCtrl.prototype.changeValidCountItems = function(count_for_invent_num, index) {
-    if (count_for_invent_num > this.item.count || count_for_invent_num <= 0 || this.calculationValue() > this.item.count) {
-      this.items_attributes[index].count_for_invent_num = 1;
+  WarehouseEditLocationCtrl.prototype.changeValidCountItems = function(item) {
+    if (item.count_for_invent_num > this.item.count || item.count_for_invent_num <= 0 || this.calculationValue() > this.item.count) {
+      item.count_for_invent_num = 1;
     }
   };
 })();

@@ -60,9 +60,11 @@ module Warehouse
       end
 
       def new_property_values
-        data[:item]['property_values'] = data[:prop_data][:file_depending].map do |value|
+        property_ids = Invent::Property.order(:property_order).where(name: data[:prop_data][:file_depending]).pluck(:property_id)
+
+        data[:item]['property_values'] = property_ids.map do |id|
           PropertyValue.new(
-            property_id: Invent::Property.find_by(name: value).property_id,
+            property_id: id,
             warehouse_item_id: data[:item]['id'],
             value: ''
           ).as_json

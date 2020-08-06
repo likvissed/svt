@@ -8,25 +8,21 @@ function LocationItemCtrl(Server, Error) {
   this.Server = Server;
   this.Error = Error;
 
-  this.selectedIss = {
+  this.not_chosen = 'Не выбрано';
+
+  this.selected_iss = {
     site        : { site_id: null, name: 'Выберите площадку' },
     building    : { building_id: null, name: 'Выберите корпус' },
     room        : { room_id: null, name: 'Выберите комнату' },
     roomManually: { room_id: -1, name: 'Ввести комнату вручную...' }
   };
 
-  this.selected_object = {
-    site    : '',
-    building: ''
-  };
-
   // Наименование «Корпус - комната»  выбранного из расположения техники
   if (!this.selectedItem.location) {
-    this.selectedItem.names_building_room = 'Не выбрано';
+    this.selectedItem.names_building_room = this.not_chosen;
   }
 
   this.loadLocationSites();
-
 }
 
 /**
@@ -37,10 +33,11 @@ LocationItemCtrl.prototype.loadLocationSites = function() {
 
   this.Server.Warehouse.Location.loadLocations(
     (response) => {
+      console.log('response', response);
       this.location_sites = response.iss_locations;
       this.new_location = response.new_location;
 
-      this.successCallback();
+      this.addDefaultData();
     },
     (response, status) => {
       this.Error.response(response, status);
@@ -48,43 +45,45 @@ LocationItemCtrl.prototype.loadLocationSites = function() {
   );
 };
 
-LocationItemCtrl.prototype.successCallback = function() {
-  // Добавить для каждого значения дефолтные данные
+// Добавить дефолтные данные
+LocationItemCtrl.prototype.addDefaultData = function() {
   this.location_sites.forEach((site) => {
     site.iss_reference_buildings.forEach((building) => {
-      building.iss_reference_rooms.unshift(this.selectedIss.roomManually);
-      building.iss_reference_rooms.unshift(this.selectedIss.room);
+      building.iss_reference_rooms.unshift(this.selected_iss.roomManually);
+      building.iss_reference_rooms.unshift(this.selected_iss.room);
     });
-    site.iss_reference_buildings.unshift(this.selectedIss.building);
+    site.iss_reference_buildings.unshift(this.selected_iss.building);
   });
-  this.location_sites = [this.selectedIss.site].concat(this.location_sites);
+  this.location_sites = [this.selected_iss.site].concat(this.location_sites);
 
   this.findElementForLocation();
 };
 
 /**
- * Найти и присвоить уже существующие значения расположения в selected_object
+ * Найти и присвоить уже существующие значения расположения в selectedItem
  */
 LocationItemCtrl.prototype.findElementForLocation = function() {
   // Назначить пустой объект Location для техники, если расположение отсутствует
   if (!this.selectedItem.location) { this.selectedItem.location = this.new_location; }
 
+  this.selectedItem.location_obj = {};
+
   // find site
-  this.selected_object.site = this.selectedItem.location.site_id ? (
+  this.selectedItem.location_obj.site = this.selectedItem.location.site_id ? (
     this.location_sites.find((el) => {
       return this.selectedItem.location.site_id == el.site_id;
     })
   ) : (
-    this.selectedIss.site
+    this.selected_iss.site
   );
 
   // find building
-  this.selected_object.building = this.selectedItem.location.building_id ? (
-    this.selected_object.site.iss_reference_buildings.find((el) => {
+  this.selectedItem.location_obj.building = this.selectedItem.location.building_id ? (
+    this.selectedItem.location_obj.site.iss_reference_buildings.find((el) => {
       return this.selectedItem.location.building_id == el.building_id;
     })
   ) : (
-    this.selectedIss.building
+    this.selected_iss.building
   );
 
   this.selectedItem.location.name = '';
@@ -97,10 +96,11 @@ LocationItemCtrl.prototype.findElementForLocation = function() {
  *  Получить для names_building_room наименование, как «Корпус - комната» из расположения техники
  */
 LocationItemCtrl.prototype.getNameBuildingRoom = function() {
-  this.selectedItem.names_building_room = this.selectedItem.location.building_id && this.selectedItem.location.room_id && this.selected_object.building ? (
+  this.selectedItem.names_building_room = this.selectedItem.location.building_id && this.selectedItem.location.room_id &&
+   this.selectedItem.location_obj.building ? (
     this.getNameRoom()
   ) : (
-    'Не выбрано'
+    this.not_chosen
   );
 };
 
@@ -109,7 +109,7 @@ LocationItemCtrl.prototype.getNameBuildingRoom = function() {
  */
 LocationItemCtrl.prototype.getNameRoom = function() {
   // find room
-  let object_room = this.selected_object.building.iss_reference_rooms.find((el) => {
+  let object_room = this.selectedItem.location_obj.building.iss_reference_rooms.find((el) => {
     return this.selectedItem.location.room_id == el.room_id;
   });
 
@@ -123,14 +123,14 @@ LocationItemCtrl.prototype.getNameRoom = function() {
     room_name = room_name.name;
   } else {
     // Если room_id задан, но комнаты уже нет
-    room_name = 'Не выбрано'
+    room_name = this.not_chosen
     this.selectedItem.location.room_id = null;
   }
 
   // Если выбрали "Ввести комнату вручную", но в поле ввода еще не введен текст
   if (room_name === '') {
-    return 'Не выбрано'
-  } else { return `${this.selected_object.building.name}-${room_name}` }
+    return this.not_chosen
+  } else { return `${this.selectedItem.location_obj.building.name}-${room_name}` }
 
 };
 

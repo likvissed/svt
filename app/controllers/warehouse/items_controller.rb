@@ -43,7 +43,17 @@ module Warehouse
       if split_items.run
         render json: { full_message: I18n.t('controllers.warehouse/item.splited') }
       else
-        render json: { full_message: I18n.t('controllers.warehouse/item.not_splited'), status: 422 }
+        render json: split_items.error, status: 422
+      end
+    end
+
+    def create
+      create_item = Items::Create.new(current_user, item_params)
+
+      if create_item.run
+        render json: { full_message: I18n.t('controllers.warehouse/item.create') }
+      else
+        render json: create_item.error, status: 422
       end
     end
 

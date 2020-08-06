@@ -114,7 +114,7 @@ module Warehouse
         it 'response with full_message' do
           put :split, params: params
 
-          expect(JSON.parse(response.body)['full_message']).to eq('Новое значение количества техники передано не было')
+          expect(response.status).to eq(422)
         end
       end
     end

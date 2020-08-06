@@ -4,7 +4,7 @@ module Warehouse
       protected
 
       def find_or_generate_item(op)
-        op[:item] = setting_location_attributes(op[:item])
+        setting_location_attributes(op[:item])
 
         if op[:item][:warehouse_type].to_s == 'without_invent_num'
           Item.find_by(item_type: op[:item][:item_type], item_model: op[:item][:item_model], status: :non_used) || Item.new(op[:item])
@@ -19,9 +19,15 @@ module Warehouse
 
         if item[:location_attributes].present?
           if item[:location_attributes]['room_id'] == -1
-            @room = Invent::Room.new(item[:location_attributes]['name'], item[:location_attributes]['building_id'], RoomSecurityCategory.missing_category.id)
+            room = IssReferenceRoom.find_by(name: item[:location_attributes]['name'], building_id: item[:location_attributes]['building_id'])
+            category_id = if room.present?
+                            room.security_category_id
+                          else
+                            RoomSecurityCategory.missing_category.id
+                          end
+            room = Invent::Room.new(item[:location_attributes]['name'], item[:location_attributes]['building_id'], category_id)
 
-            item[:location_attributes]['room_id'] = @room.data.room_id if @room.run
+            item[:location_attributes]['room_id'] = room.data.room_id if room.run
           end
           item[:location_attributes].delete :name
         end

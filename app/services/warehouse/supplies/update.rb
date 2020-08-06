@@ -45,7 +45,7 @@ module Warehouse
                       else
                         find_or_generate_item(op)
                       end
-          item = setting_location_attributes(item)
+          setting_location_attributes(item)
           op[:item].status = :non_used
 
           if item[:location_attributes].blank?

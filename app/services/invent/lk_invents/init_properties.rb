@@ -77,6 +77,9 @@ module Invent
                                     end
           end
 
+          # Для вывода на странице техники на складе
+          loc['short_name'] = loc['name']
+
           loc['name'] = "#{loc['name']} (#{loc['long_name']})" unless loc['long_name'].to_s.empty?
         end
       end
