@@ -35,7 +35,9 @@ module Warehouse
 
       def fill_with_new_data
         @item_for_update = []
-        current_invent_num = @item.invent_num_start
+        # Массив, содержащий инв.№, входящие в диапазон разделяемой техники, исключая инв.№ уже существующей техники
+        array_invent_num = allowed_invent_num if @item.invent_num_start
+        current_index = 0
 
         @items_attributes.each_with_index do |item, index|
           current_item = if index.zero?
@@ -48,14 +50,30 @@ module Warehouse
                            item['property_values_attributes'].each { |prop_val| prop_val['id'] = '' } if item['property_values_attributes'].present?
                            old_item
                          end
-          current_item['count'] = item['count_for_invent_num']
 
-          unless current_invent_num.nil?
-            current_item['invent_num_start'] = current_invent_num
-            current_item['invent_num_end'] = current_invent_num + item['count_for_invent_num'].to_i - 1
+          if array_invent_num.present?
+            if current_item['count_reserved'].zero?
+              current_item['invent_num_start'] = array_invent_num[current_index]
+              current_item['invent_num_end'] = array_invent_num[current_index + item['count_for_invent_num'].to_i - 1]
+            else
+              # Добавление в диапазон инв.№ тех, которые еще не исполнены в расходных ордерах
+              invent_num_waiting_take = [array_invent_num[current_index]]
+              @item.operations.each do |op|
+                op.inv_items.each { |inv_item| invent_num_waiting_take.push(inv_item.invent_num.to_i) if inv_item.status == 'waiting_take' }
+              end
 
-            current_invent_num = current_item['invent_num_end'] + 1
+              current_item['invent_num_start'] = invent_num_waiting_take.sort.first
+              current_item['invent_num_end'] = invent_num_waiting_take.sort.last
+            end
+
+            current_index += item['count_for_invent_num'].to_i
           end
+
+          current_item['count'] = if current_item['count_reserved'].zero?
+                                    item['count_for_invent_num']
+                                  else
+                                    item['count_for_invent_num'] + item['count_reserved']
+                                  end
 
           current_item['location_attributes'] = item['location'].as_json
           current_item['property_values_attributes'] = item['property_values_attributes'].as_json
@@ -66,6 +84,12 @@ module Warehouse
         if validation
           @item_for_update.each { |it| update_w_item(it) }
         end
+      end
+
+      def allowed_invent_num
+        existing_invent_nums = Invent::Item.pluck(:invent_num)
+
+        (@item.invent_num_start..@item.invent_num_end).to_a.reject { |el| existing_invent_nums.include?(el.to_s) }
       end
 
       def validation
@@ -80,6 +104,8 @@ module Warehouse
           item['location_attributes'].delete 'name'
 
           it = Item.new(item)
+          it.allow_create_item = true
+
           if it.valid?
             count_inc += 1
             if name.present?
@@ -98,6 +124,7 @@ module Warehouse
 
       def update_w_item(item)
         # Если существующая техника - то обновить, если новая - создать с расположением
+        item['allow_create_item'] = true
         item_obj = if item['id'].present?
                      old_item = Items::Update.new(@current_user, item['id'], item)
                      old_item.run

@@ -15,7 +15,7 @@ import { app } from '../../app/app';
     this.item = items.item;
     this.$timeout = $timeout;
 
-    this.item.count_for_invent_num = this.item.count;
+    this.item.count_for_invent_num = this.item.count - this.item.count_reserved;
     this.item.activeTab = 0;
     this.activeTab = 0;
 
@@ -70,8 +70,8 @@ import { app } from '../../app/app';
       return el.names_building_room == 'Не выбрано';
     });
 
-    if (this.item.count != count_items) {
-      this.Flash.alert(`Количество распределенной техники не соответствует количеству на складе - ${this.item.count} шт.`);
+    if (this.item.count - this.item.count_reserved != count_items) {
+      this.Flash.alert(`Количество распределенной техники не соответствует количеству на складе - ${this.item.count - this.item.count_reserved} шт.`);
 
       return false;
     } else if (not_chosen) {
@@ -90,7 +90,7 @@ import { app } from '../../app/app';
    *  Имеется ли больше одной единицы техники на складе
    */
   WarehouseEditLocationCtrl.prototype.hasMoreItem = function() {
-    return this.item.count > 1 && this.item.status == 'non_used';
+    return this.item.count - this.item.count_reserved > 1 && this.item.status == 'non_used';
   };
 
 
@@ -153,12 +153,12 @@ import { app } from '../../app/app';
 
       return true;
 
-    } else if (this.item.count == count_items) {
+    } else if (this.item.count - this.item.count_reserved == count_items) {
       this.Flash.alert('Количество техники разбито максимально');
 
       return false;
 
-    } else if (this.item.count > count_items) {
+    } else if (this.item.count - this.item.count_reserved > count_items) {
 
       return true;
     }
@@ -172,7 +172,7 @@ import { app } from '../../app/app';
    *  3 - суммарное значение полей "Количество техники" уже превышает общее количество на складе
    */
   WarehouseEditLocationCtrl.prototype.changeValidCountItems = function(item) {
-    if (item.count_for_invent_num > this.item.count || item.count_for_invent_num <= 0 || this.calculationValue() > this.item.count) {
+    if (item.count_for_invent_num > this.item.count - this.item.count_reserved || item.count_for_invent_num <= 0 || this.calculationValue() > this.item.count - this.item.count_reserved) {
       item.count_for_invent_num = 1;
     }
   };

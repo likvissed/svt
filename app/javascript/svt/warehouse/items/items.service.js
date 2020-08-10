@@ -87,7 +87,7 @@ import { app } from '../../app/app';
   WarehouseItems.prototype.openEditLocationItem = function(item) {
     let size_modal = 'md';
 
-    if (item.count > 1 && item.status == 'non_used') { size_modal = 'lg' }
+    if (item.count - item.count_reserved > 1 && item.status == 'non_used') { size_modal = 'lg' }
     this.$uibModal.open({
       templateUrl : 'WarehouseEditLocationItemCtrl.slim',
       controller  : 'WarehouseEditLocationCtrl',

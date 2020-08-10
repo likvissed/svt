@@ -53,7 +53,8 @@ module Warehouse
 
     # was_created - ставится, если техника была создана (используется внутри сервиса Warehouse::Orders::BaseService).
     # allow_update_model_or_type - разрешает обновить технику на складе, даже если модели или тип ихменились.
-    attr_accessor :was_created, :allow_update_model_or_type
+    # allow_create_item - позволить создать технику, если  уже существует техника, у которой инв. номер входит в создаваемый диапазон
+    attr_accessor :was_created, :allow_update_model_or_type, :allow_create_item
 
     def order_operations
       operations.where(operationable_type: 'Warehouse::Order')
@@ -122,6 +123,8 @@ module Warehouse
     end
 
     def compare_invent_nums_with_reserved
+      return if allow_create_item
+
       return unless invent_num_end
 
       nums = inv_items.pluck(:invent_num)

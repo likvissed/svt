@@ -33,7 +33,6 @@ LocationItemCtrl.prototype.loadLocationSites = function() {
 
   this.Server.Warehouse.Location.loadLocations(
     (response) => {
-      console.log('response', response);
       this.location_sites = response.iss_locations;
       this.new_location = response.new_location;
 
