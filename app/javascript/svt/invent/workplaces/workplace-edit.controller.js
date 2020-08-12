@@ -201,16 +201,23 @@ import { app } from '../../app/app';
   };
 
   /**
-   * Отправить технику на склад
+   * Открыть модальное окно назначения расположения перед отправлением на склад
    *
    * @param item
    */
-  WorkplaceEditCtrl.prototype.sendItemToStock = function(item) {
-    let confirm_str = `ВНИМАНИЕ! Техника будет перемещена на склад! Вы действительно хотите переместить на склад ${item.type.short_description}?`;
-
-    if (!confirm(confirm_str)) { return false; }
-
-    this.InventItem.sendToStock().then(() => this.Workplace.delItem(item));
+  WorkplaceEditCtrl.prototype.openAssignLocation = function(item) {
+    this.$uibModal.open({
+      templateUrl : 'WorkplaceAssignLocationItemCtrl.slim',
+      controller  : 'WorkplaceAssignLocationItemCtrl',
+      controllerAs: 'edit',
+      backdrop    : 'static',
+      size        : 'md',
+      resolve     : {
+        items: function() {
+          return { item: item };
+        }
+      }
+    });
   };
 
   /**

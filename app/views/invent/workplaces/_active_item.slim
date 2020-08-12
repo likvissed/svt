@@ -9,4 +9,5 @@ fieldset.ng-hide ng-show="item" ng-disabled="item.status == 'prepared_to_swap'"
       .col-sm-8.col-lg-6.col-xlg-5.col-fhd-4
         = button_tag "На списание", class: "btn-default btn-sm btn-block", "ng-click": "wp.sendItemToWriteOff(item)"
       .col-sm-8.col-lg-6.col-xlg-5.col-fhd-4
-        = button_tag "На склад", class: "btn-default btn-sm btn-block", "ng-click": "wp.sendItemToStock(item)"
+        = render partial: 'location_to_stock'
+        = button_tag "На склад", class: "btn-default btn-sm btn-block", "ng-click": "wp.openAssignLocation(item)"

@@ -1,0 +1,9 @@
+script type="text/ng-template" id="WorkplaceAssignLocationItemCtrl.slim"
+  form role="form" data-method="edit.method"
+    .modal-header
+      h4 Место складирования
+    .modal-body
+      location-item selected-item="edit.item"
+    .modal-footer
+      = button_tag "Отправить", type: :button, class: "btn-success", "ng-click": "edit.sendItemToStock()", "ng-disabled": "edit.disableButton()"
+      = button_tag "Закрыть", type: :button, class: "btn-default", "ng-click": "edit.close()"

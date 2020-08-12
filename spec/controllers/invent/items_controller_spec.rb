@@ -139,7 +139,8 @@ module Invent
 
     describe 'POST #to_stock' do
       let(:workplace) { create(:workplace_pk, :add_items, items: %i[pc monitor]) }
-      let(:params) { { item_id: workplace.items.first.item_id } }
+      let(:location) { attributes_for(:location) }
+      let(:params) { { item_id: workplace.items.first.item_id, location: location } }
 
       it 'creates instance of the Items::ToStock' do
         post :to_stock, params: params, format: :json

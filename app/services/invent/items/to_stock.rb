@@ -1,9 +1,10 @@
 module Invent
   module Items
     class ToStock < Invent::ApplicationService
-      def initialize(current_user, item_id)
+      def initialize(current_user, item_id, location)
         @current_user = current_user
         @item_id = item_id
+        @location = location
 
         super
       end
@@ -30,10 +31,30 @@ module Invent
       def send_to_stock
         @order = Warehouse::Orders::CreateByInvItem.new(current_user, @item, :in)
 
-        return true if @order.run
+        if @order.run
+          assign_location
 
-        @error = @order.error
-        raise 'Сервис CreateByInvItem завершился с ошибкой'
+          return
+        else
+          @error = @order.error
+          raise 'Сервис CreateByInvItem завершился с ошибкой'
+        end
+      end
+
+      def assign_location
+        find_item
+        w_item = @item.warehouse_item.as_json
+
+        w_item['location_attributes'] = @location.as_json
+        # Для обновления расположения, если location_id существует
+        w_item['location_attributes']['id'] = w_item['location_id']
+
+        @warehouse_item = Warehouse::Items::Update.new(@current_user, w_item['id'], w_item)
+
+        return if @warehouse_item.run
+
+        @error = @warehouse_item.error
+        raise 'Сервис Warehouse::Items::Update завершился с ошибкой'
       end
     end
   end
