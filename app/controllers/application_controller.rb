@@ -10,6 +10,7 @@ class ApplicationController < ActionController::Base
   after_action :set_csrf_cookie_for_ng
   after_action :user_activity
   before_action :authenticate_user!
+  before_action :add_attr_to_current_user, if: -> { current_user }
   # before_action :authorization, if: -> { current_user }
 
   # Обрабтка случаев, когда у пользователя нет доступа на выполнение запрашиваемых действий
@@ -83,6 +84,10 @@ class ApplicationController < ActionController::Base
   end
 
   private
+
+  def add_attr_to_current_user
+    current_user.access_token = session[:access_token]
+  end
 
   # Чтобы после выхода редиректил на страницу входа
   def after_sign_out_path_for(resource_or_scope)

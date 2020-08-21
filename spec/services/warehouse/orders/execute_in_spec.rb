@@ -6,6 +6,8 @@ module Warehouse
       let!(:current_user) { create(:***REMOVED***_user) }
       subject { ExecuteIn.new(current_user, order.id, order_params) }
 
+      before { allow(UnregistrationWorker).to receive(:perform_async).and_return(true) }
+
       context 'when operations belongs_to item' do
         let(:first_inv_item) { create(:item, :with_property_values, type_name: :pc, status: :waiting_bring, priority: :high) }
         let(:sec_inv_item) { create(:item, :with_property_values, type_name: :monitor, priority: :high) }

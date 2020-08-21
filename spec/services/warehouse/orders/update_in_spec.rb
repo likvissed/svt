@@ -7,6 +7,8 @@ module Warehouse
       let(:new_user) { create(:***REMOVED***_user, role: Role.find_by(name: :admin)) }
       subject { UpdateIn.new(new_user, order.id, order_params) }
 
+      before { allow(UnregistrationWorker).to receive(:perform_async).and_return(true) }
+
       context 'when warehouse_type is :without_invent_num' do
         let!(:order) { create(:order) }
         let(:order_json) { order.as_json }

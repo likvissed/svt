@@ -127,7 +127,7 @@ module Warehouse
           @orders_arr.each do |order|
             save_order(order)
 
-            @order_state.update_inv_items(order)
+            @order_state.update_inv_items(order, current_user.access_token)
           end
         end
       end

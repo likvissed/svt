@@ -40,10 +40,14 @@ module Invent
       def send_to_write_off
         @order = Warehouse::Orders::CreateByInvItem.new(current_user, @item, :write_off)
 
-        return true if @order.run
+        if @order.run
+          UnregistrationWorker.perform_async(@item.invent_num, current_user.access_token)
 
-        @error = @order.error
-        raise 'Сервис CreateByInvItem для создания ордера на списание завершился с ошибкой'
+          return true
+        else
+          @error = @order.error
+          raise 'Сервис CreateByInvItem для создания ордера на списание завершился с ошибкой'
+        end
       end
     end
   end

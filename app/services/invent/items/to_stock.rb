@@ -33,6 +33,7 @@ module Invent
 
         if @order.run
           assign_location
+          UnregistrationWorker.perform_async(@item.invent_num, current_user.access_token)
 
           return
         else

@@ -23,6 +23,8 @@ class User < ApplicationRecord
 
   # Для тестов
   attr_accessor :login, :email, :division, :tel
+  # Для отправки разрегистрации техники
+  attr_accessor :access_token
 
   def self.find_for_database_authentication(warden_conditions)
     conditions = warden_conditions.dup

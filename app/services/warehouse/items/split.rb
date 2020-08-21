@@ -13,6 +13,7 @@ module Warehouse
         present_count_for_invent_num
         find_item
         fill_with_new_data
+        broadcast_items
 
         true
       rescue RuntimeError => e

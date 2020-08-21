@@ -24,6 +24,8 @@ module Warehouse
       let(:invent_item_ids) { order_params[:operations_attributes].map { |op| op[:inv_item_ids] }.flatten.compact }
       subject { CreateIn.new(current_user, order_params.as_json) }
 
+      before { allow(UnregistrationWorker).to receive(:perform_async).and_return(true) }
+
       its(:run) { is_expected.to be_truthy }
 
       context 'when :operation attribute is not :in' do

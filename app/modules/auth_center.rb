@@ -1,5 +1,5 @@
-module Authorize
-  def get_url(state)
+module AuthCenter
+  def authorize_url(state)
     "#{ENV['AUTHORIZATION_URI']}?client_id=#{ENV['CLIENT_ID']}&response_type=code&redirect_uri=#{ENV['REDIRECT_URI']}&state=#{state}"
   end
 
@@ -18,7 +18,7 @@ module Authorize
 
   def get_user(access_token)
     JSON.parse(RestClient::Request.execute(method: :post,
-                                           url: 'https://auth-center.***REMOVED***.ru/api/module/main/login_info',
+                                           url: ENV['USER_INFO_URI'],
                                            headers: { 'Content-Type' => 'application/json', 'Authorization' => "Bearer #{access_token}" }))
   end
 
@@ -30,6 +30,22 @@ module Authorize
                                              client_secret: ENV['CLIENT_SECRET'],
                                              grant_type: 'refresh_token',
                                              refresh_token: refresh_token
+                                           }))
+  end
+
+  def unreg_host(invent_num, access_token)
+    RestClient.proxy = ''
+    JSON.parse(RestClient::Request.execute(method: :post,
+                                           url: ENV['UNREG_HOST_URI'],
+                                           payload: {
+                                             class: 'HOSTREG',
+                                             name: 'invent_unreg',
+                                             severity: 'INFO',
+                                             subject: invent_num,
+                                             description: ''
+                                           },
+                                           headers: {
+                                             'Authorization' => "Bearer #{access_token}"
                                            }))
   end
 end

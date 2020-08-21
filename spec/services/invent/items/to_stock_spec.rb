@@ -20,6 +20,7 @@ module Invent
       subject { ToStock.new(user, item.item_id, new_location) }
 
       before { allow(Warehouse::Orders::CreateByInvItem).to receive(:new).and_return(create_by_inv_item) }
+      before { allow(UnregistrationWorker).to receive(:perform_async).and_return(true) }
 
       context 'when warehouse_item is empty for item' do
         its(:run) { is_expected.to be_truthy }
