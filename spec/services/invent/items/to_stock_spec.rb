@@ -34,18 +34,6 @@ module Invent
         context 'when update_location_w_item receive :new' do
           before { allow(Warehouse::Items::Update).to receive(:new).and_return(update_location_w_item) }
 
-      context 'when warehouse_item is empty for item' do
-        its(:run) { is_expected.to be_truthy }
-
-        it 'creates Warehouse::Orders::CreateByInvItem instance' do
-          expect(Warehouse::Orders::CreateByInvItem).to receive(:new).with(user, item, :in)
-
-          subject.run
-        end
-
-        context 'when update_location_w_item receive :new' do
-          before { allow(Warehouse::Items::Update).to receive(:new).and_return(update_location_w_item) }
-
           it 'creates Warehouse::Items::Update instance' do
             expect(create_by_inv_item).to receive(:run).and_return(true)
             expect(Warehouse::Items::Update).to receive(:new).with(user, item.id, w_items_params)
