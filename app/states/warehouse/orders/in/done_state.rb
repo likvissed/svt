@@ -9,8 +9,13 @@ module Warehouse
           end
         end
 
-        def update_inv_items(order)
-          order.operations.each { |op| op.inv_items.each(&:to_stock!) }
+        def update_inv_items(order, access_token)
+          order.operations.each do |op|
+            op.inv_items.each do |inv_item|
+              inv_item.to_stock!
+              UnregistrationWorker.perform_async(inv_item.invent_num, access_token)
+            end
+          end
         end
 
         def init_warehouse_item(operation)

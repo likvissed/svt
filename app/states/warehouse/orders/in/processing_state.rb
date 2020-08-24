@@ -2,7 +2,7 @@ module Warehouse
   module Orders
     module In
       class ProcessingState < AbstractState
-        def update_inv_items(order)
+        def update_inv_items(order, _access_token)
           order.operations.each { |op| op.inv_items.each { |inv_item| inv_item.update!(status: :waiting_bring) } }
         end
 

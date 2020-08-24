@@ -65,5 +65,17 @@ module Inv
     end
 
     config.action_cable.url = "wss://#{ENV['APPNAME']}.***REMOVED***.ru/cable"
+
+    config.cache_store = :redis_store, 'redis://localhost:6379/2/cache'
+
+    config.action_mailer.delivery_method = :smtp
+    config.action_mailer.smtp_settings = {
+      address:              ENV['ACTION_MAILER_ADDRESS'],
+      port:                 25,
+      user_name:            ENV['GMAIL_USERNAME'],
+      password:             ENV['GMAIL_PASSWORD'],
+      authentication:       'plain',
+      openssl_verify_mode: 'none'
+    }
   end
 end

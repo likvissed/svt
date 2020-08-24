@@ -3,7 +3,7 @@ class Users::CallbacksController < DeviseController
   def registration_user
     session[:state] ||= Digest::MD5.hexdigest(rand.to_s)
 
-    redirect_to Authorize.get_url(session[:state])
+    redirect_to AuthCenter.authorize_url(session[:state])
   end
 
   def authorize_user
