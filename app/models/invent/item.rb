@@ -21,6 +21,7 @@ module Invent
     has_many :warehouse_inv_item_to_operations, class_name: 'Warehouse::InvItemToOperation', foreign_key: 'invent_item_id', dependent: :destroy
     has_many :warehouse_operations, through: :warehouse_inv_item_to_operations, class_name: 'Warehouse::Operation', source: :operation
     has_many :warehouse_orders, through: :warehouse_operations, source: :operationable, source_type: 'Warehouse::Order'
+    has_many :barcodes, as: :codeable, dependent: :destroy
 
     belongs_to :type, optional: false
     belongs_to :workplace, optional: true

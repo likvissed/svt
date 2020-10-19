@@ -9,6 +9,7 @@ module Invent
     it { is_expected.to have_many(:warehouse_inv_item_to_operations).class_name('Warehouse::InvItemToOperation').with_foreign_key('invent_item_id').dependent(:destroy) }
     it { is_expected.to have_many(:warehouse_operations).through(:warehouse_inv_item_to_operations).class_name('Warehouse::Operation').source(:operation) }
     it { is_expected.to have_many(:warehouse_orders).through(:warehouse_operations).class_name('Warehouse::Order').source(:operationable) }
+    it { is_expected.to have_many(:barcodes).dependent(:destroy) }
     it { is_expected.to belong_to(:type) }
     it { is_expected.to belong_to(:workplace) }
     it { is_expected.to belong_to(:model) }

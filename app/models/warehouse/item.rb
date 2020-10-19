@@ -7,6 +7,7 @@ module Warehouse
     has_many :orders, through: :operations, source: :operationable, source_type: 'Warehouse::Order'
     has_many :property_values, -> { left_outer_joins(:property).order('invent_property.property_order').includes(:property) },
              inverse_of: :item, dependent: :destroy, foreign_key: 'warehouse_item_id'
+    has_many :barcodes, as: :codeable, dependent: :destroy
 
     belongs_to :inv_item, class_name: 'Invent::Item', foreign_key: 'invent_item_id', optional: true
     belongs_to :inv_type, class_name: 'Invent::Type', foreign_key: 'invent_type_id', optional: true
