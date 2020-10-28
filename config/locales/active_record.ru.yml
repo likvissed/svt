@@ -388,5 +388,10 @@ ru:
               not_found: 'не найден'
             tn:
                 user_not_found: '"%{tn}" не существует, проверьте корректность введенного номера'
+        barcode:
+          attributes:
+            base:
+              barcode_already_exists: "Штрих-код '%{codeable_id}' уже существует"
+
 
 

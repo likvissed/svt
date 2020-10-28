@@ -78,6 +78,7 @@ module Invent
           new_mon['status'] = 'prepared_to_swap'
           new_mon['id'] = new_mon['item_id']
           new_mon['property_values_attributes'] = new_mon['property_values']
+          new_mon['barcodes_attributes'] = new_mon['barcodes']
           new_mon['property_values_attributes'].each do |prop_val|
             prop_val['id'] = prop_val['property_value_id']
 
@@ -86,6 +87,7 @@ module Invent
 
           new_mon.delete('item_id')
           new_mon.delete('property_values')
+          new_mon.delete('barcodes')
 
           wp.data.delete('location_room')
           wp.data['items_attributes'] << new_mon

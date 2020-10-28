@@ -29,6 +29,7 @@ module Invent
 
     validates :invent_num, presence: true, unless: -> { status == 'waiting_take' }
     validates :serial_num, presence: true, if: -> { validate_serial_num_for_execute_out }
+    validates :barcodes, presence: true
 
     validate :presence_model, :check_mandatory, if: -> { errors.details[:type].empty? && !disable_filters }
     validate :property_values_validation, if: -> { validate_prop_values }
@@ -40,7 +41,7 @@ module Invent
     before_update :prevent_update
     # before_save :model_id_nil_if_model_item
 
-    scope :item_id, ->(item_id) { where(item_id: item_id) }
+    scope :item_barcode, ->(barcode) { joins(:barcodes).where('id = ?', barcode) }
     scope :type_id, ->(type_id) { where(type_id: type_id) }
     scope :invent_num, ->(invent_num) { where('invent_num LIKE ?', "%#{invent_num}%").limit(RECORD_LIMIT) }
     scope :serial_num, ->(serial_num) { where('serial_num LIKE ?', "%#{serial_num}%").limit(RECORD_LIMIT) }
@@ -111,6 +112,7 @@ module Invent
     delegate :properties, to: :type
 
     accepts_nested_attributes_for :property_values, allow_destroy: true
+    accepts_nested_attributes_for :barcodes, allow_destroy: true
 
     enum status: { waiting_take: 1, waiting_bring: 2, prepared_to_swap: 3, in_stock: 4, in_workplace: 5, waiting_write_off: 6, written_off: 7 }
     enum priority: { default: 1, high: 2 }
@@ -211,6 +213,15 @@ module Invent
           add_inv_property_value(prop, prop_val.value, skip_validations)
         end
       end
+    end
+
+    # Сгенерировать назначение штрих-кода
+    def build_barcodes
+      barcodes.push(
+        Barcode.new(
+          codeable_type: self.class.name
+        )
+      )
     end
 
     def add_inv_property_value(property, value, skip_validations = false)

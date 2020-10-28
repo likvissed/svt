@@ -14,6 +14,7 @@ module Invent
       def run
         fill_swap_arr
         create_or_get_room
+        assing_barcode if @workplace_params['items_attributes'].present?
         @workplace = Workplace.new(@workplace_params)
         log_data
         authorize @workplace, :create?

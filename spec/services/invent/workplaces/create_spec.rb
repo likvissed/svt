@@ -68,7 +68,10 @@ module Invent
           ).as_json(
             include: {
               items: {
-                include: :property_values
+                include: %i[
+                  property_values
+                  barcodes
+                ]
               }
             },
             methods: :location_room_name
@@ -77,14 +80,18 @@ module Invent
           tmp['items_attributes'] = tmp['items']
           tmp['items_attributes'].each do |item|
             item['property_values_attributes'] = item['property_values']
+            item['barcodes_attributes'] = item['barcodes']
 
             item.delete('property_values')
+            item.delete('barcodes')
           end
 
-          new_mon = workplace_2.items.last.as_json(include: :property_values)
+          new_mon = workplace_2.items.last.as_json(include: %i[property_values barcodes])
           new_mon['status'] = 'prepared_to_swap'
           new_mon['id'] = new_mon['item_id']
           new_mon['property_values_attributes'] = new_mon['property_values']
+          new_mon['barcodes_attributes'] = new_mon['barcodes']
+
           new_mon['property_values_attributes'].each do |prop_val|
             prop_val['id'] = prop_val['property_value_id']
 
@@ -93,6 +100,8 @@ module Invent
 
           new_mon.delete('item_id')
           new_mon.delete('property_values')
+          new_mon.delete('barcodes')
+
           tmp['items_attributes'] << new_mon
 
           tmp.delete('items')
@@ -113,6 +122,19 @@ module Invent
           subject.run
 
           expect(Workplace.last.items.count).to eq 3
+        end
+
+        it 'increment count of barcode for items' do
+          expect { subject.run }.to change(Barcode, :count).by(workplace_2.items.count)
+        end
+
+        it 'barcodes correspond to items' do
+          subject.run
+
+          workplace_2.items.each do |item|
+            expect(item.barcodes.first.codeable_type).to eq item.class.name
+            expect(item.barcodes.first.codeable_id).to eq item.item_id
+          end
         end
 
         it 'reduces count of items for workplace_2' do

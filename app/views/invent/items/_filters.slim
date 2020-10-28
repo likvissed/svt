@@ -78,7 +78,7 @@
             = fa_icon "minus lg"
 
 .col-sm-4.col-md-5.col-lg-3.col-xlg-2.col-fhd-2.multiline-buffer
-  = text_field_tag "", "", class: "form-control input-sm", placeholder: "ID", "ng-model": "table.selected.item_id",
+  = text_field_tag "", "", class: "form-control input-sm", placeholder: "Штрих-код", "ng-model": "table.selected.item_barcode",
     "ng-model-options": "{ debounce: 300 }", "ng-change": "table.changeFilter()"
 .col-sm-5.col-md-5.col-lg-3.col-xlg-3.col-fhd-2.multiline-buffer
   = select_tag "", "", class: "form-control input-sm", "ng-model": "table.selected.type_id", "ng-change": "table.changeFilter()",

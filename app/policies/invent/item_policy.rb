@@ -26,6 +26,7 @@ module Invent
         :invent_num,
         :serial_num,
         :priority,
+        :barcodes,
         property_values_attributes: %i[id property_id item_id property_list_id value _destroy]
       ]
     end

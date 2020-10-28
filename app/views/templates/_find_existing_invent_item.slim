@@ -1,12 +1,12 @@
 div ng-controller="FindExistingInventItemCtrl as find"
   / .form-group
   uib-tabset type="pills" justified="true"
-    uib-tab heading="Поиск по штрих-коду (ID техники)" classes="btn-sm" select="find.clearFindedData(); find.clearSearchData()"
+    uib-tab heading="Поиск по штрих-коду" classes="btn-sm" select="find.clearFindedData(); find.clearSearchData()"
       .form-group
-        = label_tag "item_id", "Штрих-код (ID техники)", class: "control-label"
+        = label_tag "item_barcode", "Штрих-код", class: "control-label"
         .span.input-group-btn
-          = text_field_tag "item_id", "", class: "form-control", autocomplete: "off", placeholder: "Штрих-код",
-            "ng-model": "find.item_id","ng-model-options": "{ debounce: 300 }", "ng-change": "find.clearFindedData(); find.loadItems()"
+          = text_field_tag "item_barcode", "", class: "form-control", autocomplete: "off", placeholder: "Штрих-код",
+            "ng-model": "find.item_barcode","ng-model-options": "{ debounce: 300 }", "ng-change": "find.clearFindedData(); find.loadItems()"
           / span.input-group-btn
           /   = button_tag "", type: :button, class: "btn-primary", "ng-click": "find.loadItems()",
           /     "ng-disabled": "!find.item_id", "uib-tooltip": "Нажмите для поиска",

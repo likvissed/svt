@@ -18,7 +18,7 @@ module Invent
     end
 
     def busy
-      @busy = Items::Busy.new(params[:type_id], params[:invent_num], params[:item_id], params[:division])
+      @busy = Items::Busy.new(params[:type_id], params[:invent_num], params[:barcodes], params[:division])
 
       if @busy.run
         render json: @busy.data

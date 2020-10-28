@@ -14,8 +14,10 @@ module Invent
     it { is_expected.to belong_to(:workplace) }
     it { is_expected.to belong_to(:model) }
     it { is_expected.to validate_presence_of(:invent_num) }
+    it { is_expected.to validate_presence_of(:barcodes) }
     it { is_expected.to delegate_method(:properties).to(:type) }
     it { is_expected.to accept_nested_attributes_for(:property_values).allow_destroy(true) }
+    it { is_expected.to accept_nested_attributes_for(:barcodes).allow_destroy(true) }
 
     context 'when status is :waiting_take' do
       before { subject.status = :waiting_take }
@@ -83,7 +85,8 @@ module Invent
       end
 
       context 'when not all properties with mandatory flag are sets' do
-        subject { build(:item, type_name: :printer) }
+        let(:barcode) { build(:barcode_invent_item) }
+        subject { build(:item, type_name: :printer, barcodes: [barcode]) }
 
         it { is_expected.not_to be_valid }
 
@@ -363,6 +366,28 @@ module Invent
               expect(prop_val.property_list).to be_nil
             end
           end
+        end
+      end
+    end
+
+    describe '#build_barcodes' do
+      let(:warehouse_item) { create(:expanded_item) }
+      let(:printer_type) { Type.find_by(name: :printer) }
+
+      subject { build(:item, type: printer_type) }
+
+      it 'assign barcode codeable_type for item' do
+        expect(subject.build_barcodes.first.codeable_type).to eq subject.class.name
+      end
+
+      context 'when create item with assign barcode' do
+        before { subject.build_barcodes }
+
+        it 'created barcode for item' do
+          subject.save(validate: false)
+
+          expect(subject.barcodes.first.codeable_id).to eq subject.id
+          expect(subject.barcodes.first.codeable_type).to eq subject.class.name
         end
       end
     end

@@ -13,7 +13,7 @@
                 th
                 th
                 th
-                th ID
+                th Штрих-код
                 th Тип
                 th Модель
                 th Инв. №
@@ -36,7 +36,7 @@
                     = fa_icon "external-link fw", class: "pointer", "uib-tooltip": "Перейти к рабочему месту", "tooltip-append-to-body": "true"
                   = fa_icon "pencil-square-o fw", class: "pointer", id: "editItem", "uib-tooltip": "Редактировать технику",
                     "tooltip-append-to-body": "true"
-                td.col-sm-1 ng-bind="item.item_id"
+                td.col-sm-2 ng-bind="item.barcode"
                 td.col-sm-2 ng-bind="item.type.short_description"
                 td.col-sm-2 ng-bind="item.model"
                 td.col-sm-1 ng-bind="item.invent_num"

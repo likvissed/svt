@@ -17,9 +17,9 @@ module Invent
         expect(subject.data.keys).to include(*data_keys)
       end
 
-      it 'adds %w[model description translated_status label_status] field to each item' do
+      it 'adds %w[barcode model description translated_status label_status] field to each item' do
         subject.run
-        expect(subject.data[:data].first).to include('model', 'description', 'translated_status', 'label_status')
+        expect(subject.data[:data].first).to include('barcode', 'model', 'description', 'translated_status', 'label_status')
       end
 
       context 'with init_filters' do
@@ -57,8 +57,14 @@ module Invent
           subject.run
         end
 
-        context 'and with item_id filter' do
-          let(:filters) { { item_id: item.item_id } }
+        context 'and with item_barcode filter' do
+          let(:filters) { { item_barcode: item.barcodes[0].id } }
+          let(:data_items) do
+            data = {}
+            data[:data] = [item]
+            data
+          end
+          before { subject.instance_variable_set(:@data, data_items) }
 
           it 'returns filtered data' do
             expect(subject.data[:data].count).to eq 1

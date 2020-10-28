@@ -40,7 +40,7 @@ module Invent
       def filtering_params
         filters = JSON.parse(params[:filters])
         filters['for_statuses'] = data[:filters][:statuses].select { |filter| filter[:default] }.as_json if need_init_filters?
-        filters.slice('item_id', 'type_id', 'invent_num', 'serial_num', 'item_model', 'responsible', 'properties', 'for_statuses', 'location_building_id', 'location_room_id', 'priority', 'workplace_count_id')
+        filters.slice('item_barcode', 'type_id', 'invent_num', 'serial_num', 'item_model', 'responsible', 'properties', 'for_statuses', 'location_building_id', 'location_room_id', 'priority', 'workplace_count_id')
       end
 
       def limit_records
@@ -49,6 +49,7 @@ module Invent
                    .includes(
                      :type,
                      :model,
+                     :barcodes,
                      { property_values: %i[property property_list] },
                      workplace: :user_iss
                    ).order(item_id: :desc).limit(params[:length]).offset(params[:start])
@@ -59,11 +60,13 @@ module Invent
           include: [
             :type,
             :model,
+            :barcodes,
             { property_values: { include: %i[property property_list] } },
             { workplace: { include: :user_iss } }
           ],
           methods: :need_battery_replacement?
         ).each do |item|
+          item['barcode'] = item['barcodes'].present? ? item['barcodes'].first['id'] : 'Не назначен'
           item['model'] = item['model'].nil? ? item['item_model'] : item['model']['item_model']
           item['description'] = item['property_values'].map { |prop_val| property_value_info(prop_val) }.join('; ')
           item['translated_status'] = (str = Item.translate_enum(:status, item['status'])).is_a?(String) ? str : ''

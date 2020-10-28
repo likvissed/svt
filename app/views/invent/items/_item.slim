@@ -12,10 +12,10 @@ div ng-controller="EditInventItemCtrl as edit"
   .row.item-row
     .col-md-9.col-lg-10.col-xlg-9
       .form-group
-        = label_tag :workplace_items__id, "ID", class: "control-label"
+        = label_tag :workplace_items__barcode, "Штрих-код", class: "control-label"
     .col-md-15.col-lg-14.col-xlg-15
       .form-group
-        div.form-control ng-bind="edit.item_o.item.id" disabled=true
+        div.form-control ng-bind="edit.item_o.item.barcodes_attributes[0].id" disabled=true
 
   .row.item-row
     .col-md-9.col-lg-10.col-xlg-9

@@ -47,6 +47,14 @@ module Invent
         end
       end
 
+      def assing_barcode
+        @workplace_params['items_attributes'].each do |item|
+          next if item['barcodes_attributes'].present?
+
+          item['barcodes_attributes'] = [Barcode.new(codeable_type: 'Invent::Item').as_json]
+        end
+      end
+
       def fill_swap_arr
         @swap = []
         @workplace_params['items_attributes']&.delete_if { |i| @swap << i['id'] if i['status'] == 'prepared_to_swap' }
@@ -71,6 +79,7 @@ module Invent
       end
 
       def init_workplace_templates
+        ###
         @workplace ||= Workplace.new
         data[:item] = @workplace.items.build(status: :in_workplace).as_json
         data[:item]['property_values_attributes'] = []

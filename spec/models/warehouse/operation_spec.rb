@@ -71,6 +71,10 @@ module Warehouse
               expect(inv_item.status).to eq status
             end
           end
+
+          it 'barcode for item is present' do
+            subject.inv_items.each { |inv_item| expect(inv_item.barcodes).to exist }
+          end
         end
 
         context 'and when inv_item is not exist' do

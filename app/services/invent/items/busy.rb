@@ -3,17 +3,17 @@ module Invent
     # Показать список техники, используемой на РМ в данный момент. В выборку не попадает техника, с которой имеются
     # связанные не закрытые ордеры
     class Busy < Invent::ApplicationService
-      def initialize(type_id, invent_num, item_id, division = nil)
+      def initialize(type_id, invent_num, item_barcode, division = nil)
         @type_id = type_id
         @invent_num = invent_num
-        @item_id = item_id
+        @item_barcode = item_barcode
         @division = division
 
         super
       end
 
       def run
-        return false if @invent_num.blank? && @item_id.blank?
+        item_not_found if @invent_num.blank? && @item_barcode.blank?
 
         find_items
         prepare_params
@@ -55,21 +55,23 @@ module Invent
         #           .by_type_id(@type_id)
 
         data[:items] = Item
-                         .includes(:model, :type, :property_values)
+                         .includes(:model, :type, :property_values, :barcodes)
                          .select('invent_item.*')
-                         .joins(workplace: :workplace_count)
+                         .joins(:barcodes, workplace: :workplace_count)
                          .by_invent_num(@invent_num)
-                         .by_item_id(@item_id)
                          .by_division(@division)
                          .where('invent_item.workplace_id IS NOT NULL')
                          .by_type_id(@type_id)
+                         .where('id = ? OR invent_num = ?', @item_barcode, @invent_num)
 
-        if data[:items].empty?
-          errors.add(:base, :item_not_found)
-          raise 'Техника не найдена'
-        end
+        item_not_found if data[:items].empty?
 
         exclude_items_in_order
+      end
+
+      def item_not_found
+        errors.add(:base, :item_not_found)
+        raise 'Техника не найдена'
       end
 
       def exclude_items_in_order
@@ -96,7 +98,7 @@ module Invent
       end
 
       def prepare_params
-        data[:items] = data[:items].as_json(include: %i[model type], methods: :full_item_model).each do |item|
+        data[:items] = data[:items].as_json(include: %i[model type barcodes], methods: :full_item_model).each do |item|
           inv_num = item['invent_num'].blank? ? 'инв. № отсутствует' : "инв. №: #{item['invent_num']}"
           item[:main_info] = "#{item['type']['short_description']} - #{inv_num}"
         end

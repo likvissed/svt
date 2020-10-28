@@ -135,6 +135,7 @@ module Invent
             :serial_num,
             :status,
             :_destroy,
+            barcodes_attributes: %i[id codeable_id codeable_type],
             property_values_attributes: %i[id property_id item_id property_list_id value _destroy]
           ]
         ]
@@ -168,6 +169,7 @@ module Invent
             :status,
             :priority,
             :_destroy,
+            barcodes_attributes: %i[id codeable_id codeable_type],
             property_values_attributes: %i[id property_id item_id property_list_id value _destroy]
           ]
         ]
