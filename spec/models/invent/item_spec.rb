@@ -3,21 +3,21 @@ require 'feature_helper'
 module Invent
   RSpec.describe Item, type: :model do
     it { is_expected.to have_one(:warehouse_item).with_foreign_key('invent_item_id').class_name('Warehouse::Item').dependent(:nullify) }
+    it { is_expected.to have_one(:barcode_item).class_name('Barcode').dependent(:destroy) }
     it { is_expected.to have_many(:property_values).inverse_of(:item).dependent(:destroy).order('invent_property.property_order') }
     it { is_expected.to have_many(:standard_discrepancies).class_name('Standard::Discrepancy').dependent(:destroy) }
     it { is_expected.to have_many(:standard_logs).class_name('Standard::Log') }
     it { is_expected.to have_many(:warehouse_inv_item_to_operations).class_name('Warehouse::InvItemToOperation').with_foreign_key('invent_item_id').dependent(:destroy) }
     it { is_expected.to have_many(:warehouse_operations).through(:warehouse_inv_item_to_operations).class_name('Warehouse::Operation').source(:operation) }
     it { is_expected.to have_many(:warehouse_orders).through(:warehouse_operations).class_name('Warehouse::Order').source(:operationable) }
-    it { is_expected.to have_many(:barcodes).dependent(:destroy) }
     it { is_expected.to belong_to(:type) }
     it { is_expected.to belong_to(:workplace) }
     it { is_expected.to belong_to(:model) }
     it { is_expected.to validate_presence_of(:invent_num) }
-    it { is_expected.to validate_presence_of(:barcodes) }
+    it { is_expected.to validate_presence_of(:barcode_item) }
     it { is_expected.to delegate_method(:properties).to(:type) }
     it { is_expected.to accept_nested_attributes_for(:property_values).allow_destroy(true) }
-    it { is_expected.to accept_nested_attributes_for(:barcodes).allow_destroy(true) }
+    it { is_expected.to accept_nested_attributes_for(:barcode_item).allow_destroy(true) }
 
     context 'when status is :waiting_take' do
       before { subject.status = :waiting_take }
@@ -86,7 +86,7 @@ module Invent
 
       context 'when not all properties with mandatory flag are sets' do
         let(:barcode) { build(:barcode_invent_item) }
-        subject { build(:item, type_name: :printer, barcodes: [barcode]) }
+        subject { build(:item, type_name: :printer, barcode_item: barcode) }
 
         it { is_expected.not_to be_valid }
 
@@ -370,24 +370,24 @@ module Invent
       end
     end
 
-    describe '#build_barcodes' do
+    describe '#build_barcode_item' do
       let(:warehouse_item) { create(:expanded_item) }
       let(:printer_type) { Type.find_by(name: :printer) }
 
       subject { build(:item, type: printer_type) }
 
       it 'assign barcode codeable_type for item' do
-        expect(subject.build_barcodes.first.codeable_type).to eq subject.class.name
+        expect(subject.build_barcode_item.codeable_type).to eq subject.class.name
       end
 
       context 'when create item with assign barcode' do
-        before { subject.build_barcodes }
+        before { subject.build_barcode_item }
 
         it 'created barcode for item' do
           subject.save(validate: false)
 
-          expect(subject.barcodes.first.codeable_id).to eq subject.id
-          expect(subject.barcodes.first.codeable_type).to eq subject.class.name
+          expect(subject.barcode_item.codeable_id).to eq subject.id
+          expect(subject.barcode_item.codeable_type).to eq subject.class.name
         end
       end
     end

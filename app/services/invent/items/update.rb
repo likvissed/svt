@@ -12,6 +12,9 @@ module Invent
 
       def run
         find_item
+        if @item_params['property_values_attributes'].present?
+          @item_params['property_values_attributes'] = delete_blank_and_assign_barcode_prop_value(@item_params['property_values_attributes'])
+        end
         update_item
 
         broadcast_items

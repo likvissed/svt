@@ -66,10 +66,9 @@ module ServiceMacros
       prop_val['id'] = nil
       prop_val['item_id'] = nil
     end
-    new_mon['barcodes_attributes'].each do |prop_val|
-      prop_val['id'] = nil
-      prop_val['codeable_id'] = nil
-    end
+
+    new_mon['barcode_item_attributes']['id'] = nil
+    new_mon['barcode_item_attributes']['codeable_id'] = nil
 
     wp.data['items_attributes'] << new_mon
 

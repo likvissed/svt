@@ -4,7 +4,7 @@ class Barcode < ApplicationRecord
   belongs_to :codeable, polymorphic: true
 
   validates :codeable_type, presence: true
-  validate :uniqueness_type_and_id
+  validate :uniqueness_type_and_id, if: -> { id.nil? }
 
   def uniqueness_type_and_id
     errors.add(:base, :barcode_already_exists, codeable_id: codeable_id) if self.class.exists?(codeable_type: codeable_type, codeable_id: codeable_id)

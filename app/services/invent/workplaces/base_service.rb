@@ -49,9 +49,17 @@ module Invent
 
       def assing_barcode
         @workplace_params['items_attributes'].each do |item|
-          next if item['barcodes_attributes'].present?
+          next if item['barcode_item_attributes'].present?
 
-          item['barcodes_attributes'] = [Barcode.new(codeable_type: 'Invent::Item').as_json]
+          item['barcode_item_attributes'] = Barcode.new(codeable_type: 'Invent::Item').as_json
+        end
+      end
+
+      def delete_property_value
+        @workplace_params['items_attributes'].each do |item|
+          next if item['property_values_attributes'].blank?
+
+          item['property_values_attributes'] = delete_blank_and_assign_barcode_prop_value(item['property_values_attributes'])
         end
       end
 
@@ -79,7 +87,6 @@ module Invent
       end
 
       def init_workplace_templates
-        ###
         @workplace ||= Workplace.new
         data[:item] = @workplace.items.build(status: :in_workplace).as_json
         data[:item]['property_values_attributes'] = []

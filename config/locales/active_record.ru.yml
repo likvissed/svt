@@ -333,6 +333,9 @@ ru:
               shift_must_be_equal_1: 'Каждая позиция приходного ордера должно иметь "Количество" равное единице'
               order_must_contains_only_used_items: 'Текущий ордер должен содержать только б/у технику'
               absence_responsible: 'Необходимо установить ответственного для данного рабочего места'
+              not_present_workplace: 'Рабочее место %{workplace_id} не найдено'
+              item_not_find_on_workplace: 'Техника с указанным инвентарным номером на рабочем месте %{workplace_id} не найдена'
+              status_item_on_workplace_not_in_workplace: 'Статус техники %{item_barcode} не соответствует статусу "На рабочем месте"'
             consumer:
               user_by_tn_not_found: 'с указанным табельным номером не найден. Проверьте корректность
               введенных данных'

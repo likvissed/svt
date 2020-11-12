@@ -11,7 +11,7 @@ module Invent
       sequence(:serial_num) { |i| 222_222 + i }
 
       after(:build) do |item|
-        item.barcodes << build(:barcode_invent_item, codeable: item)
+        item.build_barcode_item
       end
 
       transient do
@@ -24,7 +24,7 @@ module Invent
       # Ситуация, когда пользователь заполнил поля.
       trait :with_property_values do
         after(:build) do |item, evaluator|
-          item.barcodes << build(:barcode_invent_item, codeable: item) if item.barcodes.blank?
+          item.build_barcode_item
 
           item.properties.each do |prop|
             if evaluator.property_values.empty?
@@ -99,7 +99,7 @@ module Invent
       # Ситуация, когда пользователь не заполнил поля.
       trait :without_property_values do
         after(:build) do |item|
-          item.barcodes << build(:barcode_invent_item, codeable: item) if item.barcodes.blank?
+          item.build_barcode_item
           item.properties.each do |prop|
             case prop.property_type
             when 'string'

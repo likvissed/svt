@@ -62,7 +62,11 @@ module Warehouse
         @order.operations.each do |op|
           next unless op.item
 
-          op.build_inv_items(op.shift.abs, workplace: @order.inv_workplace, status: :waiting_take)
+          if op.item.warehouse_type == 'without_invent_num' && list_type_for_barcodes.include?(op.item.item_type.to_s.downcase)
+            @order.property_with_barcode = true
+          else
+            op.build_inv_items(op.shift.abs, workplace: @order.inv_workplace, status: :waiting_take)
+          end
           op.calculate_item_count_reserved
         end
       end

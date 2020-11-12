@@ -94,6 +94,55 @@ module Warehouse
       end
     end
 
+    describe '#present_item_for_barcode' do
+      let(:status) { :in_workplace }
+      let(:inv_item) { create(:item, :with_property_values, type_name: :printer, status: status) }
+
+      let(:workplace) do
+        w = build(:workplace_net_print, items: [inv_item])
+        w.save(validate: false)
+        w
+      end
+
+      subject { build(:order, inv_workplace: workplace, operation: :out, invent_num: workplace.items.first.invent_num) }
+
+      before { subject.property_with_barcode = true }
+
+      it { is_expected.to be_valid }
+
+      context 'when status workplace incorrectly' do
+        let(:status) { :waiting_bring }
+        let(:barcode_id) { subject.inv_workplace.items.first.barcode_item.id }
+
+        it 'adds :status_item_on_workplace_not_in_workplace error' do
+          subject.invalid?
+
+          expect(subject.errors.details[:base]).to include(error: :status_item_on_workplace_not_in_workplace, item_barcode: barcode_id)
+        end
+      end
+
+      context 'when workplace entered incorrectly' do
+        let(:not_present_workplace) { 901_101 }
+        before { subject.invent_workplace_id = not_present_workplace }
+
+        it 'adds :not_present_workplace error' do
+          subject.invalid?
+
+          expect(subject.errors.details[:base]).to include(error: :not_present_workplace, workplace_id: subject.invent_workplace_id)
+        end
+      end
+
+      context 'when the item was not found at the workplace' do
+        before { subject.invent_num = subject.invent_num.to_i + 1 }
+
+        it 'adds :item_not_find_on_workplace error' do
+          subject.invalid?
+
+          expect(subject.errors.details[:base]).to include(error: :item_not_find_on_workplace, workplace_id: subject.invent_workplace_id)
+        end
+      end
+    end
+
     # context 'when operation is :in' do
     #   before { subject.dont_calculate_status = true }
 
@@ -174,6 +223,23 @@ module Warehouse
         end
 
         its(:consumer_from_history) { is_expected.to be_nil }
+      end
+    end
+
+    describe '#find_inv_item_for_assign_barcode' do
+      let(:workplace) { create(:workplace_net_print, :add_items, items: %i[printer]) }
+      subject { build(:order, inv_workplace: workplace, operation: :out, invent_num: workplace.items.first.invent_num) }
+
+      it 'retutns item in wrap array' do
+        expect(subject.find_inv_item_for_assign_barcode).to eq [workplace.items.first]
+      end
+
+      context 'when workplace is blank' do
+        before { subject.invent_workplace_id = nil }
+
+        it 'returns is blank array' do
+          expect(subject.find_inv_item_for_assign_barcode).to eq []
+        end
       end
     end
 

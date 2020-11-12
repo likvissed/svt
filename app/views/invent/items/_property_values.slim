@@ -4,7 +4,8 @@ div ng-controller="EditItemPropertyValuesCtrl as property_values"
   ng-if="property_values.data.item.model_id != -1 || property_values.data.item.type.models.length == 0" ng-hide="prop._destroy" }
     .col-md-9.col-lg-10.col-xlg-9
       .form-group
-        label ng-bind="prop.short_description"
+        span ng-class="{'text-primary': prop.assign_barcode}"
+          label ng-bind="prop.short_description"
     .col-md-15.col-lg-14.col-xlg-15
       .form-group
         div ng-switch=true on="prop.property_type"
@@ -41,5 +42,5 @@ div ng-controller="EditItemPropertyValuesCtrl as property_values"
               "popup-placement": "bottom-left", "show-button-bar": false
           div ng-switch-when="string"
             = text_field_tag "", "", class: "form-control", "ng-disabled": "(edit.additional.pcTypes | contains:property_values.data.item.type.name) && (edit.additional.pcAttrs | contains:property_values.data.item.type.properties[$index].name)",
-              "ng-model": "property_values.data.item.property_values_attributes[$index].value"
+              "ng-model": "property_values.data.item.property_values_attributes[$index].value", "ng-disabled": "prop.assign_barcode"
               

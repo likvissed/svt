@@ -15,11 +15,11 @@ module Invent
         data[:items] = [item]
         data
       end
-      subject { Busy.new(type.type_id, item.invent_num, item.barcodes[0].id, division) }
+      subject { Busy.new(type.type_id, item.invent_num, item.barcode_item.id, division) }
 
       context 'without invent_num' do
         context 'and with barcode and without division' do
-          subject { Busy.new('', '', item.barcodes[0].id) }
+          subject { Busy.new('', '', item.barcode_item.id) }
 
           before { subject.instance_variable_set(:@data, data_items) }
 
@@ -42,7 +42,7 @@ module Invent
 
       context 'with division' do
         context 'and when item is not belong to division' do
-          subject { Busy.new(type.type_id, item.invent_num, item.barcodes[0].id, 123) }
+          subject { Busy.new(type.type_id, item.invent_num, item.barcode_item.id, 123) }
 
           it 'does not show this item in result array' do
             subject.run

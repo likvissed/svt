@@ -24,6 +24,7 @@ module Warehouse
     validate :validate_in_order, if: -> { in? }
     validate :validate_write_off_order, if: -> { write_off? }
     validate :present_user_iss
+    validate :present_item_for_barcode, if: -> { operation == 'out' && invent_num.present? && property_with_barcode == true }
 
     after_initialize :set_initial_status, if: -> { new_record? }
     before_validation :set_consumer, if: -> { consumer_fio.blank? || consumer_id_tn.blank? }
@@ -54,6 +55,8 @@ module Warehouse
     attr_accessor :skip_validator
     # Флаг указывает, что нужно пропустить вычисление статуса
     attr_accessor :dont_calculate_status
+    # Флаг указывает, что нужно проверить инв.№ техники на РМ и чтобы она соответствовала назначению штрих-кода
+    attr_accessor :property_with_barcode
 
     def set_creator(user)
       self.creator_id_tn = user.id_tn
@@ -96,6 +99,23 @@ module Warehouse
         id_tn: consumer_id_tn,
         fio: consumer_fio
       }
+    end
+
+    # Метод возвращает в массиве технику, тип которой соответствует назначению штрих-кода
+    # и если она существует на рабочем месте с инвентарным номером, который введен в ордере
+    def find_inv_item_for_assign_barcode
+      inv_item = []
+
+      workplace = Invent::Workplace.find_by(workplace_id: invent_workplace_id)
+      if workplace.present?
+        name_type_for_barcode = []
+        Invent::Property.where(assign_barcode: true).find_each { |prop| prop.types.each { |type| name_type_for_barcode << type.name } }
+
+        invent_item = workplace.items.find { |item| item.invent_num == invent_num.to_s && name_type_for_barcode.include?(item.type.name) }
+
+        inv_item = [invent_item] if invent_item.present?
+      end
+      inv_item
     end
 
     protected
@@ -250,6 +270,31 @@ module Warehouse
         errors.add(:base, :cannot_destroy_with_done_operations)
         throw(:abort)
       end
+    end
+
+    # Проверка перед созданием расходного ордера и его исполнением на существование РМ,
+    # техники с инв.№ на этом РМ, и чтобы она соответствовала назначению штрих-кода
+    def present_item_for_barcode
+      workplace = Invent::Workplace.find_by(workplace_id: invent_workplace_id)
+
+      if workplace.present?
+        inv_item = find_inv_item_for_assign_barcode
+
+        if inv_item.present?
+
+          if inv_item.first.status.to_s != 'in_workplace'
+            errors.add(:base, :status_item_on_workplace_not_in_workplace, item_barcode: inv_item.first.barcode_item.id)
+          end
+
+          return
+        end
+
+      else
+        errors.add(:base, :not_present_workplace, workplace_id: invent_workplace_id)
+        throw(:abort)
+      end
+
+      errors.add(:base, :item_not_find_on_workplace, workplace_id: invent_workplace_id)
     end
   end
 end

@@ -24,7 +24,7 @@ import { app } from '../../app/app';
    * Загрузить список техники.
    */
   FindExistingInventItemCtrl.prototype.loadItems = function() {
-    this.Item.loadBusyItems(this.selectedType.type_id, this.invent_num, this.item_barcode, this.$scope.$parent.division)
+    this.Item.loadBusyItems(this.selectedType.type_id, this.invent_num, this.barcode_item, this.$scope.$parent.division)
       .then(() => {
         this.items = this.Item.items;
         this.$scope.$emit('removeDuplicateInvItems', this.items);
@@ -44,7 +44,7 @@ import { app } from '../../app/app';
    * Очистить данные поиска
    */
   FindExistingInventItemCtrl.prototype.clearSearchData = function() {
-    this.item_barcode = null;
+    this.barcode_item = null;
     this.invent_num = null;
   };
 })();

@@ -8,6 +8,7 @@ module Invent
     belongs_to :property, optional: false
     belongs_to :item, optional: false
     belongs_to :property_list, optional: true
+    belongs_to :warehouse_item, optional: true, foreign_key: 'warehouse_item_id', class_name: 'Warehouse::Item'
 
     validate :presence_val, if: -> { need_validation? && !skip_validations }
 

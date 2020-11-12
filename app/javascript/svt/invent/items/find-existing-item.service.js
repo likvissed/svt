@@ -21,13 +21,13 @@ import { app } from '../../app/app';
    * @param item_id
    * @param division - отдел
    */
-  FindExistingItemService.prototype.loadBusyItems = function(type_id, invent_num, item_barcode, division) {
+  FindExistingItemService.prototype.loadBusyItems = function(type_id, invent_num, barcode_item, division) {
     return this.Server.Invent.Item.busy(
       {
-        type_id   : type_id,
-        invent_num: invent_num,
-        barcodes  : item_barcode,
-        division  : division
+        type_id     : type_id,
+        invent_num  : invent_num,
+        barcode_item: barcode_item,
+        division    : division
       },
       (response) => {
         this.items = response.items;

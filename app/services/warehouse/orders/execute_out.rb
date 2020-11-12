@@ -45,6 +45,15 @@ module Warehouse
             end
 
             Invent::Item.transaction(requires_new: true) do
+              # Проверка, если есть техника для создания со штрих-кодом, то
+              # 1- техника должна существовать на РМ (поиск по инв.№); 2 - быть на РМ со статусом "in_workplace"
+              new_w_item = @order.operations.any? do |op|
+                op.item.warehouse_type == 'without_invent_num' && op.status_changed? && op.done? &&
+                  list_type_for_barcodes.include?(op.item.item_type.to_s.downcase)
+              end
+
+              @order.property_with_barcode = true if new_w_item
+
               save_order(@order)
               update_items if @item_ids.any?
             end
@@ -92,7 +101,35 @@ module Warehouse
             next unless @item_ids.include?(op.item_id)
 
             op.item.save!
+
+            next unless op.item.warehouse_type == 'without_invent_num' && list_type_for_barcodes.include?(op.item.item_type.to_s.downcase)
+
+            create_w_item_with_barcode(op)
+            op.item.destroy if op.item.count.zero? && op.item.count_reserved.zero?
           end
+        end
+      end
+
+      def create_w_item_with_barcode(operation)
+        operation.shift.abs.times do |_i|
+          new_warehouse_item = Item.new(
+            warehouse_type: operation.item.warehouse_type,
+            item_type: operation.item.item_type,
+            item_model: operation.item.item_model,
+            barcode: operation.item.barcode,
+            status: operation.item.status,
+            count: 0,
+            count_reserved: 0
+          )
+          new_warehouse_item.build_barcode_item
+
+          next unless new_warehouse_item.save
+
+          new_warehouse_item.create_invent_property_value(
+            property_id: Invent::Property.find_by(short_description: new_warehouse_item.item_type.capitalize).property_id,
+            item_id: @order.find_inv_item_for_assign_barcode.first.item_id,
+            value: "#{new_warehouse_item.item_model} (#{new_warehouse_item.barcode_item.id})"
+          )
         end
       end
     end

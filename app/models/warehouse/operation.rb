@@ -59,7 +59,8 @@ module Warehouse
             invent_num: item.generate_invent_num(i),
             status: params[:status]
           )
-          new_inv_item.build_barcodes
+          new_inv_item.build_barcode_item
+
           new_inv_item.build_property_values(item, true)
         end
       end

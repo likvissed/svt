@@ -6,6 +6,7 @@ module Invent
     it { is_expected.to belong_to(:property) }
     it { is_expected.to belong_to(:item) }
     it { is_expected.to belong_to(:property_list) }
+    it { is_expected.to belong_to(:warehouse_item).with_foreign_key('warehouse_item_id').class_name('Warehouse::Item') }
 
     describe '#presence_val' do
       context 'when property_type is :string' do

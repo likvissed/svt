@@ -5,10 +5,11 @@ module Warehouse
     RSpec.describe ExecuteOut, type: :model do
       let!(:current_user) { create(:***REMOVED***_user) }
       subject { ExecuteOut.new(current_user, order.id, order_params) }
+      let!(:inv_item) { create(:item, :with_property_values, type_name: :printer, status: :in_workplace) }
       let!(:workplace) do
-        wp = build(:workplace_pk, dept: ***REMOVED***)
-        wp.save(validate: false)
-        wp
+        w = build(:workplace_net_print, items: [inv_item], dept: ***REMOVED***)
+        w.save(validate: false)
+        w
       end
       let(:order_json) { order.as_json }
 
@@ -24,6 +25,71 @@ module Warehouse
           order_json['operations_attributes'] = operations.as_json
           order_json['operations_attributes'].each { |op| op['status'] = 'done' }
           order_json
+        end
+
+        context 'and when have item for assign barcode' do
+          let(:third_item) { create(:used_item, warehouse_type: :without_invent_num, count: 2, count_reserved: 1, item_type: 'Картридж', item_model: '6515DNI') }
+          let(:third_op) { build(:order_operation, item: third_item, shift: -1) }
+          let(:operations) { [first_op, sec_op, third_op] }
+          let(:new_warehouse_item) { Item.last }
+          let(:new_invent_prop_value) { Invent::PropertyValue.last }
+          let(:preperty_id) { Invent::Property.find_by(short_description: new_warehouse_item.item_type.capitalize).property_id }
+
+          before { order_params[:invent_num] = workplace.items.first.invent_num }
+
+          it 'count warehouse_item increased' do
+            expect { subject.run }.to change(Item, :count).by(1)
+          end
+
+          it 'created warehouse_item with fields item operation' do
+            subject.run
+
+            expect(new_warehouse_item.warehouse_type).to eq third_op.item.warehouse_type
+            expect(new_warehouse_item.item_type).to eq third_op.item.item_type
+            expect(new_warehouse_item.item_model).to eq third_op.item.item_model
+            expect(new_warehouse_item.barcode).to eq third_op.item.barcode
+            expect(new_warehouse_item.status).to eq third_op.item.status
+            expect(new_warehouse_item.count).to be_zero
+            expect(new_warehouse_item.count).to be_zero
+          end
+
+          it 'count barcode increased' do
+            expect { subject.run }.to change(Barcode, :count).by(1)
+          end
+
+          it 'created barcode for new warehouse_item' do
+            subject.run
+
+            expect(Barcode.last.codeable_type).to eq third_op.item.class.name
+            expect(Barcode.last.codeable_id).to eq new_warehouse_item.id
+          end
+
+          it 'count Invent::PropertyValue increased' do
+            expect { subject.run }.to change(Invent::PropertyValue, :count).by(1)
+          end
+
+          it 'created Invent::PropertyValue for new warehouse_item' do
+            subject.run
+
+            expect(new_invent_prop_value.property_id).to eq preperty_id
+            expect(new_invent_prop_value.item_id).to eq workplace.items.first.item_id
+            expect(new_invent_prop_value.value).to eq "#{new_warehouse_item.item_model} (#{new_warehouse_item.barcode_item.id})"
+            expect(new_invent_prop_value.warehouse_item_id).to eq new_warehouse_item.id
+          end
+
+          context 'and when the item has an count equal to 1' do
+            let!(:third_item) { create(:used_item, warehouse_type: :without_invent_num, count: 1, count_reserved: 1, item_type: 'Картридж', item_model: '6515DNI') }
+
+            it 'count warehouse_item not change' do
+              expect { subject.run }.not_to change(Item, :count)
+            end
+
+            it 'present w_item is destroyed and call exeception' do
+              subject.run
+
+              expect { third_item.reload }.to raise_exception(ActiveRecord::RecordNotFound)
+            end
+          end
         end
 
         include_examples 'execute_out specs'

@@ -60,6 +60,21 @@ module Invent
           subject.run
         end
 
+        context 'and when have item with properties assign barcode' do
+          before do
+            new_workplace['items_attributes'].push(new_item)
+            new_workplace['disabled_filters'] = true
+          end
+
+          include_examples 'property_value is creating'
+        end
+
+        it 'count barcode increased' do
+          subject.run
+
+          expect(Barcode.count).to eq new_workplace['items_attributes'].count
+        end
+
         its(:run) { is_expected.to be_truthy }
       end
 
@@ -78,7 +93,7 @@ module Invent
           new_mon['status'] = 'prepared_to_swap'
           new_mon['id'] = new_mon['item_id']
           new_mon['property_values_attributes'] = new_mon['property_values']
-          new_mon['barcodes_attributes'] = new_mon['barcodes']
+          new_mon['barcode_item_attributes'] = new_mon['barcode_item']
           new_mon['property_values_attributes'].each do |prop_val|
             prop_val['id'] = prop_val['property_value_id']
 
@@ -87,7 +102,7 @@ module Invent
 
           new_mon.delete('item_id')
           new_mon.delete('property_values')
-          new_mon.delete('barcodes')
+          new_mon.delete('barcode_item')
 
           wp.data.delete('location_room')
           wp.data['items_attributes'] << new_mon

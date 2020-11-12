@@ -55,9 +55,9 @@ module Invent
         #           .by_type_id(@type_id)
 
         data[:items] = Item
-                         .includes(:model, :type, :property_values, :barcodes)
+                         .includes(:model, :type, :property_values, :barcode_item)
                          .select('invent_item.*')
-                         .joins(:barcodes, workplace: :workplace_count)
+                         .joins(:barcode_item, workplace: :workplace_count)
                          .by_invent_num(@invent_num)
                          .by_division(@division)
                          .where('invent_item.workplace_id IS NOT NULL')
@@ -98,7 +98,7 @@ module Invent
       end
 
       def prepare_params
-        data[:items] = data[:items].as_json(include: %i[model type barcodes], methods: :full_item_model).each do |item|
+        data[:items] = data[:items].as_json(include: %i[model type barcode_item], methods: :full_item_model).each do |item|
           inv_num = item['invent_num'].blank? ? 'инв. № отсутствует' : "инв. №: #{item['invent_num']}"
           item[:main_info] = "#{item['type']['short_description']} - #{inv_num}"
         end

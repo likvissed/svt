@@ -160,6 +160,21 @@ module Warehouse
             expect(item_of_destroyed_operation.reload.count_reserved).to be_zero
           end
         end
+
+        context 'and when have item for assign barcode' do
+          let!(:item) { create(:new_item, warehouse_type: :without_invent_num, item_type: 'Картридж', item_model: '6515DNI', count: 2, count_reserved: 0) }
+          let(:new_operation) { attributes_for(:order_operation, item_id: item.id, item_type: 'Картридж', item_model: '6515DNI', shift: -1) }
+          let(:order_params) do
+            order_json['operations_attributes'] = order.operations.as_json
+            order_json['operations_attributes'] << new_operation.as_json
+
+            order_json
+          end
+
+          it 'not changed count Operation in order' do
+            expect { subject.run }.not_to change(Operation, :count)
+          end
+        end
       end
 
       context 'when warehouse_type is :with_invent_num' do

@@ -58,7 +58,7 @@ module Invent
         end
 
         context 'and with item_barcode filter' do
-          let(:filters) { { item_barcode: item.barcodes[0].id } }
+          let(:filters) { { barcode_item: item.barcode_item.id } }
           let(:data_items) do
             data = {}
             data[:data] = [item]

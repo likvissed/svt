@@ -109,6 +109,10 @@ module Warehouse
 
         new_hash
       end
+
+      def list_type_for_barcodes
+        Invent::Property.where(assign_barcode: true).pluck(:short_description).map(&:downcase)
+      end
     end
   end
 end

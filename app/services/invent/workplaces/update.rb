@@ -18,7 +18,11 @@ module Invent
         authorize @workplace, :update?
 
         create_or_get_room
-        assing_barcode if @workplace_params['items_attributes'].present?
+        if @workplace_params['items_attributes'].present?
+          assing_barcode
+          delete_property_value
+        end
+
         fill_swap_arr
 
         Workplace.transaction do

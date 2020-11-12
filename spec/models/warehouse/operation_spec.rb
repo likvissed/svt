@@ -73,7 +73,7 @@ module Warehouse
           end
 
           it 'barcode for item is present' do
-            subject.inv_items.each { |inv_item| expect(inv_item.barcodes).to exist }
+            subject.inv_items.each { |inv_item| expect(inv_item.barcode_item).to exist }
           end
         end
 
