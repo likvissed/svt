@@ -204,6 +204,14 @@ import { app } from '../../app/app';
       delete(existingItem._destroy);
     } else {
       this.order.operations_attributes.push(this.Operation.generate(warehouseType, item));
+
+      // Добавить связанную технику, являющейся свойством для inv_item
+      if (item.warehouse_items) {
+        item.warehouse_items.forEach((w_item) => {
+          this.order.operations_attributes.push(this.Operation.generate(warehouseType, w_item));
+          this.additional.visibleCount++;
+        });
+      }
     }
 
     this.additional.visibleCount++;

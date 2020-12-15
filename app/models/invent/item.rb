@@ -12,6 +12,7 @@ module Invent
     MOVE_ITEM_TYPES = %w[prepared_to_swap waiting_bring waiting_take].freeze
 
     has_one :warehouse_item, foreign_key: 'invent_item_id', class_name: 'Warehouse::Item', dependent: :nullify
+    has_one :barcode_item, as: :codeable, class_name: 'Barcode', dependent: :destroy
     has_many :property_values,
              -> { joins('LEFT OUTER JOIN invent_property ON invent_property_value.property_id = invent_property.property_id').order('invent_property.property_order').includes(:property) },
              inverse_of: :item, dependent: :destroy
@@ -21,7 +22,9 @@ module Invent
     has_many :warehouse_inv_item_to_operations, class_name: 'Warehouse::InvItemToOperation', foreign_key: 'invent_item_id', dependent: :destroy
     has_many :warehouse_operations, through: :warehouse_inv_item_to_operations, class_name: 'Warehouse::Operation', source: :operation
     has_many :warehouse_orders, through: :warehouse_operations, source: :operationable, source_type: 'Warehouse::Order'
-    has_one :barcode_item, as: :codeable, class_name: 'Barcode', dependent: :destroy
+    has_many :warehouse_items,
+             -> { joins('LEFT OUTER JOIN invent_property ON invent_property_value.property_id = invent_property.property_id') },
+             through: :property_values, class_name: 'Warehouse::Item', foreign_key: 'warehouse_item_id'
 
     belongs_to :type, optional: false
     belongs_to :workplace, optional: true
@@ -220,6 +223,9 @@ module Invent
 
     def add_inv_property_value(property, value, skip_validations = false)
       prop_list = model.property_list_for(property) if model && Property::LIST_PROPS.include?(property.property_type)
+
+      # Не создавать пустые значения для свойств со штрих-кодом
+      return if Invent::Property::LIST_TYPE_FOR_BARCODES.include?(property.short_description.to_s.downcase)
 
       property_values.push(
         PropertyValue.new(

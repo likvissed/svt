@@ -19,14 +19,20 @@ module Warehouse
         end
 
         def init_warehouse_item(operation)
-          operation.build_item(
-            warehouse_type: :without_invent_num,
-            item_type: operation.item_type,
-            item_model: operation.item_model,
-            status: :used,
-            count: 1,
-            count_reserved: 0
-          )
+          if operation.item.present? && Invent::Property::LIST_TYPE_FOR_BARCODES.include?(operation.item.item_type.to_s.downcase)
+            operation.item.count = 1
+            operation.item.status = :used
+            operation.item.invent_property_value.mark_for_destruction
+          else
+            operation.build_item(
+              warehouse_type: :without_invent_num,
+              item_type: operation.item_type,
+              item_model: operation.item_model,
+              status: :used,
+              count: 1,
+              count_reserved: 0
+            )
+          end
         end
 
         def edit_warehouse_item(w_item)

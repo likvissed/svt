@@ -33,7 +33,10 @@ import { app } from '../../app/app';
         this.items = response.items;
         this.selectedItem = this.items.length == 1 ? this.items[0] : null;
       },
-      (response, status) => this.Error.response(response, status)
+      (response, status) => {
+        this.clearSelectedItem();
+        this.Error.response(response, status)
+      }
     ).$promise;
   };
 

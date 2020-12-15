@@ -80,7 +80,7 @@ module Warehouse
 
           # Если операция выполнена и не помечена на удаление, то пропустить валидацию для техники
           if op.item.warehouse_type == 'without_invent_num' && op.processing? && !op.marked_for_destruction? &&
-             list_type_for_barcodes.include?(op.item.item_type.to_s.downcase)
+             Invent::Property::LIST_TYPE_FOR_BARCODES.include?(op.item.item_type.to_s.downcase)
 
             @order.property_with_barcode = true
           end

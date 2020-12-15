@@ -71,6 +71,18 @@ module Warehouse
           op.set_stockman(current_user)
           op.inv_item_ids = [inv_item.item_id]
 
+          # Добавление операции в приходный ордер для свойств техники, если они имеются
+          inv_item.warehouse_items.each do |w_item|
+            op = @order.operations.build(
+              shift: 1,
+              status: :done,
+              item_type: w_item.item_type,
+              item_model: w_item.item_model,
+              item_id: w_item.id
+            )
+            op.set_stockman(current_user)
+          end
+
           warehouse_item_in(inv_item)
         end
 
@@ -116,6 +128,19 @@ module Warehouse
           op.set_stockman(current_user)
           op.inv_item_ids = [inv_item.item_id]
           op.calculate_item_count
+
+          # Добавление операции в расходный ордер для свойств техники
+          inv_item.warehouse_items.each do |w_item|
+            op = @order.operations.build(
+              shift: -1,
+              status: :done,
+              item_type: w_item.item_type,
+              item_model: w_item.item_model,
+              item_id: w_item.id
+            )
+            op.set_stockman(current_user)
+            op.inv_item_ids = [inv_item.item_id]
+          end
         end
 
         save_order(@order)

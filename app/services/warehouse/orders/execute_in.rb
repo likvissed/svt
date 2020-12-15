@@ -74,11 +74,21 @@ module Warehouse
 
         @item_ids = @order.operations.map do |op|
           next unless op.status_changed? && op.done?
+          @order.execute_in = true
 
           op_selected = true
           op.set_stockman(current_user)
           if op.item
-            op.calculate_item_count
+            if Invent::Property::LIST_TYPE_FOR_BARCODES.include?(op.item.item_type.to_s.downcase)
+              op.item.count = 1
+              op.item.status = :used
+              op.item.invent_property_value.mark_for_destruction
+
+              op.item
+            else
+              op.calculate_item_count
+            end
+
             op.item_id
           else
             op.create_item!(
@@ -106,6 +116,9 @@ module Warehouse
             next unless @item_ids.include?(op.item_id)
 
             op.item.save!
+
+            next if op.inv_items.blank?
+
             op.inv_items.first.to_stock!
             UnregistrationWorker.perform_async(op.inv_items.first.invent_num, current_user.access_token)
           end

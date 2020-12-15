@@ -49,7 +49,7 @@ module Warehouse
               # 1- техника должна существовать на РМ (поиск по инв.№); 2 - быть на РМ со статусом "in_workplace"
               new_w_item = @order.operations.any? do |op|
                 op.item.warehouse_type == 'without_invent_num' && op.status_changed? && op.done? &&
-                  list_type_for_barcodes.include?(op.item.item_type.to_s.downcase)
+                  Invent::Property::LIST_TYPE_FOR_BARCODES.include?(op.item.item_type.to_s.downcase)
               end
 
               @order.property_with_barcode = true if new_w_item
@@ -102,33 +102,44 @@ module Warehouse
 
             op.item.save!
 
-            next unless op.item.warehouse_type == 'without_invent_num' && list_type_for_barcodes.include?(op.item.item_type.to_s.downcase)
+            next unless op.item.warehouse_type == 'without_invent_num' && Invent::Property::LIST_TYPE_FOR_BARCODES.include?(op.item.item_type.to_s.downcase)
 
-            create_w_item_with_barcode(op)
-            op.item.destroy if op.item.count.zero? && op.item.count_reserved.zero?
+            create_or_find_w_item_with_barcode(op)
+            op.item.destroy if op.item.count.zero? && op.item.count_reserved.zero? && op.item.status == 'non_used'
           end
         end
       end
 
-      def create_w_item_with_barcode(operation)
+      def create_or_find_w_item_with_barcode(operation)
         operation.shift.abs.times do |_i|
-          new_warehouse_item = Item.new(
-            warehouse_type: operation.item.warehouse_type,
-            item_type: operation.item.item_type,
-            item_model: operation.item.item_model,
-            barcode: operation.item.barcode,
-            status: operation.item.status,
-            count: 0,
-            count_reserved: 0
-          )
-          new_warehouse_item.build_barcode_item
+          # Если техника новая (status = non_used), то создается новая запись, присваивается штрих-код,
+          # Иначе (status = used) находится существующая техника с созданным штрих-кодом
+          warehouse_item = if operation.item.status == 'used'
+                             w_item_in_operation = operation.item
+                             w_item_in_operation.status = operation.item.status
+                             w_item_in_operation.count = 0
+                             w_item_in_operation.count_reserved = 0
+                             w_item_in_operation
+                           elsif operation.item.status == 'non_used'
+                             w_item = Item.new(
+                               warehouse_type: operation.item.warehouse_type,
+                               item_type: operation.item.item_type,
+                               item_model: operation.item.item_model,
+                               barcode: operation.item.barcode,
+                               status: operation.item.status,
+                               count: 0,
+                               count_reserved: 0
+                             )
+                             w_item
+                           end
+          warehouse_item.barcode_item = warehouse_item.build_barcode_item if warehouse_item.barcode_item.nil?
 
-          next unless new_warehouse_item.save
+          next unless warehouse_item.save
 
-          new_warehouse_item.create_invent_property_value(
-            property_id: Invent::Property.find_by(short_description: new_warehouse_item.item_type.capitalize).property_id,
+          warehouse_item.create_invent_property_value(
+            property_id: Invent::Property.find_by(short_description: warehouse_item.item_type.capitalize).property_id,
             item_id: @order.find_inv_item_for_assign_barcode.first.item_id,
-            value: "#{new_warehouse_item.item_model} (#{new_warehouse_item.barcode_item.id})"
+            value: "#{warehouse_item.item_model} (#{warehouse_item.barcode_item.id})"
           )
         end
       end

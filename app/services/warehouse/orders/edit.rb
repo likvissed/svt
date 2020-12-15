@@ -76,7 +76,7 @@ module Warehouse
           next unless op['item']
 
           op['inv_item_ids'] = op['inv_items'].map { |io| io['item_id'] }
-          op['item']['assign_barcode'] = list_type_for_barcodes.include?(op['item']['item_type'].to_s.downcase) ? true : false
+          op['item']['assign_barcode'] = Invent::Property::LIST_TYPE_FOR_BARCODES.include?(op['item']['item_type'].to_s.downcase) ? true : false
         end
       end
 

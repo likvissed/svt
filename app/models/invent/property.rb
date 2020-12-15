@@ -12,6 +12,8 @@ module Invent
     DATE_PROPS = %w[date date_month].freeze
     # Свойства, обозначающие выбор из списка
     LIST_PROPS = %w[list list_plus].freeze
+    # Наименование свойств, к которым может назначаться техника со склада со штрих-кодом в property_values
+    LIST_TYPE_FOR_BARCODES = Invent::Property.where(assign_barcode: true).pluck(:short_description).map(&:downcase).freeze
 
     has_many :property_to_types, dependent: :destroy
     has_many :types, through: :property_to_types

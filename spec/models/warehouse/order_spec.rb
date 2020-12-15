@@ -70,6 +70,23 @@ module Warehouse
       end
     end
 
+    describe '#present_invent_workplace_id' do
+      let(:workplace) { create(:workplace_pk, :add_items, items: %i[pc monitor]) }
+      subject { build(:order, inv_workplace: workplace, operation: :out) }
+
+      it { is_expected.to be_valid }
+
+      context 'when workplace id does not exist' do
+        before { workplace.workplace_id = 121_120 }
+
+        it 'adds :workplace_not_present error' do
+          subject.valid?
+
+          expect(subject.errors.details[:base]).to include(error: :workplace_not_present, workplace_id: workplace.workplace_id)
+        end
+      end
+    end
+
     describe '#present_user_iss' do
       let(:workplace) { create(:workplace_pk, :add_items, items: %i[pc monitor]) }
 
@@ -143,6 +160,43 @@ module Warehouse
       end
     end
 
+    describe '#check_absent_warehouse_items_for_inv_item' do
+      let(:warehouse_item) do
+        w_item = build(:new_item, warehouse_type: :without_invent_num, item_type: 'картридж', item_model: '6515DNI', count: 1)
+        w_item.build_barcode_item
+
+        w_item.save
+        w_item
+      end
+      let(:inv_item) do
+        i_item = build(:item, :with_property_values, type_name: :printer, warehouse_items: [warehouse_item])
+        i_item.save(validate: false)
+        i_item
+      end
+      let(:operation) { build(:order_operation, inv_items: [inv_item], status: 'done') }
+      let(:workplace) do
+        w = build(:workplace_net_print, items: [inv_item])
+        w.save(validate: false)
+        w
+      end
+
+      subject { build(:order, operations: [operation], inv_workplace: workplace) }
+
+      before { subject.execute_in = true }
+
+      it 'adds :warehouse_items_is_present error' do
+        subject.valid?
+
+        expect(subject.errors.details[:base]).to include(error: :warehouse_items_is_present, arr_type_with_barcode: warehouse_item.item_type.to_s)
+      end
+
+      context 'when operation status ins processing' do
+        before { operation.status = 'processing' }
+
+        it { is_expected.to be_valid }
+      end
+    end
+
     # context 'when operation is :in' do
     #   before { subject.dont_calculate_status = true }
 
@@ -173,6 +227,37 @@ module Warehouse
       context 'when operation does not have inv_item_to_operations' do
         it 'returns false' do
           expect(subject.any_inv_item_to_operation?).to be_falsey
+        end
+      end
+    end
+
+    describe '#any_w_item_have_inv_item?' do
+      let(:inv_item) do
+        i_item = build(:item, :with_property_values, type_name: :printer)
+        i_item.save(validate: false)
+        i_item
+      end
+      let(:warehouse_item) do
+        w_item = build(:new_item, warehouse_type: :without_invent_num, item_type: 'картридж', item_model: '6515DNI', count: 1)
+        w_item.build_barcode_item
+        w_item.item = inv_item
+
+        w_item.save(validate: false)
+        w_item
+      end
+      let(:operation) { build(:order_operation, item_id: warehouse_item.id) }
+
+      subject { build(:order, operations: [operation]) }
+
+      it 'returns true' do
+        expect(subject.any_w_item_have_inv_item?).to be_truthy
+      end
+
+      context 'when warehouse_item is not associated with inv_item' do
+        before { warehouse_item.item = nil }
+
+        it 'return false' do
+          expect(subject.any_w_item_have_inv_item?).to be_falsey
         end
       end
     end
@@ -302,13 +387,44 @@ module Warehouse
             build(:order_operation, inv_items: [workplace_2.items.first])
           ]
         end
-        let(:ids) { [workplace_1.items.first.item_id, workplace_2.items.first.item_id] }
+        # let(:ids) { [workplace_1.items.first.item_id, workplace_2.items.first.item_id] }
         subject { build(:order, operations: operations) }
 
         it 'adds :uniq_workplace error' do
           subject.valid?
 
           expect(subject.errors.details[:base]).to include(error: :uniq_workplace)
+        end
+
+        context 'and when present item with barcode and type :without_invent_num' do
+          let(:workplace_3) do
+            w = build(:workplace_net_print)
+            w.save(validate: false)
+            w
+          end
+          let(:inv_item) do
+            i_item = build(:item, :with_property_values, type_name: :printer)
+            i_item.workplace = workplace_3
+            i_item.save(validate: false)
+            i_item
+          end
+          let(:warehouse_item) do
+            w_item = build(:new_item, warehouse_type: :without_invent_num, item_type: 'картридж', item_model: '6515DNI', count: 1)
+            w_item.build_barcode_item
+            w_item.item = inv_item
+
+            w_item.save(validate: false)
+            w_item
+          end
+          let(:operation) { build(:order_operation, item_id: warehouse_item.id) }
+
+          before { operations << operation }
+
+          it 'adds :uniq_workplace error' do
+            subject.valid?
+
+            expect(subject.errors.details[:base]).to include(error: :uniq_workplace)
+          end
         end
 
         it { is_expected.not_to be_valid }
@@ -506,7 +622,7 @@ module Warehouse
       end
     end
 
-    describe '#set_workplace' do
+    describe '#set_workplace_inv_items' do
       let!(:workplace) { create(:workplace_pk, :add_items, items: %i[pc monitor], dept: ***REMOVED***) }
       let(:operations) do
         [
@@ -529,6 +645,35 @@ module Warehouse
         it 'does not set :workplace attribute' do
           expect { subject.valid? }.not_to change(subject, :invent_workplace_id)
         end
+      end
+    end
+
+    describe '#set_workplace_w_item' do
+      let(:warehouse_item) do
+        w_item = build(:new_item, warehouse_type: :without_invent_num, item_type: 'картридж', item_model: '6515DNI', count: 1)
+        w_item.build_barcode_item
+
+        w_item.save
+        w_item
+      end
+      let(:inv_item) do
+        i_item = build(:item, :with_property_values, type_name: :printer, warehouse_items: [warehouse_item])
+        i_item.save(validate: false)
+        i_item
+      end
+      let(:operation) { build(:order_operation, inv_items: [inv_item], item_id: warehouse_item.id) }
+      let(:workplace) do
+        w = build(:workplace_net_print, items: [inv_item])
+        w.save(validate: false)
+        w
+      end
+
+      subject { build(:order, operations: [operation], inv_workplace: workplace) }
+
+      it 'assigned invent_workplace_id for order' do
+        subject.valid?
+
+        expect(subject.invent_workplace_id).to eq inv_item.workplace_id
       end
     end
 

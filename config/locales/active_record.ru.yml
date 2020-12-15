@@ -336,6 +336,8 @@ ru:
               not_present_workplace: 'Рабочее место %{workplace_id} не найдено'
               item_not_find_on_workplace: 'Техника с указанным инвентарным номером на рабочем месте %{workplace_id} не найдена'
               status_item_on_workplace_not_in_workplace: 'Статус техники %{item_barcode} не соответствует статусу "На рабочем месте"'
+              warehouse_items_is_present: "Невозможно исполнить ордер, так как в нем содержится техника, у которой имеются свойства (%{arr_type_with_barcode}), необходимые для переноса на склад"
+              workplace_not_present: 'Рабочее место %{workplace_id} не существует. Проверьте корректность введенных данных'
             consumer:
               user_by_tn_not_found: 'с указанным табельным номером не найден. Проверьте корректность
               введенных данных'

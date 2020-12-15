@@ -44,23 +44,31 @@ module Warehouse
         array_locations = []
 
         operations.each do |op|
-          if op['inv_item_ids'].present? && op['location'].present?
-            value = {}
-            value[:id_inv_item] = op['inv_item_ids'].first
-            value[:location] = op['location'].as_json
+          if op['location'].present?
+            if op['inv_item_ids'].present? || op['w_item_id'].present?
+              value = {}
+              value[:id_inv_item] = op['inv_item_ids'].present? ? op['inv_item_ids'].first : op['w_item_id']
+              value[:find_by_warehouse_id] = op['inv_item_ids'].present? ? false : true
+              value[:location] = op['location'].as_json
+            end
 
             array_locations.push(value)
           end
 
+          op.delete('w_item_id')
           op.delete(:location)
         end
-
+        array_locations = array_locations.compact
         array_locations
       end
 
       def assiged_location_for_w_items(array_locations)
         array_locations.each do |item_for_location|
-          w_item = Item.find_by(invent_item_id: item_for_location[:id_inv_item])
+          w_item = if item_for_location[:find_by_warehouse_id]
+                     Item.find_by(id: item_for_location[:id_inv_item])
+                   else
+                     Item.find_by(invent_item_id: item_for_location[:id_inv_item])
+                   end
 
           item_params = w_item.as_json
           item_params['location_attributes'] = item_for_location[:location]
@@ -108,10 +116,6 @@ module Warehouse
         end
 
         new_hash
-      end
-
-      def list_type_for_barcodes
-        Invent::Property.where(assign_barcode: true).pluck(:short_description).map(&:downcase)
       end
     end
   end

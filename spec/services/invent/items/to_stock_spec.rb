@@ -56,6 +56,57 @@ module Invent
           expect(item.warehouse_item.location.building_id).to eq new_location.building_id
           expect(item.warehouse_item.location.room_id).to eq new_location.room_id
         end
+
+        context 'and when assign location for warehouse_item with barcode' do
+          let(:item) do
+            i_item = build(:item, :with_property_values, type_name: :printer)
+            i_item.workplace = workplace
+            i_item.save(validate: false)
+            i_item
+          end
+          let(:existing_item) do
+            w_item = build(:new_item, warehouse_type: :without_invent_num, item_type: 'картридж', item_model: '6515DNI', count: 1)
+            w_item.build_barcode_item
+            w_item.item = item
+            w_item.save(validate: false)
+            w_item
+          end
+
+          before { item.warehouse_items = [existing_item] }
+
+          it 'creates warehouse_location records' do
+            expect { subject.run }.to change(Warehouse::Location, :count).by(item.warehouse_items.size + 1)
+          end
+
+          it 'deletes invent_property_value records' do
+            expect { subject.run }.to change(PropertyValue, :count).by(-1)
+          end
+
+          it 'update params for warehouse_item with barcode' do
+            subject.run
+
+            expect(existing_item.reload.status).to eq 'used'
+            expect(existing_item.reload.count).to eq 1
+            expect(existing_item.reload.invent_property_value).to be_nil
+          end
+
+          it 'create new location for warehouse_item with barcode' do
+            subject.run
+
+            expect(existing_item.reload.location.site_id).to eq new_location.site_id
+            expect(existing_item.reload.location.building_id).to eq new_location.building_id
+            expect(existing_item.reload.location.room_id).to eq new_location.room_id
+          end
+
+          it 'create new location for warehouse_item without barcode' do
+            puts item.warehouse_items.inspect
+            subject.run
+
+            expect(item.reload.warehouse_item.location.site_id).to eq new_location.site_id
+            expect(item.reload.warehouse_item.location.building_id).to eq new_location.building_id
+            expect(item.reload.warehouse_item.location.room_id).to eq new_location.room_id
+          end
+        end
       end
 
       context 'when warehouse_item is present for item' do

@@ -312,6 +312,32 @@ module Warehouse
 
           its(:run) { is_expected.to be_falsey }
         end
+
+        context 'and when in operations contain warehouse_item with barcode' do
+          let(:inv_item) { create(:item, :with_property_values, type_name: :printer) }
+          let(:property_with_barcode) { Invent::Property.find_by(short_description: Invent::Property::LIST_TYPE_FOR_BARCODES.first.capitalize) }
+          let(:inv_property_value) { create(:property_value, property: property_with_barcode, item: inv_item) }
+          let(:warehouse_item) do
+            w_item = build(:new_item, warehouse_type: :without_invent_num, item_type: 'картридж', item_model: '6515DNI', count: 0)
+            w_item.build_barcode_item
+            w_item.invent_property_value = inv_property_value
+
+            w_item.save(validate: false)
+            w_item
+          end
+          let(:third_op) { build(:order_operation, item_model: warehouse_item.item_type, item_type: warehouse_item.item_model, item: warehouse_item) }
+          let(:operations) { [first_op, sec_op, third_op] }
+
+          it 'deleted invent_property_value' do
+            expect { subject.run }.to change(Invent::PropertyValue, :count).by(-1)
+          end
+
+          it 'sets status and count for warehouse_item' do
+            expect { subject.run }
+              .to change { warehouse_item.reload.status }.from('non_used').to('used')
+                    .and change { warehouse_item.reload.count }.from(0).to(1)
+          end
+        end
       end
 
       context 'and when one of operations already done and another just selected' do

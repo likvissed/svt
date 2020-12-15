@@ -31,8 +31,11 @@ module Invent
       def send_to_stock
         @order = Warehouse::Orders::CreateByInvItem.new(current_user, @item, :in)
 
+        # Назначить расположение для свойств техники со штрих-кодом
+        @item.warehouse_items.each { |w_item| assign_location(w_item.as_json) } if @item.warehouse_items.present?
+
         if @order.run
-          assign_location
+          location_for_w_item
           UnregistrationWorker.perform_async(@item.invent_num, current_user.access_token)
 
           return
@@ -42,20 +45,21 @@ module Invent
         end
       end
 
-      def assign_location
+      def location_for_w_item
         find_item
-        w_item = @item.warehouse_item.as_json
+        assign_location(@item.warehouse_item.as_json)
+      end
 
-        w_item['location_attributes'] = @location.as_json
+      def assign_location(warehouse_item)
+        warehouse_item['location_attributes'] = @location.as_json
+
         # Для обновления расположения, если location_id существует
-        w_item['location_attributes']['id'] = w_item['location_id']
+        # Также добавлено условие, для того, чтобы не возникало ошибки "Запись не найдена",
+        # так как у некоторых warehouse_item.location_id = 0, а не nil
+        warehouse_item['location_attributes']['id'] = warehouse_item['location_id'] && !warehouse_item['location_id'].zero? ? warehouse_item['location_id'] : nil
 
-        @warehouse_item = Warehouse::Items::Update.new(@current_user, w_item['id'], w_item)
-
-        return if @warehouse_item.run
-
-        @error = @warehouse_item.error
-        raise 'Сервис Warehouse::Items::Update завершился с ошибкой'
+        @warehouse_item = Warehouse::Items::Update.new(@current_user, warehouse_item['id'], warehouse_item)
+        @error = @warehouse_item.error unless @warehouse_item.run
       end
     end
   end

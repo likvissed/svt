@@ -38,22 +38,33 @@ import { app } from '../../app/app';
    * @param items
    */
   ItemsForOrderController.prototype._removeDuplicateItems = function(items) {
-    let index;
-
     this.Order.order.operations_attributes.forEach(function(attr) {
-      if (!attr.inv_item_ids) { return false; }
+      let index;
 
-      index = items.findIndex((el) => attr.inv_item_ids.includes(el.item_id));
-      if (index != -1) {
-        items.splice(index, 1);
+      if (attr.inv_item_ids) {
+        // Находит индекс техники (inv_item), которая уже добавлена в позиции
+        index = items.findIndex((el) => attr.inv_item_ids.includes(el.item_id));
+        if (index != -1) {
+          items.splice(index, 1);
+        }
       }
+      if (attr.w_item_id) {
+        // Находит индекс техники (w_item), которая уже добавлена в позиции
+        index = items.findIndex((el) => attr.w_item_id == el.id);
+        if (index != -1) {
+          items.splice(index, 1);
+        }
+      }
+
+      return false;
     });
   };
 
   ItemsForOrderController.prototype.ok = function() {
     if (this.warehouseType == 'with_invent_num') {
       if (!this.FindExistingItemService.selectedItem) {
-        this.Flash.alert('Необходимо указать инвентарный номер (или ID) и выбрать технику');
+
+        this.Flash.alert('Необходимо указать инвентарный номер (или штрих-код) и выбрать технику');
 
         return false;
       }

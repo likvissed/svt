@@ -28,7 +28,7 @@ module Warehouse
         end
 
         context 'and when have item for assign barcode' do
-          let(:third_item) { create(:used_item, warehouse_type: :without_invent_num, count: 2, count_reserved: 1, item_type: 'Картридж', item_model: '6515DNI') }
+          let(:third_item) { create(:used_item, warehouse_type: :without_invent_num, count: 2, count_reserved: 1, item_type: 'Картридж', item_model: '6515DNI', status: 'non_used') }
           let(:third_op) { build(:order_operation, item: third_item, shift: -1) }
           let(:operations) { [first_op, sec_op, third_op] }
           let(:new_warehouse_item) { Item.last }
@@ -78,7 +78,7 @@ module Warehouse
           end
 
           context 'and when the item has an count equal to 1' do
-            let!(:third_item) { create(:used_item, warehouse_type: :without_invent_num, count: 1, count_reserved: 1, item_type: 'Картридж', item_model: '6515DNI') }
+            let!(:third_item) { create(:used_item, warehouse_type: :without_invent_num, count: 1, count_reserved: 1, item_type: 'Картридж', item_model: '6515DNI', status: 'non_used') }
 
             it 'count warehouse_item not change' do
               expect { subject.run }.not_to change(Item, :count)
@@ -88,6 +88,22 @@ module Warehouse
               subject.run
 
               expect { third_item.reload }.to raise_exception(ActiveRecord::RecordNotFound)
+            end
+
+            context 'and when status warehouse_item is used' do
+              before { allow_any_instance_of(Item).to receive(:status).and_return('used') }
+
+              it 'count warehouse_item not increased' do
+                expect { subject.run }.not_to change(Item, :count)
+              end
+
+              it 'sets status, count and count_reserved for third_item' do
+                subject.run
+
+                expect(third_item.reload.status).to eq third_op.item.status
+                expect(third_item.reload.count).to be_zero
+                expect(third_item.reload.count_reserved).to be_zero
+              end
             end
           end
         end

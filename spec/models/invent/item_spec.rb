@@ -10,6 +10,7 @@ module Invent
     it { is_expected.to have_many(:warehouse_inv_item_to_operations).class_name('Warehouse::InvItemToOperation').with_foreign_key('invent_item_id').dependent(:destroy) }
     it { is_expected.to have_many(:warehouse_operations).through(:warehouse_inv_item_to_operations).class_name('Warehouse::Operation').source(:operation) }
     it { is_expected.to have_many(:warehouse_orders).through(:warehouse_operations).class_name('Warehouse::Order').source(:operationable) }
+    it { is_expected.to have_many(:warehouse_items).through(:property_values).class_name('Warehouse::Item').with_foreign_key('warehouse_item_id') }
     it { is_expected.to belong_to(:type) }
     it { is_expected.to belong_to(:workplace) }
     it { is_expected.to belong_to(:model) }
@@ -330,19 +331,26 @@ module Invent
       end
 
       context 'when type exists' do
+        let(:count_property_include_assign_barcode) do
+          printer_type.properties.select do |prop|
+            Invent::Property::LIST_TYPE_FOR_BARCODES.include?(prop.short_description.to_s.downcase)
+          end.count
+        end
         let(:printer_type) { Type.find_by(name: :printer) }
 
         context 'and when model exists' do
           subject { build(:item, type: printer_type) }
           before { subject.build_property_values(warehouse_item, true) }
 
-          it 'creates one property_value for each property' do
-            expect(subject.property_values.size).to eq printer_type.properties.size
+          it 'creates one property_value for each property without assign barcode' do
+            expect(subject.property_values.size + count_property_include_assign_barcode).to eq printer_type.properties.size
           end
 
-          it 'sets default value for each property specified by selected model' do
+          it 'sets default value for each property without assign barcode specified by selected model' do
             subject.save(validate: false)
             printer_type.properties.each do |prop|
+              next if Invent::Property::LIST_TYPE_FOR_BARCODES.include?(prop.short_description.to_s.downcase)
+
               if prop.property_type == 'string'
                 expect(subject.get_value(prop)).to be_empty
               elsif %w[list list_plus].include?(prop.property_type)
@@ -356,8 +364,8 @@ module Invent
           subject { build(:item, type: printer_type, model: nil) }
           before { subject.build_property_values(warehouse_item, true) }
 
-          it 'creates one property_value for each property' do
-            expect(subject.property_values.size).to eq printer_type.properties.size
+          it 'creates one property_value for each property without assign barcode' do
+            expect(subject.property_values.size + count_property_include_assign_barcode).to eq printer_type.properties.size
           end
 
           it 'sets empty values for each property with string :property_type' do

@@ -32,7 +32,10 @@ module Warehouse
         # Массив id возвращаемой техники (с инв. номером)
         item_id_arr = @order_params['operations_attributes'].map { |op_attr| op_attr['inv_item_ids'] }.flatten.compact
         # Массив операций без инв. номера
-        op_without_id_arr = @order_params['operations_attributes'].select { |op_attr| !op_attr['inv_item_ids'] || op_attr['inv_item_ids'].compact.empty? }
+        op_without_id_arr = @order_params['operations_attributes'].select { |op_attr| (!op_attr['inv_item_ids'] || op_attr['inv_item_ids'].compact.empty?) && !op_attr['w_item_id'] }
+        # Массив операций без инв. номера и с назначенным штрих-кодом
+        op_without_id_barcode_arr = @order_params['operations_attributes'].map { |op_attr| op_attr['w_item_id'] }.flatten.compact
+
         # Массив объектов возвращаемой техники
         items = Invent::Item.includes(workplace: :workplace_count).find(item_id_arr)
 
@@ -44,7 +47,31 @@ module Warehouse
           new_params << order_with_empty_op
         end
 
-        @order_params = new_params
+        # Назначить технику со штрих-кодом для операции
+        # Сначала необхоимо добавить в new_params свойства техники, а затем саму технику (generate_new_params)
+        # для ситуаций, когда  нажимается кнопка "Создать и исполнить" приходный ордер,
+        # чтобы свойство техники смогло назначить ID РМ, т.к. связь между ними в этом случае еще будет существовать
+        if op_without_id_barcode_arr.any?
+
+          # Массив объектов техники, в которых имеются операции без инв. номера и с назначенным штрих-кодом
+          items_for_w_item = Barcode.where(codeable_id: op_without_id_barcode_arr, codeable_type: 'Warehouse::Item').map(&:codeable).map(&:item)
+
+          items_for_w_item.uniq(&:workplace_id).map do |inv_item|
+            order = @order_params.deep_dup
+            order['operations_attributes'] = order['operations_attributes'].select do |op_attr|
+              next unless op_attr['w_item_id']
+
+              op_attr['item_id'] = op_attr['w_item_id']
+
+              items_for_w_item.select { |i| i['workplace_id'] == inv_item.workplace_id }.map(&:item_id).include?(Item.find_by(id: op_attr['w_item_id']).item.item_id)
+              items_for_w_item
+            end
+
+            new_params.unshift order
+          end
+        end
+
+        @order_params = new_params.compact
       end
 
       def generate_new_params(items)
@@ -93,6 +120,10 @@ module Warehouse
         @order = Order.new(param)
         authorize @order, :create_in?
         @order_state = @order.done? && @order.dont_calculate_status ? Orders::In::DoneState.new(@order) : Orders::In::ProcessingState.new(@order)
+
+        # Если ордер сразу создается и исполняется, проверить существует ли связь между inv_item и warehouse_item
+        @order.execute_in = true if @order.dont_calculate_status
+
         @order.set_creator(current_user)
 
         @order_state.processing_operations(current_user)
