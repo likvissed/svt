@@ -85,6 +85,9 @@ module Warehouse
       elsif status_changed? && done?
         item.count_reserved += shift
       end
+
+      # Чтобы не было отрицательного значения в count_reserved
+      item.count_reserved = 0 if item.count_reserved.negative?
     end
 
     def calculate_item_count

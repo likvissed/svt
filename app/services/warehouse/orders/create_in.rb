@@ -55,19 +55,21 @@ module Warehouse
 
           # Массив объектов техники, в которых имеются операции без инв. номера и с назначенным штрих-кодом
           items_for_w_item = Barcode.where(codeable_id: op_without_id_barcode_arr, codeable_type: 'Warehouse::Item').map(&:codeable).map(&:item)
+          # Если в позицию добавили технику без инв.№ и со штрих-кодом, но в другом окне уже отправили на склад
+          # проверка, существует ли связь между w_item и invent_item
+          if items_for_w_item.compact.present?
+            items_for_w_item.uniq(&:workplace_id).each do |inv_item|
+              order = @order_params.deep_dup
+              order['operations_attributes'] = order['operations_attributes'].select do |op_attr|
+                next unless op_attr['w_item_id']
 
-          items_for_w_item.uniq(&:workplace_id).map do |inv_item|
-            order = @order_params.deep_dup
-            order['operations_attributes'] = order['operations_attributes'].select do |op_attr|
-              next unless op_attr['w_item_id']
+                op_attr['item_id'] = op_attr['w_item_id']
 
-              op_attr['item_id'] = op_attr['w_item_id']
+                items_for_w_item.select { |i| i['workplace_id'] == inv_item.workplace_id }.map(&:item_id).include?(Item.find_by(id: op_attr['w_item_id']).item.item_id)
+              end
 
-              items_for_w_item.select { |i| i['workplace_id'] == inv_item.workplace_id }.map(&:item_id).include?(Item.find_by(id: op_attr['w_item_id']).item.item_id)
-              items_for_w_item
+              new_params.unshift order
             end
-
-            new_params.unshift order
           end
         end
 

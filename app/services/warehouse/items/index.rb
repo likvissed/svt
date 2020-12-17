@@ -14,7 +14,7 @@ module Warehouse
       def run
         load_order_items
         load_other_items
-        init_filters if need_init_filters?
+        init_filters
         load_orders
         limit_records
         load_locations
@@ -128,7 +128,12 @@ module Warehouse
 
       def init_filters
         data[:filters] = {}
-        data[:filters][:item_types] = Item.pluck(:item_type).uniq
+
+        data[:filters][:item_types] = if need_init_filters?
+                                        Item.show_only_presence.pluck(:item_type).uniq
+                                      else
+                                        Item.pluck(:item_type).uniq
+                                      end
         data[:filters][:statuses] = Item.statuses.map { |key, _val| [key, Item.translate_enum(:status, key)] }.to_h
         data[:filters][:buildings] = IssReferenceBuilding
                                        .select('iss_reference_sites.name as site_name, iss_reference_buildings.*')

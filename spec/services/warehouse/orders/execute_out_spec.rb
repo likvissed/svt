@@ -50,7 +50,6 @@ module Warehouse
             expect(new_warehouse_item.barcode).to eq third_op.item.barcode
             expect(new_warehouse_item.status).to eq third_op.item.status
             expect(new_warehouse_item.count).to be_zero
-            expect(new_warehouse_item.count).to be_zero
           end
 
           it 'count barcode increased' do

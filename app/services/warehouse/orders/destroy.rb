@@ -73,8 +73,6 @@ module Warehouse
           @order.operations.each do |op|
             op.mark_for_destruction
             op.calculate_item_count_reserved
-            # Чтобы не было отрицательного значения в count_reserved
-            op.item.count_reserved = 0 if op.item.count_reserved.negative?
             op.item.status = :used
             op.item.save!
           end

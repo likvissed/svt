@@ -4,7 +4,8 @@ module Warehouse
       protected
 
       def order_out?
-        @order_params['operation'] == 'out' && @order_params['operations_attributes']&.all? { |op| op['shift'].to_i.negative? }
+        # Добавлена проверка на ноль для того, чтобы при создании расходного ордера запустилась валидация :shift у warehouse_operation
+        @order_params['operation'] == 'out' && @order_params['operations_attributes']&.all? { |op| op['shift'].to_i.negative? || op['shift'].to_i.zero? }
       end
 
       def order_in?

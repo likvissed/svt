@@ -230,19 +230,21 @@ import { app } from '../../app/app';
   InventItemsTableCtrl.prototype.dataForAstraea = function(item) {
     let tn;
 
-    if (item.workplace.user_iss) {
-      tn = item.workplace.user_iss.tn;
-    }
+    if (item.workplace) {
+      if (item.workplace.user_iss) {
+        tn = item.workplace.user_iss.tn;
+      }
 
-    const data = {
-      item_id     : item.item_id,
-      invent_num  : item.invent_num,
-      id_tn       : item.workplace.id_tn,
-      tn          : tn,
-      workplace_id: item.workplace_id,
-      type_id     : item.type_id
-    }
+      const data = {
+        item_id     : item.item_id,
+        invent_num  : item.invent_num,
+        id_tn       : item.workplace.id_tn,
+        tn          : tn,
+        workplace_id: item.workplace_id,
+        type_id     : item.type_id
+      }
 
-    return encodeURIComponent(JSON.stringify(data));
+      return encodeURIComponent(JSON.stringify(data));
+    }
   };
 })();

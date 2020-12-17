@@ -112,6 +112,7 @@ ru:
         base: ''
         date: 'Дата исполнения позиции'
         stockman_fio: 'ФИО исполнителя позиции'
+        shift: 'Количество'
 
       warehouse/order/operations:
         item_type: 'Тип техники (опред. авт.)'

@@ -45,7 +45,7 @@ script type="text/ng-template" id="execOrder.slim"
               span.help-block ng-show="exec.form['order[consumer]'].$invalid" ng-bind="exec.errorMessage('order[consumer]')"
           .col-sm-6
             = label_tag "order[tel]", "Телефон", class: "control-label"
-            = text_field_tag "order[tel]", "", class: "form-control", autocomplete: "off", "ng-model": "exec.order.consumer_obj.tel",
+            = text_field_tag "order[tel]", "", class: "form-control", autocomplete: "off", "ng-model": "exec.order.consumer.tel",
               disabled: true
         .row
           .col-sm-10
