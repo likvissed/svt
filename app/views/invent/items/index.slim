@@ -20,6 +20,7 @@
                 th ID РМ
                 th Ответственный
                 th Статус
+                th Расположение
                 th Описание
                 th
             tbody ng-repeat="item in table.items"
@@ -42,7 +43,8 @@
                 td.col-sm-1 ng-bind="item.invent_num"
                 td.col-sm-1 ng-bind="item.workplace.workplace_id"
                 td.col-sm-4 ng-bind="item.workplace.user_iss.fio"
-                td.col-sm-2 ng-bind-html="item.label_status"
+                td.col-sm-1 ng-bind-html="item.label_status"
+                td.col-sm-4 ng-bind-html="item.location"
                 td.col-sm-9 ng-bind-html="item.description"
                 td.text-center
                   = fa_icon "trash-o fw", class: "text-danger pointer", id: "destroyItem",

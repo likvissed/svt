@@ -46,7 +46,7 @@ import { app } from '../../app/app';
    */
   InventItemsTable.prototype.loadRooms = function() {
     this.clearRooms();
-    this.Server.Location.rooms(
+    this.Server.Warehouse.Location.rooms(
       { building_id: this.Filters.getSelected().building.building_id },
       (data) => this.Filters.setPossibleValues({ rooms: data }),
       (response, status) => this.Error.response(response, status)
