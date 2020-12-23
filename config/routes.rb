@@ -140,5 +140,13 @@ Rails.application.routes.draw do
 
   resource :statistics, only: :show
 
+  namespace :api do
+    namespace :v1 do
+      namespace :invent do
+        resources :items, only: :index 
+      end
+    end
+  end
+
   mount ActionCable.server, at: '/cable'
 end
