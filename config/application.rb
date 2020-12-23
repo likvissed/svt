@@ -50,6 +50,8 @@ module Inv
         resource '/invent/***REMOVED***_invents/get_pc_script*', headers: :any, methods: [:get]
         resource '/invent/***REMOVED***_invents/existing_item*', headers: :any, methods: [:get]
         resource '/invent/***REMOVED***_invents/invent_item*', headers: :any, methods: [:get]
+        resource '/user_isses*', headers: :any,  methods: [:get]
+        resource '/api/v1/invent/items*', headers: :any,  methods: [:get]
       end
     end
 
