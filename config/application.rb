@@ -35,7 +35,8 @@ module Inv
       allow do
         origins 'https://***REMOVED***.***REMOVED***.ru', 'https://***REMOVED***.npopm``.ru',
                 'https://***REMOVED***.***REMOVED***.ru', 'https://***REMOVED***.npopm.ru',
-                'https://***REMOVED***.***REMOVED***.ru', 'https://***REMOVED***.npopm.ru', 'http://***REMOVED***'
+                'https://***REMOVED***.***REMOVED***.ru', 'https://***REMOVED***.npopm.ru', 'http://***REMOVED***',
+                /\Ahttps:\/\/***REMOVED***(.*)\.***REMOVED***\.ru\z/
         resource '/invent/***REMOVED***_invents/svt_access*', headers: :any, methods: [:get]
         resource '/invent/***REMOVED***_invents/init_properties*', headers: :any, methods: [:get]
         resource '/invent/***REMOVED***_invents/show_division_data*', headers: :any, methods: [:get]
