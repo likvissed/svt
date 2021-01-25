@@ -1,12 +1,22 @@
 FactoryBot.define do
-  factory :audit, class: Hash do
-    cpu { ['intel(r) core(tm) i3-2100 cpu @ 3.10ghz'] }
-    ram { [3.5] }
-    hdd { ['st500dm002-1bd142 ata device'] }
-    mb { ['aquarius pro, std, elt series'] }
-    video { ['nvidia geforce gtx 550 ti'] }
-    last_connection { [Time.zone.now.to_s] }
+  factory :audit_processed, class: Hash do
+    cpu { ['Intel(R) Core(TM) i5-6400 CPU @ 2.70GHz'] }
+    ram { [8] }
+    hdd { ['TOSHIB DT01ACA050 SCSI Disk Device'] }
+    mb { ['System Product Name'] }
+    video { ['Intel(R) HD Graphics 530'] }
 
-    initialize_with { attributes }
+    initialize_with { attributes.stringify_keys }
+  end
+
+  factory :audit, class: Hash do
+    cpu { 'Intel(R) Core(TM) i5-6400 CPU @ 2.70GHz' }
+    ram { 8063 }
+    hdd { ' TOSHIB  DT01ACA050 SCSI Disk Device' }
+    mb { 'System Product Name' }
+    video { ' Intel(R) HD Graphics 530' }
+    printers { ' HP LaserJet Pro MFP M426f-M427f PCL 6' }
+
+    initialize_with { attributes.stringify_keys }
   end
 end
