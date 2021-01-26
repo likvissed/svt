@@ -11,41 +11,30 @@ module Invent
 
       context 'with valid inventory number' do
         context 'when Audit correctly works on the specified PC' do
-          before { allow(Audit).to receive(:get_data).and_return(build(:audit)) }
+          before { allow(subject).to receive(:load_configuration_data).and_return(build(:audit_processed)) }
 
-          it 'returns a hash with %i[cpu ram hdd mb video last_connection] keys' do
+          it 'returns a hash with %i[cpu ram hdd mb video] keys' do
             subject.run
-            expect(subject.data).to include(:cpu, :ram, :hdd, :mb, :video, :last_connection)
+            expect(subject.data.keys).to eq %w[cpu ram hdd mb video]
           end
 
           its(:run) { is_expected.to be_truthy }
         end
 
         context 'when Audit does not work correctly (or not installed) on the specified PC' do
-          before { allow(Audit).to receive(:get_data).and_return(nil) }
+          before { allow(subject).to receive(:load_configuration_data).and_return(nil) }
 
           it 'assigns the data nil' do
             subject.run
+
             expect(subject.data).to be_nil
           end
 
           it 'sets the :empty_data error into the :base key' do
             subject.run
+
             expect(subject.errors.details[:base]).to include(error: :empty_data)
           end
-
-          its(:run) { is_expected.to be_falsey }
-        end
-
-        context "when Audit did not update data more than #{Audit::MAX_RELENAVCE_TIME} days" do
-          before { allow(Audit).to receive(:get_data).and_return(build(:audit, last_connection: [30.days.ago.to_s])) }
-
-          it 'sets the :not_relevant error into the :base key' do
-            subject.run
-            expect(subject.errors.details[:base]).to include(error: :not_relevant)
-          end
-
-          its(:run) { is_expected.to be_falsey }
         end
       end
 
@@ -54,11 +43,13 @@ module Invent
 
         it 'sets the :not_found error into :host key' do
           subject.run
+
           expect(subject.errors.details[:host]).to include(error: :not_found)
         end
 
         it 'does not run load_data method' do
           expect(subject).not_to receive(:load_data)
+
           subject.run
         end
 
