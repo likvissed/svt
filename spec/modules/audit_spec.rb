@@ -19,7 +19,7 @@ describe 'Audit' do
       let(:mac_name) { '1 0 0' }
       before { allow(subject).to receive(:configuration_data).and_return([]) }
 
-      it 'returns a hash with params' do
+      it 'returns is empty array' do
         expect(subject.configuration_data(mac_name)).to eq []
       end
     end
