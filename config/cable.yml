@@ -1,17 +1,17 @@
-development:
-#  adapter: async
+default: &default
   adapter: redis
-  url: redis://localhost:6379/1/cable
+  url: <%= "#{ENV['REDIS_URL']}1/cable" %>
+
+development:
+  <<: *default
   timeout: 1
 
 test:
   adapter: async
 
 staging:
-  adapter: redis
-  url: redis://localhost:6379/1/cable
+  <<: *default
   timeout: 1
 
 production:
-  adapter: redis
-  url: redis://localhost:6379/1/cable
+  <<: *default
