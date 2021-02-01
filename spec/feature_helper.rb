@@ -2,7 +2,6 @@ require 'spec_helper'
 require 'sidekiq/testing'
 
 RSpec.configure do |config|
-  Capybara.javascript_driver = :webkit
   Sidekiq::Testing.inline!
 
   config.include FeatureMacros, type: :feature
@@ -61,28 +60,4 @@ RSpec.configure do |config|
     ActiveRecord::Base.establish_connection local_db
     DatabaseCleaner.clean
   end
-
-  Capybara::Webkit.configure do |config|
-    config.allow_unknown_urls
-  end
 end
-
-# Описание настроек прокси:
-# https://gist.github.com/tychobrailleur/5712504
-# ENV['NO_PROXY'] = ENV['no_proxy'] = '127.0.0.1'
-# Capybara.register_driver :selenium do |app|
-#   profile = Selenium::WebDriver::Firefox::Profile.new
-#   profile['network.proxy.type'] = 3
-#   client = Selenium::WebDriver::Remote::Http::Default.new
-#   client.read_timeout = 120 # instead of the default 60
-
-# Capybara::Selenium::Driver.new(app, browser: :firefox, profile: profile, http_client: client)
-# end
-
-# Capybara.configure do |config|
-#   config.default_driver = :selenium
-#   config.app_host = "http://#{SERVER_CONFIG['hostname']}"
-# end
-
-# Capybara.default_driver = :selenium
-# Capybara.javascript_driver = :selenium

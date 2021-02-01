@@ -24,9 +24,6 @@ gem 'rest-client'
 
 # MySQL
 gem 'mysql2'
-# MSSQL
-gem 'activerecord-sqlserver-adapter'
-gem 'tiny_tds'
 
 # Other
 gem 'awesome_print'
@@ -79,12 +76,12 @@ group :development, :test do
   gem 'byebug', platform: :mri
 
   # Testing
-  gem 'capybara'
-  gem 'capybara-webkit'
   gem 'factory_bot_rails'
+  gem 'guard'
+  gem 'guard-rspec', require: false
   gem 'rails-controller-testing'
-  gem 'rspec-rails', '3.5.0'
   gem 'rspec-its'
+  gem 'rspec-rails', '3.5.0'
 end
 
 group :development do

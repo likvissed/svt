@@ -8,6 +8,11 @@ Bundler.require(*Rails.groups)
 
 module Inv
   class Application < Rails::Application
+    ENV['http_proxy'] = ""
+    ENV['https_proxy'] = ""
+    ENV['HTTP_PROXY'] = ""
+    ENV['HTTPS_PROXY'] = ""
+
     # Use the responders controller from the responders gem
     config.app_generators.scaffold_controller :responders_controller
 
@@ -67,9 +72,9 @@ module Inv
       g.fixture_replacement :factory_bot, dir: 'spec/factories'
     end
 
-    config.action_cable.url = "wss://#{ENV['APPNAME']}.***REMOVED***.ru/cable"
+    config.action_cable.url = "wss://#{ENV['APPNAME']}.***REMOVED***.ru:8443/cable"
 
-    config.cache_store = :redis_store, 'redis://localhost:6379/2/cache'
+    config.cache_store = :redis_store, "#{ENV['REDIS_URL']}2/cache"
 
     config.action_mailer.delivery_method = :smtp
     config.action_mailer.smtp_settings = {

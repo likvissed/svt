@@ -1,0 +1,52 @@
+default: &default
+  adapter: mysql2
+  encoding: utf8
+  pool: <%= ENV.fetch("RAILS_MAX_THREADS") { 25 } %>
+  socket: /var/run/mysqld/mysqld.sock
+  timeout: 5000
+  # strict: false
+
+netadmin: &netadmin
+  <<: *default
+  host: <%= ENV["MYSQL_NETADMIN_HOST"] %>
+
+# Локальные учетные данные (содержит список пользователей и ролей)
+development:
+  <<: *default
+  database: <%= ENV["MYSQL_DEV_DATABASE"] %>
+  username: <%= ENV["MYSQL_DEV_USER"] %>
+  password: <%= ENV["MYSQL_DEV_PASSWORD"] %>
+  host: <%= ENV["MYSQL_DEV_HOST"] %>
+
+test:
+  <<: *default
+  database: <%= ENV["MYSQL_TEST_DATABASE"] %>
+  username: <%= ENV["MYSQL_TEST_USER"] %>
+  password: <%= ENV["MYSQL_TEST_PASSWORD"] %>
+  host: <%= ENV["MYSQL_TEST_HOST"] %>
+
+# Учетные данные БД СВТ
+development_invent:
+  <<: *netadmin
+  database:
+  username:
+  password:
+
+test_invent:
+  <<: *netadmin
+  database:
+  username:
+  password:
+
+# Учетные данные БД Netadmin
+development_netadmin:
+  <<: *netadmin
+  database:
+  username:
+  password:
+
+test_netadmin:
+  <<: *netadmin
+  database:
+  username:
+  password:
