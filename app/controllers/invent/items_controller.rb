@@ -49,9 +49,9 @@ module Invent
 
     def update
       @update = Items::Update.new(current_user, params[:item_id], item_params)
-
+      
       if @update.run
-        render json: { full_message: I18n.t('controllers.invent/item.updated', item_id: params[:item_id]) }
+        render json: { full_message: I18n.t('controllers.invent/item.updated', barcode: @update.data[:barcode]) }
       else
         render json: @update.error, status: 422
       end
@@ -101,7 +101,7 @@ module Invent
       @to_stock = Items::ToStock.new(current_user, params[:item_id], params[:location])
 
       if @to_stock.run
-        render json: { full_message: I18n.t('controllers.invent/item.sended_to_stock', item_id: params[:item_id]) }
+        render json: { full_message: I18n.t('controllers.invent/item.sended_to_stock', barcode: @to_stock.data[:barcode]) }
       else
         render json: { full_message: @to_stock.error[:full_message] }, status: 422
       end
@@ -111,7 +111,7 @@ module Invent
       @to_write_off = Items::ToWriteOff.new(current_user, params[:item_id])
 
       if @to_write_off.run
-        render json: { full_message: I18n.t('controllers.invent/item.sended_to_stock_and_waiting_write_off', item_id: params[:item_id]) }
+        render json: { full_message: I18n.t('controllers.invent/item.sended_to_stock_and_waiting_write_off', barcode: @to_write_off.data[:barcode]) }
       else
         render json: { full_message: @to_write_off.error[:full_message] }, status: 422
       end

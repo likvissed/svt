@@ -2,7 +2,7 @@ module Warehouse
   class Order < BaseWarehouse
     self.table_name = "#{table_name_prefix}orders"
 
-    has_many :operations, as: :operationable, dependent: :destroy
+    has_many :operations, as: :operationable, dependent: :destroy, inverse_of: :operationable
     has_many :inv_item_to_operations, through: :operations
     has_many :inv_items, through: :operations
     has_many :items, through: :operations
@@ -48,6 +48,15 @@ module Warehouse
     scope :creator_fio, ->(creator_fio) { where('creator_fio LIKE ?', "%#{creator_fio}%") }
     scope :consumer_fio, ->(consumer_fio) { where('consumer_fio LIKE ?', "%#{consumer_fio}%") }
     scope :invent_num, ->(invent_num) { joins(:inv_items).where(invent_item: { invent_num: invent_num }) }
+    scope :barcode_for_warehouse_item, ->(barcode) do
+      joins(operations: {item: :barcode_item}).where(barcodes: { id: barcode })
+    end
+    scope :barcode_for_invent_item, ->(barcode) do
+      joins(operations: {item: {inv_item: :barcode_item}}).where(barcodes: { id: barcode })
+    end
+    scope :barcode, ->(barcode) do
+      barcode_for_warehouse_item(barcode).presence || barcode_for_invent_item(barcode)
+    end
 
     enum operation: { out: 1, in: 2, write_off: 3 }
     enum status: { processing: 1, done: 2 }
@@ -114,8 +123,6 @@ module Warehouse
     # Метод возвращает в массиве технику, тип которой соответствует назначению штрих-кода
     # и если она существует на рабочем месте с инвентарным номером, который введен в ордере
     def find_inv_item_for_assign_barcode
-      inv_item = []
-
       workplace = Invent::Workplace.find_by(workplace_id: invent_workplace_id)
       if workplace.present?
         name_type_for_barcode = []
@@ -123,9 +130,10 @@ module Warehouse
 
         invent_item = workplace.items.find { |item| item.invent_num == invent_num.to_s && name_type_for_barcode.include?(item.type.name) }
 
-        inv_item = [invent_item] if invent_item.present?
+        return [invent_item] if invent_item.present?
       end
-      inv_item
+
+      return []
     end
 
     # Проверка, чтобы у invent_item не было связи с warehouse_item (т.е. назначенных свойств)
@@ -326,22 +334,22 @@ module Warehouse
     # Проверка перед созданием расходного ордера и его исполнением на существование РМ,
     # техники с инв.№ на этом РМ, и чтобы она соответствовала назначению штрих-кода
     def present_item_for_barcode
-      workplace = Invent::Workplace.find_by(workplace_id: invent_workplace_id)
+      Rails.logger.info "present_item_for_barcode: #{inv_workplace.inspect}".yellow
+      workplace = Invent::Workplace.find_by_workplace_id(invent_workplace_id)
 
       if workplace.present?
         inv_item = find_inv_item_for_assign_barcode
+        Rails.logger.info "inv_item: #{inv_item.inspect}".green
 
         if inv_item.present?
-
           if inv_item.first.status.to_s != 'in_workplace'
             errors.add(:base, :status_item_on_workplace_not_in_workplace, item_barcode: inv_item.first.barcode_item.id)
           end
 
           return
         end
-
       else
-        errors.add(:base, :not_present_workplace, workplace_id: invent_workplace_id)
+        errors.add(:base, :workplace_not_present, workplace_id: invent_workplace_id)
         throw(:abort)
       end
 

@@ -2,14 +2,14 @@ require 'feature_helper'
 
 module Warehouse
   RSpec.describe Order, type: :model do
-    it { is_expected.to have_many(:operations).dependent(:destroy) }
+    it { is_expected.to have_many(:operations).dependent(:destroy).inverse_of(:operationable) }
     it { is_expected.to have_many(:inv_items).through(:operations) }
     it { is_expected.to have_many(:inv_item_to_operations).through(:operations) }
     it { is_expected.to have_many(:items).through(:operations) }
-    it { is_expected.to belong_to(:inv_workplace).with_foreign_key('invent_workplace_id').class_name('Invent::Workplace') }
-    it { is_expected.to belong_to(:creator).class_name('UserIss').with_foreign_key('creator_id_tn') }
-    it { is_expected.to belong_to(:consumer).class_name('UserIss').with_foreign_key('consumer_id_tn') }
-    it { is_expected.to belong_to(:validator).class_name('UserIss').with_foreign_key('validator_id_tn') }
+    it { is_expected.to belong_to(:inv_workplace).with_foreign_key('invent_workplace_id').class_name('Invent::Workplace').optional }
+    it { is_expected.to belong_to(:creator).class_name('UserIss').with_foreign_key('creator_id_tn').optional }
+    it { is_expected.to belong_to(:consumer).class_name('UserIss').with_foreign_key('consumer_id_tn').optional }
+    it { is_expected.to belong_to(:validator).class_name('UserIss').with_foreign_key('validator_id_tn').optional }
     it { is_expected.to validate_presence_of(:operation) }
     # it { is_expected.to validate_presence_of(:status) }
     it { is_expected.to validate_presence_of(:creator_fio) }
@@ -38,7 +38,7 @@ module Warehouse
     describe 'validates invent_num ' do
       context 'when warehouse_type has :without_invent_num value' do
         let(:used_item) { create(:used_item, warehouse_type: 'without_invent_num') }
-        let(:operation) { create(:order_operation, item_id: used_item.id) }
+        let(:operation) { build(:order_operation, item_id: used_item.id) }
         subject { build(:order, operations: [operation], operation: 'out') }
 
         it { is_expected.to validate_presence_of(:invent_num) }
@@ -50,7 +50,7 @@ module Warehouse
 
       context 'when warehouse_type has :with_invent_num value' do
         let(:used_item) { create(:used_item) }
-        let(:operation) { create(:order_operation, item_id: used_item.id) }
+        let(:operation) { build(:order_operation, item_id: used_item.id) }
         subject { build(:order, operations: [operation]) }
 
         it { is_expected.to_not validate_presence_of(:invent_num) }
@@ -59,7 +59,7 @@ module Warehouse
       context 'when warehouse_type has any value' do
         let(:used_item1) { create(:used_item, warehouse_type: 'without_invent_num') }
         let(:used_item2) { create(:used_item) }
-        let(:operation) { [create(:order_operation, item_id: used_item1.id), create(:order_operation, item_id: used_item2.id)] }
+        let(:operation) { [build(:order_operation, item_id: used_item1.id), build(:order_operation, item_id: used_item2.id)] }
         subject { build(:order, operations: operation, operation: 'out') }
 
         it { is_expected.to validate_presence_of(:invent_num) }
@@ -139,13 +139,13 @@ module Warehouse
       end
 
       context 'when workplace entered incorrectly' do
-        let(:not_present_workplace) { 901_101 }
-        before { subject.invent_workplace_id = not_present_workplace }
+        let(:workplace_not_present) { 901_101 }
+        before { subject.invent_workplace_id = workplace_not_present }
 
-        it 'adds :not_present_workplace error' do
+        it 'adds :workplace_not_present error' do
           subject.invalid?
 
-          expect(subject.errors.details[:base]).to include(error: :not_present_workplace, workplace_id: subject.invent_workplace_id)
+          expect(subject.errors.details[:base]).to include(error: :workplace_not_present, workplace_id: subject.invent_workplace_id)
         end
       end
 

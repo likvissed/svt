@@ -54,7 +54,7 @@ module Invent
         #           .where('io_id IS NULL')
         #           .by_type_id(@type_id)
 
-        data[:items] = find_item_by_bacrode if @item_barcode.present?
+        data[:items] = find_item_by_barcode if @item_barcode.present?
         data[:items] = find_item_by_invent_num if @invent_num.present?
 
         item_not_found if data[:items].empty?
@@ -68,10 +68,10 @@ module Invent
       end
 
       # Поиск техники по штрих-коду (warehouse_item или invent_item)
-      def find_item_by_bacrode
+      def find_item_by_barcode
         barcode = Barcode.find_by(id: @item_barcode)
-
         return [] if barcode.blank?
+
         item = barcode.codeable
 
         # Исключаем вывод техники, которая находится на складе,

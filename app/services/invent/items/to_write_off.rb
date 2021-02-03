@@ -31,10 +31,14 @@ module Invent
       def send_to_stock
         @order = Warehouse::Orders::CreateByInvItem.new(current_user, @item, :in)
 
-        return true if @order.run
+        if @order.run
+          data[:barcode] = @item.barcode_item.id
 
-        @error = @order.error
-        raise 'Сервис CreateByInvItem для создания приходного ордера завершился с ошибкой'
+          return 
+        else
+          @error = @order.error
+          raise 'Сервис CreateByInvItem для создания приходного ордера завершился с ошибкой'
+        end
       end
 
       def send_to_write_off

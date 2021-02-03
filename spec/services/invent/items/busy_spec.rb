@@ -174,8 +174,8 @@ module Invent
       end
 
       context 'when item belongs to operation with processing status' do
-        let!(:operation_1) { create(:order_operation, stockman_id_tn: user.id_tn, status: :done, inv_items: [item]) }
-        let!(:operation_2) { create(:order_operation, inv_items: [item]) }
+        let!(:operation_1) { build(:order_operation, stockman_id_tn: user.id_tn, status: :done, inv_items: [item]) }
+        let!(:operation_2) { build(:order_operation, inv_items: [item]) }
         let!(:order) { create(:order, operation: :in, consumer_id_tn: user.id_tn, operations: [operation_2]) }
 
         its(:run) { is_expected.to be_falsey }
@@ -187,7 +187,7 @@ module Invent
       end
 
       context 'when item belongs to operation with done status' do
-        let!(:operation) { create(:order_operation, stockman_id_tn: user.id_tn, status: :done, inv_items: [item]) }
+        let!(:operation) { build(:order_operation, stockman_id_tn: user.id_tn, status: :done, inv_items: [item]) }
 
         it 'shows this item in result array' do
           subject.run

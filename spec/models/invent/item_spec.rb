@@ -3,7 +3,7 @@ require 'feature_helper'
 module Invent
   RSpec.describe Item, type: :model do
     it { is_expected.to have_one(:warehouse_item).with_foreign_key('invent_item_id').class_name('Warehouse::Item').dependent(:nullify) }
-    it { is_expected.to have_one(:barcode_item).class_name('Barcode').dependent(:destroy) }
+    it { is_expected.to have_one(:barcode_item).class_name('Barcode').dependent(:destroy).inverse_of(:codeable) }
     it { is_expected.to have_many(:property_values).inverse_of(:item).dependent(:destroy).order('invent_property.property_order') }
     it { is_expected.to have_many(:standard_discrepancies).class_name('Standard::Discrepancy').dependent(:destroy) }
     it { is_expected.to have_many(:standard_logs).class_name('Standard::Log') }
@@ -12,8 +12,8 @@ module Invent
     it { is_expected.to have_many(:warehouse_orders).through(:warehouse_operations).class_name('Warehouse::Order').source(:operationable) }
     it { is_expected.to have_many(:warehouse_items).through(:property_values).class_name('Warehouse::Item').with_foreign_key('warehouse_item_id') }
     it { is_expected.to belong_to(:type) }
-    it { is_expected.to belong_to(:workplace) }
-    it { is_expected.to belong_to(:model) }
+    it { is_expected.to belong_to(:workplace).optional }
+    it { is_expected.to belong_to(:model).optional }
     it { is_expected.to validate_presence_of(:invent_num) }
     it { is_expected.to validate_presence_of(:barcode_item) }
     it { is_expected.to delegate_method(:properties).to(:type) }

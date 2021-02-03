@@ -3,7 +3,7 @@ require 'feature_helper'
 describe 'Audit' do
   subject { Audit }
 
-  describe '#configuration_data' do
+  describe '::configuration_data' do
     let(:audit) { build(:audit) }
 
     context 'when mac-address is valid' do

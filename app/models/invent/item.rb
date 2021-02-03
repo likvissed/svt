@@ -12,7 +12,7 @@ module Invent
     MOVE_ITEM_TYPES = %w[prepared_to_swap waiting_bring waiting_take].freeze
 
     has_one :warehouse_item, foreign_key: 'invent_item_id', class_name: 'Warehouse::Item', dependent: :nullify
-    has_one :barcode_item, as: :codeable, class_name: 'Barcode', dependent: :destroy
+    has_one :barcode_item, as: :codeable, class_name: 'Barcode', dependent: :destroy, inverse_of: :codeable
     has_many :property_values,
              -> { joins('LEFT OUTER JOIN invent_property ON invent_property_value.property_id = invent_property.property_id').order('invent_property.property_order').includes(:property) },
              inverse_of: :item, dependent: :destroy
@@ -44,10 +44,7 @@ module Invent
     before_update :prevent_update
     # before_save :model_id_nil_if_model_item
 
-    scope :barcode_item, ->(barcode_item) do
-      joins("INNER JOIN #{Barcode.table_name} barcodes ON barcodes.codeable_id = invent_item.item_id")
-        .where('id = ?', barcode_item)
-    end
+    scope :barcode_item, ->(barcode) { joins(:barcode_item).where(barcodes: { id: barcode }) }
     scope :type_id, ->(type_id) { where(type_id: type_id) }
     scope :invent_num, ->(invent_num) { where('invent_num LIKE ?', "%#{invent_num}%").limit(RECORD_LIMIT) }
     scope :serial_num, ->(serial_num) { where('serial_num LIKE ?', "%#{serial_num}%").limit(RECORD_LIMIT) }

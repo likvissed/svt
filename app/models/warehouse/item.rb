@@ -8,7 +8,7 @@ module Warehouse
     has_many :property_values, -> { left_outer_joins(:property).order('invent_property.property_order').includes(:property) },
              inverse_of: :item, dependent: :destroy, foreign_key: 'warehouse_item_id'
 
-    has_one :barcode_item, as: :codeable, class_name: 'Barcode', dependent: :destroy
+    has_one :barcode_item, as: :codeable, class_name: 'Barcode', dependent: :destroy, inverse_of: :codeable
     has_one :invent_property_value, class_name: 'Invent::PropertyValue', dependent: :destroy, foreign_key: 'warehouse_item_id', autosave: true
     has_one :item, through: :invent_property_value, class_name: 'Invent::Item', foreign_key: 'id'
 
@@ -47,30 +47,23 @@ module Warehouse
 
     scope :barcode_with_invent_item, ->(barcode_item) do
       joins("INNER JOIN
-              invent_item inv_item
-            ON
-              inv_item.item_id = warehouse_items.invent_item_id
-            INNER JOIN
-              #{Barcode.table_name} barcodes
-            ON
-              barcodes.codeable_id = inv_item.item_id
-                AND
-              barcodes.codeable_type = 'Invent::Item'
-            ")
+            invent_item inv_item
+          ON
+            inv_item.item_id = warehouse_items.invent_item_id
+          INNER JOIN
+            barcodes
+          ON
+            barcodes.codeable_id = inv_item.item_id
+              AND
+            barcodes.codeable_type = 'Invent::Item'
+          ")
         .where(barcodes: { id: barcode_item })
     end
     scope :barcode_with_warehouse_item, ->(barcode_item) do
-      joins("INNER JOIN
-        #{Barcode.table_name} barcodes
-      ON
-        barcodes.codeable_id = warehouse_items.id
-          AND
-        barcodes.codeable_type = 'Warehouse::Item'
-      ")
-        .where(barcodes: { id: barcode_item })
+      joins(:barcode_item).where(barcodes: { id: barcode_item })
     end
     scope :barcode_item, ->(barcode_item) do
-      barcode_with_warehouse_item(barcode_item).present? ? barcode_with_warehouse_item(barcode_item) : barcode_with_invent_item(barcode_item)
+      barcode_with_warehouse_item(barcode_item).presence || barcode_with_invent_item(barcode_item)
     end
 
     scope :building_id, ->(building_id) do

@@ -36,7 +36,7 @@ module Warehouse
       end
 
       def filtering_params
-        JSON.parse(params[:filters]).slice('id', 'invent_workplace_id', 'invent_num', 'consumer_dept', 'operation', 'creator_fio', 'consumer_fio')
+        JSON.parse(params[:filters]).slice('id', 'invent_workplace_id', 'invent_num', 'barcode', 'consumer_dept', 'operation', 'creator_fio', 'consumer_fio')
       end
 
       def limit_records

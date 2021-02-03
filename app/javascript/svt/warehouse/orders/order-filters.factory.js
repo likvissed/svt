@@ -14,6 +14,7 @@ import { app } from '../../app/app';
         id                 : '',
         invent_workplace_id: '',
         invent_num         : '',
+        barcode            : '',
         division           : '',
         operation          : '',
         creator_fio        : '',

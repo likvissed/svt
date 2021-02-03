@@ -51,7 +51,6 @@ module Invent
                      :type,
                      :model,
                      :barcode_item,
-                     :warehouse_item,
                      { warehouse_item: :location },
                      { property_values: %i[property property_list] },
                      workplace: %i[user_iss iss_reference_room]
@@ -64,7 +63,6 @@ module Invent
             :type,
             :model,
             :barcode_item,
-            :warehouse_item,
             { warehouse_item: { include: :location } },
             { property_values: { include: %i[property property_list] } },
             { workplace: {

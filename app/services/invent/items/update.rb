@@ -36,10 +36,14 @@ module Invent
       end
 
       def update_item
-        return if @item.update(@item_params)
+        if @item.update(@item_params)
+          data[:barcode] = @item.barcode_item.id 
 
-        error[:full_message] = @item.errors.full_messages.join('. ')
-        raise 'Данные не обновлены'
+          return
+        else
+          error[:full_message] = @item.errors.full_messages.join('. ')
+          raise 'Данные не обновлены'
+        end
       end
     end
   end

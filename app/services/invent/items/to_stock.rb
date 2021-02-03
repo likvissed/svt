@@ -35,6 +35,7 @@ module Invent
         @item.warehouse_items.each { |w_item| assign_location(w_item.as_json) } if @item.warehouse_items.present?
 
         if @order.run
+          data[:barcode] = @item.barcode_item.id
           location_for_w_item
           UnregistrationWorker.perform_async(@item.invent_num, current_user.access_token)
 
