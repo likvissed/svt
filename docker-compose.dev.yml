@@ -3,7 +3,7 @@ version: "3.9"
 x-app: &app
   build:
     context: .
-    dockerfile: Dockerfile
+    dockerfile: docker/app/app.dev.Dockerfile
     args:
       RUBY_VERSION: 2.5.5
       BUNDLER_VERSION: 2.0.2
@@ -18,8 +18,8 @@ x-app: &app
 x-backend: &backend
   <<: *app
   volumes:
-    - .:/app:cached
     - bundle:/usr/local/bundle
+    - .:/app:cached
     - rails_cache:/app/tmp/cache
     - node_modules:/app/node_modules
     - packs:/app/public/packs
@@ -30,18 +30,20 @@ x-backend: &backend
   depends_on:
     - mysql
     - redis
+  env_file:
+    - .env
 
 services:
   runner:
     <<: *backend
     command: /bin/bash
 
-  rails:
+  app:
     <<: *backend
     restart: unless-stopped
     ports:
       - "3000"
-    command: bundle exec rails server -b 0.0.0.0
+    command: bundle exec puma -C config/puma.rb
 
   nginx:
     image: nginx:1.19.6-alpine
@@ -53,8 +55,8 @@ services:
       - type: bind
         source: ./
         target: /app
-      - .docker/nginx/:/etc/nginx/conf.d/
-      - .docker/tls/:/etc/pki/tls/nginx/
+      - ./docker/nginx/nginx.dev.conf:/etc/nginx/conf.d/nginx.dev.conf
+      - ./docker/tls/:/etc/pki/tls/nginx/
     stdin_open: true
     tty: true
     networks:
@@ -63,24 +65,23 @@ services:
   mysql:
     image: mysql:5.7
     volumes:
-      - ./docker/mysql/:/etc/mysql/conf.d/
       - mysql:/var/lib/mysql
     environment:
-      MYSQL_ROOT_PASSWORD: "root_pwd"
+      MYSQL_ROOT_PASSWORD: ${MYSQL_DEV_ROOT_PASSWORD}
       MYSQL_DATABASE: ${MYSQL_DEV_DATABASE}
       MYSQL_USER: ${MYSQL_DEV_USER}
       MYSQL_PASSWORD: ${MYSQL_DEV_PASSWORD}
     restart: always
     networks:
       - svt
+    command: --character-set-server=utf8mb4 --collation-server=utf8mb4_general_ci
 
   mysql-test:
     image: mysql:5.7
     volumes:
-      - ./docker/mysql/:/etc/mysql/conf.d/
       - mysql-test:/var/lib/mysql
     environment:
-      MYSQL_ROOT_PASSWORD: "root-test_pwd"
+      MYSQL_ROOT_PASSWORD: "${MYSQL_TEST_ROOT_PASSWORD}"
       MYSQL_DATABASE: ${MYSQL_TEST_DATABASE}
       MYSQL_USER: ${MYSQL_TEST_USER}
       MYSQL_PASSWORD: ${MYSQL_TEST_PASSWORD}
