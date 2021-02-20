@@ -16,6 +16,7 @@ x-app: &app
 
 x-backend: &backend
   <<: *app
+  image: $CI_REGISTRY_IMAGE
   volumes:
     - rails_cache:/app/tmp/cache
   environment:
@@ -45,6 +46,7 @@ services:
       dockerfile: docker/nginx/nginx.Dockerfile
       args:
         RAILS_ROOT: /app
+    image: $CI_REGISTRY_IMAGE
     restart: unless-stopped
     ports:
       - 80:80
