@@ -11,7 +11,7 @@ docker-build-master:
     - chmod 644 ~/.ssh/known_hosts
     - echo "$CI_REGISTRY_PASSWORD" | docker login -u "$CI_REGISTRY_USER" $CI_REGISTRY --password-stdin
     - cp $DOTENV .env
-    - mkdir -p config/database.yml
+    - mkdir config
     - cp $DATABASE config/database.yml
   script:
     - docker-compose -f docker-compose.prod.yml -p svt-test build --build-arg http_proxy=$http_proxy --build-arg https_proxy=$https_proxy
