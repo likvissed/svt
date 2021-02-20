@@ -33,8 +33,6 @@ services:
     <<: *backend
     image: ${CI_REGISTRY_IMAGE}/${DEPLOY_PROJECT_NAME}_app
     restart: unless-stopped
-    ports:
-      - 3000
     volumes:
       - assets:/app/public
     command: bundle exec puma -C config/puma.rb
