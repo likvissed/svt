@@ -16,7 +16,6 @@ x-app: &app
 
 x-backend: &backend
   <<: *app
-  image: $CI_REGISTRY_IMAGE
   volumes:
     - rails_cache:/app/tmp/cache
   environment:
@@ -32,6 +31,7 @@ x-backend: &backend
 services:
   app:
     <<: *backend
+    image: ${CI_REGISTRY_IMAGE}/${DEPLOY_PROJECT_NAME}_app
     restart: unless-stopped
     ports:
       - 3000
@@ -46,7 +46,7 @@ services:
       dockerfile: docker/nginx/nginx.Dockerfile
       args:
         RAILS_ROOT: /app
-    image: $CI_REGISTRY_IMAGE
+    image: ${CI_REGISTRY_IMAGE}/${DEPLOY_PROJECT_NAME}_nginx
     restart: unless-stopped
     ports:
       - 80:80
@@ -78,6 +78,7 @@ services:
 
   sidekiq:
     <<: *backend
+    image: ${CI_REGISTRY_IMAGE}/${DEPLOY_PROJECT_NAME}_sidekiq
     depends_on:
       - redis
     restart: unless-stopped
