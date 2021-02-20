@@ -59,8 +59,8 @@ RUN gem install bundler:${BUNDLER_VERSION}
 RUN echo 'gem: --no-rdoc --no-ri' > ~/.gemrc
 
 # Set yarn proxy
-RUN yarn config set proxy ${HTTP_PROXY} \
-  && yarn config set https-proxy ${HTTP_PROXY}
+RUN yarn config set proxy ${http_proxy} \
+  && yarn config set https-proxy ${http_proxy}
 
 # Create app folder
 RUN mkdir -p ${RAILS_ROOT}
