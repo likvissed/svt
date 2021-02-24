@@ -17,8 +17,6 @@ x-app: &app
 x-backend: &backend
   <<: *app
   volumes:
-    - bundle:/usr/local/bundle
-    - node_modules:/app/node_modules
     - rails_cache:/app/tmp/cache
   environment:
     BOOTSNAP_CACHE_DIR: /usr/local/bundle/_bootsnap
@@ -93,5 +91,3 @@ volumes:
   rails_cache:
   assets:
   redis:
-  bundle:
-  node_modules:
