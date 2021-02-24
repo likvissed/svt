@@ -65,6 +65,16 @@ RUN yarn config set proxy ${http_proxy} \
 RUN mkdir -p ${RAILS_ROOT}
 WORKDIR ${RAILS_ROOT}
 
+# Install gems
+COPY Gemfile .
+COPY Gemfile.lock .
+RUN bundle install --jobs 4 --without development test
+
+# Install yarn packages
+COPY package.json .
+COPY yarn.lock .
+RUN yarn install
+
 COPY . .
 RUN mkdir -p tmp/pids
 
