@@ -1,52 +1,51 @@
 default: &default
   adapter: mysql2
   encoding: utf8
-  pool: <%= ENV.fetch("RAILS_MAX_THREADS") { 25 } %>
+  pool: <%= ENV.fetch("RAILS_MAX_THREADS") { 5 } %>
   socket: /var/run/mysqld/mysqld.sock
   timeout: 5000
   # strict: false
-
-netadmin: &netadmin
-  <<: *default
   host: <%= ENV["MYSQL_NETADMIN_HOST"] %>
+
+netadmin_dev: &netadmin_dev
+  <<: *default
+  username: <%= ENV["MYSQL_DEV_USER"] %>
+  password: <%= ENV["MYSQL_DEV_PASSWORD"] %>
+
+netadmin_test: &netadmin_test
+  <<: *default
+  username: <%= ENV["MYSQL_TEST_USER"] %>
+  password: <%= ENV["MYSQL_TEST_PASSWORD"] %>
+
+# ================================================ БД условно локальная ================================================
 
 # Локальные учетные данные (содержит список пользователей и ролей)
 development:
-  <<: *default
-  database: <%= ENV["MYSQL_DEV_DATABASE"] %>
-  username: <%= ENV["MYSQL_DEV_USER"] %>
-  password: <%= ENV["MYSQL_DEV_PASSWORD"] %>
-  host: <%= ENV["MYSQL_DEV_HOST"] %>
+  <<: *netadmin_dev
+  database: svt_dev
 
 test:
-  <<: *default
-  database: <%= ENV["MYSQL_TEST_DATABASE"] %>
-  username: <%= ENV["MYSQL_TEST_USER"] %>
-  password: <%= ENV["MYSQL_TEST_PASSWORD"] %>
-  host: <%= ENV["MYSQL_TEST_HOST"] %>
+  <<: *netadmin_test
+  database: svt_test
+
+#  ================================================ БД инвентаризации ===================================================
 
 # Учетные данные БД СВТ
 development_invent:
-  <<: *netadmin
-  database:
-  username:
-  password:
+  <<: *netadmin_dev
+  database: invent_development
 
 test_invent:
-  <<: *netadmin
-  database:
-  username:
-  password:
+  <<: *netadmin_test
+  database: invent_test
+
+#================================================ БД Netadmin =========================================================
 
 # Учетные данные БД Netadmin
 development_netadmin:
-  <<: *netadmin
-  database:
-  username:
-  password:
+  <<: *netadmin_dev
+  database: netadmin
 
 test_netadmin:
-  <<: *netadmin
-  database:
-  username:
-  password:
+  <<: *netadmin_test
+  database: netadmin

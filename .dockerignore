@@ -23,6 +23,9 @@ pickle-email-*.html
 # dotenv
 .env
 
+# git
+.git/
+
 ## Environment normalization:
 /.bundle
 /vendor/bundle

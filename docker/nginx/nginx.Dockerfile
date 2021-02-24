@@ -10,7 +10,7 @@ COPY public/ public/
 COPY docker/nginx/nginx.prod.conf /tmp/nginx.prod.conf
 COPY docker/tls/ /etc/pki/tls/nginx/
 
-RUN envsubst '$RAILS_ROOT' < /tmp/nginx.prod.conf > /etc/nginx/conf.d/default.conf
+RUN envsubst '$RAILS_ROOT $HOSTNAME' < /tmp/nginx.prod.conf > /etc/nginx/conf.d/default.conf
 
 EXPOSE 80
 EXPOSE 443

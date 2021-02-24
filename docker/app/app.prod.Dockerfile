@@ -23,7 +23,6 @@ RUN apt-get update -qq && apt-get install -yq --no-install-recommends \
     curl \
     locales \
     tzdata \
-    netcat \
   && apt-get clean \
   && rm -rf /var/cache/apt/archives/* \
   && rm -rf /var/lib/apt/lists/* /tmp/* /var/tmp/* \
@@ -65,16 +64,6 @@ RUN yarn config set proxy ${http_proxy} \
 # Create app folder
 RUN mkdir -p ${RAILS_ROOT}
 WORKDIR ${RAILS_ROOT}
-
-# Install gems
-COPY Gemfile .
-COPY Gemfile.lock .
-RUN bundle install --jobs 4 --without development test
-
-# Install yarn packages
-COPY package.json .
-COPY yarn.lock .
-RUN yarn install
 
 COPY . .
 RUN mkdir -p tmp/pids

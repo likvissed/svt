@@ -17,13 +17,14 @@ x-app: &app
 x-backend: &backend
   <<: *app
   volumes:
+    - bundle:/usr/local/bundle
+    - node_modules:/app/node_modules
     - rails_cache:/app/tmp/cache
   environment:
     BOOTSNAP_CACHE_DIR: /usr/local/bundle/_bootsnap
   stdin_open: true
   tty: true
   depends_on:
-    - mysql
     - redis
   env_file:
     - .env
@@ -37,6 +38,12 @@ services:
       - assets:/app/public
     command: bundle exec puma -C config/puma.rb
     entrypoint: docker/entrypoint.sh
+    deploy:
+      resources:
+        reservations:
+          memory: 1gb
+        limits:
+          memory: 2gb
 
   nginx:
     build:
@@ -55,24 +62,20 @@ services:
       - app
     stdin_open: true
     tty: true
-
-  mysql:
-    image: mysql:5.7
-    volumes:
-      - mysql:/var/lib/mysql
-    environment:
-      MYSQL_ROOT_PASSWORD: ${MYSQL_PRODUCTION_ROOT_PASSWORD}
-      MYSQL_DATABASE: ${MYSQL_PRODUCTION_DATABASE}
-      MYSQL_USER: ${MYSQL_PRODUCTION_USER}
-      MYSQL_PASSWORD: ${MYSQL_PRODUCTION_PASSWORD}
-    restart: always
-    command: --character-set-server=utf8mb4 --collation-server=utf8mb4_general_ci
+    deploy:
+      resources:
+        limits:
+          memory: 500m
 
   redis:
     image: redis:5.0
     volumes:
       - redis:/data
     restart: always
+    deploy:
+      resources:
+        limits:
+          memory: 500m
 
   sidekiq:
     <<: *backend
@@ -81,9 +84,14 @@ services:
       - redis
     restart: unless-stopped
     command: bundle exec sidekiq -C config/sidekiq.yml
+    deploy:
+      resources:
+        limits:
+          memory: 1gb
 
 volumes:
   rails_cache:
   assets:
-  mysql:
   redis:
+  bundle:
+  node_modules:
