@@ -28,7 +28,7 @@ x-backend: &backend
   stdin_open: true
   tty: true
   depends_on:
-    - mysql
+    # - mysql
     - redis
   env_file:
     - .env
@@ -41,8 +41,6 @@ services:
   app:
     <<: *backend
     restart: unless-stopped
-    ports:
-      - "3000"
     command: bundle exec puma -C config/puma.rb
 
   nginx:
@@ -62,35 +60,35 @@ services:
     networks:
       - svt
 
-  mysql:
-    image: mysql:5.7
-    volumes:
-      - mysql:/var/lib/mysql
-    environment:
-      MYSQL_ROOT_PASSWORD: ${MYSQL_DEV_ROOT_PASSWORD}
-      MYSQL_DATABASE: ${MYSQL_DEV_DATABASE}
-      MYSQL_USER: ${MYSQL_DEV_USER}
-      MYSQL_PASSWORD: ${MYSQL_DEV_PASSWORD}
-    restart: always
-    networks:
-      - svt
-    command: --character-set-server=utf8mb4 --collation-server=utf8mb4_general_ci
+  # mysql:
+  #   image: mysql:5.7
+  #   volumes:
+  #     - mysql:/var/lib/mysql
+  #   environment:
+  #     MYSQL_ROOT_PASSWORD: ${MYSQL_DEV_ROOT_PASSWORD}
+  #     MYSQL_DATABASE: ${MYSQL_DEV_DATABASE}
+  #     MYSQL_USER: ${MYSQL_DEV_USER}
+  #     MYSQL_PASSWORD: ${MYSQL_DEV_PASSWORD}
+  #   restart: always
+  #   networks:
+  #     - svt
+  #   command: --character-set-server=utf8mb4 --collation-server=utf8mb4_general_ci
 
-  mysql-test:
-    image: mysql:5.7
-    volumes:
-      - mysql-test:/var/lib/mysql
-    environment:
-      MYSQL_ROOT_PASSWORD: "${MYSQL_TEST_ROOT_PASSWORD}"
-      MYSQL_DATABASE: ${MYSQL_TEST_DATABASE}
-      MYSQL_USER: ${MYSQL_TEST_USER}
-      MYSQL_PASSWORD: ${MYSQL_TEST_PASSWORD}
-    restart: always
-    networks:
-      - svt
+  # mysql-test:
+  #   image: mysql:5.7
+  #   volumes:
+  #     - mysql-test:/var/lib/mysql
+  #   environment:
+  #     MYSQL_ROOT_PASSWORD: "${MYSQL_TEST_ROOT_PASSWORD}"
+  #     MYSQL_DATABASE: ${MYSQL_TEST_DATABASE}
+  #     MYSQL_USER: ${MYSQL_TEST_USER}
+  #     MYSQL_PASSWORD: ${MYSQL_TEST_PASSWORD}
+  #   restart: always
+  #   networks:
+  #     - svt
 
   redis:
-    image: redis:5.0
+    image: redis:5.0.11
     volumes:
       - redis:/data
     restart: always
@@ -124,8 +122,8 @@ volumes:
   rails_cache:
   node_modules:
   packs:
-  mysql:
-  mysql-test:
+  # mysql:
+  # mysql-test:
   redis:
 
 networks:
