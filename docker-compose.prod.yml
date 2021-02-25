@@ -63,7 +63,7 @@ services:
     deploy:
       resources:
         limits:
-          memory: 500m
+          memory: 400m
 
   redis:
     image: redis:5.0.11
@@ -73,7 +73,7 @@ services:
     deploy:
       resources:
         limits:
-          memory: 500m
+          memory: 400m
 
   sidekiq:
     <<: *backend
