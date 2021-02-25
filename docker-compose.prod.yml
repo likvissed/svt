@@ -32,8 +32,6 @@ services:
     <<: *backend
     image: ${CI_REGISTRY_IMAGE}/${DEPLOY_PROJECT_NAME}_app
     restart: unless-stopped
-    volumes:
-      - assets:/app/public
     command: bundle exec puma -C config/puma.rb
     entrypoint: docker/entrypoint.sh
     deploy:
@@ -54,8 +52,6 @@ services:
     ports:
       - 80:80
       - 443:443
-    volumes:
-      - assets:/app/public
     depends_on:
       - app
     stdin_open: true
@@ -89,5 +85,4 @@ services:
 
 volumes:
   rails_cache:
-  assets:
   redis:

@@ -5,7 +5,7 @@ ENV RAILS_ROOT ${RAILS_ROOT}
 
 WORKDIR ${RAILS_ROOT}
 RUN mkdir log
-COPY public/ public/
+COPY --from=${CI_REGISTRY_IMAGE}/${DEPLOY_PROJECT_NAME}_app /app/public/ public/
 
 COPY docker/nginx/nginx.prod.conf /tmp/nginx.prod.conf
 COPY docker/tls/ /etc/pki/tls/nginx/

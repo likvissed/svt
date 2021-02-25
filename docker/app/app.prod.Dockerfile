@@ -1,5 +1,6 @@
+# FIRST STAGE
 ARG RUBY_VERSION
-FROM ruby:${RUBY_VERSION}-slim-buster
+FROM docker-hub.***REMOVED***.ru/registry/languages/ruby:${RUBY_VERSION}-slim-buster-gembuilder AS build
 
 ARG BUNDLER_VERSION
 ARG NODE_MAJOR
@@ -8,32 +9,9 @@ ARG RAILS_ROOT
 ARG RAILS_ENV
 
 ENV TZ=Asia/Krasnoyarsk
-ENV LANG ru_RU.UTF-8
-ENV LANGUAGE ru_RU:ru
-ENV LC_ALL ru_RU.UTF-8
 ENV RAILS_ENV ${RAILS_ENV}
 ENV NODE_ENV ${RAILS_ENV}
-
 ENV DEBIAN_FRONTEND noninteractive
-
-# Common packages
-RUN apt-get update -qq && apt-get install -yq --no-install-recommends \
-    build-essential \
-    gnupg2 \
-    curl \
-    locales \
-    tzdata \
-  && apt-get clean \
-  && rm -rf /var/cache/apt/archives/* \
-  && rm -rf /var/lib/apt/lists/* /tmp/* /var/tmp/* \
-  && truncate -s 0 /var/log/*log
-
-# Set RU locale
-RUN sed -i -e 's/# ru_RU.UTF-8 UTF-8/ru_RU.UTF-8 UTF-8/' /etc/locale.gen && \
-    dpkg-reconfigure locales && \
-    update-locale LANG=ru_RU.UTF-8 && \
-    locale-gen ru_RU.UTF-8 && \
-    dpkg-reconfigure locales
 
 # NodeJS
 RUN curl -sL https://deb.nodesource.com/setup_${NODE_MAJOR}.x | bash -
@@ -45,8 +23,6 @@ RUN curl -sS https://dl.yarnpkg.com/debian/pubkey.gpg | apt-key add - \
 # Install dependencies
 RUN apt-get update -qq && apt-get -yq dist-upgrade \
   && apt-get install -yq --no-install-recommends \
-    libpq-dev \
-    default-libmysqlclient-dev \
     nodejs \
     yarn=${YARN_VERSION}-1 \
     && apt-get clean \
@@ -76,6 +52,48 @@ COPY yarn.lock .
 RUN yarn install
 
 COPY . .
+RUN DEVISE_SECRET_KEY=`bin/rake secret` bundle exec rake assets:precompile
+
+# SECONDS STAGE
+FROM ruby:${RUBY_VERSION}-slim-buster
+
+ARG RAILS_ROOT
+ARG RAILS_ENV
+
+ENV TZ=Asia/Krasnoyarsk
+ENV LANG ru_RU.UTF-8
+ENV LANGUAGE ru_RU:ru
+ENV LC_ALL ru_RU.UTF-8
+ENV RAILS_ENV ${RAILS_ENV}
+ENV NODE_ENV ${RAILS_ENV}
+
+ENV DEBIAN_FRONTEND noninteractive
+
+# Install locales
+RUN apt-get update -qq && apt-get install -yq --no-install-recommends \
+    locales \
+    tzdata \
+  && apt-get clean \
+  && rm -rf /var/cache/apt/archives/* \
+  && rm -rf /var/lib/apt/lists/* /tmp/* /var/tmp/* \
+  && truncate -s 0 /var/log/*log
+
+# Set RU locale
+RUN sed -i -e 's/# ru_RU.UTF-8 UTF-8/ru_RU.UTF-8 UTF-8/' /etc/locale.gen && \
+    dpkg-reconfigure locales && \
+    update-locale LANG=ru_RU.UTF-8 && \
+    locale-gen ru_RU.UTF-8 && \
+    dpkg-reconfigure locales
+
+# Create app folder
+RUN mkdir -p ${RAILS_ROOT}
+WORKDIR ${RAILS_ROOT}
+
+# Copy files
+COPY --from=build /usr/local/bundle /usr/local/bundle
+COPY --from=build /app/public /app/public
+COPY . .
+
 RUN mkdir -p tmp/pids
 
 STOPSIGNAL SIGTERM
