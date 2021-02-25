@@ -42,8 +42,7 @@ RUN mkdir -p ${RAILS_ROOT}
 WORKDIR ${RAILS_ROOT}
 
 # Install gems
-COPY Gemfile .
-COPY Gemfile.lock .
+COPY Gemfile* .
 RUN bundle install --jobs 4 --without development test
 
 # Install yarn packages
@@ -59,6 +58,7 @@ FROM ruby:${RUBY_VERSION}-slim-buster
 
 ARG RAILS_ROOT
 ARG RAILS_ENV
+ARG BUNDLER_VERSION
 
 ENV TZ=Asia/Krasnoyarsk
 ENV LANG ru_RU.UTF-8
@@ -88,6 +88,9 @@ RUN sed -i -e 's/# ru_RU.UTF-8 UTF-8/ru_RU.UTF-8 UTF-8/' /etc/locale.gen && \
 # Create app folder
 RUN mkdir -p ${RAILS_ROOT}
 WORKDIR ${RAILS_ROOT}
+
+# Install bundler
+RUN gem install bundler:${BUNDLER_VERSION}
 
 # Copy files
 COPY --from=build /usr/local/bundle /usr/local/bundle
