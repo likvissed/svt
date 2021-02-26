@@ -20,6 +20,7 @@ x-backend: &backend
     - rails_cache:/app/tmp/cache
   environment:
     BOOTSNAP_CACHE_DIR: /usr/local/bundle/_bootsnap
+    RAILS_LOG_TO_STDOUT: true
   stdin_open: true
   tty: true
   depends_on:
