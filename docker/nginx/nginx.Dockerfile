@@ -1,5 +1,8 @@
 # ARG IMAGE_NAME=${CI_REGISTRY_IMAGE}/${DEPLOY_PROJECT_NAME}_app
-FROM docker-hub.***REMOVED***.ru/***REMOVED***/***REMOVED***/svt/svt-test_app:latest AS app
+ARG CI_REGISTRY_IMAGE
+ARG DEPLOY_PROJECT_NAME
+FROM ${CI_REGISTRY_IMAGE}/${DEPLOY_PROJECT_NAME}:latest AS app
+# FROM docker-hub.***REMOVED***.ru/***REMOVED***/***REMOVED***/svt/svt_app:latest AS app
 FROM nginx:1.19.6-alpine
 
 ARG RAILS_ROOT
