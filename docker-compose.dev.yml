@@ -3,7 +3,7 @@ version: "3.9"
 x-app: &app
   build:
     context: .
-    dockerfile: docker/app/app.dev.Dockerfile
+    dockerfile: .docker/app/app.dev.Dockerfile
     args:
       RUBY_VERSION: 2.5.5
       BUNDLER_VERSION: 2.0.2

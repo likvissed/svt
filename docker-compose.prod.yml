@@ -3,7 +3,7 @@ version: "3.9"
 x-app: &app
   build:
     context: .
-    dockerfile: docker/app/app.prod.Dockerfile
+    dockerfile: .docker/app/app.prod.Dockerfile
     args:
       RUBY_VERSION: 2.5.5
       BUNDLER_VERSION: 2.0.2
@@ -34,7 +34,7 @@ services:
     image: ${CI_REGISTRY_IMAGE}/${DEPLOY_PROJECT_NAME}_app
     restart: unless-stopped
     command: bundle exec puma -C config/puma.rb
-    entrypoint: docker/entrypoint.sh
+    entrypoint: .docker/entrypoint.sh
     deploy:
       resources:
         reservations:
@@ -45,7 +45,7 @@ services:
   nginx:
     build:
       context: .
-      dockerfile: docker/nginx/nginx.Dockerfile
+      dockerfile: .docker/nginx/nginx.Dockerfile
       args:
         RAILS_ROOT: /app
         APP_HOSTNAME: svt
