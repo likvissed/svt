@@ -48,6 +48,7 @@ services:
       dockerfile: docker/nginx/nginx.Dockerfile
       args:
         RAILS_ROOT: /app
+        APP_HOSTNAME: svt
     image: ${CI_REGISTRY_IMAGE}/${DEPLOY_PROJECT_NAME}_nginx
     restart: unless-stopped
     ports:
