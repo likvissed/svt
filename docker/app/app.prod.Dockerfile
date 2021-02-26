@@ -69,10 +69,11 @@ ENV NODE_ENV ${RAILS_ENV}
 
 ENV DEBIAN_FRONTEND noninteractive
 
-# Install locales
+# Install dependencies
 RUN apt-get update -qq && apt-get install -yq --no-install-recommends \
     locales \
     tzdata \
+    default-libmysqlclient-dev \
   && apt-get clean \
   && rm -rf /var/cache/apt/archives/* \
   && rm -rf /var/lib/apt/lists/* /tmp/* /var/tmp/* \
