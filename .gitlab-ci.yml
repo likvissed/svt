@@ -19,4 +19,4 @@ docker-build-master:
     - docker-compose -f docker-compose.prod.yml -p svt -H "ssh://$DEPLOY_USER@$PRODUCTION_SERVER" down --remove-orphans
     - docker-compose -f docker-compose.prod.yml -p svt -H "ssh://$DEPLOY_USER@$PRODUCTION_SERVER" up -d
   only:
-    - master
+    - develop
