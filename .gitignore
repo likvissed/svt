@@ -71,7 +71,7 @@ config/redis.yml
 
 .lib/AuditBot/var/auditbot.log
 .env
-config/secrets.yml
+# config/secrets.yml
 /node_modules
 /public/packs
 /public/packs-test

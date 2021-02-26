@@ -12,7 +12,7 @@
 
 ActiveRecord::Schema.define(version: 20171018041102) do
 
-  create_table "roles", id: :integer, force: :cascade, options: "ENGINE=InnoDB DEFAULT CHARSET=utf8" do |t|
+  create_table "roles", id: :integer, force: :cascade, options: "ENGINE=InnoDB DEFAULT CHARSET=utf8mb4" do |t|
     t.string "name", limit: 64
     t.string "short_description", limit: 64
     t.string "long_description"
@@ -20,7 +20,7 @@ ActiveRecord::Schema.define(version: 20171018041102) do
     t.datetime "updated_at", null: false
   end
 
-  create_table "standard_discrepancies", id: :integer, force: :cascade, options: "ENGINE=InnoDB DEFAULT CHARSET=utf8" do |t|
+  create_table "standard_discrepancies", id: :integer, force: :cascade, options: "ENGINE=InnoDB DEFAULT CHARSET=utf8mb4" do |t|
     t.integer "item_id"
     t.integer "property_id"
     t.integer "property_value_id"
@@ -32,7 +32,7 @@ ActiveRecord::Schema.define(version: 20171018041102) do
     t.index ["property_value_id"], name: "index_standard_discrepancies_on_property_value_id"
   end
 
-  create_table "standard_log_details", id: :integer, force: :cascade, options: "ENGINE=InnoDB DEFAULT CHARSET=utf8" do |t|
+  create_table "standard_log_details", id: :integer, force: :cascade, options: "ENGINE=InnoDB DEFAULT CHARSET=utf8mb4" do |t|
     t.integer "log_id"
     t.integer "property_id"
     t.string "old_detail"
@@ -43,7 +43,7 @@ ActiveRecord::Schema.define(version: 20171018041102) do
     t.index ["property_id"], name: "index_standard_log_details_on_property_id"
   end
 
-  create_table "standard_logs", id: :integer, force: :cascade, options: "ENGINE=InnoDB DEFAULT CHARSET=utf8" do |t|
+  create_table "standard_logs", id: :integer, force: :cascade, options: "ENGINE=InnoDB DEFAULT CHARSET=utf8mb4" do |t|
     t.integer "item_id"
     t.string "username"
     t.integer "event"
@@ -52,7 +52,7 @@ ActiveRecord::Schema.define(version: 20171018041102) do
     t.index ["item_id"], name: "index_standard_logs_on_item_id"
   end
 
-  create_table "users", id: :integer, force: :cascade, options: "ENGINE=InnoDB DEFAULT CHARSET=utf8" do |t|
+  create_table "users", id: :integer, force: :cascade, options: "ENGINE=InnoDB DEFAULT CHARSET=utf8mb4" do |t|
     t.integer "id_tn", null: false
     t.integer "tn", null: false
     t.string "fullname"

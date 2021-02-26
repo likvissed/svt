@@ -1,0 +1,22 @@
+docker-build-master:
+  image: docker-hub.***REMOVED***.ru/registry/docker:latest
+  stage: build
+  before_script:
+    - apk add --no-cache docker-compose openssh-client
+    - mkdir -p ~/.ssh
+    - echo "$ID_RSA" > ~/.ssh/id_ed25519
+    - chmod -R 700 ~/.ssh
+    - ssh-keyscan $PRODUCTION_SERVER >> ~/.ssh/known_hosts
+    - ssh-keyscan $(getent hosts $PRODUCTION_SERVER | cut -d' ' -f1) >> ~/.ssh/known_hosts
+    - chmod 644 ~/.ssh/known_hosts
+    - echo "$CI_REGISTRY_PASSWORD" | docker login -u "$CI_REGISTRY_USER" $CI_REGISTRY --password-stdin
+    - cp $DOTENV .env
+    - cp $DATABASE config/database.yml
+  script:
+    - docker-compose -f docker-compose.prod.yml -p svt build --build-arg http_proxy=$http_proxy --build-arg https_proxy=$https_proxy
+    - docker-compose -f docker-compose.prod.yml -p svt push
+    - docker-compose -f docker-compose.prod.yml -p svt -H "ssh://$DEPLOY_USER@$PRODUCTION_SERVER" pull
+    - docker-compose -f docker-compose.prod.yml -p svt -H "ssh://$DEPLOY_USER@$PRODUCTION_SERVER" down --remove-orphans
+    - docker-compose -f docker-compose.prod.yml -p svt -H "ssh://$DEPLOY_USER@$PRODUCTION_SERVER" up -d
+  only:
+    - master

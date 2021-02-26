@@ -37,7 +37,7 @@ development:
     https: false
     host: webpacker
     port: 3035
-    public: https://localhost.***REMOVED***.ru:8443
+    public: https://localhost.***REMOVED***.ru
     hmr: true
     # Inline should be set to true if using HMR
     inline: true

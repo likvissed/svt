@@ -22,6 +22,7 @@ RUN apt-get update -qq && apt-get install -yq --no-install-recommends \
     git \
     locales \
     tzdata \
+    netcat \
   && apt-get clean \
   && rm -rf /var/cache/apt/archives/* \
   && rm -rf /var/lib/apt/lists/* /tmp/* /var/tmp/* \
@@ -62,9 +63,5 @@ RUN yarn config set proxy ${HTTP_PROXY} \
 # Create app folder
 RUN mkdir -p ${RAILS_ROOT}
 WORKDIR ${RAILS_ROOT}
-
-# Copy tls
-RUN mkdir /tls
-COPY .docker/tls/ /tls/
 
 STOPSIGNAL SIGTERM
