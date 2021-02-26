@@ -53,8 +53,8 @@ services:
       - type: bind
         source: ./
         target: /app
-      - ./docker/nginx/nginx.dev.conf:/etc/nginx/conf.d/nginx.dev.conf
-      - ./docker/tls/:/etc/pki/tls/nginx/
+      - ./.docker/nginx/nginx.dev.conf:/etc/nginx/conf.d/nginx.dev.conf
+      - ./.docker/tls/:/etc/pki/tls/nginx/
     stdin_open: true
     tty: true
     networks:
