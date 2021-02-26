@@ -13,10 +13,10 @@ docker-build-master:
     - cp $DOTENV .env
     - cp $DATABASE config/database.yml
   script:
-    - docker-compose -f docker-compose.prod.yml -p svt-test build --build-arg http_proxy=$http_proxy --build-arg https_proxy=$https_proxy
-    - docker-compose -f docker-compose.prod.yml -p svt-test push
-    - docker-compose -f docker-compose.prod.yml -p svt-test -H "ssh://$DEPLOY_USER@$PRODUCTION_SERVER" pull
-    - docker-compose -f docker-compose.prod.yml -p svt-test -H "ssh://$DEPLOY_USER@$PRODUCTION_SERVER" down --remove-orphans
-    - docker-compose -f docker-compose.prod.yml -p svt-test -H "ssh://$DEPLOY_USER@$PRODUCTION_SERVER" up -d
+    - docker-compose -f docker-compose.prod.yml -p svt build --build-arg http_proxy=$http_proxy --build-arg https_proxy=$https_proxy
+    - docker-compose -f docker-compose.prod.yml -p svt push
+    - docker-compose -f docker-compose.prod.yml -p svt -H "ssh://$DEPLOY_USER@$PRODUCTION_SERVER" pull
+    - docker-compose -f docker-compose.prod.yml -p svt -H "ssh://$DEPLOY_USER@$PRODUCTION_SERVER" down --remove-orphans
+    - docker-compose -f docker-compose.prod.yml -p svt -H "ssh://$DEPLOY_USER@$PRODUCTION_SERVER" up -d
   only:
-    - docker-settings
+    - master
