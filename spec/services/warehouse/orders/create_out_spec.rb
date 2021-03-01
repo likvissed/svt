@@ -228,6 +228,38 @@ module Warehouse
 
         include_examples 'specs for failed on create :out order'
       end
+
+      context 'when have item for assign barcode' do
+        let!(:inv_item) { create(:item, :with_property_values, type_name: :printer, status: :in_workplace) }
+        let(:workplace) do
+          w = build(:workplace_net_print, items: [inv_item])
+          w.save(validate: false)
+          w
+        end
+
+        let(:item) { create(:used_item, warehouse_type: :without_invent_num, item_type: 'Картридж', item_model: '6515DNI', count: 1) }
+        let(:operation) { attributes_for(:order_operation, item_id: item.id, shift: -1) }
+
+        let(:order_params) do
+          order = attributes_for(:order, operation: :out, invent_workplace_id: workplace.workplace_id, invent_num: workplace.items.first.invent_num)
+          order[:operations_attributes] = [operation]
+          order
+        end
+
+        it { is_expected.to be_valid }
+
+        it 'order :out is created' do
+          expect { subject.run }.to change(Order, :count)
+        end
+
+        context 'and when invent_num for order incorrect' do
+          before { order_params[:invent_num] = order_params[:invent_num].to_i + 1 }
+
+          it 'order :out is not created' do
+            expect { subject.run }.not_to change(Order, :count)
+          end
+        end
+      end
     end
   end
 end

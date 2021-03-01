@@ -2,7 +2,7 @@ require 'feature_helper'
 
 module Warehouse
   RSpec.describe Supply, type: :model do
-    it { is_expected.to have_many(:operations).dependent(:destroy) }
+    it { is_expected.to have_many(:operations).dependent(:destroy).inverse_of(:operationable) }
     it { is_expected.to have_many(:items).through(:operations) }
     it { is_expected.to validate_presence_of(:name) }
     it { is_expected.to validate_presence_of(:date) }

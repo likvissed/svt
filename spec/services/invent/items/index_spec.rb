@@ -17,9 +17,9 @@ module Invent
         expect(subject.data.keys).to include(*data_keys)
       end
 
-      it 'adds %w[model description translated_status label_status] field to each item' do
+      it 'adds %w[barcode model description translated_status label_status location] field to each item' do
         subject.run
-        expect(subject.data[:data].first).to include('model', 'description', 'translated_status', 'label_status')
+        expect(subject.data[:data].first).to include('barcode', 'model', 'description', 'translated_status', 'label_status', 'location')
       end
 
       context 'with init_filters' do
@@ -57,8 +57,14 @@ module Invent
           subject.run
         end
 
-        context 'and with item_id filter' do
-          let(:filters) { { item_id: item.item_id } }
+        context 'and with item_barcode filter' do
+          let(:filters) { { barcode_item: item.barcode_item.id } }
+          let(:data_items) do
+            data = {}
+            data[:data] = [item]
+            data
+          end
+          before { subject.instance_variable_set(:@data, data_items) }
 
           it 'returns filtered data' do
             expect(subject.data[:data].count).to eq 1
@@ -83,6 +89,32 @@ module Invent
           it 'returns filtered data' do
             expect(subject.data[:data].count).to eq 1
             expect(subject.data[:data].first['invent_num']).to eq item.invent_num
+          end
+
+          context 'and when workplace is empty' do
+            let!(:item) { create(:item, :with_property_values, type_name: :monitor) }
+
+            it 'returns filtered data' do
+              subject.data[:data].each do |el|
+                expect(el['location']).to eq 'Не назначено'
+              end
+            end
+
+            context 'and when item have warehouse_item with location' do
+              let(:location) { create(:location) }
+              let(:w_item) { create(:used_item, count: 0, count_reserved: 0, location: location) }
+              let!(:item) { create(:item, :with_property_values, type_name: :monitor, warehouse_item: w_item) }
+
+              let(:site_name) { IssReferenceSite.find(item.warehouse_item.location.site_id).name }
+              let(:building_name) { IssReferenceBuilding.find(item.warehouse_item.location.building_id).name }
+              let(:room_name) { IssReferenceRoom.find(item.warehouse_item.location.room_id).name }
+
+              it 'returns filtered data' do
+                subject.data[:data].each do |el|
+                  expect(el['location']).to eq "Пл. '#{site_name}', корп. #{building_name}, комн. #{room_name}"
+                end
+              end
+            end
           end
         end
 

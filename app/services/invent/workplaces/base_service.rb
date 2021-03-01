@@ -47,6 +47,22 @@ module Invent
         end
       end
 
+      def assing_barcode
+        @workplace_params['items_attributes'].each do |item|
+          next if item['barcode_item_attributes'].present?
+
+          item['barcode_item_attributes'] = Barcode.new(codeable_type: 'Invent::Item').as_json
+        end
+      end
+
+      def delete_property_value
+        @workplace_params['items_attributes'].each do |item|
+          next if item['property_values_attributes'].blank?
+
+          item['property_values_attributes'] = delete_blank_and_assign_barcode_prop_value(item['property_values_attributes'])
+        end
+      end
+
       def fill_swap_arr
         @swap = []
         @workplace_params['items_attributes']&.delete_if { |i| @swap << i['id'] if i['status'] == 'prepared_to_swap' }

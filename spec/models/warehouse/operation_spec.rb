@@ -4,8 +4,8 @@ module Warehouse
   RSpec.describe Operation, type: :model do
     it { is_expected.to have_many(:inv_item_to_operations).dependent(:destroy) }
     it { is_expected.to have_many(:inv_items).through(:inv_item_to_operations).class_name('Invent::Item') }
-    it { is_expected.to belong_to(:item) }
-    it { is_expected.to belong_to(:stockman).class_name('UserIss').with_foreign_key('stockman_id_tn') }
+    it { is_expected.to belong_to(:item).optional }
+    it { is_expected.to belong_to(:stockman).class_name('UserIss').with_foreign_key('stockman_id_tn').optional }
     it { is_expected.to belong_to(:operationable) }
     it { is_expected.to validate_presence_of(:item_type) }
     it { is_expected.to validate_presence_of(:item_model) }
@@ -14,6 +14,8 @@ module Warehouse
     it { is_expected.not_to validate_presence_of(:stockman_fio) }
     it { is_expected.not_to validate_presence_of(:date) }
     it { is_expected.to accept_nested_attributes_for(:inv_items).allow_destroy(false) }
+
+    let(:order) { create(:order) }
 
     context 'when :shift attribute is equal zero' do
       subject { build(:supply_operation, shift: 0) }
@@ -45,7 +47,7 @@ module Warehouse
     end
 
     describe '#build_inv_items' do
-      subject { create(:order_operation, item: item, shift: -2) }
+      subject { create(:order_operation, item: item, shift: -2, operationable: order) }
 
       context 'when :warehouse_type attribute of item has :without_invent_num value' do
         let(:item) { create(:new_item, warehouse_type: :without_invent_num) }
@@ -70,6 +72,10 @@ module Warehouse
               expect(inv_item.workplace).to eq workplace_2
               expect(inv_item.status).to eq status
             end
+          end
+
+          it 'barcode for item is present' do
+            subject.inv_items.each { |inv_item| expect(inv_item.barcode_item).to exist }
           end
         end
 
@@ -102,7 +108,7 @@ module Warehouse
       let(:item) { create(:new_item, warehouse_type: :without_invent_num, count: 20) }
 
       context 'when operation is a new record' do
-        subject { build(:order_operation, item: item, shift: -4) }
+        subject { build(:order_operation, item: item, shift: -4, operationable: order) }
 
         it 'increased :count_reserved attribute' do
           subject.calculate_item_count_reserved
@@ -113,7 +119,7 @@ module Warehouse
 
       context 'when operation already exists' do
         let(:item) { create(:new_item, warehouse_type: :without_invent_num, count: 20, count_reserved: 15) }
-        subject { create(:order_operation, item: item, shift: -4) }
+        subject { create(:order_operation, item: item, shift: -4, operationable: order) }
 
         context 'and when operation marked for destruction' do
           before { subject.mark_for_destruction }
@@ -162,7 +168,7 @@ module Warehouse
 
       context 'with supply operation' do
         context 'and when operation is a new record' do
-          subject { build(:supply_operation, item: item, shift: 4) }
+          subject { build(:supply_operation, item: item, shift: 4, operationable: order) }
 
           it 'increased :count_reserved attribute' do
             subject.calculate_item_count
@@ -171,7 +177,7 @@ module Warehouse
         end
 
         context 'and when operation already exists' do
-          subject { create(:supply_operation, item: item, shift: 4) }
+          subject { create(:supply_operation, item: item, shift: 4, operationable: order) }
 
           context 'and when operation marked for destruction' do
             before { subject.mark_for_destruction }
@@ -245,7 +251,7 @@ module Warehouse
       let!(:item) { build(:new_item, warehouse_type: :with_invent_num, count: 0, invent_num_start: 765_100) }
 
       context 'when operation is a new record' do
-        subject { build(:supply_operation, item: item, shift: 25) }
+        subject { build(:supply_operation, item: item, shift: 25, operationable: order) }
 
         it 'calculate :invent_num_end attribute' do
           subject.calculate_item_invent_num_end
@@ -255,7 +261,7 @@ module Warehouse
       end
 
       context 'when operation already exists' do
-        subject { create(:supply_operation, item: item, shift: 4) }
+        subject { create(:supply_operation, item: item, shift: 4, operationable: order) }
 
         context 'and when operation marked for destruction' do
           before { subject.mark_for_destruction }
@@ -345,7 +351,7 @@ module Warehouse
         context 'and when operation with :processing status for specified item is not exist' do
           let(:item) { create(:item, :with_property_values, type_name: :monitor) }
           let(:used_item) { create(:used_item, inv_item: item) }
-          subject { build(:order_operation, item: used_item) }
+          subject { build(:order_operation, item: used_item, operationable: order) }
 
           it { is_expected.to be_valid }
         end
@@ -356,7 +362,7 @@ module Warehouse
           let(:used_item) { create(:used_item, inv_item: inv_item) }
           let(:operation) { build(:order_operation, inv_items: [inv_item], item: used_item) }
           let!(:order) { create(:order, inv_workplace: workplace, operations: [operation]) }
-          subject { build(:order_operation, item: order.items.first) }
+          subject { build(:order_operation, item: order.items.first, operationable: order) }
 
           it 'adds :operation_already_exists error' do
             subject.valid?
@@ -374,7 +380,7 @@ module Warehouse
       context 'when item type is :without_ivnent_num' do
         context 'and when operation with :processing status for specified item is not exist' do
           let(:used_item) { create(:used_item, item_type: 'test', item_model: 'test', warehouse_type: :without_invent_num, count: 1) }
-          subject { build(:order_operation, item: used_item) }
+          subject { build(:order_operation, item: used_item, operationable: order) }
 
           it { is_expected.to be_valid }
         end
@@ -427,7 +433,7 @@ module Warehouse
     describe '#prevent_change_status' do
       context 'when status was done and changed to :processing' do
         let(:user) { create(:user) }
-        subject { create(:order_operation, status: :done, stockman_id_tn: user.id_tn) }
+        subject { create(:order_operation, status: :done, stockman_id_tn: user.id_tn, operationable: order) }
         before do
           subject.status = 'processing'
           subject.save
@@ -445,7 +451,7 @@ module Warehouse
 
     describe '#prevent_update' do
       let(:user) { create(:user) }
-      subject { create(:order_operation, status: :done, stockman_id_tn: user.id_tn) }
+      subject { create(:order_operation, status: :done, stockman_id_tn: user.id_tn, operationable: order) }
 
       context 'when status is done and another attribute was changed' do
         let(:new_user) { create(:***REMOVED***_user) }
@@ -457,7 +463,7 @@ module Warehouse
 
     describe '#prevent_destroy' do
       let(:user) { create(:user) }
-      let!(:operation) { create(:order_operation, status: :done, stockman_id_tn: user.id_tn) }
+      let!(:operation) { create(:order_operation, status: :done, stockman_id_tn: user.id_tn, operationable: order) }
 
       it 'does not destroy operation' do
         expect { operation.destroy }.not_to change(Operation, :count)

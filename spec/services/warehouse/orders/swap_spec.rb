@@ -10,6 +10,48 @@ module Warehouse
       let(:swap_items) { [workplace_2.items.last.item_id, workplace_3.items.first.item_id] }
       subject { Swap.new(current_user, workplace_1.workplace_id, swap_items) }
 
+      context 'when present property with barcode fo item' do
+        let(:property_with_barcode) { Invent::Property.find_by(short_description: Invent::Property::LIST_TYPE_FOR_BARCODES.first.capitalize) }
+        let(:inv_property_value) { create(:property_value, property: property_with_barcode, item: workplace_2.items.last) }
+        let(:warehouse_item) do
+          w_item = create(:used_item, warehouse_type: :without_invent_num, count: 2, count_reserved: 1, item_type: 'Картридж', item_model: '6515DNI')
+          w_item.build_barcode_item
+          w_item.invent_property_value = inv_property_value
+
+          w_item.save(validate: false)
+          w_item
+        end
+
+        before { workplace_2.items.last.warehouse_items = [warehouse_item] }
+
+        it 'creates warehouse_operations records' do
+          expect { subject.run }.to change(Operation, :count).by(swap_items.size * 2 + (workplace_2.items.last.warehouse_items.size * 2))
+        end
+
+        it 'ets fields the each operation' do
+          subject.run
+
+          Order.all.includes(:operations).each do |order|
+            order.operations.each do |op|
+              if op.operationable.operation == 'in'
+                expect(op.shift).to eq(1)
+              elsif op.operationable.operation == 'out'
+                expect(op.shift).to eq(-1)
+              end
+
+              next if op.item_type != warehouse_item.item_type
+
+              expect(op.status).to eq 'done'
+              expect(op.item_type).to eq warehouse_item.item_type
+              expect(op.item_model).to eq warehouse_item.item_model
+              expect(op.item_id).to eq warehouse_item.id
+              expect(op.stockman_id_tn).to eq current_user.id_tn
+              expect(op.stockman_fio).to eq current_user.fullname
+            end
+          end
+        end
+      end
+
       it 'creates warehouse_operations records' do
         expect { subject.run }.to change(Operation, :count).by(swap_items.size * 2)
       end

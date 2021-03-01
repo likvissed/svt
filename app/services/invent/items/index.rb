@@ -15,6 +15,7 @@ module Invent
         load_filters if need_init_filters?
         load_items
         limit_records
+        load_locations
         prepare_to_render
 
         true
@@ -40,7 +41,7 @@ module Invent
       def filtering_params
         filters = JSON.parse(params[:filters])
         filters['for_statuses'] = data[:filters][:statuses].select { |filter| filter[:default] }.as_json if need_init_filters?
-        filters.slice('item_id', 'type_id', 'invent_num', 'serial_num', 'item_model', 'responsible', 'properties', 'for_statuses', 'location_building_id', 'location_room_id', 'priority', 'workplace_count_id')
+        filters.slice('barcode_item', 'type_id', 'invent_num', 'serial_num', 'item_model', 'responsible', 'properties', 'for_statuses', 'location_building_id', 'location_room_id', 'priority', 'workplace_count_id')
       end
 
       def limit_records
@@ -49,8 +50,10 @@ module Invent
                    .includes(
                      :type,
                      :model,
+                     :barcode_item,
+                     { warehouse_item: :location },
                      { property_values: %i[property property_list] },
-                     workplace: :user_iss
+                     workplace: %i[user_iss iss_reference_room]
                    ).order(item_id: :desc).limit(params[:length]).offset(params[:start])
       end
 
@@ -59,16 +62,25 @@ module Invent
           include: [
             :type,
             :model,
+            :barcode_item,
+            { warehouse_item: { include: :location } },
             { property_values: { include: %i[property property_list] } },
-            { workplace: { include: :user_iss } }
+            { workplace: {
+              include: %i[
+                user_iss
+                iss_reference_room
+              ]
+            } }
           ],
           methods: :need_battery_replacement?
         ).each do |item|
+          item['barcode'] = item['barcode_item'].present? ? item['barcode_item']['id'] : 'Не назначен'
           item['model'] = item['model'].nil? ? item['item_model'] : item['model']['item_model']
           item['description'] = item['property_values'].map { |prop_val| property_value_info(prop_val) }.join('; ')
           item['translated_status'] = (str = Item.translate_enum(:status, item['status'])).is_a?(String) ? str : ''
           item['translated_priority'] = Item.translate_enum(:priority, item['priority'])
           item['label_status'] = label_status(item, item['translated_status'])
+          item['location'] = location_string(item)
         end
       end
 
@@ -111,10 +123,40 @@ module Invent
         "<span class='label #{label_class}'>#{text}</span>"
       end
 
+      def location_string(item)
+        location_name = if item.try(:[], 'workplace').try(:[], 'iss_reference_room')
+                          existence_of_location(
+                            item['workplace']['location_site_id'],
+                            item['workplace']['location_building_id'],
+                            item['workplace']['location_room_id']
+                          )
+                        elsif item.try(:[], 'warehouse_item').try(:[], 'location')
+                          existence_of_location(
+                            item['warehouse_item']['location']['site_id'],
+                            item['warehouse_item']['location']['building_id'],
+                            item['warehouse_item']['location']['room_id']
+                          )
+                        end
+
+        location_name.present? ? location_name : 'Не назначено'
+      end
+
+      def existence_of_location(site_id, building_id, room_id)
+        site = data[:locations].find { |location| location['site_id'] == site_id }
+        building = site['iss_reference_buildings'].find { |b| b['building_id'] == building_id }
+        room = building['iss_reference_rooms'].find { |b| b['room_id'] == room_id }
+
+        "Пл. '#{site['short_name']}', корп. #{building['name']}, комн. #{room['name']}" if room.present?
+      end
+
       def item_statuses
         statuses = Invent::Item.statuses.map { |key, val| { id: val, status: key, label: Invent::Item.translate_enum(:status, key) } }
         statuses.each { |status| status[:default] = DEFAULT_STATUS_FILTER.include?(status[:status]) }
         statuses
+      end
+
+      def load_locations
+        data[:locations] = Invent::LkInvents::InitProperties.new(current_user).load_locations
       end
     end
   end

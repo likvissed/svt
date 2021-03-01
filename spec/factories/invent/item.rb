@@ -10,6 +10,10 @@ module Invent
       sequence(:invent_num) { |i| 764_196 + i }
       sequence(:serial_num) { |i| 222_222 + i }
 
+      after(:build) do |item|
+        item.build_barcode_item
+      end
+
       transient do
         # Имя типа, указанное в таблице invent_type (поле name).
         type_name { nil }
@@ -20,6 +24,8 @@ module Invent
       # Ситуация, когда пользователь заполнил поля.
       trait :with_property_values do
         after(:build) do |item, evaluator|
+          item.build_barcode_item
+
           item.properties.each do |prop|
             if evaluator.property_values.empty?
               # Если property_values пуст, создать дефотлные значения.
@@ -93,6 +99,7 @@ module Invent
       # Ситуация, когда пользователь не заполнил поля.
       trait :without_property_values do
         after(:build) do |item|
+          item.build_barcode_item
           item.properties.each do |prop|
             case prop.property_type
             when 'string'

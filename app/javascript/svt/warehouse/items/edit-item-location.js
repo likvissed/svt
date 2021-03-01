@@ -34,6 +34,9 @@ import { app } from '../../app/app';
         { id: this.item.id },
         { item: this.item },
         (response) => {
+          // Назначается расположение после обновления приходного ордера
+          this.item.location = response.data.json_item.location;
+
           this.Flash.notice(response.full_message);
           this.$uibModalInstance.close();
         },

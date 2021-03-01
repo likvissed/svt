@@ -12,6 +12,9 @@ module Invent
 
       def run
         find_item
+        if @item_params['property_values_attributes'].present?
+          @item_params['property_values_attributes'] = delete_blank_and_assign_barcode_prop_value(@item_params['property_values_attributes'])
+        end
         update_item
 
         broadcast_items
@@ -33,10 +36,14 @@ module Invent
       end
 
       def update_item
-        return if @item.update(@item_params)
+        if @item.update(@item_params)
+          data[:barcode] = @item.barcode_item.id 
 
-        error[:full_message] = @item.errors.full_messages.join('. ')
-        raise 'Данные не обновлены'
+          return
+        else
+          error[:full_message] = @item.errors.full_messages.join('. ')
+          raise 'Данные не обновлены'
+        end
       end
     end
   end

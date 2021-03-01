@@ -89,6 +89,69 @@ module Warehouse
             expect(existing_item.reload.item_model).to eq 'qwerty'
           end
         end
+
+        context 'and when warehouse_item is property inv_item and have barcode' do
+          let(:inv_item) do
+            i_item = build(:item, :with_property_values, type_name: :printer)
+            i_item.workplace = workplace_1
+            i_item.save(validate: false)
+            i_item
+          end
+          let(:existing_item) do
+            w_item = build(:new_item, warehouse_type: :without_invent_num, item_type: 'картридж', item_model: '6515DNI', count: 1)
+            w_item.build_barcode_item
+            w_item.item = inv_item
+            w_item.save(validate: false)
+            w_item
+          end
+          let(:operation_5) { attributes_for(:order_operation, item_type: existing_item.item_type, item_model: existing_item.item_model, w_item_id: existing_item.id) }
+
+          before do
+            order_params[:operations_attributes] << operation_5
+            inv_item.warehouse_items = [existing_item]
+          end
+
+          it 'creates warehouse_operations records' do
+            expect { subject.run }.to change(Order, :count).by(order_params[:operations_attributes].size)
+          end
+
+          context 'and when in one order adds w_item with barcode of different workplaces' do
+            let(:inv_item_2) do
+              i_item = build(:item, :with_property_values, type_name: :printer)
+              i_item.workplace = workplace_2
+              i_item.save(validate: false)
+              i_item
+            end
+            let(:existing_item_2) do
+              w_item = build(:new_item, warehouse_type: :without_invent_num, item_type: 'картридж', item_model: '875553I', count: 1)
+              w_item.build_barcode_item
+              w_item.item = inv_item_2
+              w_item.save(validate: false)
+              w_item
+            end
+            let(:operation_6) { attributes_for(:order_operation, item_type: existing_item_2.item_type, item_model: existing_item_2.item_model, w_item_id: existing_item_2.id) }
+            let(:order_params) do
+              order = attributes_for(:order)
+              order[:operations_attributes] = []
+              order
+            end
+
+            before do
+              order_params[:operations_attributes] = [operation_5, operation_6]
+
+              inv_item.warehouse_items = [existing_item]
+              inv_item_2.warehouse_items = [existing_item_2]
+            end
+
+            it 'creates warehouse_orders records' do
+              expect { subject.run }.to change(Order, :count).by(order_params[:operations_attributes].size)
+            end
+
+            it 'creates warehouse_operations records' do
+              expect { subject.run }.to change(Operation, :count).by(order_params[:operations_attributes].size)
+            end
+          end
+        end
       end
 
       it 'creates warehouse_operations records' do

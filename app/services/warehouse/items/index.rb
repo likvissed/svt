@@ -14,7 +14,7 @@ module Warehouse
       def run
         load_order_items
         load_other_items
-        init_filters if need_init_filters?
+        init_filters
         load_orders
         limit_records
         load_locations
@@ -50,7 +50,7 @@ module Warehouse
       end
 
       def filtering_params
-        JSON.parse(params[:filters]).slice('show_only_presence', 'status', 'item_type', 'barcode', 'item_model', 'invent_num', 'invent_item_id', 'building_id', 'room_id')
+        JSON.parse(params[:filters]).slice('show_only_presence', 'status', 'item_type', 'barcode', 'item_model', 'invent_num', 'barcode_item', 'building_id', 'room_id')
       end
 
       def limit_records
@@ -67,7 +67,7 @@ module Warehouse
           start = @start - @order_items_to_result.size
         end
 
-        @items = @items.includes(:inv_item, :inv_type, :supplies, :location).where.not(id: @exclude_items.map(&:id)).order(id: :desc).limit(limit).offset(start)
+        @items = @items.includes(:inv_type, :supplies, :location, :barcode_item, inv_item: :barcode_item).where.not(id: @exclude_items.map(&:id)).order(id: :desc).limit(limit).offset(start)
       end
 
       def load_locations
@@ -81,8 +81,22 @@ module Warehouse
                        @items
                      end
 
-        data[:data] = result_arr.as_json(include: %i[inv_item inv_type supplies location]).each do |item|
+        data[:data] = result_arr.as_json(
+          include: [
+            :inv_type,
+            :supplies,
+            :location,
+            :barcode_item,
+            inv_item: { include: :barcode_item }
+          ]
+        ).each do |item|
           item['range_inv_nums'] = item['invent_num_end'].to_i.zero? ? '' : "#{item['invent_num_start']} - #{item['invent_num_end']}"
+
+          item['barcode_item'] = if item['invent_item_id'].present?
+                                   item['inv_item']['barcode_item']['id']
+                                 elsif item['barcode_item'].present?
+                                   item['barcode_item']['id']
+                                 end
 
           item['location_name'] = 'Не назначено'
 
@@ -114,7 +128,12 @@ module Warehouse
 
       def init_filters
         data[:filters] = {}
-        data[:filters][:item_types] = Item.pluck(:item_type).uniq
+
+        data[:filters][:item_types] = if need_init_filters?
+                                        Item.show_only_presence.pluck(:item_type).uniq
+                                      else
+                                        Item.pluck(:item_type).uniq
+                                      end
         data[:filters][:statuses] = Item.statuses.map { |key, _val| [key, Item.translate_enum(:status, key)] }.to_h
         data[:filters][:buildings] = IssReferenceBuilding
                                        .select('iss_reference_sites.name as site_name, iss_reference_buildings.*')

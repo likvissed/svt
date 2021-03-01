@@ -2,7 +2,7 @@ module Warehouse
   class Order < BaseWarehouse
     self.table_name = "#{table_name_prefix}orders"
 
-    has_many :operations, as: :operationable, dependent: :destroy
+    has_many :operations, as: :operationable, dependent: :destroy, inverse_of: :operationable
     has_many :inv_item_to_operations, through: :operations
     has_many :inv_items, through: :operations
     has_many :items, through: :operations
@@ -17,18 +17,23 @@ module Warehouse
     validates :validator_fio, presence: { message: :empty }, if: -> { out? && !skip_validator }
     validates :closed_time, presence: true, if: -> { done? }
     validates :invent_workplace_id, presence: true, if: -> { out? }
-    validates :invent_num, presence: true, if: -> { operation == 'out' && operations.any? { |oop| oop.item.present? && oop.item.warehouse_type == 'without_invent_num' } }
+    validates :invent_num, presence: true, if: -> { operation == 'out' && operations.any? { |oop| oop.item.present? && oop.item.warehouse_type == 'without_invent_num' && oop.item.item.blank? } }
 
     validate :presence_consumer, if: -> { operations.any?(&:done?) && !write_off? }
     validate :at_least_one_operation
     validate :validate_in_order, if: -> { in? }
     validate :validate_write_off_order, if: -> { write_off? }
+    validate :present_invent_workplace_id, if: -> { out? }
     validate :present_user_iss
+    validate :present_item_for_barcode, if: -> { operation == 'out' && invent_num.present? && property_with_barcode == true }
+    validate :check_absent_warehouse_items_for_inv_item, if: -> { execute_in == true }
 
     after_initialize :set_initial_status, if: -> { new_record? }
     before_validation :set_consumer, if: -> { consumer_fio.blank? || consumer_id_tn.blank? }
     before_validation :set_closed_time, if: -> { done? && status_changed? }
-    before_validation :set_workplace, if: -> { errors.empty? && any_inv_item_to_operation? && new_record? && in? }
+    before_validation :set_workplace_inv_items, if: -> { errors.empty? && any_inv_item_to_operation? && new_record? && in? }
+    before_validation :set_workplace_w_item, if: -> { errors.empty? && any_w_item_have_inv_item? && new_record? && in? }
+
     before_validation :set_consumer_dept_out, if: -> { out? }
     before_validation :set_consumer_dept_in, if: -> { in? }
     before_validation :calculate_status, unless: -> { dont_calculate_status }
@@ -43,6 +48,15 @@ module Warehouse
     scope :creator_fio, ->(creator_fio) { where('creator_fio LIKE ?', "%#{creator_fio}%") }
     scope :consumer_fio, ->(consumer_fio) { where('consumer_fio LIKE ?', "%#{consumer_fio}%") }
     scope :invent_num, ->(invent_num) { joins(:inv_items).where(invent_item: { invent_num: invent_num }) }
+    scope :barcode_for_warehouse_item, ->(barcode) do
+      joins(operations: {item: :barcode_item}).where(barcodes: { id: barcode })
+    end
+    scope :barcode_for_invent_item, ->(barcode) do
+      joins(operations: {item: {inv_item: :barcode_item}}).where(barcodes: { id: barcode })
+    end
+    scope :barcode, ->(barcode) do
+      barcode_for_warehouse_item(barcode).presence || barcode_for_invent_item(barcode)
+    end
 
     enum operation: { out: 1, in: 2, write_off: 3 }
     enum status: { processing: 1, done: 2 }
@@ -54,6 +68,10 @@ module Warehouse
     attr_accessor :skip_validator
     # Флаг указывает, что нужно пропустить вычисление статуса
     attr_accessor :dont_calculate_status
+    # Флаг указывает, что нужно проверить инв.№ техники на РМ и чтобы она соответствовала назначению штрих-кода
+    attr_accessor :property_with_barcode
+    # # Флаг указывает, что приходный ордер исполняется
+    attr_accessor :execute_in
 
     def set_creator(user)
       self.creator_id_tn = user.id_tn
@@ -89,6 +107,10 @@ module Warehouse
       operations.any? { |op| op.inv_item_to_operations.any? }
     end
 
+    def any_w_item_have_inv_item?
+      operations.any? { |op| op.try(:item) && op.item.item }
+    end
+
     def consumer_from_history
       return nil unless consumer_fio
 
@@ -96,6 +118,35 @@ module Warehouse
         id_tn: consumer_id_tn,
         fio: consumer_fio
       }
+    end
+
+    # Метод возвращает в массиве технику, тип которой соответствует назначению штрих-кода
+    # и если она существует на рабочем месте с инвентарным номером, который введен в ордере
+    def find_inv_item_for_assign_barcode
+      workplace = Invent::Workplace.find_by(workplace_id: invent_workplace_id)
+      if workplace.present?
+        name_type_for_barcode = []
+        Invent::Property.where(assign_barcode: true).find_each { |prop| prop.types.each { |type| name_type_for_barcode << type.name } }
+
+        invent_item = workplace.items.find { |item| item.invent_num == invent_num.to_s && name_type_for_barcode.include?(item.type.name) }
+
+        return [invent_item] if invent_item.present?
+      end
+
+      return []
+    end
+
+    # Проверка, чтобы у invent_item не было связи с warehouse_item (т.е. назначенных свойств)
+    # для тех позиций, которые отмечены на исполнение
+    def check_absent_warehouse_items_for_inv_item
+      operations.each do |op|
+        next unless op.done? && op.inv_items.present? && op.inv_items.any? { |inv_item| inv_item.warehouse_items.present? }
+
+        arr_type_with_barcode = op.inv_items.map { |inv_item| inv_item.warehouse_items.map(&:item_type).map(&:downcase) }.flatten
+
+        # Возникает эта ошибка, когда сразу исполняют приходный ордер в котором имеются и техника и ее свойста (R: картридж)
+        errors.add(:base, :warehouse_items_is_present, arr_type_with_barcode: arr_type_with_barcode.first)
+      end
     end
 
     protected
@@ -126,7 +177,7 @@ module Warehouse
     def validate_in_order
       # presence_consumer if operations.any?(&:done?)
       check_operation_list
-      uniqueness_of_workplace if any_inv_item_to_operation?
+      uniqueness_of_workplace if any_inv_item_to_operation? || any_w_item_have_inv_item?
       # compare_consumer_dept if any_inv_item_to_operation? && errors.empty?
       check_operation_shift
 
@@ -138,6 +189,12 @@ module Warehouse
       return if operations.all? { |op| !op.item.new? && op.item.status_was != 'non_used' }
 
       errors.add(:base, :order_must_contains_only_used_items)
+    end
+
+    def present_invent_workplace_id
+      return if Invent::Workplace.find_by(workplace_id: invent_workplace_id).present?
+
+      errors.add(:base, :workplace_not_present, workplace_id: invent_workplace_id)
     end
 
     def set_initial_status
@@ -175,8 +232,12 @@ module Warehouse
       self.closed_time = Time.zone.now
     end
 
-    def set_workplace
+    def set_workplace_inv_items
       self.invent_workplace_id = operations.find { |op| op.inv_items.any? }.inv_items.first.workplace_id
+    end
+
+    def set_workplace_w_item
+      self.invent_workplace_id = operations.find { |op| op.try(:item).try(:item) }.item.item.workplace_id
     end
 
     def set_consumer_dept_out
@@ -190,6 +251,9 @@ module Warehouse
     end
 
     def check_operation_list
+      # Если среди операций отсутствует техника без инв.№ и без назначенного штрих-кода
+      return unless operations.any? { |op| op.inv_items.none? && Invent::Property::LIST_TYPE_FOR_BARCODES.exclude?(op.item_type.to_s.downcase) }
+
       if inv_workplace && operations.any? { |op| op.inv_items.none? }
         errors.add(:base, :cannot_have_operations_without_invent_num)
       elsif !inv_workplace && any_inv_item_to_operation?
@@ -199,16 +263,31 @@ module Warehouse
 
     def compare_nested_arrs
       inv_item_to_op_length = operations.map { |op| op.inv_item_to_operations.size }.inject(0) { |sum, x| sum + x }
-      return if operations.size == inv_item_to_op_length
+      inv_item_with_w_item = operations.select do |op|
+        Invent::Property::LIST_TYPE_FOR_BARCODES.include?(op.item_type.to_s.downcase)
+      end
+
+      return if operations.size == inv_item_to_op_length + inv_item_with_w_item.count
 
       errors.add(:base, :nested_arrs_not_equals)
     end
 
     # Проверяет, чтобы техника ордера относилась только к одному рабочему месту
     def uniqueness_of_workplace
-      length = operations.map { |op| op.inv_items.map(&:workplace_id) if op.status_was == 'processing' || op.processing? }.flatten.compact.uniq.length
-      return if [0, 1].include?(length)
+      # Для техники с инв.№
+      wp_id_inv_items = operations.map { |op| op.inv_items.map(&:workplace_id) if op.status_was == 'processing' || op.processing? }.flatten.compact.uniq
+      # Для техники без инв.№ и со штрих-кодом
+      wp_id_w_items = operations.map do |op|
+        if op.try(:item).try(:item).try(:workplace).present? && op.status_was == 'processing' || op.processing?
+          op.try(:item).try(:item).try(:workplace_id)
+        end
+      end.flatten.compact.uniq
 
+      # Если существует техника со штрих-кодом, то разрешить добовлять элементы техники в один ордер,
+      # при условии одинаковых рабочих мест
+      items_with_barcode = wp_id_inv_items.present? && wp_id_w_items.present? ? wp_id_inv_items == wp_id_w_items : true
+
+      return if [0, 1].include?(wp_id_inv_items.length) && [0, 1].include?(wp_id_w_items.length) && items_with_barcode
       errors.add(:base, :uniq_workplace)
     end
 
@@ -250,6 +329,31 @@ module Warehouse
         errors.add(:base, :cannot_destroy_with_done_operations)
         throw(:abort)
       end
+    end
+
+    # Проверка перед созданием расходного ордера и его исполнением на существование РМ,
+    # техники с инв.№ на этом РМ, и чтобы она соответствовала назначению штрих-кода
+    def present_item_for_barcode
+      Rails.logger.info "present_item_for_barcode: #{inv_workplace.inspect}".yellow
+      workplace = Invent::Workplace.find_by_workplace_id(invent_workplace_id)
+
+      if workplace.present?
+        inv_item = find_inv_item_for_assign_barcode
+        Rails.logger.info "inv_item: #{inv_item.inspect}".green
+
+        if inv_item.present?
+          if inv_item.first.status.to_s != 'in_workplace'
+            errors.add(:base, :status_item_on_workplace_not_in_workplace, item_barcode: inv_item.first.barcode_item.id)
+          end
+
+          return
+        end
+      else
+        errors.add(:base, :workplace_not_present, workplace_id: invent_workplace_id)
+        throw(:abort)
+      end
+
+      errors.add(:base, :item_not_find_on_workplace, workplace_id: invent_workplace_id)
     end
   end
 end

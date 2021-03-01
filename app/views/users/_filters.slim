@@ -22,4 +22,4 @@
         = fa_icon "times"
 .col-sm-5.col-md-4.col-xlg-4.col-fhd-3.multiline-buffer
   = text_field_tag "", "", class: "form-control input-sm", placeholder: "ФИО", "ng-model-options": "{ debounce: 300 }",
-    "ng-model": "u_table.selectedTableFilters.fullname", "ng-change": "u_table.reloadUsers()"
+    "ng-model": "u_table.selectedTableFilters.fullname", "ng-change": "u_table.reloadUsers()", "oninput": "this.value = this.value.replace(/[;]/g, '');"

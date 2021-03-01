@@ -53,6 +53,21 @@ module Invent
           subject.run
         end
 
+        context 'and when have item with properties assign barcode' do
+          before do
+            workplace['items_attributes'].push(new_item)
+            workplace['disabled_filters'] = true
+          end
+
+          include_examples 'property_value is creating'
+        end
+
+        it 'count barcode increased' do
+          subject.run
+
+          expect(Barcode.count).to eq workplace['items_attributes'].count
+        end
+
         its(:run) { is_expected.to be_truthy }
       end
 
@@ -68,7 +83,10 @@ module Invent
           ).as_json(
             include: {
               items: {
-                include: :property_values
+                include: %i[
+                  property_values
+                  barcode_item
+                ]
               }
             },
             methods: :location_room_name
@@ -77,14 +95,18 @@ module Invent
           tmp['items_attributes'] = tmp['items']
           tmp['items_attributes'].each do |item|
             item['property_values_attributes'] = item['property_values']
+            item['barcode_item_attributes'] = item['barcode_item']
 
             item.delete('property_values')
+            item.delete('barcode_item')
           end
 
-          new_mon = workplace_2.items.last.as_json(include: :property_values)
+          new_mon = workplace_2.items.last.as_json(include: %i[property_values barcode_item])
           new_mon['status'] = 'prepared_to_swap'
           new_mon['id'] = new_mon['item_id']
           new_mon['property_values_attributes'] = new_mon['property_values']
+          new_mon['barcode_item_attributes'] = new_mon['barcode_item']
+
           new_mon['property_values_attributes'].each do |prop_val|
             prop_val['id'] = prop_val['property_value_id']
 
@@ -93,6 +115,8 @@ module Invent
 
           new_mon.delete('item_id')
           new_mon.delete('property_values')
+          new_mon.delete('barcode_item')
+
           tmp['items_attributes'] << new_mon
 
           tmp.delete('items')
@@ -113,6 +137,19 @@ module Invent
           subject.run
 
           expect(Workplace.last.items.count).to eq 3
+        end
+
+        it 'increment count of barcode for items' do
+          expect { subject.run }.to change(Barcode, :count).by(workplace_2.items.count)
+        end
+
+        it 'barcodes correspond to items' do
+          subject.run
+
+          workplace_2.items.each do |item|
+            expect(item.barcode_item.codeable_type).to eq item.class.name
+            expect(item.barcode_item.codeable_id).to eq item.item_id
+          end
         end
 
         it 'reduces count of items for workplace_2' do

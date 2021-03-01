@@ -33,6 +33,9 @@ module Warehouse
       def update_item_params
         if @item.update(@item_params)
           data[:item] = @item
+          # Добавляется расположение, для ситуаций, когда обновляется расположение в приходном ордере
+          data[:json_item] = @item.as_json(include: [:location])
+
         else
           error[:full_message] = @item.errors.full_messages.join('. ')
 

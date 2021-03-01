@@ -47,9 +47,10 @@ import { app } from '../../app/app';
         // Данные для составления нумерации страниц
         this.TablePaginator.setData(response);
 
+        // Обновляем фильтр "Тип техники" каждый раз
+        this.filters.selItemTypesFiler = response.filters.item_types;
         if (init) {
           // Данные для фильтров
-          this.filters.selItemTypesFiler = response.filters.item_types;
           this.filters.buildings = response.filters.buildings;
           this.filters.selStatusFilter = Object.assign(this.filters.selStatusFilter, response.filters.statuses);
         }

@@ -59,6 +59,8 @@ module Warehouse
             invent_num: item.generate_invent_num(i),
             status: params[:status]
           )
+          new_inv_item.build_barcode_item
+
           new_inv_item.build_property_values(item, true)
         end
       end
@@ -83,6 +85,9 @@ module Warehouse
       elsif status_changed? && done?
         item.count_reserved += shift
       end
+
+      # Чтобы не было отрицательного значения в count_reserved
+      item.count_reserved = 0 if item.count_reserved.negative?
     end
 
     def calculate_item_count

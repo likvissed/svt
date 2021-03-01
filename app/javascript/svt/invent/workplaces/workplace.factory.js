@@ -277,6 +277,8 @@ import { app } from '../../app/app';
     this.Item.setType(item, selectedType);
     item.priorities = this.Item.getPriorities();
 
+    item.barcode_item_attributes = {};
+
     if (item.type_id != 0) {
       this.Item.setModel(item);
 
@@ -315,6 +317,9 @@ import { app } from '../../app/app';
         this.Item.setItemAttributes(item, response.item, this.workplace.workplace_id);
         item.priorities = this.Item.getPriorities();
         item.status = 'prepared_to_swap';
+
+        // Присвоить штрих-код, если техника с другого РМ
+        item.barcode_item_attributes = response.item.barcode_item_attributes;
 
         // Сделать созданный элемент активным в табах.
         this._setActiveTab(length);

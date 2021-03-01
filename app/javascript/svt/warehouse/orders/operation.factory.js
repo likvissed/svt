@@ -37,7 +37,7 @@ import { app } from '../../app/app';
       let op = _getTemplate();
 
       if (_orderOperation == 'in') {
-        if (warehouseType == 'with_invent_num') {
+        if (warehouseType == 'with_invent_num' && item.codeable_type == 'invent') {
           op.inv_items = [item];
           op.inv_item_ids = [item.item_id];
           op.item_type = item.type.short_description;
@@ -47,6 +47,10 @@ import { app } from '../../app/app';
           op.item_type = item.item_type;
           op.item_model = item.item_model;
           op.location = item.location;
+
+          if (item.codeable_type == 'warehouse') {
+            op.w_item_id = item.id;
+          }
         }
       } else if (_orderOperation == 'out' || _orderOperation == 'write_off') {
         op.item_id = item.id;

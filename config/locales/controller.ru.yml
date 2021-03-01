@@ -17,10 +17,10 @@ ru:
       updated: 'Данные одела %{dept} обновлены'
       destroyed: 'Отдел удален'
     invent/item:
-      updated: 'Техника №%{item_id} обновлена'
+      updated: 'Техника №%{barcode} обновлена'
       destroyed: 'Техника удалена'
-      sended_to_stock: 'Техника №%{item_id} отправлена на склад'
-      sended_to_stock_and_waiting_write_off: 'Техника №%{item_id} отправлена на склад, создан ордер на списание'
+      sended_to_stock: 'Техника №%{barcode} отправлена на склад'
+      sended_to_stock_and_waiting_write_off: 'Техника №%{barcode} отправлена на склад, создан ордер на списание'
     invent/model:
       created: 'Модель создана'
       updated: 'Модель обновлена'

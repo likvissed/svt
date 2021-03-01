@@ -31,7 +31,7 @@ module Warehouse
       update_item = Items::Update.new(current_user, params[:id], item_params)
 
       if update_item.run
-        render json: { full_message: I18n.t('controllers.warehouse/item.updated') }
+        render json: { full_message: I18n.t('controllers.warehouse/item.updated'), data: update_item.data }
       else
         render json: update_item.error, status: 422
       end

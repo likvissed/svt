@@ -92,11 +92,13 @@ module Warehouse
             :date,
             :_destroy,
             :to_write_off,
+            :w_item_id,
             inv_item_ids: [],
             inv_items_attributes: [
               :id,
               :serial_num,
               :invent_num,
+              :codeable_type,
               :_destroy
             ],
             location: %i[

@@ -10,6 +10,7 @@ module Invent
       let(:new_model) { Invent::Model.last }
       let(:new_item_model) { 'new_test_item_model' }
       let(:new_invent_num) { '199' }
+      let(:property_with_assign_barcode) { Invent::Property.where(assign_barcode: true).pluck(:property_id) }
       let(:new_item) do
         edit = Edit.new(old_item.item_id)
         edit.run
@@ -22,6 +23,8 @@ module Invent
         data['item_model'] = new_item_model
         data['property_values_attributes'].each do |prop_val|
           prop_val['property_list_id'] = 15
+
+          prop_val['value'] = '' if property_with_assign_barcode.include?(prop_val['property_id'])
 
           prop_val.delete('property_list')
         end
@@ -68,6 +71,23 @@ module Invent
           before { allow_any_instance_of(Invent::Item).to receive(:warehouse_item).and_return(nil) }
 
           its(:run) { is_expected.to be_truthy }
+        end
+
+        context 'and when assign barcode in the property is true' do
+          let!(:old_item) { create(:item, :with_property_values, type_name: :printer) }
+          it 'property value not changed for assign barcode' do
+            sent_property_value = new_item['property_values_attributes'].find do |prop_val|
+              property_with_assign_barcode.include?(prop_val['property_id'])
+            end
+
+            subject.run
+
+            changed_prop_value = old_item.reload.property_values.find do |prop_val|
+              property_with_assign_barcode.include?(prop_val['property_id'])
+            end
+
+            expect(changed_prop_value.value).not_to eq sent_property_value['value']
+          end
         end
       end
 

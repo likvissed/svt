@@ -24,4 +24,4 @@
         = fa_icon "times"
 .col-fhd-4.col-xlg-4.col-lg-6.col-sm-6.multiline-buffer
   = text_field_tag "", "", class: "form-control input-sm", placeholder: "Модель", "ng-model-options": "{ debounce: 300 }",
-  "ng-model": "m_table.selectedTableFilters.item_model", "ng-change": "m_table.reloadModels()"
+  "ng-model": "m_table.selectedTableFilters.item_model", "ng-change": "m_table.reloadModels()", "oninput": "this.value = this.value.replace(/[;]/g, '');"

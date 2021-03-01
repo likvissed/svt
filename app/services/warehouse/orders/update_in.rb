@@ -34,6 +34,9 @@ module Warehouse
       def wrap_order_with_transactions
         operations = @order_params['operations_attributes']
 
+        # Добавить технику без инв.№ и со штрих-кодом, чтобы проверить уникальность рабочего места при обновлении (uniqueness_of_workplace)
+        @order_params['operations_attributes'].each { |operation| operation['item_id'] = operation['w_item_id'] if operation['w_item_id'].present? }
+
         if operations.present?
           @location_for_w_items = create_array_location_for_items(operations)
 

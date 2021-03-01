@@ -2,7 +2,7 @@ module Warehouse
   class Supply < BaseWarehouse
     self.table_name = "#{table_name_prefix}supplies"
 
-    has_many :operations, as: :operationable, dependent: :destroy
+    has_many :operations, as: :operationable, dependent: :destroy, inverse_of: :operationable
     has_many :items, through: :operations
 
     accepts_nested_attributes_for :operations, allow_destroy: true

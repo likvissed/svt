@@ -3,18 +3,22 @@ require 'feature_helper'
 module Invent
   RSpec.describe Item, type: :model do
     it { is_expected.to have_one(:warehouse_item).with_foreign_key('invent_item_id').class_name('Warehouse::Item').dependent(:nullify) }
+    it { is_expected.to have_one(:barcode_item).class_name('Barcode').dependent(:destroy).inverse_of(:codeable) }
     it { is_expected.to have_many(:property_values).inverse_of(:item).dependent(:destroy).order('invent_property.property_order') }
     it { is_expected.to have_many(:standard_discrepancies).class_name('Standard::Discrepancy').dependent(:destroy) }
     it { is_expected.to have_many(:standard_logs).class_name('Standard::Log') }
     it { is_expected.to have_many(:warehouse_inv_item_to_operations).class_name('Warehouse::InvItemToOperation').with_foreign_key('invent_item_id').dependent(:destroy) }
     it { is_expected.to have_many(:warehouse_operations).through(:warehouse_inv_item_to_operations).class_name('Warehouse::Operation').source(:operation) }
     it { is_expected.to have_many(:warehouse_orders).through(:warehouse_operations).class_name('Warehouse::Order').source(:operationable) }
+    it { is_expected.to have_many(:warehouse_items).through(:property_values).class_name('Warehouse::Item').with_foreign_key('warehouse_item_id') }
     it { is_expected.to belong_to(:type) }
-    it { is_expected.to belong_to(:workplace) }
-    it { is_expected.to belong_to(:model) }
+    it { is_expected.to belong_to(:workplace).optional }
+    it { is_expected.to belong_to(:model).optional }
     it { is_expected.to validate_presence_of(:invent_num) }
+    it { is_expected.to validate_presence_of(:barcode_item) }
     it { is_expected.to delegate_method(:properties).to(:type) }
     it { is_expected.to accept_nested_attributes_for(:property_values).allow_destroy(true) }
+    it { is_expected.to accept_nested_attributes_for(:barcode_item).allow_destroy(true) }
 
     context 'when status is :waiting_take' do
       before { subject.status = :waiting_take }
@@ -82,7 +86,8 @@ module Invent
       end
 
       context 'when not all properties with mandatory flag are sets' do
-        subject { build(:item, type_name: :printer) }
+        let(:barcode) { build(:barcode_invent_item) }
+        subject { build(:item, type_name: :printer, barcode_item: barcode) }
 
         it { is_expected.not_to be_valid }
 
@@ -326,19 +331,26 @@ module Invent
       end
 
       context 'when type exists' do
+        let(:count_property_include_assign_barcode) do
+          printer_type.properties.select do |prop|
+            Invent::Property::LIST_TYPE_FOR_BARCODES.include?(prop.short_description.to_s.downcase)
+          end.count
+        end
         let(:printer_type) { Type.find_by(name: :printer) }
 
         context 'and when model exists' do
           subject { build(:item, type: printer_type) }
           before { subject.build_property_values(warehouse_item, true) }
 
-          it 'creates one property_value for each property' do
-            expect(subject.property_values.size).to eq printer_type.properties.size
+          it 'creates one property_value for each property without assign barcode' do
+            expect(subject.property_values.size + count_property_include_assign_barcode).to eq printer_type.properties.size
           end
 
-          it 'sets default value for each property specified by selected model' do
+          it 'sets default value for each property without assign barcode specified by selected model' do
             subject.save(validate: false)
             printer_type.properties.each do |prop|
+              next if Invent::Property::LIST_TYPE_FOR_BARCODES.include?(prop.short_description.to_s.downcase)
+
               if prop.property_type == 'string'
                 expect(subject.get_value(prop)).to be_empty
               elsif %w[list list_plus].include?(prop.property_type)
@@ -352,8 +364,8 @@ module Invent
           subject { build(:item, type: printer_type, model: nil) }
           before { subject.build_property_values(warehouse_item, true) }
 
-          it 'creates one property_value for each property' do
-            expect(subject.property_values.size).to eq printer_type.properties.size
+          it 'creates one property_value for each property without assign barcode' do
+            expect(subject.property_values.size + count_property_include_assign_barcode).to eq printer_type.properties.size
           end
 
           it 'sets empty values for each property with string :property_type' do
@@ -362,6 +374,28 @@ module Invent
               expect(prop_val.property_list).to be_nil
             end
           end
+        end
+      end
+    end
+
+    describe '#build_barcode_item' do
+      let(:warehouse_item) { create(:expanded_item) }
+      let(:printer_type) { Type.find_by(name: :printer) }
+
+      subject { build(:item, type: printer_type) }
+
+      it 'assign barcode codeable_type for item' do
+        expect(subject.build_barcode_item.codeable_type).to eq subject.class.name
+      end
+
+      context 'when create item with assign barcode' do
+        before { subject.build_barcode_item }
+
+        it 'created barcode for item' do
+          subject.save(validate: false)
+
+          expect(subject.barcode_item.codeable_id).to eq subject.id
+          expect(subject.barcode_item.codeable_type).to eq subject.class.name
         end
       end
     end

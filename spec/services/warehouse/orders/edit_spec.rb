@@ -42,6 +42,20 @@ module Warehouse
         it 'adds fio_user_iss key' do
           expect(subject.data[:order]['fio_user_iss']).to eq order.inv_workplace.user_iss.fio
         end
+
+        it 'returns false for assign_barcode for operation item attribute' do
+          expect(subject.data[:order]['operations_attributes'].first['item']['assign_barcode']).to be_falsey
+        end
+
+        context 'when have item for assign barcode' do
+          let(:item) { create(:used_item, warehouse_type: :without_invent_num, item_type: 'Картридж', item_model: '6515DNI') }
+          let(:operation) { build(:order_operation, item_id: item.id, shift: -1) }
+          let(:order) { create(:order, operation: :out, operations: [operation]) }
+
+          it 'returns true for assign_barcode for operation item attribute' do
+            expect(subject.data[:order]['operations_attributes'].first['item']['assign_barcode']).to be_truthy
+          end
+        end
       end
 
       context 'when :check_unreg flag is set' do

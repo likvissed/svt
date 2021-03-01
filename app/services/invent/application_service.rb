@@ -31,9 +31,11 @@ class Invent::ApplicationService < ApplicationService
     item['id'] = item['item_id']
     item['is_open_order'] = item['warehouse_orders'].any? { |order| order['status'] == 'processing' } if item['warehouse_orders'].present?
     item['property_values_attributes'] = item['property_values']
+    item['barcode_item_attributes'] = item['barcode_item']
 
     item.delete('item_id')
     item.delete('property_values')
+    item.delete('barcode_item')
 
     item['property_values_attributes'].each do |prop_val|
       prop_val['id'] = prop_val['property_value_id']
@@ -108,5 +110,17 @@ class Invent::ApplicationService < ApplicationService
     end
 
     item['property_values_attributes'] = new_property_values
+  end
+
+  # Удалить property_value, которые включены для назначения штрих-кода (Property.assign_barcode = true)
+  # при создании/обновлении РМ (и обновлении техники) - чтобы не создавалась пустая запись этих свойств
+  def delete_blank_and_assign_barcode_prop_value(property_values_attr)
+    property_with_assign_barcode = Invent::Property.where(assign_barcode: true).pluck(:property_id)
+
+    property_values_attr.delete_if do |prop_val|
+      property_with_assign_barcode.include?(prop_val['property_id']) && prop_val['value'].blank?
+    end
+
+    property_values_attr
   end
 end

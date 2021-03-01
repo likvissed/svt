@@ -8,7 +8,7 @@ module Invent
     it { is_expected.to belong_to(:workplace_type) }
     it { is_expected.to belong_to(:workplace_specialization) }
     it { is_expected.to belong_to(:workplace_count) }
-    it { is_expected.to belong_to(:user_iss).with_foreign_key('id_tn') }
+    it { is_expected.to belong_to(:user_iss).with_foreign_key('id_tn').optional }
     it { is_expected.to belong_to(:iss_reference_site).with_foreign_key('location_site_id') }
     it { is_expected.to belong_to(:iss_reference_building).with_foreign_key('location_building_id') }
     it { is_expected.to belong_to(:iss_reference_room).with_foreign_key('location_room_id') }

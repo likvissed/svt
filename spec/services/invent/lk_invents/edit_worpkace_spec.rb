@@ -23,7 +23,7 @@ module Invent
 
           it 'fills each items_attribute at least with %w[warehouse_orders id property_values_attributes] keys' do
             subject.data['items_attributes'].each do |item|
-              expect(item).to include('warehouse_orders', 'id', 'property_values_attributes')
+              expect(item).to include('warehouse_orders', 'id', 'property_values_attributes', 'barcode_item_attributes')
             end
           end
 
@@ -32,6 +32,12 @@ module Invent
               item['property_values_attributes'].each do |prop_val|
                 expect(prop_val).to include('id')
               end
+            end
+          end
+
+          it 'fills each barcode_item_attributes keys from barcode' do
+            subject.data['items_attributes'].each do |item|
+              expect(item['barcode_item_attributes']).to include('id', 'codeable_id', 'codeable_type')
             end
           end
         end

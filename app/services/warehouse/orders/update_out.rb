@@ -78,6 +78,13 @@ module Warehouse
         @order.operations.each do |op|
           next unless op.item
 
+          # Если операция выполнена и не помечена на удаление, то пропустить валидацию для техники
+          if op.item.warehouse_type == 'without_invent_num' && op.processing? && !op.marked_for_destruction? &&
+             Invent::Property::LIST_TYPE_FOR_BARCODES.include?(op.item.item_type.to_s.downcase)
+
+            @order.property_with_barcode = true
+          end
+
           if op.new_record?
             op.build_inv_items(op.shift.abs, workplace: @order.inv_workplace, status: :waiting_take)
           elsif op.marked_for_destruction?

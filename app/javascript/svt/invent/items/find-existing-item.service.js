@@ -21,19 +21,22 @@ import { app } from '../../app/app';
    * @param item_id
    * @param division - отдел
    */
-  FindExistingItemService.prototype.loadBusyItems = function(type_id, invent_num, item_id, division) {
+  FindExistingItemService.prototype.loadBusyItems = function(type_id, invent_num, barcode_item, division) {
     return this.Server.Invent.Item.busy(
       {
-        type_id   : type_id,
-        invent_num: invent_num,
-        item_id   : item_id,
-        division  : division
+        type_id     : type_id,
+        invent_num  : invent_num,
+        barcode_item: barcode_item,
+        division    : division
       },
       (response) => {
         this.items = response.items;
         this.selectedItem = this.items.length == 1 ? this.items[0] : null;
       },
-      (response, status) => this.Error.response(response, status)
+      (response, status) => {
+        this.clearSelectedItem();
+        this.Error.response(response, status)
+      }
     ).$promise;
   };
 

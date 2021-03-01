@@ -55,6 +55,24 @@ module Warehouse
       end
 
       def set_in_operations
+        # Добавление в приходный ордер свойств техники со штрих-кодом
+        if @inv_item.warehouse_items.present?
+          @inv_item.warehouse_items.each do |w_item|
+            new_op = @order.operations.build(
+              shift: 1,
+              status: :done,
+              item_type: w_item.item_type,
+              item_model: w_item.item_model,
+              item_id: w_item.id
+            )
+            new_op.set_stockman(current_user)
+
+            new_op.item.count = 1
+            new_op.item.status = :used
+            new_op.item.invent_property_value.mark_for_destruction
+          end
+        end
+
         op = @order.operations.build(
           shift: 1,
           status: :done,
@@ -67,6 +85,23 @@ module Warehouse
 
       def set_write_off_operations
         new_status = @order_state.new_item_status
+
+        # Добавление в ордер на списание свойств техники со штрих-кодом
+        if @inv_item.warehouse_items.present?
+          @inv_item.warehouse_items.each do |w_item|
+            new_op = @order.operations.build(
+              shift: -1,
+              status: :processing,
+              item_type: w_item.item_type,
+              item_model: w_item.item_model,
+              item_id: w_item.id
+            )
+            new_op.item.count = 1
+            new_op.item.count_reserved = 1
+            new_op.item.status = :waiting_write_off
+            new_op.set_stockman(current_user)
+          end
+        end
 
         op = @order.operations.build(
           item: @inv_item.warehouse_item,
