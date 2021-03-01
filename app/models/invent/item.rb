@@ -44,7 +44,10 @@ module Invent
     before_update :prevent_update
     # before_save :model_id_nil_if_model_item
 
-    scope :barcode_item, ->(barcode) { joins(:barcode_item).where(barcodes: { id: barcode }) }
+    scope :barcode_item, ->(barcode_item) do
+      joins("INNER JOIN #{Barcode.table_name} invent_barcodes ON invent_barcodes.codeable_id = invent_item.item_id")
+        .where('id = ?', barcode_item)
+    end
     scope :type_id, ->(type_id) { where(type_id: type_id) }
     scope :invent_num, ->(invent_num) { where('invent_num LIKE ?', "%#{invent_num}%").limit(RECORD_LIMIT) }
     scope :serial_num, ->(serial_num) { where('serial_num LIKE ?', "%#{serial_num}%").limit(RECORD_LIMIT) }
