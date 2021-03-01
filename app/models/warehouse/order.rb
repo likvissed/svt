@@ -49,10 +49,10 @@ module Warehouse
     scope :consumer_fio, ->(consumer_fio) { where('consumer_fio LIKE ?', "%#{consumer_fio}%") }
     scope :invent_num, ->(invent_num) { joins(:inv_items).where(invent_item: { invent_num: invent_num }) }
     scope :barcode_for_warehouse_item, ->(barcode) do
-      joins(operations: {item: :barcode_item}).where(barcodes: { id: barcode })
+      joins(operations: {item: :barcode_item}).where(invent_barcodes: { id: barcode })
     end
     scope :barcode_for_invent_item, ->(barcode) do
-      joins(operations: {item: {inv_item: :barcode_item}}).where(barcodes: { id: barcode })
+      joins(operations: {item: {inv_item: :barcode_item}}).where(invent_barcodes: { id: barcode })
     end
     scope :barcode, ->(barcode) do
       barcode_for_warehouse_item(barcode).presence || barcode_for_invent_item(barcode)

@@ -8,7 +8,7 @@
 .col-sm-5.col-md-4.col-xlg-3.col-fhd-2.multiline-buffer
   = text_field_tag "", "", class: "form-control input-sm", placeholder: "Инвентарный №", "ng-model-options": "{ debounce: 300 }",
     "ng-model": "table.selected.invent_num", "ng-change": "table.reloadOrders()", "oninput": "this.value = this.value.replace(/[;]/g, '');"
-.col-sm-4.col-md-5.col-xlg-2.col-fhd-1.multiline-buffer
+.col-sm-4.col-md-5.col-xlg-3.col-fhd-2.multiline-buffer
   = text_field_tag "", "", class: "form-control input-sm", placeholder: "Штрих-код", "ng-model-options": "{ debounce: 300 }",
       "ng-model": "table.selected.barcode", "ng-change": "table.reloadOrders()", "oninput": "this.value = this.value.replace(/[;]/g, '');"
 .col-sm-5.col-md-4.col-lg-4.col-xlg-3.multiline-buffer

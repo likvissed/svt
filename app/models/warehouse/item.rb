@@ -51,16 +51,16 @@ module Warehouse
           ON
             inv_item.item_id = warehouse_items.invent_item_id
           INNER JOIN
-            barcodes
+            invent_barcodes
           ON
-            barcodes.codeable_id = inv_item.item_id
+            invent_barcodes.codeable_id = inv_item.item_id
               AND
-            barcodes.codeable_type = 'Invent::Item'
+            invent_barcodes.codeable_type = 'Invent::Item'
           ")
-        .where(barcodes: { id: barcode_item })
+        .where(invent_barcodes: { id: barcode_item })
     end
     scope :barcode_with_warehouse_item, ->(barcode_item) do
-      joins(:barcode_item).where(barcodes: { id: barcode_item })
+      joins(:barcode_item).where(invent_barcodes: { id: barcode_item })
     end
     scope :barcode_item, ->(barcode_item) do
       barcode_with_warehouse_item(barcode_item).presence || barcode_with_invent_item(barcode_item)
