@@ -240,7 +240,8 @@ module Invent
 
       replacement_date_ups_prop = Property.find_by(name: :replacement_date)
       prop_val = get_value(replacement_date_ups_prop)
-      return unless prop_val
+
+      return true unless prop_val
 
       # replacement_date = Date.strptime(prop_val, '%Y-%m')
       replacement_date = Date.parse(prop_val)

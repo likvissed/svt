@@ -1,5 +1,5 @@
 class Barcode < ApplicationRecord
-  self.table_name = "#{Rails.configuration.database_configuration["#{Rails.env}_invent"]['database']}.barcodes"
+  self.table_name = "#{Rails.configuration.database_configuration["#{Rails.env}_invent"]['database']}.invent_barcodes"
   self.primary_key = :id
 
   belongs_to :codeable, polymorphic: true
