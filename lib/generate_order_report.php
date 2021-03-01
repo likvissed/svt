@@ -11,6 +11,15 @@ $date = $argv[4];
 $invent_params = json_decode($argv[5], true);
 $warehouse_params = json_decode($argv[6], true);
 $database = yaml_parse_file('config/database.yml');
+$database[$env]['host'] = $_SERVER['MYSQL_NETADMIN_HOST'];
+
+if ($_SERVER['RAILS_ENV'] === 'production') {
+  $database[$env]['username'] = $_SERVER['MYSQL_PRODUCTION_USER'];
+  $database[$env]['password'] = $_SERVER['MYSQL_PRODUCTION_PASSWORD'];
+} else {
+  $database[$env]['username'] = $_SERVER['MYSQL_DEV_USER'];
+  $database[$env]['password'] = $_SERVER['MYSQL_DEV_PASSWORD'];
+}
 
 $con = new DBConn ($database[$env]);
 
@@ -53,9 +62,9 @@ if (!empty($invent_params)) {
     invent_type
   ON
     invent_item.type_id = invent_type.type_id
-  LEFT OUTER JOIN 
-    (SELECT * FROM invent_property WHERE mandatory = TRUE) property      
-  ON 
+  LEFT OUTER JOIN
+    (SELECT * FROM invent_property WHERE mandatory = TRUE) property
+  ON
     property.property_id = invent_property_value.property_id
   LEFT OUTER JOIN
     invent_property_list
@@ -211,12 +220,12 @@ foreach($sql_invent_data as $row_data) {
   if (!isset($result[$index]['property_values'])) {
     $result[$index]['property_values'] = array();
   }
- 
+
   array_push($result[$index]['property_values'], get_prop_val_object($row_data));
   // var_dump($result[$index]['property_values'] );
-  
+
 }
-// exit; 
+// exit;
 foreach($sql_warehouse_data as $row_data) {
   $obj = array();
   $obj['warehouse_type'] = 'without_invent_num';
@@ -246,10 +255,10 @@ function get_prop_val_object($data) {
   return array(
     'property' => $data['property'],
     'value' => $value
-  
+
   );
 }
- 
+
 function get_result_index($current_row, $result) {
   $index = null;
 
@@ -322,11 +331,11 @@ foreach($result as $data) {
     $table->writeToCell($i + 1, 2, $data['type'], $fontBold);
     if ($data['type'] != 'Системный блок') {
       $table->writeToCell($i + 1, 2, ' ' . $data['item_model'], $fontBold);
-      
+
     }
     $table->writeToCell($i + 1, 2, "\n", $fontBold);
     foreach($data['property_values'] as $prop_val) {
-   
+
       if (isset($prop_val['property'])) {
         $table->writeToCell($i + 1, 2, $prop_val['property'] . ': ' . $prop_val['value'] . "\n", $table_font);
       }
@@ -335,7 +344,7 @@ foreach($result as $data) {
 
     // var_dump($sql_consumer_data[0]['fio']);
     // exit;
-    
+
     $nested_table = $cell->addTable();
     $nested_table->addRows(4, 0.5);
     $nested_table->addColumnsList(array(6, 6));

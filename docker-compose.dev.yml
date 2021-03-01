@@ -113,8 +113,8 @@ services:
 
   guard:
     <<: *backend
-    depends_on:
-      - mysql-test
+    # depends_on:
+    #   - mysql-test
     command: bundle exec guard
 
 volumes:

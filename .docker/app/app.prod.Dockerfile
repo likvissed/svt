@@ -86,6 +86,14 @@ RUN sed -i -e 's/# ru_RU.UTF-8 UTF-8/ru_RU.UTF-8 UTF-8/' /etc/locale.gen && \
     locale-gen ru_RU.UTF-8 && \
     dpkg-reconfigure locales
 
+# Install PHP
+RUN apt-get update -qq && apt-get install -yq --no-install-recommends \
+    php \
+    php-cli \
+    php-yaml \
+    php-mysql \
+    php-mbstring
+
 # Create app folder
 RUN mkdir -p ${RAILS_ROOT}
 WORKDIR ${RAILS_ROOT}
