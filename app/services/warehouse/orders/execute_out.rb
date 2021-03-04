@@ -116,7 +116,7 @@ module Warehouse
           # Иначе (status = used) находится существующая техника с созданным штрих-кодом
           warehouse_item = if operation.item.status == 'used'
                              w_item_in_operation = operation.item
-                             w_item_in_operation.status = operation.item.status
+                             w_item_in_operation.status = 'used'
                              w_item_in_operation.count = 0
                              w_item_in_operation.count_reserved = 0
                              w_item_in_operation
@@ -126,7 +126,7 @@ module Warehouse
                                item_type: operation.item.item_type,
                                item_model: operation.item.item_model,
                                barcode: operation.item.barcode,
-                               status: operation.item.status,
+                               status: 'used',
                                count: 0,
                                count_reserved: 0
                              )
@@ -141,7 +141,48 @@ module Warehouse
             item_id: @order.find_inv_item_for_assign_barcode.first.item_id,
             value: "#{warehouse_item.item_model} (#{warehouse_item.barcode_item.id})"
           )
+
+          # Создать новую операцию для текущей техники
+          #
+          # В результате, например, изначально 1 операция на выдачу -2 техники
+          # как результат: 2 операции и каждая с выдачей -1 техники
+          @order.operations.create(
+            item_id: warehouse_item.id,
+            item_type: operation.item_type,
+            item_model: operation.item_model,
+            status: 'done',
+            stockman_id_tn: operation.stockman_id_tn,
+            stockman_fio: operation.stockman_fio,
+            date: operation.date
+          )
+
+          # Если у техники существует поставка, то назначить ее для созданной техники
+          create_and_update_operation_supply(warehouse_item, operation) if operation.item.supplies.present?
         end
+        # Удалить операцию, тк для каждой единицы техники уже существует созданная операция
+        operation.delete_item_without_invent_num = true
+        operation.destroy
+      end
+
+      def create_and_update_operation_supply(w_item, operation)
+        supply_id = operation.item.supplies.first.id
+
+        new_operation = w_item.operations.build(
+          item_id: w_item['id'],
+          shift: 1,
+          status: :done,
+          operationable_id: supply_id,
+          operationable_type: 'Warehouse::Supply',
+          item_type: w_item['item_type'],
+          item_model: w_item['item_model'],
+          date: Time.zone.now
+        )
+        new_operation.set_stockman(current_user)
+        new_operation.save
+
+        # Уменьшить количество в операции существующей поставки
+        present_op = operation.item.operations.find_by(operationable_type: 'Warehouse::Supply')
+        present_op.shift == 1 ? present_op.destroy : present_op.update(shift: present_op.shift - 1)
       end
     end
   end

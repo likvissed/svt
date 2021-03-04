@@ -46,7 +46,8 @@ module Warehouse
                         find_or_generate_item(op)
                       end
           setting_location_attributes(item)
-          op[:item].status = :non_used
+          # Если в позициях находится техника со штрих-кодом
+          op[:item].status = op[:item].status.presence || :non_used
 
           if item[:location_attributes].blank?
             item[:location_attributes] = location

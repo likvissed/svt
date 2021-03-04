@@ -49,10 +49,10 @@ module Warehouse
     scope :consumer_fio, ->(consumer_fio) { where('consumer_fio LIKE ?', "%#{consumer_fio}%") }
     scope :invent_num, ->(invent_num) { joins(:inv_items).where(invent_item: { invent_num: invent_num }) }
     scope :barcode_for_warehouse_item, ->(barcode) do
-      joins(operations: {item: :barcode_item}).where(invent_barcodes: { id: barcode })
+      joins(operations: { item: :barcode_item }).where(invent_barcodes: { id: barcode })
     end
     scope :barcode_for_invent_item, ->(barcode) do
-      joins(operations: {item: {inv_item: :barcode_item}}).where(invent_barcodes: { id: barcode })
+      joins(inv_items: :barcode_item ).where(invent_barcodes: { id: barcode })
     end
     scope :barcode, ->(barcode) do
       barcode_for_warehouse_item(barcode).presence || barcode_for_invent_item(barcode)
@@ -334,12 +334,10 @@ module Warehouse
     # Проверка перед созданием расходного ордера и его исполнением на существование РМ,
     # техники с инв.№ на этом РМ, и чтобы она соответствовала назначению штрих-кода
     def present_item_for_barcode
-      Rails.logger.info "present_item_for_barcode: #{inv_workplace.inspect}".yellow
       workplace = Invent::Workplace.find_by_workplace_id(invent_workplace_id)
 
       if workplace.present?
         inv_item = find_inv_item_for_assign_barcode
-        Rails.logger.info "inv_item: #{inv_item.inspect}".green
 
         if inv_item.present?
           if inv_item.first.status.to_s != 'in_workplace'

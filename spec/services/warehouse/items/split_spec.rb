@@ -63,24 +63,23 @@ module Warehouse
           context 'and when present supply for item' do
             let(:supply) { create(:supply) }
             let(:operation) { create(:supply_operation, operationable: supply) }
-            before { item.operations = [operation]}
-            
+            before { item.operations = [operation] }
+
             it 'increase count to operations' do
               expect { subject.run }.to change(Operation, :count).by(1)
             end
 
             it 'create new operation for item' do
               subject.run
-  
+
               %i[item_type item_model].each do |key|
                 expect(Item.first.operations.first[key.to_s]).to eq item[key.to_s]
               end
-  
+
               expect(Item.first.operations.first['item_id']).to eq item.id
               expect(Item.first.operations.first['shift']).to eq items_attributes.first['count_for_invent_num']
             end
           end
-
 
           context 'and when room_id is null' do
             before { items_attributes.first['location']['room_id'] = nil }

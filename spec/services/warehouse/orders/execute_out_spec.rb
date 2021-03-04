@@ -48,7 +48,7 @@ module Warehouse
             expect(new_warehouse_item.item_type).to eq third_op.item.item_type
             expect(new_warehouse_item.item_model).to eq third_op.item.item_model
             expect(new_warehouse_item.barcode).to eq third_op.item.barcode
-            expect(new_warehouse_item.status).to eq third_op.item.status
+            expect(new_warehouse_item.status).to eq 'used'
             expect(new_warehouse_item.count).to be_zero
           end
 
@@ -76,7 +76,7 @@ module Warehouse
             expect(new_invent_prop_value.warehouse_item_id).to eq new_warehouse_item.id
           end
 
-          context 'and when the item has an count equal to 1' do
+          context 'and when the w_item has an count equal to 1' do
             let!(:third_item) { create(:used_item, warehouse_type: :without_invent_num, count: 1, count_reserved: 1, item_type: 'Картридж', item_model: '6515DNI', status: 'non_used') }
 
             it 'count warehouse_item not change' do
@@ -90,7 +90,7 @@ module Warehouse
             end
 
             context 'and when status warehouse_item is used' do
-              before { allow_any_instance_of(Item).to receive(:status).and_return('used') }
+              before { third_item.status = 'used' }
 
               it 'count warehouse_item not increased' do
                 expect { subject.run }.not_to change(Item, :count)
@@ -99,10 +99,54 @@ module Warehouse
               it 'sets status, count and count_reserved for third_item' do
                 subject.run
 
-                expect(third_item.reload.status).to eq third_op.item.status
-                expect(third_item.reload.count).to be_zero
-                expect(third_item.reload.count_reserved).to be_zero
+                expect(Item.last.status).to eq third_op.item.status
+                expect(Item.last.count).to be_zero
+                expect(Item.last.count_reserved).to be_zero
               end
+            end
+          end
+
+          context 'and when the w_item has an count equal to 2 and supply' do
+            let(:supply) { create(:supply) }
+            let(:supply_operation) { create(:supply_operation, operationable: supply, shift: 2) }
+
+            let!(:third_item) { create(:used_item, warehouse_type: :without_invent_num, count: 2, count_reserved: 2, item_type: 'Картридж', item_model: '6515DNI', status: 'non_used') }
+            let(:third_op) { build(:order_operation, item: third_item, shift: -2) }
+
+            before { third_item.operations = [supply_operation] }
+
+            it 'created two new w_item and destroy one old w_item' do
+              expect { subject.run }.to change(Item, :count).by(1)
+            end
+
+            it 'created four new and destroy two old Operation' do
+              expect { subject.run }.to change(Operation, :count).by(2)
+            end
+
+            it 'sets fields in operations for new items' do
+              subject.run
+
+              Item.last(2).each do |it|
+                expect(it.operations.first.operationable_type).to eq third_op.operationable_type
+                expect(it.operations.first.status).to eq 'done'
+                expect(it.operations.first.item_type).to eq third_item.item_type
+                expect(it.operations.first.item_model).to eq third_item.item_model
+                expect(it.operations.first.shift).to eq(-1)
+
+                expect(it.operations.last.operationable_type).to eq supply_operation.operationable_type
+                expect(it.operations.last.status).to eq 'done'
+                expect(it.operations.last.item_type).to eq third_item.item_type
+                expect(it.operations.last.item_model).to eq third_item.item_model
+                expect(it.operations.last.shift).to eq 1
+              end
+            end
+
+            it 'present w_item, operation and supply is destroyed and call exeception' do
+              subject.run
+
+              expect { third_item.reload }.to raise_exception(ActiveRecord::RecordNotFound)
+              expect { third_op.reload }.to raise_exception(ActiveRecord::RecordNotFound)
+              expect { supply_operation.reload }.to raise_exception(ActiveRecord::RecordNotFound)
             end
           end
         end

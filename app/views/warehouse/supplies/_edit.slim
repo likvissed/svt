@@ -54,7 +54,7 @@ script type="text/ng-template" id="editSupplyModal.slim"
             td ng-bind="op.shift"
             td.text-center
               = fa_icon "pencil-square-o fw", class: "pointer", "tooltip-placement": "left", "uib-tooltip": "Редактировать позицию",
-                "ng-click": "edit.editPosition(op)"
+                "ng-click": "edit.editPosition(op)", "ng-if": "op.status != 'done'"
               = fa_icon "minus-circle fw", class: "pointer", "tooltip-placement": "left", "uib-tooltip": "Убрать позицию",
                 "ng-click": "edit.delPosition(op)", "ng-if": "op.status != 'done'"
 
