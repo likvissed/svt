@@ -25,7 +25,7 @@ module Warehouse
 
     enum status: { processing: 1, done: 2 }
 
-    attr_accessor :to_write_off, :delete_item_without_invent_num
+    attr_accessor :to_write_off, :update_item_without_invent_num
 
     def set_stockman(user)
       self.stockman_id_tn = user.id_tn
@@ -161,6 +161,8 @@ module Warehouse
     end
 
     def prevent_update
+      return true if update_item_without_invent_num.present?
+
       return true unless done? && !status_changed?
       # Для операций с поставки техники со штрих-кодом
       return true if operationable_type == 'Warehouse::Supply'
@@ -170,8 +172,6 @@ module Warehouse
     end
 
     def prevent_destroy
-      return true if delete_item_without_invent_num.present?
-
       errors.add(:base, :cannot_destroy_done_operation)
       throw(:abort)
     end

@@ -141,11 +141,34 @@ module Warehouse
               end
             end
 
-            it 'present w_item, operation and supply is destroyed and call exeception' do
+            it 'sets status, count and count_reserved for new w_item' do
+              subject.run
+
+              Item.last(2).each do |it|
+                expect(it.status).to eq 'used'
+                expect(it.count).to be_zero
+                expect(it.count_reserved).to be_zero
+              end
+            end
+
+            it 'order status is done' do
+              subject.run
+
+              expect(order.reload.status).to eq 'done'
+            end
+
+            it 'status is done for all operations order' do
+              subject.run
+
+              order.reload.operations.each do |op|
+                expect(op.status).to eq 'done'
+              end
+            end
+
+            it 'present w_item and supply is destroyed and call exeception' do
               subject.run
 
               expect { third_item.reload }.to raise_exception(ActiveRecord::RecordNotFound)
-              expect { third_op.reload }.to raise_exception(ActiveRecord::RecordNotFound)
               expect { supply_operation.reload }.to raise_exception(ActiveRecord::RecordNotFound)
             end
           end
