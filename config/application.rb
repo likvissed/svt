@@ -41,6 +41,7 @@ module Inv
         origins 'https://***REMOVED***.***REMOVED***.ru', 'https://***REMOVED***.npopm``.ru',
                 'https://***REMOVED***.***REMOVED***.ru', 'https://***REMOVED***.npopm.ru',
                 'https://***REMOVED***.***REMOVED***.ru', 'https://***REMOVED***.npopm.ru', 'http://***REMOVED***',
+                'https://cpr-dev.***REMOVED***.ru', 'https://***REMOVED***', 'https://***REMOVED***',
                 /\Ahttps:\/\/***REMOVED***(.*)\.***REMOVED***\.ru\z/
         resource '/invent/***REMOVED***_invents/svt_access*', headers: :any, methods: [:get]
         resource '/invent/***REMOVED***_invents/init_properties*', headers: :any, methods: [:get]
