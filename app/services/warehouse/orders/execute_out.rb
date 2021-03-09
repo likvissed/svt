@@ -184,7 +184,9 @@ module Warehouse
         # Если у техники существует поставка, то назначить ее для созданной техники
         create_and_update_operation_supply(warehouse_item, operation) if warehouse_item.supplies.blank? && operation.item.supplies.present?
 
+        # Назначить текущую технику для созданной ранее операции
         operation.update_item_without_invent_num = true
+        operation.update(item: warehouse_item)
       end
 
       def create_and_update_operation_supply(w_item, operation)
