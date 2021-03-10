@@ -64,6 +64,10 @@ RUN sed -i -e 's/# ru_RU.UTF-8 UTF-8/ru_RU.UTF-8 UTF-8/' /etc/locale.gen && \
     locale-gen ru_RU.UTF-8 && \
     dpkg-reconfigure locales
 
+# OpenSSL TLSv1.0
+RUN sed -i 's,^\(MinProtocol[ ]*=\).*,\1'TLSv1.0',g' /etc/ssl/openssl.cnf && \
+  sed -i 's,^\(CipherString[ ]*=\).*,\1'DEFAULT@SECLEVEL=1',g' /etc/ssl/openssl.cnf
+
 # Set yarn proxy
 RUN yarn config set proxy ${HTTP_PROXY} \
   && yarn config set https-proxy ${HTTP_PROXY}
