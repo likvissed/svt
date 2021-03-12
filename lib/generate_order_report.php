@@ -11,7 +11,7 @@ $date = $argv[4];
 $invent_params = json_decode($argv[5], true);
 $warehouse_params = json_decode($argv[6], true);
 $database = yaml_parse_file('config/database.yml');
-$database[$env]['host'] = $_SERVER['MYSQL_NETADMIN_HOST'];
+$database[$env]['host'] = $_SERVER['MYSQL_NETADMIN_SLAVE'];
 
 if ($_SERVER['RAILS_ENV'] === 'production') {
   $database[$env]['username'] = $_SERVER['MYSQL_PRODUCTION_USER'];
