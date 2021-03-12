@@ -1,11 +1,21 @@
 default: &default
-  adapter: mysql2
+  # adapter: mysql2
+  adapter: mysql2_makara
   encoding: utf8
   pool: <%= ENV.fetch("RAILS_MAX_THREADS") { 5 } %>
   socket: /var/run/mysqld/mysqld.sock
   timeout: 5000
   # strict: false
-  host: <%= ENV["MYSQL_NETADMIN_HOST"] %>
+  # host: <%= ENV["MYSQL_NETADMIN_MASTER"] %>
+  makara:
+    blacklist_duration: 5
+    master_ttl: 5
+    sticky: true
+    connections:
+      - role: master
+        host: <%= ENV["MYSQL_NETADMIN_MASTER"] %>
+      - role: slave
+        host: <%= ENV["MYSQL_NETADMIN_SLAVE"] %>
 
 netadmin_dev: &netadmin_dev
   <<: *default
