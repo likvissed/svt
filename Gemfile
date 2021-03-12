@@ -24,6 +24,8 @@ gem 'rest-client'
 
 # MySQL
 gem 'mysql2'
+# Split into read and write for different hosts
+gem 'makara'
 
 # Other
 gem 'awesome_print'

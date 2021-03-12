@@ -99,7 +99,6 @@ module Invent
           end
 
           it 'create new location for warehouse_item without barcode' do
-            puts item.warehouse_items.inspect
             subject.run
 
             expect(item.reload.warehouse_item.location.site_id).to eq new_location.site_id
