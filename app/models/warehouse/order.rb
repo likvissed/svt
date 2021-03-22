@@ -47,7 +47,12 @@ module Warehouse
     scope :operation, ->(op) { where(operation: op) }
     scope :creator_fio, ->(creator_fio) { where('creator_fio LIKE ?', "%#{creator_fio}%") }
     scope :consumer_fio, ->(consumer_fio) { where('consumer_fio LIKE ?', "%#{consumer_fio}%") }
-    scope :invent_num, ->(invent_num) { joins(:inv_items).where(invent_item: { invent_num: invent_num }) }
+    scope :invent_num_inv_items, ->(invent_num) { joins(:inv_items).where(invent_item: { invent_num: invent_num }) }
+    scope :invent_num, ->(invent_num) do
+      where(invent_num: invent_num)
+        .or(where(id: invent_num_inv_items(invent_num).pluck(:id)))
+    end
+
     scope :barcode_for_warehouse_item, ->(barcode) do
       joins(operations: { item: :barcode_item }).where(invent_barcodes: { id: barcode })
     end
