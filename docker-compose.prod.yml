@@ -14,8 +14,15 @@ x-app: &app
   tmpfs:
     - /tmp
 
+x-syslog-driver: &syslog-driver
+  driver: syslog
+  options:
+    syslog-address: ${SYSLOG_URL}
+    tag: "{{.Name}}/{{.ID}}"
+
 x-backend: &backend
   <<: *app
+  <<: *syslog-driver
   volumes:
     - rails_cache:/app/tmp/cache
   environment:
@@ -27,6 +34,7 @@ x-backend: &backend
     - redis
   env_file:
     - .env
+
 
 services:
   app:
@@ -43,6 +51,7 @@ services:
           memory: 2gb
 
   nginx:
+    <<: *syslog-driver
     build:
       context: .
       dockerfile: .docker/nginx/nginx.Dockerfile
@@ -58,16 +67,25 @@ services:
       - app
     stdin_open: true
     tty: true
+    driver: syslog
+    options:
+      syslog-address: "udp://sandbox-713:514"
+      tag: "{{.Name}}/{{.ID}}"
     deploy:
       resources:
         limits:
           memory: 400m
 
   redis:
+    <<: *syslog-driver
     image: redis:5.0.11
     volumes:
       - redis:/data
     restart: always
+    driver: syslog
+    options:
+      syslog-address: "udp://sandbox-713:514"
+      tag: "{{.Name}}/{{.ID}}"
     deploy:
       resources:
         limits:
