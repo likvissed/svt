@@ -68,10 +68,6 @@ services:
       - app
     stdin_open: true
     tty: true
-    driver: syslog
-    options:
-      syslog-address: "udp://sandbox-713:514"
-      tag: "{{.Name}}/{{.ID}}"
     deploy:
       resources:
         limits:
@@ -83,10 +79,6 @@ services:
     volumes:
       - redis:/data
     restart: always
-    driver: syslog
-    options:
-      syslog-address: "udp://sandbox-713:514"
-      tag: "{{.Name}}/{{.ID}}"
     deploy:
       resources:
         limits:
