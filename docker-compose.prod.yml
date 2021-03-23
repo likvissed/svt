@@ -15,10 +15,11 @@ x-app: &app
     - /tmp
 
 x-syslog-driver: &syslog-driver
-  driver: syslog
-  options:
-    syslog-address: ${SYSLOG_URL}
-    tag: "{{.Name}}/{{.ID}}"
+  logging:
+    driver: syslog
+    options:
+      syslog-address: ${SYSLOG_URL}
+      tag: "{{.Name}}/{{.ID}}"
 
 x-backend: &backend
   <<: *app
