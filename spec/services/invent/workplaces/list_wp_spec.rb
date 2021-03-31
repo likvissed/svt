@@ -29,8 +29,31 @@ module Invent
         end
       end
 
-      it 'adds %i[workplace_id workplace items] fields' do
-        expect(subject.data[:data].first).to include(:workplace_id, :workplace, :items)
+      context 'when workplace have attachment' do
+        let(:attachment) { build(:attachment) }
+        let!(:workplace) do
+          build(
+            :workplace_pk,
+            attachments: [attachment],
+            workplace_count: workplace_count
+          ).save(validate: false)
+        end
+
+        it 'adds %i[workplace_id workplace items attachments] fields' do
+          expect(subject.data[:data].first).to include(:workplace_id, :workplace, :items, :attachments)
+        end
+
+        it 'adds link string and wraps filename with <a href> </a> tag' do
+          expect(subject.data[:data].last[:attachments]).to match(%r{<a href=/invent/attachments/download/#{attachment.id}> #{attachment.document.identifier}</a>})
+        end
+
+        context 'and file attachment is blank' do
+          let!(:attachment) { build(:attachment_blank) }
+
+          it 'adds filename as "Файл отсутствует"' do
+            expect(subject.data[:data].last[:attachments]).to eq 'Файл отсутствует'
+          end
+        end
       end
 
       context 'with init_filters' do

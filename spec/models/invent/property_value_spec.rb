@@ -8,7 +8,7 @@ module Invent
       subject { build(:property_value, item: item, property: property) }
 
       it { is_expected.to have_one(:standard_discrepancy).class_name('Standard::Discrepancy') }
-      it { is_expected.to belong_to(:property) }
+      it { is_expected.to belong_to(:property).required }
       it { is_expected.to belong_to(:item).without_validating_presence }
       it { is_expected.to belong_to(:property_list).optional }
       it { is_expected.to belong_to(:warehouse_item).optional.with_foreign_key('warehouse_item_id').class_name('Warehouse::Item') }

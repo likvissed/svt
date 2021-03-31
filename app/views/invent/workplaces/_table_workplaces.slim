@@ -13,6 +13,7 @@
             sort-column sort-name="responsible" on-sort="table.reloadWorkplaces()"
           th Расположение
           th Кол-во техники
+          th Кол-во файлов
           th Статус
           th
       tbody
@@ -22,7 +23,8 @@
           td.col-sm-4 ng-bind="wp.wp_type"
           td.col-sm-6 ng-bind="wp.responsible"
           td.col-sm-5 ng-bind="wp.location"
-          td.col-sm-2 ng-bind="wp.count"
+          td.col-sm-1 ng-bind="wp.count_items"
+          td.col-sm-1 ng-bind="wp.count_attachments"
           td.col-sm-3 ng-bind-html="wp.label_status"
           td.col-sm-1.text-center
             a ng-href="/invent/workplaces/{{wp.workplace_id}}/edit" class="default-color"

@@ -43,7 +43,7 @@ module Invent
       def limit_records
         data[:recordsFiltered] = @workplaces.length
         @workplaces = @workplaces
-                        .includes(%i[items iss_reference_site iss_reference_building iss_reference_room workplace_count])
+                        .includes(%i[items iss_reference_site iss_reference_building iss_reference_room workplace_count attachments])
                         .limit(params[:length]).offset(params[:start]).order(order_data)
       end
 
@@ -59,16 +59,18 @@ module Invent
 
       def prepare_to_render
         data[:data] = @workplaces.as_json(
-          include: %i[items iss_reference_site iss_reference_building iss_reference_room workplace_count]
+          include: %i[items iss_reference_site iss_reference_building iss_reference_room workplace_count attachments]
         ).each do |wp|
           wp['location'] = wp_location_string(wp)
           wp['responsible'] ||= 'Ответственный не найден'
           wp['label_status'] = label_status(wp['status'])
           # wp['status'] = Workplace.translate_enum(:status, wp['status'])
           wp['division'] = wp['workplace_count']['division']
-          wp['count'] = wp['items'].count
+          wp['count_items'] = wp['items'].count
+          wp['count_attachments'] = wp['attachments'].count
 
           wp.delete('items')
+          wp.delete('attachments')
           wp.delete('workplace_count')
           wp.delete('iss_reference_site')
           wp.delete('iss_reference_building')

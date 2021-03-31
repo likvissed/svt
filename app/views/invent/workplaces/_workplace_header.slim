@@ -27,6 +27,34 @@
             div ng-if="wp.workplace.disabled_filters"
               = fa_icon "toggle-off lg", class: "text-danger"
               |  Ограничения отключены
+      span<>
+      - if !current_user.role? :***REMOVED***_user
+        .form-group
+          = button_tag type: :button, class: "btn-default", "data-toggle": "dropdown" do
+            ' Файлы
+            span.caret
+          ul.dropdown-menu.dropdown-menu-auto
+            li.text-center
+              span
+                = label_tag :attachment do
+                  span.btn
+                    = fa_icon "folder-open"
+                    |  Загрузить файл
+                = file_field_tag "attachment", "document-upload": "true", class: "hidden-attachment"
+            span ng-if="(wp.workplace.attachments_attributes | filter:{_destroy:1}).length != wp.workplace.attachments_attributes.length"
+              li
+                table.table
+                  thead
+                  tbody.table-hover
+                    tr ng-repeat="attachment in wp.workplace.attachments_attributes" ng-hide="attachment._destroy"
+                      li.text-center
+                        td ng-bind="attachment.filename"
+                        td
+                          div ng-if="attachment.id && attachment.filename != 'Файл отсутствует'"
+                            span class="fa fa-download" uib-tooltip="Скачать файл" class="text-primary pointer" ng-click="wp.downloadFile(attachment.id)"
+                        td
+                          span class="fa fa-trash-o" uib-tooltip="Удалить файл" class="text-danger pointer" ng-click="wp.deleteFile(attachment)"
+
     .divider-vertical
 
     .navbar-form.navbar-right

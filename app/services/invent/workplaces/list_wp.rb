@@ -42,6 +42,7 @@ module Invent
                           :iss_reference_site,
                           :iss_reference_building,
                           :iss_reference_room,
+                          :attachments,
                           items: [:type, :model, property_values: %i[property property_list]]
                         ).order(workplace_id: :desc).limit(params[:length]).offset(params[:start])
       end
@@ -57,6 +58,7 @@ module Invent
                             :iss_reference_site,
                             :iss_reference_building,
                             :iss_reference_room,
+                            :attachments,
                             items: {
                               include: [
                                 :type,
@@ -74,11 +76,13 @@ module Invent
 #{wp['workplace_type']['short_description']}; Расположение: #{wp_location_string(wp)}; Основной вид деятельности:
 #{wp['workplace_specialization']['short_description']}"
                           items = wp['items'].map { |item| item_info(item) }
+                          attachments = wp['attachments'].map { |att| attachment_info(att) }.join('; ')
 
                           {
                             workplace_id: wp['workplace_id'],
                             workplace: workplace,
-                            items: items
+                            items: items,
+                            attachments: attachments
                           }
                         end
       end
@@ -90,6 +94,15 @@ module Invent
         status = item['status'] == 'in_workplace' ? '' : get_status(item['status'])
         "#{item['type']['short_description']}#{status}: Инв №: #{item['invent_num']}; Модель: #{model}; Конфигурация:
  #{property_values.join('; ')}"
+      end
+
+      # Добавить ссылку для скачивания, если файл существует
+      def attachment_info(attachment)
+        if attachment['document'].file.nil?
+          'Файл отсутствует'
+        else
+          "<a href=/invent/attachments/download/#{attachment['id']}> #{attachment['document'].identifier}</a>"
+        end
       end
 
       # Обернуть строку в тег <span class='manually'>

@@ -79,15 +79,20 @@ import { app } from '../../app/app';
   Workplaces.prototype._prepareWorkplaceToRender = function() {
     let
       items,
+      attachments,
       composition;
 
     this.workplaces.forEach((el) => {
       items = [];
+      attachments = [];
 
       el.items.forEach(function(value) { items.push(`<li> ${value} </li>`); });
       el.renderData = `<span> ${el.workplace}</span><br>`;
-      composition = items.length == 0 ? 'Состав отсутствует' : `Состав:<ul> ${items.join('')} </ul>`;
+      composition = items.length == 0 ? 'Состав отсутствует <br>' : `Состав:<ul> ${items.join('')} </ul>`;
       el.renderData += composition;
+
+      attachments = el.attachments.length == 0 ? 'Вложения отсутствуют' : `Вложенные файлы: <ul> ${el.attachments} </ul>`;
+      el.renderData += attachments;
     });
   }
 })();

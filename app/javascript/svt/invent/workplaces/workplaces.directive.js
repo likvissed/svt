@@ -6,7 +6,8 @@ import { app } from '../../app/app';
   app
     .directive('fileUpload', fileUpload)
     .directive('workplaceListApprove', workplaceListApprove)
-    .directive('workplaceListDivisionFilter', workplaceListDivisionFilter);
+    .directive('workplaceListDivisionFilter', workplaceListDivisionFilter)
+    .directive('documentUpload', documentUpload);
 
   function fileUpload(){
     return {
@@ -45,5 +46,18 @@ import { app } from '../../app/app';
         '</ui-select>' +
       '</div>'
     }
+  }
+
+  function documentUpload(){
+    return {
+      link: function(scope, element) {
+        element.on('change', function(event) {
+          // Добавить файл в спиcок файлов рабочего места
+          scope.wp.addFile(event.target.files[0]);
+          scope.$apply();
+        });
+
+      }
+    };
   }
 })();

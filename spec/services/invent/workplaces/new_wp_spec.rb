@@ -39,9 +39,9 @@ module Invent
         expect(subject.data[:item]['status']).to eq 'in_workplace'
       end
 
-      it 'sets %w[disabled_filters items_attributes] attributes' do
+      it 'sets %w[disabled_filters items_attributes attachments_attributes new_attachment] attributes' do
         subject.run
-        expect(subject.data[:workplace]).to include('disabled_filters', 'items_attributes')
+        expect(subject.data[:workplace]).to include('disabled_filters', 'items_attributes', 'attachments_attributes', 'new_attachment')
       end
     end
   end

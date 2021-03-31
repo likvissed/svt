@@ -30,6 +30,13 @@ module Invent
         expect(subject).to receive(:broadcast_workplaces_list)
         subject.run
       end
+
+      context 'when workplace have attachment' do
+        let(:present_attachment) { create(:attachment, workplace: workplace) }
+        before { workplace.attachments = [present_attachment] }
+
+        its(:run) { is_expected.to be_falsey }
+      end
     end
   end
 end

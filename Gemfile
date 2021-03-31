@@ -40,6 +40,8 @@ gem 'safe_attributes'
 gem 'simple_form'
 gem 'slim'
 gem 'webpacker'
+# File attachment library
+gem 'carrierwave', '~> 2.0'
 
 # Bundle edge Rails instead: gem 'rails', github: 'rails/rails'
 gem 'rails', '~> 5.1.1'

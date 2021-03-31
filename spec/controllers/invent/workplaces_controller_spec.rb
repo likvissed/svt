@@ -55,7 +55,7 @@ module Invent
 
     describe 'POST #create' do
       let(:workplace) { build(:workplace_pk, :add_items, items: %i[pc monitor], workplace_count: workplace_count) }
-      let(:wp_params) { { workplace: workplace.as_json } }
+      let(:wp_params) { { workplace: workplace.to_json } }
 
       it 'creates instance of the LkInvents::CreateWorkplace' do
         post :create, params: wp_params
@@ -120,7 +120,7 @@ module Invent
       let(:wp_params) do
         {
           workplace_id: workplace.workplace_id,
-          workplace: workplace.as_json
+          workplace: workplace.to_json
         }
       end
 

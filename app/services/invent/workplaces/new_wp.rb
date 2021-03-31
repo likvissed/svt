@@ -31,6 +31,9 @@ module Invent
       def set_workplace_params
         data[:workplace] = @workplace.as_json(methods: :disabled_filters)
         data[:workplace]['items_attributes'] = []
+
+        data[:workplace]['attachments_attributes'] = []
+        data[:workplace]['new_attachment'] = @workplace.attachments.build
       end
 
       def load_properties
