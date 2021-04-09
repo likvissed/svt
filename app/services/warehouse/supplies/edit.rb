@@ -49,6 +49,11 @@ module Warehouse
         )
 
         data[:supply]['operations_attributes'] = data[:supply]['operations']
+        data[:supply]['operations_attributes'].each do |op|
+          next if op['item'].blank?
+
+          op['item']['assign_barcode'] = Invent::Property::LIST_TYPE_FOR_BARCODES.include?(op['item']['item_type'].to_s.downcase) ? true : false
+        end
         data[:supply].delete('operations')
 
         # data[:supply]['date'] = data[:supply]['date'].strftime("%Y-%m-%d")

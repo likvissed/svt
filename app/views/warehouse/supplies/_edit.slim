@@ -49,7 +49,8 @@ script type="text/ng-template" id="editSupplyModal.slim"
             th.col-fhd-2.col-xlg-3
         tbody
           tr.animate-show ng-repeat="op in edit.supply.operations_attributes" ng-hide="op._destroy"
-            td ng-bind="op.item.item_type"
+            td ng-class="{ 'text-primary': op.item.assign_barcode }"
+              span ng-bind="op.item.item_type"
             td ng-bind="op.item.item_model"
             td ng-bind="op.shift"
             td.text-center
