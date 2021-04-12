@@ -241,7 +241,8 @@ import { app } from '../../app/app';
         id_tn       : item.workplace.id_tn,
         tn          : tn,
         workplace_id: item.workplace_id,
-        type_id     : item.type_id
+        type_id     : item.type_id,
+        severity    : 6
       }
 
       return encodeURIComponent(JSON.stringify(data));
