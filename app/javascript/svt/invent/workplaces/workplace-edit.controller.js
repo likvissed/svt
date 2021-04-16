@@ -267,8 +267,6 @@ import { app } from '../../app/app';
       file.name
     );
     this.workplace.attachments_attributes.push(new_attachment);
-
-    this.Flash.notice(`Файл «${file.name}»‎ успешно загружен`);
   };
 
   /**
@@ -288,12 +286,14 @@ import { app } from '../../app/app';
       let index = this.workplace.attachments_attributes.indexOf(attachment);
       this.workplace.attachments_attributes.splice(index, 1);
 
-      // Получить все пары "ключ-значение" для новых вложений
-      let attachments = this.Workplace.formDataResult.entries();
+      let name = 'attachments[]';
 
-      for (let key of attachments) {
-        this.Workplace.formDataResult.delete(key[attachment.form_index]);
-      }
+      // Получить все значения для новых вложений
+      let keep_form_data = this.Workplace.formDataResult.getAll(name);
+
+      keep_form_data.splice(attachment.form_index, 1);
+      this.Workplace.formDataResult.delete(name);
+      keep_form_data.forEach((value) => this.Workplace.formDataResult.append(name, value));
     }
   };
 })();

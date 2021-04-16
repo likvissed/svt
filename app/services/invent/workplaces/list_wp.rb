@@ -76,7 +76,7 @@ module Invent
 #{wp['workplace_type']['short_description']}; Расположение: #{wp_location_string(wp)}; Основной вид деятельности:
 #{wp['workplace_specialization']['short_description']}"
                           items = wp['items'].map { |item| item_info(item) }
-                          attachments = wp['attachments'].map { |att| attachment_info(att) }.join('; ')
+                          attachments = wp['attachments'].map { |att| attachment_info(att) }
 
                           {
                             workplace_id: wp['workplace_id'],

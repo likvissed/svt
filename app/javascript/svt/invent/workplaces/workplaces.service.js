@@ -91,8 +91,9 @@ import { app } from '../../app/app';
       composition = items.length == 0 ? 'Состав отсутствует <br>' : `Состав:<ul> ${items.join('')} </ul>`;
       el.renderData += composition;
 
-      attachments = el.attachments.length == 0 ? 'Вложения отсутствуют' : `Вложенные файлы: <ul> ${el.attachments} </ul>`;
-      el.renderData += attachments;
+      el.attachments.forEach(function(value) { attachments.push(`<li> ${value} </li>`); });
+      composition = attachments.length == 0 ? 'Вложения отсутствуют' : `Вложенные файлы: <ul> ${attachments.join('')} </ul>`;
+      el.renderData += composition;
     });
   }
 })();

@@ -52,8 +52,10 @@ import { app } from '../../app/app';
     return {
       link: function(scope, element) {
         element.on('change', function(event) {
-          // Добавить файл в спиcок файлов рабочего места
-          scope.wp.addFile(event.target.files[0]);
+          Array.from(event.target.files).forEach((file) => {
+            // Добавить файл в спиcок файлов рабочего места
+            scope.wp.addFile(file);
+          });
           scope.$apply();
         });
 

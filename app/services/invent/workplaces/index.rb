@@ -67,10 +67,10 @@ module Invent
           # wp['status'] = Workplace.translate_enum(:status, wp['status'])
           wp['division'] = wp['workplace_count']['division']
           wp['count_items'] = wp['items'].count
+          wp['attachments'].each { |att| att['filename'] = att['document'].file.nil? ? 'Файл отсутствует' : att['document'].identifier }
           wp['count_attachments'] = wp['attachments'].count
 
           wp.delete('items')
-          wp.delete('attachments')
           wp.delete('workplace_count')
           wp.delete('iss_reference_site')
           wp.delete('iss_reference_building')

@@ -69,4 +69,11 @@ import { app } from '../../app/app';
       (response, status) => this.Error.response(response, status)
     );
   };
+
+  /**
+   * Скачать вложенный файл
+   */
+  WorkplaceTableCtrl.prototype.downloadFile = function(attachment_id) {
+    window.open(`/invent/attachments/download/${attachment_id}`, '_blank');
+  };
 })();
