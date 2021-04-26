@@ -293,7 +293,19 @@ import { app } from '../../app/app';
 
       keep_form_data.splice(attachment.form_index, 1);
       this.Workplace.formDataResult.delete(name);
+      // Заполнить массив вложенных файлов
       keep_form_data.forEach((value) => this.Workplace.formDataResult.append(name, value));
+
+      // Массив всех новых вложенных атрибутов
+      let array_new_attachments_attributes = this.workplace.attachments_attributes.filter(function(attr){
+        return attr.id === null;
+      })
+      // Обновить form_index для новых вложенных атрибутов
+      array_new_attachments_attributes.forEach((value, index) => {
+        if (!attachment.id) {
+          value.form_index = index;
+        }
+      });
     }
   };
 })();
