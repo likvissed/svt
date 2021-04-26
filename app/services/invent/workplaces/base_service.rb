@@ -65,12 +65,7 @@ module Invent
 
       # Добавить файлы вложения при обновлении и создании РМ
       def create_attachments
-        new_attachments = []
-        @workplace_attachments.each do |attachment|
-          new_attachments << @workplace.attachments.build(document: attachment).as_json
-        end
-
-        Attachment.create(new_attachments)
+        @workplace_attachments.each { |att| @workplace.attachments.create(document: att) }
       end
 
       def fill_swap_arr

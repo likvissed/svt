@@ -14,6 +14,15 @@ include_once 'DBConn.php';
 $env = $argv[1] . '_invent';
 $dept = $argv[2];
 $database = yaml_parse_file('config/database.yml');
+$database[$env]['host'] = $_SERVER['MYSQL_NETADMIN_SLAVE'];
+
+if ($_SERVER['RAILS_ENV'] === 'production') {
+  $database[$env]['username'] = $_SERVER['MYSQL_PRODUCTION_USER'];
+  $database[$env]['password'] = $_SERVER['MYSQL_PRODUCTION_PASSWORD'];
+} else {
+  $database[$env]['username'] = $_SERVER['MYSQL_DEV_USER'];
+  $database[$env]['password'] = $_SERVER['MYSQL_DEV_PASSWORD'];
+}
 
 $con = new DBConn ($database[$env]);
 $con->prepare_query('SELECT wi.workplace_id,u.fio_initials,iwt.short_description,irs.name AS site,irb.name as corp, irr.name FROM invent_workplace AS wi, invent_workplace_type as iwt, netadmin.user_iss AS u, netadmin.iss_reference_sites AS irs, netadmin.iss_reference_buildings AS irb, netadmin.iss_reference_rooms AS irr where u.id_tn=wi.id_tn AND irs.site_id=wi.location_site_id AND irb.building_id=wi.location_building_id AND irr.room_id=wi.location_room_id AND iwt.workplace_type_id=wi.workplace_type_id AND u.id_tn IN (SELECT id_tn FROM netadmin.user_iss WHERE dept=:dept) ORDER BY wi.workplace_id;');
