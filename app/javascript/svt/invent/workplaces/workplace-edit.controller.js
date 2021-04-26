@@ -5,14 +5,14 @@ import { app } from '../../app/app';
 
   app.controller('WorkplaceEditCtrl', WorkplaceEditCtrl);
 
-  WorkplaceEditCtrl.$inject = ['$timeout', '$uibModal', 'Workplace', 'WorkplaceItem', 'InventItem', 'Flash', 'Config'];
+  WorkplaceEditCtrl.$inject = ['$timeout', '$uibModal', 'Workplace', 'WorkplaceItem', 'InventItem', 'Flash', 'Config', '$window'];
 
   /**
    * Редактирование данных о РМ. Подтверждение/отклонение введенных данных.
    *
    * @class SVT.WorkplaceEditCtrl
    */
-  function WorkplaceEditCtrl($timeout, $uibModal, Workplace, WorkplaceItem, InventItem, Flash, Config) {
+  function WorkplaceEditCtrl($timeout, $uibModal, Workplace, WorkplaceItem, InventItem, Flash, Config, $window) {
     this.$timeout = $timeout;
     this.$uibModal = $uibModal;
     this.Flash = Flash;
@@ -20,6 +20,10 @@ import { app } from '../../app/app';
     this.Workplace = Workplace;
     this.WorkplaceItem = WorkplaceItem;
     this.InventItem = InventItem;
+    this.$window = $window;
+
+    // Новые вложенные файлы рабочего места
+    this.Workplace.formDataResult = new FormData();
   }
 
   WorkplaceEditCtrl.prototype.init = function(id) {
@@ -231,5 +235,65 @@ import { app } from '../../app/app';
     if (!confirm(confirm_str)) { return false; }
 
     this.InventItem.sendToWriteOff().then(() => this.Workplace.delItem(item));
+  };
+
+  /**
+   * Добавить загруженный файл на рабочее место
+   */
+  WorkplaceEditCtrl.prototype.addFile = function(file) {
+    // Если файл не был выбран в окне загрузки
+    if (!file) {
+      this.Flash.alert('Загрузка файла не удалась. Попробуйте снова');
+
+      return false;
+    }
+    // Перевести размер загруженного файла из байт в Мб
+    let file_size = file.size / 1024 / 1024;
+    if (file_size > 100) {
+      this.Flash.alert('Невозможно загрузить файл, размером больше 100 мегабайт');
+
+      return false;
+    }
+
+    let new_attachment = angular.copy(this.workplace.new_attachment);
+    new_attachment.filename = file.name;
+    // Добавить поле form_index для получения индекса при удалении вложения
+    new_attachment.form_index = this.Workplace.formDataResult.getAll('attachments[]').length;
+
+    // Добавить файл в массив вложенных файлов рабочего места
+    this.Workplace.formDataResult.append(
+      'attachments[]',
+      file,
+      file.name
+    );
+    this.workplace.attachments_attributes.push(new_attachment);
+  };
+
+  /**
+   * Скачать файл, прикрепленный к рабочему месту
+   */
+  WorkplaceEditCtrl.prototype.downloadFile = function(attachment_id) {
+    this.$window.open(`/invent/attachments/download/${attachment_id}`, '_blank');
+  };
+
+  /**
+   * Удалить файл с рабочего места
+   */
+  WorkplaceEditCtrl.prototype.deleteFile = function(attachment) {
+    if (attachment.id) {
+      attachment._destroy = 1;
+    } else {
+      let index = this.workplace.attachments_attributes.indexOf(attachment);
+      this.workplace.attachments_attributes.splice(index, 1);
+
+      let name = 'attachments[]';
+
+      // Получить все значения для новых вложений
+      let keep_form_data = this.Workplace.formDataResult.getAll(name);
+
+      keep_form_data.splice(attachment.form_index, 1);
+      this.Workplace.formDataResult.delete(name);
+      keep_form_data.forEach((value) => this.Workplace.formDataResult.append(name, value));
+    }
   };
 })();

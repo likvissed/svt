@@ -5,8 +5,8 @@ module Invent
     it { is_expected.to have_many(:model_property_lists).dependent(:destroy) }
     it { is_expected.to have_many(:items).dependent(:restrict_with_error) }
     it { is_expected.to have_many(:warehouse_items).with_foreign_key('invent_model_id').dependent(:restrict_with_error) }
-    it { is_expected.to belong_to(:vendor) }
-    it { is_expected.to belong_to(:type) }
+    it { is_expected.to belong_to(:vendor).required }
+    it { is_expected.to belong_to(:type).required }
     # Спеки не проходят из-за 'reduce: true'
     # it { is_expected.to validate_presence_of(:vendor) }
     # it { is_expected.to validate_presence_of(:type) }

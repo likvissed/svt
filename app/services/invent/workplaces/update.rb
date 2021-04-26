@@ -5,10 +5,11 @@ module Invent
       # current_user - текущий пользователь
       # workplace_id - workplace_id изменяемого рабочего места
       # workplace_params - параметры, пройденные фильтрацию 'strong_params'
-      def initialize(current_user, workplace_id, workplace_params)
+      def initialize(current_user, workplace_id, workplace_params, workplace_attachments)
         @current_user = current_user
         @workplace_id = workplace_id
         @workplace_params = workplace_params
+        @workplace_attachments = workplace_attachments
 
         super
       end
@@ -47,6 +48,8 @@ module Invent
 
       def update_workplace
         if @workplace.update(@workplace_params)
+          create_attachments if @workplace_attachments.present?
+
           # Чтобы избежать N+1 запрос в методе 'transform_workplace' нужно создать объект ActiveRecord (например,
           # вызвать find)
           @workplace = Workplace

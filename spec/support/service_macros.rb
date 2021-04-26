@@ -30,6 +30,7 @@ module ServiceMacros
       methods: :location_room_name
     )
 
+    tmp['attachments_attributes'] = []
     tmp['items_attributes'] = tmp['items']
     tmp['items_attributes'].each do |item|
       item['property_values_attributes'] = item['property_values']
@@ -56,6 +57,7 @@ module ServiceMacros
       wp.data['location_room_name'] = nil
     end
     wp.data.delete('location_room')
+    wp.data.delete('new_attachment')
 
     # Меняем состав рабочего места
     new_mon = wp.data['items_attributes'].deep_dup.last

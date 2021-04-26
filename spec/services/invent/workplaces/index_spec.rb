@@ -153,7 +153,7 @@ module Invent
 
       it 'fills the workplaces array at least with %w[division responsibles phone date-range waiting ready] keys' do
         expect(subject.data[:data].first)
-          .to include('division', 'wp_type', 'responsible', 'location', 'count', 'status')
+          .to include('division', 'wp_type', 'responsible', 'location', 'count_items', 'count_attachments', 'status')
       end
 
       it 'must create @workplaces variable' do

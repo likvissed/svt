@@ -5,6 +5,7 @@ module Invent
     RSpec.describe Update, type: :model do
       let!(:user) { create(:user) }
       let!(:old_workplace) { create(:workplace_pk, :add_items, items: %i[pc monitor]) }
+      let(:workplace_attachments) { [] }
 
       context 'with valid workplace params' do
         let(:room) { IssReferenceSite.first.iss_reference_buildings.first.iss_reference_rooms.last }
@@ -12,7 +13,7 @@ module Invent
         let(:new_workplace) do
           update_workplace_attributes(true, user, old_workplace.workplace_id, room: room, user_iss: user_iss)
         end
-        subject { Update.new(user, old_workplace.workplace_id, new_workplace) }
+        subject { Update.new(user, old_workplace.workplace_id, new_workplace, workplace_attachments) }
 
         it 'creates a @workplace variable' do
           subject.run
@@ -75,6 +76,38 @@ module Invent
           expect(Barcode.count).to eq new_workplace['items_attributes'].count
         end
 
+        context 'when workplace have attachments' do
+          let(:new_attachment) { { id: nil, workplace_id: nil } }
+          let(:file) do
+            Rack::Test::UploadedFile.new(Rails.root.join('spec/files/new_pc_config.txt'), 'text/plain')
+          end
+          let(:present_attachment) { create(:attachment, workplace: old_workplace) }
+          let(:workplace_attachments) { [file] }
+          before { new_workplace['attachments_attributes'] = [present_attachment.as_json, new_attachment] }
+
+          it 'count of attachments has changed' do
+            expect { subject.run }.to change(Attachment, :count).by(workplace_attachments.count)
+          end
+
+          context 'and when deletes present ands add new attachment' do
+            before do
+              new_workplace['attachments_attributes'].each do |att|
+                att['_destroy'] = 1 if att['id'].present?
+              end
+            end
+
+            it 'count attachment not changes' do
+              expect { subject.run }.not_to change(Attachment, :count)
+            end
+
+            it 'assigns identifier for new file' do
+              subject.run
+
+              expect(old_workplace.attachments.first.document.file.identifier).to eq file.original_filename
+            end
+          end
+        end
+
         its(:run) { is_expected.to be_truthy }
       end
 
@@ -105,11 +138,12 @@ module Invent
           new_mon.delete('barcode_item')
 
           wp.data.delete('location_room')
+          wp.data.delete('new_attachment')
           wp.data['items_attributes'] << new_mon
           wp.data
         end
         let(:swap) { Warehouse::Orders::Swap.new(user, old_workplace.workplace_id, [new_workplace['items_attributes'].last['id']]) }
-        subject { Update.new(user, old_workplace.workplace_id, new_workplace) }
+        subject { Update.new(user, old_workplace.workplace_id, new_workplace, workplace_attachments) }
 
         it 'runs Warehouse::Orders::Swap service' do
           expect(Warehouse::Orders::Swap).to receive(:new).with(user, old_workplace.workplace_id, [new_workplace['items_attributes'].last['id']]).and_return(swap)
@@ -148,7 +182,7 @@ module Invent
         let(:new_workplace) do
           update_workplace_attributes(false, user, old_workplace.workplace_id)
         end
-        subject { Update.new(user, old_workplace.workplace_id, new_workplace) }
+        subject { Update.new(user, old_workplace.workplace_id, new_workplace, workplace_attachments) }
 
         its(:run) { is_expected.to be_falsey }
       end

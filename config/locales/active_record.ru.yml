@@ -231,6 +231,7 @@ ru:
               cannot_destroy_items: 'Не удалось удалить запись (обратитесь к администратору, т. ***REMOVED***)'
               cannot_destroy_workplace_belongs_to_processing_order: 'Невозможно удалить РМ, так как имеется связанный с РМ незакрытый ордер'
               cannot_destroy_workplace_with_items: 'Невозможно удалить РМ, содержащее технику'
+              cannot_destroy_workplace_with_attachments: 'Невозможно удалить РМ, содержащее вложенные файлы'
               wrong_rm_pk_composition: 'Неправильный состав стационарного рабочего места'
               wrong_rm_mob_composition: 'Неправильный состав мобильного рабочего места'
               wrong_rm_net_print_composition: 'Неправильный состав рабочего места печати'

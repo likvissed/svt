@@ -5,14 +5,16 @@ module Invent
     it { is_expected.not_to validate_presence_of(:freezing_time) }
     it { is_expected.to have_many(:items).inverse_of(:workplace).dependent(:nullify) }
     it { is_expected.to have_many(:orders).class_name('Warehouse::Order').dependent(:nullify) }
-    it { is_expected.to belong_to(:workplace_type) }
-    it { is_expected.to belong_to(:workplace_specialization) }
-    it { is_expected.to belong_to(:workplace_count) }
+    it { is_expected.to have_many(:attachments).with_foreign_key('workplace_id').dependent(:destroy).inverse_of(:workplace) }
+    it { is_expected.to belong_to(:workplace_type).required }
+    it { is_expected.to belong_to(:workplace_specialization).required }
+    it { is_expected.to belong_to(:workplace_count).required }
     it { is_expected.to belong_to(:user_iss).with_foreign_key('id_tn').optional }
-    it { is_expected.to belong_to(:iss_reference_site).with_foreign_key('location_site_id') }
-    it { is_expected.to belong_to(:iss_reference_building).with_foreign_key('location_building_id') }
-    it { is_expected.to belong_to(:iss_reference_room).with_foreign_key('location_room_id') }
+    it { is_expected.to belong_to(:iss_reference_site).with_foreign_key('location_site_id').required }
+    it { is_expected.to belong_to(:iss_reference_building).with_foreign_key('location_building_id').required }
+    it { is_expected.to belong_to(:iss_reference_room).with_foreign_key('location_room_id').required }
     it { is_expected.to accept_nested_attributes_for(:items).allow_destroy(false) }
+    it { is_expected.to accept_nested_attributes_for(:attachments).allow_destroy(true) }
 
     context 'when workplace status is :temporary' do
       before { subject.status = :temporary }
@@ -68,7 +70,7 @@ module Invent
       end
     end
 
-    describe '#check_items' do
+    describe '#check_items_and_attachments' do
       context 'when workplace includes any item' do
         let!(:wp) { create(:workplace_pk, :add_items, items: %i[pc monitor monitor]) }
         subject { wp }
@@ -80,6 +82,38 @@ module Invent
 
         it 'does not destroy Workplace' do
           expect { subject.destroy }.not_to change(Workplace, :count)
+        end
+
+        context 'and when includes any attachmen' do
+          let(:present_attachment) { create(:attachment, workplace: wp) }
+          before { wp.attachments = [present_attachment] }
+
+          it 'adds :cannot_destroy_workplace_with_attachments error' do
+            subject.destroy
+
+            expect(subject.errors.details[:base]).to include(error: :cannot_destroy_workplace_with_attachments)
+          end
+        end
+      end
+
+      context 'when workplace includes any attachment' do
+        let!(:workplace) do
+          wp = build(:workplace_pk)
+          wp.save(validate: false)
+          wp
+        end
+        let(:present_attachment) { create(:attachment, workplace: workplace) }
+        before { workplace.attachments = [present_attachment] }
+        subject { workplace }
+
+        it 'does not destroy Workplace' do
+          expect { subject.destroy }.not_to change(Workplace, :count)
+        end
+
+        it 'adds :cannot_destroy_workplace_with_attachments error' do
+          subject.destroy
+
+          expect(subject.errors.details[:base]).to include(error: :cannot_destroy_workplace_with_attachments)
         end
       end
 
@@ -95,7 +129,7 @@ module Invent
 
       context 'when runned :hard_destroy method' do
         it 'does not run validation' do
-          expect(subject).not_to receive(:check_items)
+          expect(subject).not_to receive(:check_items_and_attachments)
           subject.hard_destroy
         end
       end

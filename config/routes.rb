@@ -27,7 +27,7 @@ Rails.application.routes.draw do
       end
     end
     # Рабочие места
-    resources :workplaces, param: :workplace_id do
+    resources :workplaces, except: [:update], param: :workplace_id do
       collection do
         # Вывести все РМ списком
         get 'list_wp', to: 'workplaces#list_wp'
@@ -39,8 +39,13 @@ Rails.application.routes.draw do
         get 'category_for_room', to: 'workplaces#category_for_room'
       end
 
+      put 'update', as: 'update', on: :collection
       delete 'hard_destroy', to: 'workplaces#hard_destroy', on: :member
     end
+
+    # Скачивание файлов, прикрепленных к рабочему месту
+    # прямой путь используется в /services/invent/workplaces/list_wp.rb
+    get 'attachments/download/:id', to: 'attachments#download', as: 'attachments/download'
 
     # Запросы с ЛК
     # Проверка доступа к разделу "Вычислительная техника" в ЛК.

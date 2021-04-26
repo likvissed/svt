@@ -63,6 +63,11 @@ module Invent
         end
       end
 
+      # Добавить файлы вложения при обновлении и создании РМ
+      def create_attachments
+        @workplace_attachments.each { |att| @workplace.attachments.create(document: att) }
+      end
+
       def fill_swap_arr
         @swap = []
         @workplace_params['items_attributes']&.delete_if { |i| @swap << i['id'] if i['status'] == 'prepared_to_swap' }

@@ -4,9 +4,10 @@ module Invent
     class Create < BaseService
       # current_user - текущий пользователь
       # workplace_params - параметры, пройденные фильтрацию 'strong_params'
-      def initialize(current_user, workplace_params)
+      def initialize(current_user, workplace_params, workplace_attachments)
         @current_user = current_user
         @workplace_params = workplace_params
+        @workplace_attachments = workplace_attachments
 
         super
       end
@@ -58,6 +59,7 @@ module Invent
       # Создать рабочее место.
       def save_workplace
         if @workplace.save
+          create_attachments if @workplace_attachments.present?
           # Чтобы избежать N+1 запрос в методе 'transform_workplace' нужно создать объект ActiveRecord (например,
           # вызвать find)
           @workplace = Workplace

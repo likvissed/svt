@@ -37,7 +37,8 @@ module Invent
     end
 
     def create
-      @create = Workplaces::Create.new(current_user, workplace_params)
+      workplace_attachments = params[:attachments].presence || []
+      @create = Workplaces::Create.new(current_user, workplace_params, workplace_attachments)
 
       if @create.run
         flash[:notice] = I18n.t('controllers.invent/workplace.created')
@@ -78,7 +79,8 @@ module Invent
     end
 
     def update
-      @update = Workplaces::Update.new(current_user, params[:workplace_id], workplace_params)
+      workplace_attachments = params[:attachments].presence || []
+      @update = Workplaces::Update.new(current_user, params[:workplace_id], workplace_params, workplace_attachments)
 
       if @update.run
         flash[:notice] = I18n.t('controllers.invent/workplace.updated')
@@ -140,7 +142,8 @@ module Invent
     protected
 
     def workplace_params
-      params.require(:workplace).permit(policy(Workplace).permitted_attributes)
+      new_params = ActionController::Parameters.new({ workplace: JSON.parse(params[:workplace]) })
+      new_params.require(:workplace).permit(policy(Workplace).permitted_attributes)
     end
 
     def check_access

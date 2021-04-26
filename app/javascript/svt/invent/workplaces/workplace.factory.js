@@ -233,16 +233,17 @@ import { app } from '../../app/app';
   Workplace.prototype.saveWorkplace = function() {
     this._delObjects();
 
+    this.formDataResult.append('workplace', JSON.stringify(this.workplaceCopy));
+
     if (this.workplaceCopy.workplace_id) {
-      this.Server.Invent.Workplace.update(
-        { workplace_id: this.workplace.workplace_id },
-        { workplace: this.workplaceCopy },
+      this.formDataResult.append('workplace_id', this.workplace.workplace_id);
+
+      this.Server.Invent.Workplace.update(this.formDataResult,
         (response) => this.$window.location.href = response.location,
         (response, status) => this.Error.response(response, status)
       );
     } else {
-      this.Server.Invent.Workplace.save(
-        { workplace: this.workplaceCopy },
+      this.Server.Invent.Workplace.save(this.formDataResult,
         (response) => this.$window.location.href = response.location,
         (response, status) => this.Error.response(response, status)
       );

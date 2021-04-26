@@ -34,10 +34,21 @@ import { app } from '../../app/app';
             method: 'GET',
             url   : '/invent/workplaces/:id/edit.json'
           },
-          update : { method: 'PUT' },
           confirm: {
             method: 'PUT',
             url   : '/invent/workplaces/confirm'
+          },
+          save: {
+            method          : 'POST',
+            url             : '/invent/workplaces.json',
+            headers         : { 'Content-Type': undefined },
+            transformRequest: angular.identity
+          },
+          update: {
+            method          : 'PUT',
+            url             : '/invent/workplaces/update.json',
+            headers         : { 'Content-Type': undefined },
+            transformRequest: angular.identity
           },
           hardDelete: {
             method: 'DELETE',

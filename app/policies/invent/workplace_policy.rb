@@ -123,6 +123,12 @@ module Invent
           :location_room_id,
           :comment,
           item_ids: [],
+          attachments_attributes: %i[
+            id
+            workplace_id
+            document
+            _destroy
+          ],
           items_attributes: [
             :id,
             :parent_id,
@@ -156,6 +162,12 @@ module Invent
           :status,
           :freezing_time,
           item_ids: [],
+          attachments_attributes: %i[
+            id
+            workplace_id
+            document
+            _destroy
+          ],
           items_attributes: [
             :id,
             :parent_id,

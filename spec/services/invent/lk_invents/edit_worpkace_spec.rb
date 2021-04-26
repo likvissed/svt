@@ -17,13 +17,24 @@ module Invent
         context 'when @data is filling' do
           before { subject.run }
 
-          it 'fills @data at least with %w[location_room items_attributes] keys' do
-            expect(subject.data).to include('location_room', 'items_attributes')
+          it 'fills @data at least with %w[location_room items_attributes attachments_attributes new_attachment] keys' do
+            expect(subject.data).to include('location_room', 'items_attributes', 'attachments_attributes', 'new_attachment')
           end
 
           it 'fills each items_attribute at least with %w[warehouse_orders id property_values_attributes] keys' do
             subject.data['items_attributes'].each do |item|
               expect(item).to include('warehouse_orders', 'id', 'property_values_attributes', 'barcode_item_attributes')
+            end
+          end
+
+          context 'and when workplace have attachment' do
+            let(:attachment) { create(:attachment, workplace: workplace) }
+            before { workplace.attachments = [attachment] }
+
+            it 'fills each attachments_attributes with %w[id workplace_id filename document] keys' do
+              subject.data['attachments_attributes'].each do |att|
+                expect(att).to include('id', 'workplace_id', 'filename', 'document')
+              end
             end
           end
 

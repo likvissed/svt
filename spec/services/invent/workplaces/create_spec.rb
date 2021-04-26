@@ -6,7 +6,8 @@ module Invent
       let!(:user) { create(:user) }
       let!(:workplace_count) { create(:active_workplace_count, users: [user]) }
       let(:room) { IssReferenceSite.first.iss_reference_buildings.first.iss_reference_rooms.first }
-      subject { Create.new(user, workplace) }
+      let(:workplace_attachments) { [] }
+      subject { Create.new(user, workplace, workplace_attachments) }
 
       context 'with valid workplace params' do
         let(:workplace) { create_workplace_attributes(true, room: room) }
@@ -66,6 +67,33 @@ module Invent
           subject.run
 
           expect(Barcode.count).to eq workplace['items_attributes'].count
+        end
+
+        context 'and when add attachments' do
+          let(:new_attachment) { { id: nil, workplace_id: nil } }
+          let(:file) do
+            Rack::Test::UploadedFile.new(Rails.root.join('spec/files/old_pc_config.txt'), 'text/plain')
+          end
+          let(:workplace_attachments) { [file, file] }
+          before { workplace['attachments_attributes'] = [new_attachment, new_attachment] }
+
+          it 'count of attachments has changed ' do
+            expect { subject.run }.to change(Attachment, :count).by(workplace_attachments.count)
+          end
+
+          it 'assigns identifier for each file' do
+            subject.run
+
+            Attachment.all.each do |att|
+              expect(att.document.file.identifier).to eq file.original_filename
+            end
+          end
+        end
+
+        it 'returns is blank count of attachments' do
+          subject.run
+
+          expect(Attachment.count).to be_zero
         end
 
         its(:run) { is_expected.to be_truthy }

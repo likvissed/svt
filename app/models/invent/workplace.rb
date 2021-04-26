@@ -5,6 +5,7 @@ module Invent
 
     has_many :items, inverse_of: :workplace, dependent: :nullify
     has_many :orders, class_name: 'Warehouse::Order', foreign_key: 'invent_workplace_id', dependent: :nullify
+    has_many :attachments, foreign_key: 'workplace_id', dependent: :destroy, inverse_of: :workplace
 
     belongs_to :workplace_type, optional: false
     belongs_to :workplace_specialization, optional: false
@@ -23,7 +24,7 @@ module Invent
     validates :comment, presence: true, if: -> { status == 'temporary' }
     validate :check_workplace_conditions, if: -> { workplace_type && !disabled_filters }
 
-    before_destroy :check_items, prepend: true, unless: -> { hard_destroy }
+    before_destroy :check_items_and_attachments, prepend: true, unless: -> { hard_destroy }
     before_destroy :check_processing_orders, prepend: true
 
     scope :fullname, ->(fullname) { left_outer_joins(:user_iss).where('fio LIKE ?', "%#{fullname}%") }
@@ -42,12 +43,13 @@ module Invent
     attr_accessor :location_room_name, :division, :room_category_id
     # Поле указывает, нужно ли использовать валидаторы при создании/редактировании текущей модели
     attr_accessor :disabled_filters
-    # Указывает, что нужно пропустить валидацию check_items
+    # Указывает, что нужно пропустить валидацию check_items_and_attachments
     attr_accessor :hard_destroy
 
     delegate :division, to: :workplace_count
 
     accepts_nested_attributes_for :items, reject_if: proc { |attr| attr['type_id'].to_i.zero? }
+    accepts_nested_attributes_for :attachments, allow_destroy: true, reject_if: proc { |attr| attr['id'].blank? }
 
     enum status: { confirmed: 0, pending_verification: 1, disapproved: 2, freezed: 3, temporary: 4 }
 
@@ -76,10 +78,11 @@ module Invent
       throw(:abort)
     end
 
-    def check_items
-      return if items.empty?
+    def check_items_and_attachments
+      return if items.empty? && attachments.empty?
 
-      errors.add(:base, :cannot_destroy_workplace_with_items)
+      errors.add(:base, :cannot_destroy_workplace_with_items) if items.exists?
+      errors.add(:base, :cannot_destroy_workplace_with_attachments) if attachments.exists?
       throw(:abort)
     end
 

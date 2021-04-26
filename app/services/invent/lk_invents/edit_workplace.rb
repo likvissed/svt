@@ -27,7 +27,7 @@ module Invent
       # Получить данные из БД.
       def load_workplace
         @workplace = Workplace
-                       .includes(:workplace_count, :iss_reference_room, items: [:barcode_item, { property_values: :property }])
+                       .includes(:workplace_count, :iss_reference_room, :attachments, items: [:barcode_item, { property_values: :property }])
                        .find(@workplace_id)
         authorize workplace, :edit?
 
@@ -41,6 +41,7 @@ module Invent
           include: [
             :workplace_count,
             :iss_reference_room,
+            :attachments,
             items: {
               include: [
                 :warehouse_orders,
@@ -59,8 +60,11 @@ module Invent
         data['division'] = data['workplace_count']['division']
         data['location_room'] = data['iss_reference_room']
         data['items_attributes'] = data['items']
+        data['attachments_attributes'] = data['attachments']
 
         data.delete('items')
+        data.delete('attachments')
+        data.delete('workplace_count')
         data.delete('iss_reference_room')
         data.delete('location_room_id')
         data.delete('workplace_count')
@@ -68,6 +72,11 @@ module Invent
         data['items_attributes'].each do |item|
           prepare_to_edit_item(item)
         end
+
+        # Вывести в поле filename имя файла, если он существует
+        data['attachments_attributes'].each { |att| att['filename'] = att['document'].file.nil? ? 'Файл отсутствует' : att['document'].identifier }
+
+        data['new_attachment'] = @workplace.attachments.build
       end
     end
   end
