@@ -4,6 +4,7 @@ class Invent::WorkplaceWorker
   def perform(*_args)
     freezing_not_used_workplaces
     freezing_temporary_workplaces
+    clear_cache
   end
 
   protected
@@ -22,5 +23,10 @@ class Invent::WorkplaceWorker
   # Заморозить временные РМ, у которых прошел срок работы.
   def freezing_temporary_workplaces
     Invent::Workplace.where(status: 'temporary').where('freezing_time <= ?', Time.zone.now).update_all(status: :freezed)
+  end
+
+  # Очистить кэш, для того, чтобы обновлённые статусы отображались у пользователей
+  def clear_cache
+    Rails.cache.clear
   end
 end

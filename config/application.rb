@@ -32,6 +32,7 @@ module Inv
     config.autoload_paths << Rails.root.join('app', 'services').to_s
     config.autoload_paths << Rails.root.join('app', 'modules').to_s
     config.autoload_paths << Rails.root.join('app', 'states').to_s
+    config.autoload_paths << Rails.root.join('app', 'sweepers').to_s
     config.autoload_paths << Rails.root.join('lib', 'validators').to_s
     config.autoload_paths << Rails.root.join('lib', 'strategy').to_s
 
