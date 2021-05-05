@@ -68,6 +68,8 @@ gem 'redis', '~> 3.0'
 gem 'redis-rails'
 # Use ActiveModel has_secure_password
 # gem 'bcrypt', '~> 3.1.7'
+gem 'actionpack-action_caching'
+gem 'rails-observers'
 
 group :test do
   gem 'database_cleaner'

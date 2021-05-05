@@ -150,6 +150,8 @@ Rails.application.routes.draw do
       namespace :invent do
         resources :items, only: :index 
       end
+      # Очистить кэш во всём приложении
+      get 'clear_cache_app', to: 'cache#clear'
     end
   end
 

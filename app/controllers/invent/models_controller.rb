@@ -2,6 +2,8 @@ module Invent
   class ModelsController < ApplicationController
     before_action :check_access
 
+    cache_sweeper :cache_sweeper
+
     def index
       @index = Models::Index.new(params)
 

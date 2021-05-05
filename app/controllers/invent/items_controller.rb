@@ -2,6 +2,9 @@ module Invent
   class ItemsController < ApplicationController
     before_action :check_access, except: [:pc_config_from_audit, :pc_config_from_user]
 
+    caches_action :index, cache_path: proc { |c| c.request.url }, if: -> { params['filters'].present? }, expires_in: 12.hours
+    cache_sweeper :cache_sweeper
+
     def index
       respond_to do |format|
         format.html
