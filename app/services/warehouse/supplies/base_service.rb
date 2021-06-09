@@ -17,20 +17,6 @@ module Warehouse
         item[:location_attributes] = item[:location]
         item.delete(:location)
 
-        if item[:location_attributes].present?
-          if item[:location_attributes]['room_id'] == -1
-            room = IssReferenceRoom.find_by(name: item[:location_attributes]['name'], building_id: item[:location_attributes]['building_id'])
-            category_id = if room.present?
-                            room.security_category_id
-                          else
-                            RoomSecurityCategory.missing_category.id
-                          end
-            room = Invent::Room.new(item[:location_attributes]['name'], item[:location_attributes]['building_id'], category_id)
-
-            item[:location_attributes]['room_id'] = room.data.room_id if room.run
-          end
-          item[:location_attributes].delete :name
-        end
         item
       end
 

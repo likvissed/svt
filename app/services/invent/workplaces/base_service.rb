@@ -3,12 +3,12 @@ module Invent
     class BaseService < Invent::ApplicationService
       protected
 
-      # Создать комнату (если она не существует). Создает объект @room.
-      def create_or_get_room
-        @room = Room.new(@workplace_params['location_room_name'], @workplace_params['location_building_id'], @workplace_params['room_category_id'])
+      # # Создать комнату (если она не существует). Создает объект @room.
+      # def create_or_get_room
+      #   @room = Room.new(@workplace_params['location_room_name'], @workplace_params['location_building_id'], @workplace_params['room_category_id'])
 
-        @workplace_params['location_room_id'] = @room.data.room_id if @room.run
-      end
+      #   @workplace_params['location_room_id'] = @room.data.room_id if @room.run
+      # end
 
       # Преобразование объекта workplace в специальный вид, чтобы таблица могла отобразить данные.
       def prepare_workplace

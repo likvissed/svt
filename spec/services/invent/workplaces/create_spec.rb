@@ -105,9 +105,7 @@ module Invent
           tmp = build(
             :workplace_pk,
             :add_items,
-            items: %i[pc monitor],
-            iss_reference_room: nil,
-            location_room_name: room.name
+            items: %i[pc monitor]
           ).as_json(
             include: {
               items: {
@@ -116,8 +114,7 @@ module Invent
                   barcode_item
                 ]
               }
-            },
-            methods: :location_room_name
+            }
           )
 
           tmp['items_attributes'] = tmp['items']

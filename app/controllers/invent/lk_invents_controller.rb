@@ -166,7 +166,6 @@ module Invent
         :id_tn,
         :location_site_id,
         :location_building_id,
-        :location_room_name,
         :location_room_id,
         :comment,
         :status,

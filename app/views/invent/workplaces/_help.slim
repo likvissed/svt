@@ -1,6 +1,6 @@
 .row.animate-show.ng-hide ng-show="wp.workplace.workplace_type.workplace_type_id != 0"
   - if current_user.one_of_roles? :admin, :manager, :worker  
-    span ng-if="wp.workplace.room_category_id && wp.workplace.room_category_id != wp.workplace.no_secrecy.id"
+    span ng-if="wp.workplace.location_obj.room && wp.workplace.location_obj.room.security_category_id != wp.workplace.no_secrecy.id"
       .col-sm-24
         .row
           .col-sm-24

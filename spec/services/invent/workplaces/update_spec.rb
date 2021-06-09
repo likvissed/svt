@@ -11,7 +11,7 @@ module Invent
         let(:room) { IssReferenceSite.first.iss_reference_buildings.first.iss_reference_rooms.last }
         let(:user_iss) { build(:***REMOVED***_user_iss) }
         let(:new_workplace) do
-          update_workplace_attributes(true, user, old_workplace.workplace_id, room: room, user_iss: user_iss)
+          update_workplace_attributes(true, user, old_workplace.workplace_id, location_room_id: room.room_id, user_iss: user_iss)
         end
         subject { Update.new(user, old_workplace.workplace_id, new_workplace, workplace_attachments) }
 
@@ -119,7 +119,7 @@ module Invent
           wp = Invent::LkInvents::EditWorkplace.new(user, old_workplace.workplace_id)
           wp.run
 
-          wp.data['location_room_name'] = room.name
+          wp.data['location_room_id'] = room.room_id
           wp.data['id_tn'] = user_iss.id_tn
 
           new_mon = workplace_2.items.last.as_json(include: :property_values)

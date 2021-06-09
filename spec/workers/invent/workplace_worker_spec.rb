@@ -58,7 +58,7 @@ module Invent
 
     context 'when workplace has :temporary status' do
       context 'and when it is freezing time' do
-        let!(:workplace) { create(:workplace_pk, :add_items, items: %i[pc monitor], status: :temporary, freezing_time: Time.zone.now.to_date) }
+        let!(:workplace) { create(:workplace_pk, :add_items, items: %i[pc monitor], status: :temporary, freezing_time: Time.zone.now.to_date, comment: 'comment') }
 
         it 'changes workplace status' do
           expect { subject.perform }.to change { workplace.reload.status }.from('temporary').to('freezed')
@@ -66,7 +66,7 @@ module Invent
       end
 
       context 'and when it is not freezing time' do
-        let!(:workplace) { create(:workplace_pk, :add_items, items: %i[pc monitor], status: :temporary, freezing_time: Time.zone.now.to_date + 10.days) }
+        let!(:workplace) { create(:workplace_pk, :add_items, items: %i[pc monitor], status: :temporary, freezing_time: Time.zone.now.to_date + 10.days, comment: 'comment') }
 
         it 'does not change workplace status' do
           expect { subject.perform }.not_to change { workplace.reload.status }

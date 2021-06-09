@@ -5,8 +5,6 @@ module ServiceMacros
               :workplace_pk,
               :add_items,
               items: %i[pc monitor],
-              iss_reference_room: nil,
-              location_room_name: params[:room].name,
               workplace_count: workplace_count
             )
           else
@@ -14,7 +12,6 @@ module ServiceMacros
               :workplace,
               user_iss: nil,
               workplace_specialization: nil,
-              iss_reference_room: nil,
               workplace_count: workplace_count
             )
           end
@@ -26,8 +23,7 @@ module ServiceMacros
         items: {
           include: :property_values
         }
-      },
-      methods: :location_room_name
+      }
     )
 
     tmp['attachments_attributes'] = []
@@ -48,15 +44,14 @@ module ServiceMacros
 
     if valid
       # Меняем общие аттрибуты рабочего места
-      wp.data['location_room_name'] = params[:room].name
+      wp.data['location_room_id'] = params[:location_room_id]
       wp.data['id_tn'] = params[:user_iss].id_tn
     else
       # Меняем общие аттрибуты рабочего места
       wp.data['id_tn'] = nil
       wp.data['workplace_specialization'] = nil
-      wp.data['location_room_name'] = nil
+      wp.data['location_room_id'] = nil
     end
-    wp.data.delete('location_room')
     wp.data.delete('new_attachment')
 
     # Меняем состав рабочего места

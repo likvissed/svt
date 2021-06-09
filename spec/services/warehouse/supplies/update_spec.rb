@@ -122,6 +122,8 @@ module Warehouse
           edit.data[:supply]['operations_attributes'].each do |op|
             op['item']['location_id'] = location.id
             op['item']['location'] = location.as_json
+
+            op['item'].delete('assign_barcode')
           end
 
           edit.data[:supply]['operations_attributes'].first['_destroy'] = 1
@@ -188,6 +190,8 @@ module Warehouse
           edit.data[:supply]['operations_attributes'].each do |op|
             op['item']['location_id'] = location.id
             op['item']['location'] = location.as_json
+
+            op['item'].delete('assign_barcode')
           end
 
           edit.data[:supply]['operations_attributes'].first['shift'] += 5
@@ -211,6 +215,8 @@ module Warehouse
           edit.data[:supply]['operations_attributes'].each do |op|
             op['item']['location_id'] = location.id
             op['item']['location'] = location.as_json
+
+            op['item'].delete('assign_barcode')
           end
 
           edit.data[:supply]['operations_attributes'].first['shift'] -= 5
@@ -242,6 +248,8 @@ module Warehouse
           edit.data[:supply]['operations_attributes'].each do |op|
             op['item']['location_id'] = location.id
             op['item']['location'] = location.as_json
+
+            op['item'].delete('assign_barcode')
           end
 
           edit.data[:supply]['operations_attributes'].find { |op| op['item']['warehouse_type'] == 'with_invent_num' }['item']['invent_num_start'] = invent_num_start

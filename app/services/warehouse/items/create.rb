@@ -9,7 +9,6 @@ module Warehouse
       end
 
       def run
-        create_or_get_room_id
         create_item
 
         true

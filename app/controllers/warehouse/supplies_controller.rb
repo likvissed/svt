@@ -105,7 +105,6 @@ module Warehouse
               building_id
               room_id
               comment
-              name
             ]
           ]
         ]

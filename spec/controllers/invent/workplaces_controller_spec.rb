@@ -185,34 +185,5 @@ module Invent
         put :confirm
       end
     end
-
-    describe 'GET #category_for_room' do
-      let(:room) { IssReferenceSite.first.iss_reference_buildings.first.iss_reference_rooms.first }
-      let(:default_category) { RoomSecurityCategory.missing_category }
-
-      it 'room is not found and category is default' do
-        get :category_for_room, params: { room_name: 210, building_id: nil }
-
-        expect(JSON.parse(response.body)['category_id']).to eq(default_category.id)
-      end
-
-      it 'room_is_new returns true' do
-        get :category_for_room, params: { room_name: 210, building_id: nil }
-
-        expect(JSON.parse(response.body)['room_is_new']).to be_truthy
-      end
-
-      it 'get category_id for an existing room' do
-        get :category_for_room, params: { room_name: room.name, building_id: room.building_id }
-
-        expect(JSON.parse(response.body)['category_id']).to eq(room.security_category_id)
-      end
-
-      it 'room_is_new returns false' do
-        get :category_for_room, params: { room_name: room.name, building_id: room.building_id }
-
-        expect(JSON.parse(response.body)['room_is_new']).to be_falsey
-      end
-    end
   end
 end

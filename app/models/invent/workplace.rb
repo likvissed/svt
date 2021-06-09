@@ -40,7 +40,7 @@ module Invent
     scope :location_room_id, ->(room_id) { where(location_room_id: room_id) }
 
     # Для тестов (от имени пользователя заполняется поле "Комната")
-    attr_accessor :location_room_name, :division, :room_category_id
+    attr_accessor :division, :room_category_id
     # Поле указывает, нужно ли использовать валидаторы при создании/редактировании текущей модели
     attr_accessor :disabled_filters
     # Указывает, что нужно пропустить валидацию check_items_and_attachments

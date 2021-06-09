@@ -48,9 +48,35 @@ import { app } from '../../app/app';
       return this.workplace.workplace_type_id == el.workplace_type_id;
     });
 
-    this.workplace.location_site = this.iss_locations.find((el) => {
-      return this.workplace.location_site_id == el.site_id;
-    });
+    // Назначение объекта расположения
+    this.workplace.location_obj = {};
+
+    this.workplace.location_obj.site = this.workplace.location_site_id ? (
+      this.iss_locations.find((el) => {
+        return this.workplace.location_site_id == el.site_id;
+      })
+    ) : (
+      ''
+    );
+
+    this.workplace.location_obj.building = this.workplace.location_building_id ? (
+      this.workplace.location_obj.site.iss_reference_buildings.find((el) => {
+        return this.workplace.location_building_id == el.building_id;
+      })
+    ) : (
+      ''
+    );
+
+    this.workplace.location_obj.room = this.workplace.location_room_id ? (
+      this.workplace.location_obj.building.iss_reference_rooms.find((el) => {
+        return this.workplace.location_room_id == el.room_id;
+      })
+    ) : (
+      ''
+    );
+    if (this.workplace.location_obj.room) {
+      this.findNameCategory();
+    }
 
     this.workplace.items_attributes.forEach((item) => {
       this.Item.getTypesItem(item);
@@ -65,8 +91,8 @@ import { app } from '../../app/app';
     this.workplaceCopy = angular.copy(this.workplace);
 
     delete(this.workplaceCopy.workplace_type);
-    delete(this.workplaceCopy.location_site);
     delete(this.workplaceCopy.division);
+    delete(this.workplaceCopy.location_obj);
 
     this.workplaceCopy.items_attributes.forEach((item) => this.Item.delProperties(item));
   };
@@ -165,7 +191,6 @@ import { app } from '../../app/app';
           });
 
           if (this.workplace.location_room) {
-            this.workplace.location_room_name = this.workplace.location_room.name;
             this.workplace.room_category_id = this.workplace.location_room.security_category_id;
           }
 
@@ -217,7 +242,13 @@ import { app } from '../../app/app';
       this.workplace.location_building_id = null;
     }
 
-    this.workplace.location_room_name = '';
+    this.workplace.location_obj.building = this.workplace.location_obj.site.iss_reference_buildings.find((el) => {
+      return this.workplace.location_building_id == el.building_id;
+    })
+
+    this.workplace.location_room_id = '';
+    this.workplace.location_obj.room = '';
+    this.workplace.room_category_id = '';
   };
 
   /**
@@ -376,8 +407,17 @@ import { app } from '../../app/app';
   /**
    * Найти объект для категории "Отсутствует"
    */
-    Workplace.prototype.findBlankCategory = function() {
-      this.workplace.no_secrecy = this.rooms_security_categories.find((el) => el.category == 'Отсутствует')
+  Workplace.prototype.findBlankCategory = function() {
+    this.workplace.no_secrecy = this.rooms_security_categories.find((el) => el.category == 'Отсутствует')
+  };
+
+  /**
+   * Найти и назначить наименование выбранной комнаты
+   */
+  Workplace.prototype.findNameCategory = function() {
+    let current_category = this.rooms_security_categories.find((el) => el.id == this.workplace.location_obj.room.security_category_id);
+
+    this.workplace.room_category_name = current_category.category
   };
 
   /**
@@ -385,23 +425,5 @@ import { app } from '../../app/app';
    */
   Workplace.prototype.changeSecurityCategory = function() {
     this.workplace.room_category = this.rooms_security_categories.find((el) => el.id == this.workplace.room_category_id);
-  };
-
-  /**
-   * Получить id категории для введенной комнаты и установить значение для категории
-   */
-  Workplace.prototype.setDefaultCategory = function() {
-    this.Server.Invent.Workplace.categoryForRoom(
-      {
-        room_name  : this.workplace.location_room_name,
-        building_id: this.workplace.location_building_id
-      },
-      (response) => {
-        this.workplace.room_is_new = response.room_is_new;
-        this.workplace.room_category_id = response.category_id;
-        this.changeSecurityCategory();
-      }
-    );
-
   };
 })();

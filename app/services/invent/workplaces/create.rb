@@ -14,7 +14,6 @@ module Invent
 
       def run
         fill_swap_arr
-        create_or_get_room
         if @workplace_params['items_attributes'].present?
           assing_barcode
           delete_property_value
