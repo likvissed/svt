@@ -40,7 +40,6 @@ module Invent
         @data = workplace.as_json(
           include: [
             :workplace_count,
-            :iss_reference_room,
             :attachments,
             items: {
               include: [
@@ -58,15 +57,12 @@ module Invent
       # Подготовка параметров для отправки пользователю.
       def prepare_to_render
         data['division'] = data['workplace_count']['division']
-        data['location_room'] = data['iss_reference_room']
         data['items_attributes'] = data['items']
         data['attachments_attributes'] = data['attachments']
 
         data.delete('items')
         data.delete('attachments')
         data.delete('workplace_count')
-        data.delete('iss_reference_room')
-        data.delete('location_room_id')
         data.delete('workplace_count')
 
         data['items_attributes'].each do |item|

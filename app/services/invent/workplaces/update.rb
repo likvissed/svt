@@ -18,7 +18,6 @@ module Invent
         @workplace = Workplace.find(@workplace_id)
         authorize @workplace, :update?
 
-        create_or_get_room
         if @workplace_params['items_attributes'].present?
           assing_barcode
           delete_property_value

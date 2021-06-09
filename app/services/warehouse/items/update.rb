@@ -11,7 +11,6 @@ module Warehouse
 
       def run
         find_item
-        create_or_get_room_id
         update_item_params
         broadcast_items
 

@@ -28,30 +28,25 @@
   .col-sm-24
     .form-group
       = label_tag :workplace_location_site_id, "Площадка", class: "control-label"
-      = select_tag "workplace[location_site_id]", "", class: "form-control", "ng-model": "wp.workplace.location_site",
-        "ng-change": "wp.setLocationSite(); wp.setDefaultLocation('building'); wp.setDefaultCategory()",
-        "ng-options": "loc_site.name disable when !loc_site.site_id for loc_site in wp.iss_locations track by loc_site.site_id"
+      = select_tag "workplace[location_site_id]", "", class: "form-control", "ng-model": "wp.workplace.location_site_id",
+        "ng-change": "wp.setLocationSite(); wp.setDefaultLocation('building')",
+        "ng-options": "loc_site.site_id as loc_site.name disable when !loc_site.site_id for loc_site in wp.iss_locations"
 .row
   .col-sm-24
     .form-group
       = label_tag :workplace_location_building_id, "Корпус", class: "control-label"
       = select_tag "workplace[location_building_id]", "", class: "form-control", "ng-model": "wp.workplace.location_building_id",
-        "ng-disabled": "!wp.workplace.location_site.site_id", "ng-change": "wp.setDefaultLocation(); wp.setDefaultCategory()",
-        "ng-options": "loc_building.building_id as loc_building.long_name disable when !loc_building.building_id for loc_building in wp.workplace.location_site.iss_reference_buildings"
+        "ng-disabled": "!wp.workplace.location_site_id", "ng-change": "wp.setDefaultLocation()",
+        "ng-options": "loc_building.building_id as loc_building.long_name disable when !loc_building.building_id for loc_building in wp.workplace.location_obj.site.iss_reference_buildings"
 .row
   .col-sm-24
     .form-group
       = label_tag :workplace_location_room, "Комната", class: "control-label"
-      = text_field_tag "workplace[location_room]", "", class: "form-control", "ng-model": "wp.workplace.location_room_name", "ng-change": "wp.setDefaultCategory()",
-          "ng-disabled": "wp.workplace.location_building_id == -1", "ng-value": "wp.workplace.location_room_name", "maxlength": "32" 
-      .text-success ng-if="wp.workplace.room_is_new == true"
-        = 'Новая комната'
-      / - if current_user.one_of_roles? :admin, :manager, :worker
-        div
-          p
-          = label_tag :workplace_room_category_id, "Категория помещения", class: "control-label"
-          = select_tag "workplace[room_category_id]", "", class: "form-control", "ng-model": "wp.workplace.room_category_id", "ng-change": "wp.changeSecurityCategory()",
-            "ng-options": "rooms_security.id as rooms_security.category for rooms_security in wp.rooms_security_categories"
+      ui-select ng-model="wp.workplace.location_obj.room" on-select="wp.setLocationRoom()" ng-disabled="wp.workplace.location_building_id == null" theme="bootstrap"
+        ui-select-match placeholder="Выберите комнату"
+          | {{ $select.selected.name }}
+        ui-select-choices repeat="location_room in wp.workplace.location_obj.building.iss_reference_rooms | filter: $select.search"
+            div ng-bind-html="location_room.name | highlight: $select.search"
 - if !current_user.role? :***REMOVED***_user
   .row
     .col-sm-24

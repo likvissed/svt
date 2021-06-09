@@ -109,15 +109,7 @@ import { app } from '../../app/app';
   WarehouseItems.prototype.completedLocation = function(location) {
     if (!location) { return false }
 
-    if (!location.name) {
-      // Присвоить пустое значение в name, если его не существует, чтобы сравнить длину строки с 0
-      location.name = '';
-    }
-
-    if (location.room_id !== null && location.room_id !== -1) {
-      return true;
-    } else if (location.room_id == -1 && location.name.length != 0) {
-      // если задан ввод комнаты вручную
+    if (location.room_id !== null) {
       return true;
     }
 

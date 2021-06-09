@@ -93,7 +93,18 @@ import { app } from '../../app/app';
    * Установить location_site_id рабочего места.
    */
   WorkplaceEditCtrl.prototype.setLocationSite = function() {
-    this.workplace.location_site_id = angular.copy(this.workplace.location_site.site_id);
+    this.workplace.location_obj.site = this.iss_locations.find((el) => {
+      return this.workplace.location_site_id == el.site_id;
+    })
+  };
+
+  /**
+   * Установить значение для location_room_id
+   */
+  WorkplaceEditCtrl.prototype.setLocationRoom = function() {
+    this.workplace.location_room_id = this.workplace.location_obj.room.room_id;
+
+    this.Workplace.findNameCategory();
   };
 
   /**
@@ -101,13 +112,6 @@ import { app } from '../../app/app';
    */
   WorkplaceEditCtrl.prototype.setDefaultLocation = function(type) {
     this.Workplace.setDefaultLocation(type);
-  };
-
-  /**
-   * Установить начальное значение для корпуса при изменении площадки.
-   */
-  WorkplaceEditCtrl.prototype.setDefaultCategory = function(type) {
-    this.Workplace.setDefaultCategory(type);
   };
 
   /**

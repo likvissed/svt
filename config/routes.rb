@@ -35,8 +35,6 @@ Rails.application.routes.draw do
         put 'confirm', to: 'workplaces#confirm'
         # Скачать скрипт для генерации файла конфигурации ПК
         get 'pc_script', to: 'workplaces#send_pc_script'
-        # Получить id категории для комнаты
-        get 'category_for_room', to: 'workplaces#category_for_room'
       end
 
       put 'update', as: 'update', on: :collection
