@@ -250,6 +250,14 @@ import { app } from '../../app/app';
             url    : ' /warehouse/locations/load_rooms/:building_id',
             isArray: true
           }
+        }),
+        AttachmentOrder: $resource('', {}, {
+          create: {
+            method          : 'POST',
+            url             : '/warehouse/attachment_orders',
+            headers         : { 'Content-Type': undefined },
+            transformRequest: angular.identity
+          }
         })
       },
       Statistics: $resource('/statistics', {}, {

@@ -128,6 +128,11 @@ Rails.application.routes.draw do
       put 'update_write_off', to: 'orders#update_write_off', on: :member
       put 'confirm', to: 'orders#confirm', on: :member
     end
+    # Добавление файла к исполненному расходному ордеру
+    post 'attachment_orders', to: 'attachment_orders#create', as: 'attachment_orders'
+    # Скачивание файла, прикрепленое к исполненному расходному ордеру
+    get 'attachment_orders/download/:id', to: 'attachment_orders#download', as: 'attachment_orders/download'
+
     resources :supplies
   end
 

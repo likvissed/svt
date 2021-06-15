@@ -4,7 +4,8 @@ import { app } from '../../app/app';
   'use strict';
 
   app
-    .directive('ngExecInOrderTable', ngExecInOrderTable);
+    .directive('ngExecInOrderTable', ngExecInOrderTable)
+    .directive('orderUpload', orderUpload);
 
   ngExecInOrderTable.$inject = ['$compile'];
 
@@ -26,5 +27,16 @@ import { app } from '../../app/app';
              .attr('tooltip-append-to-body', 'true');
       $compile(element)(scope);
     }
+  }
+
+  function orderUpload(){
+    return {
+      link: function(scope, element) {
+        element.on('change', function(event) {
+          scope.exec.loadAttachment(event.target.files[0]);
+        });
+
+      }
+    };
   }
 })();

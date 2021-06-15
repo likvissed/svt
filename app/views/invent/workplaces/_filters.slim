@@ -58,3 +58,10 @@
 .col-sm-5.col-md-4.col-xlg-3.multiline-buffer
   = text_field_tag "", "", class: "form-control input-sm", placeholder: "ФИО", "ng-model-options": "{ debounce: 300 }",
     "ng-model": "wp_index.selectedFilters.fullname", "ng-change": "wp_index.reloadWorkplaces()", "type": 'text', "oninput": "this.value = this.value.replace(/[;]/g, '');"
+.col-sm-6.col-md-5.col-xlg-4.col-fhd-3.col-fhd-offset-21.multiline-buffer
+  = button_tag type: :button, class: "btn btn-default btn-block btn-sm", "ng-click": "wp_index.showOnlyWithAttachmentFilter()" do
+    span ng-if="wp_index.selectedFilters.show_only_with_attachments"
+      = fa_icon "toggle-on lg", class: "text-success"
+    span ng-if="!wp_index.selectedFilters.show_only_with_attachments"
+      = fa_icon "toggle-off lg", class: "text-danger"
+    |  Показывать с файлами

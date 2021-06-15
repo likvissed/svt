@@ -15,6 +15,7 @@
                 th Отдел
                 th ID РМ
                 th Тип
+                th Файл
                 th Позиции ордера
                 th Кем создан
                 th Кем утвержден
@@ -29,6 +30,10 @@
                 td.col-sm-1 ng-bind="order.consumer_dept"
                 td.col-sm-1 ng-bind="order.invent_workplace_id"
                 td.col-sm-2 ng-bind="order.operation_translated"
+                td.text-center
+                   a.default-color ng-href=""
+                    span ng-if="order.attachment_filename != false"
+                      i class="fa fa-file-text-o" uib-tooltip="Скачать файл «{{ order.attachment_filename }}»" class="pointer" ng-click="table.downloadFile(order.attachment.id)"
                 td.col-sm-7 ng-bind="order.operations_to_string"
                 td.col-sm-3.col-md-4 ng-bind="order.creator.fio || order.creator_fio"
                 td.col-sm-3 ng-bind="order.validator.fio || order.validator_fio"

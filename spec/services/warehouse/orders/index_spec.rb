@@ -21,9 +21,9 @@ module Warehouse
             expect(subject.data[:data].first['operation']).to eq op_type.to_s
           end
 
-          it 'adds %w[status_translated operation_translated operations_to_string] fields' do
+          it 'adds %w[status_translated operation_translated operations_to_string attachment_filename] fields' do
             subject.run
-            expect(subject.data[:data].first).to include('status_translated', 'operation_translated', 'operations_to_string')
+            expect(subject.data[:data].first).to include('status_translated', 'operation_translated', 'operations_to_string', 'attachment_filename')
           end
 
           context 'with init_filters' do

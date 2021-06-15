@@ -11,14 +11,15 @@ import { app } from '../../app/app';
         operations: { '': 'Все типы' }
       },
       selected = {
-        id                 : '',
-        invent_workplace_id: '',
-        invent_num         : '',
-        barcode            : '',
-        division           : '',
-        operation          : '',
-        creator_fio        : '',
-        consumer_fio       : ''
+        id                       : '',
+        invent_workplace_id      : '',
+        invent_num               : '',
+        barcode                  : '',
+        division                 : '',
+        operation                : '',
+        creator_fio              : '',
+        consumer_fio             : '',
+        show_only_with_attachment: ''
       };
 
     return {
