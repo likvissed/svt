@@ -27,7 +27,7 @@ module Warehouse
       protected
 
       def load_order
-        @order = Order.includes(operations: [item: :location, inv_items: %i[model type]]).find(@order_id)
+        @order = Order.includes(:attachment, operations: [item: :location, inv_items: %i[model type]]).find(@order_id)
         data[:operation] = Operation.new(operationable: @order, shift: 1)
       end
 
@@ -43,6 +43,7 @@ module Warehouse
       def transform_to_json
         data[:order] = @order.as_json(
           include: {
+            attachment: {},
             consumer: {},
             operations: {
               methods: %i[formatted_date to_write_off],
@@ -78,6 +79,9 @@ module Warehouse
           op['inv_item_ids'] = op['inv_items'].map { |io| io['item_id'] }
           op['item']['assign_barcode'] = Invent::Property::LIST_TYPE_FOR_BARCODES.include?(op['item']['item_type'].to_s.downcase) ? true : false
         end
+
+        data[:order]['attachment_order'] = data[:order]['attachment'].present? ? true : false
+        data[:order].delete('attachment')
       end
 
       def check_hosts

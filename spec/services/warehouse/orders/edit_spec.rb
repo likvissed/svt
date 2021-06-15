@@ -47,6 +47,10 @@ module Warehouse
           expect(subject.data[:order]['operations_attributes'].first['item']['assign_barcode']).to be_falsey
         end
 
+        it 'adds attachment_order key' do
+          expect(subject.data[:order]['attachment_order']).to eq false
+        end
+
         context 'when have item for assign barcode' do
           let(:item) { create(:used_item, warehouse_type: :without_invent_num, item_type: 'Картридж', item_model: '6515DNI') }
           let(:operation) { build(:order_operation, item_id: item.id, shift: -1) }

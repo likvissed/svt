@@ -44,4 +44,12 @@ import { app } from '../../app/app';
 
     window.open(`/invent/workplace_counts/generate_pdf/${encodeURIComponent(division.division)}`, '_blank');
   };
+
+  /**
+   *  Показать/скрыть рабочие места, у которых имеются вложенные файлы / все РМ
+   */
+  WorkplaceIndexCtrl.prototype.showOnlyWithAttachmentFilter = function() {
+    this.selectedFilters.show_only_with_attachments = !this.selectedFilters.show_only_with_attachments;
+    this.reloadWorkplaces();
+  };
 })();

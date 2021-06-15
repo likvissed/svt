@@ -36,21 +36,22 @@ module Warehouse
       end
 
       def filtering_params
-        JSON.parse(params[:filters]).slice('id', 'invent_workplace_id', 'invent_num', 'barcode', 'consumer_dept', 'operation', 'creator_fio', 'consumer_fio')
+        JSON.parse(params[:filters]).slice('id', 'invent_workplace_id', 'invent_num', 'barcode', 'consumer_dept', 'operation', 'creator_fio', 'consumer_fio', 'show_only_with_attachment')
       end
 
       def limit_records
         data[:recordsFiltered] = @orders.count
         @orders = @orders
-                    .includes(:operations, :creator, :consumer, :validator)
+                    .includes(:operations, :creator, :consumer, :validator, :attachment)
                     .order(id: :desc).limit(params[:length]).offset(params[:start])
       end
 
       def prepare_to_render
-        data[:data] = @orders.as_json(include: %i[creator consumer validator], methods: :operations_to_string).each do |order|
+        data[:data] = @orders.as_json(include: %i[creator consumer validator attachment], methods: :operations_to_string).each do |order|
           order['status_translated'] = Order.translate_enum(:status, order['status'])
           order['operation_translated'] = Order.translate_enum(:operation, order['operation'])
           order['closed_time'] = order['closed_time'].strftime('%d-%m-%Y %H:%M:%S') if order['closed_time']
+          order['attachment_filename'] = order['attachment'].present? && order['attachment']['document'].file.present? ? order['attachment']['document'].identifier : false
         end
       end
 

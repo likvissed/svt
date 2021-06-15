@@ -80,6 +80,14 @@ import { app } from '../../app/app';
   };
 
   /**
+   *  Показать/скрыть ордера, у которых имеются вложенные файлы / все ордера
+   */
+  OrdersController.prototype.showOnlyWithAttachmentFilter = function() {
+    this.selected.show_only_with_attachment = !this.selected.show_only_with_attachment;
+    this._loadOrders();
+  };
+
+  /**
    * Открыть окно создания ордера.
    */
   OrdersController.prototype.newOrder = function() {
@@ -129,5 +137,12 @@ import { app } from '../../app/app';
       (response) => this.Flash.notice(response.full_message),
       (response, status) => this.Error.response(response, status)
     );
+  };
+
+  /**
+   * Скачать вложенный файл ордера
+   */
+  OrdersController.prototype.downloadFile = function(attachment_id) {
+    window.open(`/warehouse/attachment_orders/download/${attachment_id}`, '_blank');
   };
 })();

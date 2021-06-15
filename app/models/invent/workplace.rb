@@ -38,6 +38,15 @@ module Invent
     end
     scope :location_building_id, ->(building_id) { where(location_building_id: building_id) }
     scope :location_room_id, ->(room_id) { where(location_room_id: room_id) }
+    scope :show_only_with_attachments, ->(attr = nil) do
+      unless attr.nil?
+        joins("INNER JOIN
+          invent_attachments
+        ON
+        invent_attachments.workplace_id = invent_workplace.workplace_id
+        ")
+      end
+    end
 
     # Для тестов (от имени пользователя заполняется поле "Комната")
     attr_accessor :division, :room_category_id

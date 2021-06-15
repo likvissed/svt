@@ -16,6 +16,10 @@ script type="text/ng-template" id="execOrder.slim"
           h5
             | Ордер создан: 
             span ng-bind="exec.order.create_time | date:'dd.MM.yyyy'"
+        .icon-block ng-if="exec.order.status == 'done' && exec.order.operation == 'out' && !exec.order.attachment_order"
+          = label_tag :attachment do
+            = fa_icon "folder-open 2x fw", class: "pointer", "uib-tooltip": "Загрузить скан ордера"
+          = file_field_tag "attachment", "order-upload": "true", class: "hidden-attachment", "multiple": false
         .icon-block ng-if="exec.order.status == 'done' && exec.order.operation == 'out'"
           = fa_icon "print 2x fw", class: "pointer", "uib-tooltip": "Распечатать ордер", "tooltip-append-to-body": "true", "ng-click": "exec.printOrder()"
 

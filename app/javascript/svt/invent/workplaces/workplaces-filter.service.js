@@ -22,14 +22,15 @@ import { app } from '../../app/app';
       ]
     };
     this.selectedTableFilters = {
-      invent_num       : '',
-      workplace_id     : '',
-      workplace_type_id: this.filters.types[0].workplace_type_id,
-      division         : '',
-      status           : '',
-      fullname         : '',
-      building         : '',
-      room             : ''
+      invent_num               : '',
+      workplace_id             : '',
+      workplace_type_id        : this.filters.types[0].workplace_type_id,
+      division                 : '',
+      status                   : '',
+      fullname                 : '',
+      building                 : '',
+      room                     : '',
+      show_only_with_attachment: ''
     };
   }
 

@@ -6,6 +6,7 @@ module Warehouse
     it { is_expected.to have_many(:inv_items).through(:operations) }
     it { is_expected.to have_many(:inv_item_to_operations).through(:operations) }
     it { is_expected.to have_many(:items).through(:operations) }
+    it { is_expected.to have_one(:attachment).with_foreign_key('order_id').class_name('AttachmentOrder').inverse_of(:order) }
     it { is_expected.to belong_to(:inv_workplace).with_foreign_key('invent_workplace_id').class_name('Invent::Workplace').optional }
     it { is_expected.to belong_to(:creator).class_name('UserIss').with_foreign_key('creator_id_tn').optional }
     it { is_expected.to belong_to(:consumer).class_name('UserIss').with_foreign_key('consumer_id_tn').optional }

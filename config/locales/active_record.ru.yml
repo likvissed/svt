@@ -1,4 +1,8 @@
 ru:
+  errors:
+    messages:
+      max_size_error: 'невозможно загрузить, размером больше 100 мегабайт'
+
   activerecord:
     models:
       invent/workplace_count: 'отделы'
@@ -191,6 +195,9 @@ ru:
         iss_reference_site: "Площадка"
         iss_reference_building: "Корпус"
         iss_reference_room: "Комната"
+
+      warehouse/attachment_order:
+        document: 'Вложенный файл'
 
       user:
         tn: Табельный номер
@@ -387,6 +394,13 @@ ru:
           attributes:
             inv_item:
               uniq_by_processing_order: '%{type} (инв. №%{invent_num}) уже записан в ордер №%{order_id}'
+
+        warehouse/attachment_order:
+          attributes:
+            base:
+              warehouse_order_is_not_present: 'Ордер №%{order_id} не существует'
+              warehouse_order_is_not_out_or_done: 'Добавление документа допустимо только для исполненного расходного ордера'
+              warehouse_order_is_present_attachment: 'Ордер №%{order_id} уже имеет вложенный документ'
 
         user:
           attributes:

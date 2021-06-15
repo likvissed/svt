@@ -46,6 +46,8 @@ ru:
       destroyed: 'Поставка удалена'
     warehouse/location:
       load_locations: 'Данные расположений отсутствуют'
+    warehouse/attachment_order:
+      created: 'Документ добавлен к ордеру №%{order_id}‎'
     user:
       created: 'Пользователь создан'
       updated: 'Пользователь обновлен'

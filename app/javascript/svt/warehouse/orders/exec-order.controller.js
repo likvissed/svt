@@ -180,4 +180,38 @@ import { FormValidationController } from '../../shared/functions/form-validation
     // Для неисполненных позиций техники можно редактировать расположение
     if (!op.date) { this.Items.openEditLocationItem(op.item); }
   };
+
+  /**
+   * Загрузить файл к исполненному расходному ордеру
+   */
+  ExecOrderController.prototype.loadAttachment = function(file) {
+    // Если файл не был выбран в окне загрузки
+    if (!file) {
+      this.Flash.alert('Загрузка файла не удалась. Попробуйте снова');
+
+      return false;
+    }
+    // // Перевести размер загруженного файла из байт в Мб
+    let file_size = file.size / 1024 / 1024;
+    if (file_size > 100) {
+      this.Flash.alert('Невозможно загрузить файл, размером больше 100 мегабайт');
+
+      return false;
+    }
+
+    let new_attachment = new FormData();
+
+    new_attachment.append(
+      'attachment_order',
+      file,
+      file.name
+    );
+
+    new_attachment.append('order_id', JSON.stringify(this.order.id));
+
+    this.Server.Warehouse.AttachmentOrder.create(new_attachment,
+      (response) => this.Flash.notice(response.full_message),
+      (response, status) => this.Error.response(response, status)
+    );
+  };
 })();

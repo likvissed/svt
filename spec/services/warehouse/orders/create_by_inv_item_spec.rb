@@ -108,6 +108,7 @@ module Warehouse
 
             edit.data[:order].delete('consumer_obj')
             edit.data[:order].delete('fio_user_iss')
+            edit.data[:order].delete('attachment_order')
             edit.data[:order]
           end
           before do
