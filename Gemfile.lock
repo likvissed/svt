@@ -49,6 +49,10 @@ GEM
     autoprefixer-rails (10.2.4.0)
       execjs
     awesome_print (1.9.2)
+    axlsx (2.0.1)
+      htmlentities (~> 4.3.1)
+      nokogiri (>= 1.4.1)
+      rubyzip (~> 1.0.0)
     bcrypt (3.1.16)
     better_errors (2.9.1)
       coderay (>= 1.0.0)
@@ -154,6 +158,7 @@ GEM
       guard-compat (~> 1.1)
       rspec (>= 2.99.0, < 4.0)
     hashie (4.1.0)
+    htmlentities (4.3.4)
     http-accept (1.7.0)
     http-cookie (1.0.3)
       domain_name (~> 0.5)
@@ -336,6 +341,7 @@ GEM
     ruby-progressbar (1.11.0)
     ruby-vips (2.1.0)
       ffi (~> 1.12)
+    rubyzip (1.0.0)
     rufus-scheduler (3.7.0)
       fugit (~> 1.1, >= 1.1.6)
     safe_attributes (1.0.10)
@@ -428,6 +434,7 @@ PLATFORMS
 DEPENDENCIES
   actionpack-action_caching
   awesome_print
+  axlsx
   better_errors
   binding_of_caller
   bootstrap-sass

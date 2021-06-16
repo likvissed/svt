@@ -1,5 +1,3 @@
-require 'csv'
-
 class StatisticsController < ApplicationController
   def show
     @stat = Statistics.new
@@ -14,17 +12,18 @@ class StatisticsController < ApplicationController
   def export
     respond_to do |format|
       format.html
-      format.csv do
+      format.xlsx do
         if params[:data].present?
-          csv_data = CSV.generate(headers: true) do |csv|
-            csv << ['Наименование', 'Общее количество', 'На замену']
-
-            JSON.parse(params[:data]).each do |dt|
-              csv << [dt['description'], dt['total_count'], dt['to_replace_count']]
+          Axlsx::Package.new do |p|
+            p.workbook.add_worksheet(name: "sheet name" ) do |sheet|    
+              sheet.add_row ['Наименование', 'Общее количество', 'На замену']
+              JSON.parse(params[:data]).each do |dt|
+                sheet.add_row [dt['description'], dt['total_count'], dt['to_replace_count']]
+              end
             end
-          end
 
-          send_data csv_data, filename: "Статистика по батареям ИБП КВРМ-#{Time.zone.today}.csv", disposition: :attachment
+            send_data p.to_stream.read, filename: "Статистика по батареям ИБП КВРМ-#{Time.zone.today}.xlsx", disposition: :attachment
+          end
         end
       end
     end

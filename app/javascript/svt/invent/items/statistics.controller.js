@@ -34,10 +34,10 @@ import { app } from '../../app/app';
   };
 
   /**
-   * Экспортировать таблицу статистики в файл csv
+   * Экспортировать таблицу статистики в файл xlsx
    */
   StatisticsCtrl.prototype.exportData = function(stat_data) {
-    window.open(`/statistics/export/?format=csv&data=${JSON.stringify(stat_data)}`, '_blank');
+    window.open(`/statistics/export/?format=xlsx&data=${JSON.stringify(stat_data)}`, '_blank');
   };
 })();
 

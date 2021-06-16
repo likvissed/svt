@@ -21,9 +21,9 @@ RSpec.describe StatisticsController, type: :controller do
       stat.run('ups_battery')
       stat.data.to_json
     end
-    let(:params) { { format: 'csv', data: stat_data } }
+    let(:params) { { format: 'xlsx', data: stat_data } }
 
-    it 'create csv file statistics' do
+    it 'create xlsx file statistics' do
       expect(controller).to receive(:send_data)
 
       get :export, params: params
