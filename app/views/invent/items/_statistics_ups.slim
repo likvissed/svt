@@ -6,7 +6,9 @@ script type="text/ng-template" id="statisticsUps.slim"
       .icon-block
         = render partial: 'templates/load_spinner'
       .icon-block
-        = fa_icon "refresh 2x fw", class: "pointer", "tooltip-placement": "left", "uib-tooltip": "Обновить данные",
+        = fa_icon "print 2x fw", class: "pointer", "uib-tooltip": "Распечатать статистику", "ng-click": "stat.exportData(stat.data)"
+      .icon-block
+        = fa_icon "refresh 2x fw", class: "pointer", "uib-tooltip": "Обновить данные",
           "ng-click": "stat.reloadData()"
   .modal-body
     table.table.table-striped.table-condensed
