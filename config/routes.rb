@@ -147,6 +147,7 @@ Rails.application.routes.draw do
   end
 
   resource :statistics, only: :show
+  get 'statistics/export', to: 'statistics#export', as: 'statistics/export'
 
   namespace :api do
     namespace :v1 do

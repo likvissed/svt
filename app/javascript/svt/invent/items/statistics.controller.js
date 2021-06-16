@@ -32,6 +32,13 @@ import { app } from '../../app/app';
   StatisticsCtrl.prototype.close = function() {
     this.$uibModalInstance.dismiss();
   };
+
+  /**
+   * Экспортировать таблицу статистики в файл csv
+   */
+  StatisticsCtrl.prototype.exportData = function(stat_data) {
+    window.open(`/statistics/export/?format=csv&data=${JSON.stringify(stat_data)}`, '_blank');
+  };
 })();
 
 
