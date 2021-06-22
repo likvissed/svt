@@ -2,7 +2,7 @@ module Invent
   class WorkplacesController < ApplicationController
     before_action :check_access
 
-    caches_action :index, :list_wp, cache_path: proc { |c| c.request.url }, if: -> { params['filters'].present? }, expires_in: 12.hours
+    caches_action :index, :list_wp, cache_path: proc { |c| c.request.url }, if: -> { current_user.try(:role).try(:name) != '***REMOVED***_user' && params['filters'].present? }, expires_in: 12.hours
     cache_sweeper :cache_sweeper
 
     def index
