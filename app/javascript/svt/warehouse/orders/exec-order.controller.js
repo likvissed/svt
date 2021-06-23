@@ -150,6 +150,12 @@ import { FormValidationController } from '../../shared/functions/form-validation
     if (this.order.operation == 'in') {
       this._executeIn();
     } else if (this.order.operation == 'out') {
+      // Для назначения ФИО получающего технику со склада при исполнении ордера
+      this.order.operations_attributes.forEach(function(op) {
+        if (op.warehouse_receiver) {
+          op.warehouse_receiver_fio = op.warehouse_receiver.fio;
+        }
+      });
       this._executeOut();
     } else if (this.order.operation == 'write_off') {
       this._executeWriteOff();
@@ -213,5 +219,34 @@ import { FormValidationController } from '../../shared/functions/form-validation
       (response) => this.Flash.notice(response.full_message),
       (response, status) => this.Error.response(response, status)
     );
+  };
+
+  /**
+   * Назначить ФИО принявшего технику со склада позиции ордера
+   */
+  ExecOrderController.prototype.assignReceiver = function() {
+    if (!confirm('Вы действительно хотите назначить ФИО принявшего технику со склада?')) {
+      return false;
+    }
+
+    if (this.order.operation == 'out') {
+      this.order.operations_attributes.forEach(function(op) {
+        if (op.warehouse_receiver) {
+          op.warehouse_receiver_fio = op.warehouse_receiver.fio;
+        }
+      });
+
+      this.Server.Warehouse.Order.assignOperationReceiver(
+        { id: this.order.id },
+        { order: this.order },
+        (response) => {
+          this.Flash.notice(response.full_message);
+          this.$uibModalInstance.close();
+        },
+        (response, status) => {
+          this.Error.response(response, status);
+        }
+      )
+    }
   };
 })();

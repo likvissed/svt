@@ -104,11 +104,14 @@ module Warehouse
               op.delete('inv_item_ids')
               op.delete('formatted_date')
               op.delete('invent_num_order')
+              op.delete('operations_warehouse_receiver')
             end
 
             edit.data[:order].delete('consumer_obj')
             edit.data[:order].delete('fio_user_iss')
             edit.data[:order].delete('attachment_order')
+            edit.data[:order].delete('type_ops_warehouse_receiver')
+            edit.data[:order].delete('valid_op_warehouse_receiver_fio')
             edit.data[:order]
           end
           before do

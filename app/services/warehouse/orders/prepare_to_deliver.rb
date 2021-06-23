@@ -35,7 +35,10 @@ module Warehouse
 
       def search_inv_items
         data[:selected_op] = @order.operations.select { |op| op.status_changed? && op.done? }
-        data[:selected_op].each { |op| op.set_stockman(current_user) }
+        data[:selected_op].each do |op|
+          op.set_stockman(current_user)
+          op.presence_w_receiver_fio = true
+        end
 
         return true unless data[:selected_op].empty?
 

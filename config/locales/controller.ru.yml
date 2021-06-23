@@ -36,6 +36,7 @@ ru:
       confirmed: 'Ордер №%{order_id} подтвержден'
       destroyed: 'Ордер удален'
       executed: 'Исполнено'
+      assign_operation_receiver: 'Техника выдана'
     warehouse/item:
       destroyed: 'Указанная техника удалена со склада'
       updated: 'Свойства техники обновлены'

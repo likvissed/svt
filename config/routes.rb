@@ -127,6 +127,7 @@ Rails.application.routes.draw do
       put 'update_out', to: 'orders#update_out', on: :member
       put 'update_write_off', to: 'orders#update_write_off', on: :member
       put 'confirm', to: 'orders#confirm', on: :member
+      put 'assign_op_receiver', to: 'orders#assign_operation_receiver', on: :member
     end
     # Добавление файла к исполненному расходному ордеру
     post 'attachment_orders', to: 'attachment_orders#create', as: 'attachment_orders'

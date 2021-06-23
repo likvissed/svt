@@ -198,6 +198,28 @@ module Warehouse
       end
     end
 
+    describe '#valid_op_warehouse_receiver_fio' do
+      let(:user) { create(:user) }
+      let(:new_item) { create(:new_item) }
+      let(:operation) { build(:order_operation, status: :done, stockman_id_tn: user.id_tn, item: new_item, warehouse_receiver_fio: 'Example FIO') }
+      subject { create(:order, operations: [operation], consumer_id_tn: user.id_tn) }
+
+      it 'return is true' do
+        expect(subject.valid_op_warehouse_receiver_fio).to be_truthy
+      end
+
+      context 'when warehouse_receiver_fio operation is nil and status is processing' do
+        before do
+          operation.warehouse_receiver_fio = nil
+          operation.status = 'processing'
+        end
+
+        it 'return is false' do
+          expect(subject.valid_op_warehouse_receiver_fio).to be_falsey
+        end
+      end
+    end
+
     # context 'when operation is :in' do
     #   before { subject.dont_calculate_status = true }
 

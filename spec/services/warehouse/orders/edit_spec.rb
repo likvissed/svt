@@ -35,6 +35,10 @@ module Warehouse
           expect(subject.data[:order]['operations_attributes'].first['inv_items'].first['type']).to eq order.operations.first.item.inv_type.as_json
         end
 
+        it 'loads operations_warehouse_receiver key' do
+          expect(subject.data[:order]['operations_attributes'].first['operations_warehouse_receiver']).to eq true
+        end
+
         it 'adds consumer key' do
           expect(subject.data[:order]['consumer']).to eq subject.data[:order]['consumer_fio']
         end
@@ -49,6 +53,10 @@ module Warehouse
 
         it 'adds attachment_order key' do
           expect(subject.data[:order]['attachment_order']).to eq false
+        end
+
+        it 'adds valid_op_warehouse_receiver_fio key' do
+          expect(subject.data[:order]['valid_op_warehouse_receiver_fio']).to eq false
         end
 
         context 'when have item for assign barcode' do

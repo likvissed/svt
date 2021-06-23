@@ -74,6 +74,8 @@ module Warehouse
         data[:order]['consumer'] ||= @order.consumer_from_history
 
         data[:order]['operations_attributes'].each do |op|
+          op['operations_warehouse_receiver'] = Order::LIST_TYPE_FOR_ASSIGN_OP_RECEIVER.include?(op['item_type'].to_s.downcase) ? true : false
+
           next unless op['item']
 
           op['inv_item_ids'] = op['inv_items'].map { |io| io['item_id'] }
@@ -82,6 +84,8 @@ module Warehouse
 
         data[:order]['attachment_order'] = data[:order]['attachment'].present? ? true : false
         data[:order].delete('attachment')
+
+        data[:order]['valid_op_warehouse_receiver_fio'] = @order.valid_op_warehouse_receiver_fio
       end
 
       def check_hosts
