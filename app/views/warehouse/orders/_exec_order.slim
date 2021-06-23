@@ -65,12 +65,18 @@ script type="text/ng-template" id="execOrder.slim"
                 th ng-if="exec.order.operation == 'in'"
                  | На списание
                 th.col-sm-3 Тип
-                th.col-sm-3 Инв. №
+                th.col-sm-2 Инв. №
                 th.col-sm-2 Кол-во
                 th.col-sm-5 Модель
-                th.col-sm-3 Расположение                
-                th.col-sm-3 Исполнитель
-                th.col-sm-3 Дата
+                th.text-center ng-class="exec.order.operation == 'out' && exec.order.status != 'done' ? 'col-sm-8' : 'col-sm-3'"
+                  span ng-if="exec.order.operation == 'in' || exec.order.operation == 'write_off'"
+                    | Расположение
+                  span ng-if="exec.order.operation == 'out'"
+                    | Принявший со склада
+                th.col-sm-3
+                  | Исполнитель
+                th.col-sm-3
+                  | Дата
             tbody ng-repeat="op in exec.order.operations_attributes" ng-hide="op._destroy" ng-class="{ 'text-muted': exec.isOperationDone(op) }"
               tr ng-exec-in-order-table=true
                 td
@@ -82,9 +88,16 @@ script type="text/ng-template" id="execOrder.slim"
                 td ng-bind="(op.inv_items | inventNumsToStr) || exec.order.invent_num"
                 td ng-bind="op.shift | positiveVal"
                 td ng-bind="op.item_model || op.item.item_model || op.inv_items[0].full_item_model"
-                td.text-center 
-                  span ng-if="exec.order.operation == 'in' && op.item_id"
+
+                td.text-center ng-class="exec.order.operation == 'out' && exec.order.status != 'done' ? 'col-sm-8' : 'col-sm-3'"
+                  span ng-if="exec.order.operation != 'out' && op.item_id"
                     = button_tag "Изменить", type: :button, class: "btn-default btn-xs", "ng-click": "exec.openEditLocationItem(op, $event)"
+                  span ng-if="exec.order.operation == 'out' && exec.order.status != 'done' && !op.warehouse_receiver_fio && op.operations_warehouse_receiver"
+                    search-user selected-user="op.warehouse_receiver"
+                    = hidden_field_tag "op[warehouse_receiver]", "", class: "form-control", autocomplete: "off", "ng-model": "op.warehouse_receiver"
+                  span ng-if="exec.order.operation == 'out' && op.warehouse_receiver_fio" 
+                    span ng-bind="op.warehouse_receiver_fio | fioInitials"
+
                 td ng-bind="op.stockman_fio | fioInitials"
                 td ng-bind="op.formatted_date"
 
@@ -105,6 +118,7 @@ script type="text/ng-template" id="execOrder.slim"
       .pull-right
         = button_tag "Исполнить...", class: "btn-success btn-sm", "ng-click": "exec.ok()", "ng-if": "exec.order.operation == 'out' && exec.order.status != 'done'"
         = button_tag "Исполнить", class: "btn-success btn-sm", "ng-click": "exec.ok()", "ng-if": "exec.order.operation == 'in' && exec.order.status != 'done'"
+        = button_tag "Выдать со склада", class: "btn-warning btn-sm", "ng-click": "exec.assignReceiver()", "ng-if": "exec.order.operation == 'out' && exec.order.status != 'done' && !exec.order.valid_op_warehouse_receiver_fio"
         = button_tag "Списать", class: "btn-success btn-sm", "ng-click": "exec.ok()", "ng-if": "exec.order.operation == 'write_off' && exec.order.status != 'done'"
         = button_tag "Закрыть", class: "btn-default btn-sm", "ng-click": "exec.cancel()"
   = render partial: '/warehouse/items/location'

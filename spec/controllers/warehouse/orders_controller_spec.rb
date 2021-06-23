@@ -326,5 +326,25 @@ module Warehouse
         get :print, params: params, format: :json
       end
     end
+
+    describe 'PUT #assign_operation_receiver' do
+      let(:order) { create(:order) }
+      let(:params) do
+        {
+          id: order.id,
+          order: order.as_json
+        }
+      end
+
+      it 'creates instance of the Orders::AssignOperationReceiver' do
+        get :assign_operation_receiver, params: params, format: :json
+        expect(assigns(:assign_op_receiver)).to be_instance_of Orders::AssignOperationReceiver
+      end
+
+      it 'calls :run method' do
+        expect_any_instance_of(Orders::AssignOperationReceiver).to receive(:run)
+        get :assign_operation_receiver, params: params, format: :json
+      end
+    end
   end
 end

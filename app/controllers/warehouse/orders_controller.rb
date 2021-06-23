@@ -210,6 +210,16 @@ module Warehouse
       end
     end
 
+    def assign_operation_receiver
+      @assign_op_receiver = Orders::AssignOperationReceiver.new(current_user, params[:id], order_params)
+
+      if @assign_op_receiver.run
+        render json: { full_message: I18n.t('controllers.warehouse/order.assign_operation_receiver') }
+      else
+        render json: @assign_op_receiver.error, status: 422
+      end
+    end
+
     private
 
     def order_params

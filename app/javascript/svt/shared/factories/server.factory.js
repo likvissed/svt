@@ -225,6 +225,10 @@ import { app } from '../../app/app';
           executeWriteOff: {
             method: 'POST',
             url   : '/warehouse/orders/:id/execute_write_off'
+          },
+          assignOperationReceiver: {
+            method: 'PUT',
+            url   : '/warehouse/orders/:id/assign_op_receiver'
           }
         }),
         Supply: $resource('/warehouse/supplies/:id.json', {}, {

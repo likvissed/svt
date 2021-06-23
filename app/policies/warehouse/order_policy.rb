@@ -58,6 +58,10 @@ module Warehouse
       for_worker
     end
 
+    def assign_operation_receiver?
+      for_worker
+    end
+
     def permitted_attributes
       if for_manager
         [
@@ -88,6 +92,7 @@ module Warehouse
             :item_model,
             :shift,
             :stockman_fio,
+            :warehouse_receiver_fio,
             :status,
             :date,
             :_destroy,
@@ -138,6 +143,7 @@ module Warehouse
             :item_model,
             :shift,
             :stockman_fio,
+            :warehouse_receiver_fio,
             :status,
             :date,
             :_destroy,

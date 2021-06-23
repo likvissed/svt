@@ -117,6 +117,7 @@ ru:
         date: 'Дата исполнения позиции'
         stockman_fio: 'ФИО исполнителя позиции'
         shift: 'Количество'
+        warehouse_receiver_fio: 'ФИО принявшего технику со склада'
 
       warehouse/order/operations:
         item_type: 'Тип техники (опред. авт.)'
@@ -374,6 +375,7 @@ ru:
               operation_with_invent_num_already_exists: '%{type} (инв. №%{invent_num}) уже задан в незакрытых позициях ордера №%{order_id}'
               operation_without_invent_num_already_exists: '%{type} (модель "%{model}") уже задан в незакрытых позициях ордера №%{order_id}'
               cannot_update_done_operation: 'Невозможно обновить, т.к. позиция уже исполнена'
+              denied_access_for_assign_receiver_fio: 'Нет доступа для назначения ФИО принявшего со склада для новой техники: %{item_type}'
 
         warehouse/item:
           attributes:

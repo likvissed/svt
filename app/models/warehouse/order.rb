@@ -2,6 +2,9 @@ module Warehouse
   class Order < BaseWarehouse
     self.table_name = "#{table_name_prefix}orders"
 
+    # Наименование типов техники, для которой необходимо назначать получателя техники со склада перед исполнением расходного ордера
+    LIST_TYPE_FOR_ASSIGN_OP_RECEIVER = Invent::Type.where(name: %w[laminator pc monitor ups allin1 notebook tablet projector tv camera other]).pluck(:short_description).map(&:downcase).freeze
+
     has_many :operations, as: :operationable, dependent: :destroy, inverse_of: :operationable
     has_many :inv_item_to_operations, through: :operations
     has_many :inv_items, through: :operations
@@ -155,6 +158,20 @@ module Warehouse
         # Возникает эта ошибка, когда сразу исполняют приходный ордер в котором имеются и техника и ее свойста (R: картридж)
         errors.add(:base, :warehouse_items_is_present, arr_type_with_barcode: arr_type_with_barcode.first)
       end
+    end
+
+    # Проверка, заполнения всех необходимых ФИО принявнего технику на складе
+    def valid_op_warehouse_receiver_fio
+      # Rails.logger.info "op: #{operations.inspect}".green
+      operations.each do |op|
+        # Если техника в операциях включена в список для назначения получающего со склада
+        # и если уже позиция исполнена, то не учитывать в проверке
+        next unless LIST_TYPE_FOR_ASSIGN_OP_RECEIVER.include?(op.item_type.to_s.downcase) && op.status == 'processing'
+
+        # то проверить поле заполнения warehouse_receiver_fio
+        return false if op.warehouse_receiver_fio.blank?
+      end
+      true
     end
 
     protected

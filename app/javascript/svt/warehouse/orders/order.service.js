@@ -192,6 +192,18 @@ import { app } from '../../app/app';
   };
 
   /**
+   * ?
+   */
+  WarehouseOrder.prototype._setReceiver = function() {
+    this.order.operations_attributes.forEach(function(op) {
+      if (op.warehouse_receiver) {
+        op.warehouse_receiver_fio = op.warehouse_receiver.fio;
+      }
+
+    });
+  };
+
+  /**
    * Добавить объект operation к текущему ордеру.
    *
    * @param warehouseType
@@ -239,6 +251,7 @@ import { app } from '../../app/app';
    */
   WarehouseOrder.prototype.getObjectToSend = function(doneFlag = false) {
     this._setConsumer();
+    this._setReceiver();
 
     let obj = angular.copy(this.order);
 

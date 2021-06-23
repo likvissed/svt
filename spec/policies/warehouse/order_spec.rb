@@ -168,5 +168,11 @@ module Warehouse
 
       include_examples 'policy for worker'
     end
+
+    permissions :assign_operation_receiver? do
+      let(:model) { Order.first }
+
+      include_examples 'policy for worker'
+    end
   end
 end

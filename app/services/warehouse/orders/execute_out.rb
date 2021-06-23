@@ -82,6 +82,8 @@ module Warehouse
         @item_ids = @order.operations.map do |op|
           next unless op.status_changed? && op.done?
 
+          op.worker_w_receiver_fio = true if @current_user.role.name == 'worker'
+
           op_selected = true
           op.set_stockman(current_user)
           op.calculate_item_count

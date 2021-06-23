@@ -13,6 +13,8 @@ module Warehouse
     validates :shift, numericality: { other_than: 0 }
     validates :stockman_fio, :date, presence: true, if: -> { done? }
     validate :uniq_item_by_processing_operation, if: -> { item.try(:used?) && item_id_changed? }
+    validate :presence_warehouse_receiver_fio, if: -> { presence_w_receiver_fio == true && operationable.try(:operation) == 'out' && done? }
+    validate :check_worker_w_receiver_fio, if: -> { worker_w_receiver_fio == true && warehouse_receiver_fio_changed? }
 
     after_initialize :set_initial_status, if: -> { new_record? }
     after_initialize :set_initial_shift, if: -> { new_record? }
@@ -26,6 +28,11 @@ module Warehouse
     enum status: { processing: 1, done: 2 }
 
     attr_accessor :to_write_off, :update_item_without_invent_num
+
+    # Для проверки поля принявшего технику со склада
+    attr_accessor :presence_w_receiver_fio
+    # Для проверки
+    attr_accessor :worker_w_receiver_fio
 
     def set_stockman(user)
       self.stockman_id_tn = user.id_tn
@@ -174,6 +181,19 @@ module Warehouse
     def prevent_destroy
       errors.add(:base, :cannot_destroy_done_operation)
       throw(:abort)
+    end
+
+    def presence_warehouse_receiver_fio
+      return unless Order::LIST_TYPE_FOR_ASSIGN_OP_RECEIVER.include?(item_type.to_s.downcase) && warehouse_receiver_fio.blank?
+
+      errors.add(:warehouse_receiver_fio, :blank)
+    end
+
+    # Проверка, чтобы пользователь с ролью worker не назначал ФИО принявшего технику со склада, если она новая
+    def check_worker_w_receiver_fio
+      return unless item.status == 'non_used' && Order::LIST_TYPE_FOR_ASSIGN_OP_RECEIVER.include?(item_type.to_s.downcase) && warehouse_receiver_fio.present?
+
+      errors.add(:base, :denied_access_for_assign_receiver_fio, item_type: item_type)
     end
   end
 end

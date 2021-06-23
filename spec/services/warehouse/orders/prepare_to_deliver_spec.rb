@@ -25,12 +25,13 @@ module Warehouse
       let(:third_item) { create(:used_item, warehouse_type: :without_invent_num, item_type: 'test type', item_model: 'test model') }
       # Это будет выдаваться
       let(:fourth_item) { create(:new_item, inv_item: nil, inv_type: fourth_inv_item.type, inv_model: fourth_inv_item.model, count: 5, count_reserved: 3) }
+      let(:warehouse_receiver_fio) { 'Example FIO' }
       let(:operations) do
         [
-          build(:order_operation, item: first_item, inv_item_ids: [first_inv_item.item_id], shift: -1),
-          build(:order_operation, item: sec_item, inv_item_ids: [sec_inv_item.item_id], shift: -1),
-          build(:order_operation, item: third_item, shift: -1),
-          build(:order_operation, item: fourth_item, inv_item_ids: [fourth_inv_item.item_id, fifth_inv_item.item_id, sixth_inv_item.item_id], shift: -3)
+          build(:order_operation, item: first_item, inv_item_ids: [first_inv_item.item_id], shift: -1, warehouse_receiver_fio: warehouse_receiver_fio),
+          build(:order_operation, item: sec_item, inv_item_ids: [sec_inv_item.item_id], shift: -1, warehouse_receiver_fio: warehouse_receiver_fio),
+          build(:order_operation, item: third_item, shift: -1, warehouse_receiver_fio: warehouse_receiver_fio),
+          build(:order_operation, item: fourth_item, inv_item_ids: [fourth_inv_item.item_id, fifth_inv_item.item_id, sixth_inv_item.item_id], shift: -3, warehouse_receiver_fio: warehouse_receiver_fio)
         ]
       end
       let!(:order) do

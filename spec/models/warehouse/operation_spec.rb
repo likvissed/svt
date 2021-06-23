@@ -474,5 +474,35 @@ module Warehouse
         expect(operation.errors.details[:base]).to include(error: :cannot_destroy_done_operation)
       end
     end
+
+    describe '#presence_warehouse_receiver_fio' do
+      let(:order) { create(:order, operation: :out) }
+      let(:user) { create(:user) }
+      let(:new_item) { create(:new_item) }
+      subject { create(:order_operation, status: :done, stockman_id_tn: user.id_tn, operationable: order, item: new_item) }
+      before { subject.presence_w_receiver_fio = true }
+
+      it 'adds :blank error for warehouse_receiver_fio' do
+        subject.valid?
+
+        expect(subject.errors.details[:warehouse_receiver_fio]).to include(error: :blank)
+      end
+    end
+
+    describe '#check_worker_w_receiver_fio' do
+      let(:user) { create(:user) }
+      let(:new_item) { create(:new_item) }
+      subject { create(:order_operation, status: :done, stockman_id_tn: user.id_tn, operationable: order, item: new_item) }
+      before do
+        subject.worker_w_receiver_fio = true
+        subject.warehouse_receiver_fio = 'Example FIO'
+      end
+
+      it 'adds :denied_access_for_assign_receiver_fio error' do
+        subject.valid?
+
+        expect(subject.errors.details[:base]).to include(error: :denied_access_for_assign_receiver_fio, item_type: subject.item.item_type)
+      end
+    end
   end
 end
