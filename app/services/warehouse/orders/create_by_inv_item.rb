@@ -1,10 +1,11 @@
 module Warehouse
   module Orders
     class CreateByInvItem < BaseService
-      def initialize(current_user, inv_item, operation)
+      def initialize(current_user, inv_item, operation, comment = nil)
         @current_user = current_user
         @inv_item = inv_item
         @operation = operation
+        @comment = comment
 
         super
       end
@@ -39,7 +40,8 @@ module Warehouse
         @order = Order.new(
           inv_workplace: @inv_item.workplace,
           consumer: @inv_item.workplace.user_iss,
-          operation: :in
+          operation: :in,
+          comment: @comment
         )
         authorize @order, :create_in?
         @order.set_creator(current_user)
@@ -47,7 +49,7 @@ module Warehouse
       end
 
       def init_write_off_order
-        @order = Order.new(operation: :write_off)
+        @order = Order.new(operation: :write_off, comment: @comment)
         authorize @order, :create_write_off?
         @order.skip_validator = true
         @order.set_creator(current_user)

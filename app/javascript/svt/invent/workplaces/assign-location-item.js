@@ -13,22 +13,34 @@ import { app } from '../../app/app';
     this.InventItem = InventItem;
     this.WarehouseItems = WarehouseItems;
     this.item = items.item;
+    this.type = items.type;
   }
 
   /**
-   * Отправить технику на склад
+   * Отправить технику на склад или на списание
    *
    * @param item
    */
-  WorkplaceAssignLocationItemCtrl.prototype.sendItemToStock = function() {
-    let confirm_str = `ВНИМАНИЕ! Техника будет перемещена на склад! Вы действительно хотите переместить на склад ${this.item.type.short_description}?`;
+  WorkplaceAssignLocationItemCtrl.prototype.sendItem = function() {
+    if (this.type == 'stock') {
+      let confirm_str = `ВНИМАНИЕ! Техника будет перемещена на склад! Вы действительно хотите переместить на склад ${this.item.type.short_description}?`;
 
-    if (!confirm(confirm_str)) { return false; }
+      if (!confirm(confirm_str)) { return false; }
 
-    this.InventItem.sendToStock(this.item).then(() => {
-      this.$uibModalInstance.close();
-      this.Workplace.delItem(this.item)
-    });
+      this.InventItem.sendToStock(this.item, this.order_comment).then(() => {
+        this.$uibModalInstance.close();
+        this.Workplace.delItem(this.item)
+      });
+    } else if (this.type == 'write_off') {
+      let confirm_str = `ВНИМАНИЕ! Техника будет перемещена на склад и помечена на списание! Вы действительно хотите переместить на склад ${this.item.type.short_description} и создать ордер на списание?`;
+
+      if (!confirm(confirm_str)) { return false; }
+
+      this.InventItem.sendToWriteOff(this.item, this.order_comment).then(() => {
+        this.$uibModalInstance.close();
+        this.Workplace.delItem(this.item)
+      });
+    }
   };
 
   WorkplaceAssignLocationItemCtrl.prototype.close = function() {

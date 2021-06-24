@@ -1,10 +1,11 @@
 module Invent
   module Items
     class ToStock < Invent::ApplicationService
-      def initialize(current_user, item_id, location)
+      def initialize(current_user, item_id, location, comment = nil)
         @current_user = current_user
         @item_id = item_id
         @location = location
+        @comment = comment
 
         super
       end
@@ -29,7 +30,7 @@ module Invent
       end
 
       def send_to_stock
-        @order = Warehouse::Orders::CreateByInvItem.new(current_user, @item, :in)
+        @order = Warehouse::Orders::CreateByInvItem.new(current_user, @item, :in, @comment)
 
         # Назначить расположение для свойств техники со штрих-кодом
         @item.warehouse_items.each { |w_item| assign_location(w_item.as_json) } if @item.warehouse_items.present?

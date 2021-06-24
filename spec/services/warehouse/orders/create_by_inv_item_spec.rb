@@ -6,6 +6,7 @@ module Warehouse
       let!(:current_user) { create(:user) }
       let!(:workplace) { create(:workplace_pk, :add_items, items: %i[pc monitor]) }
       let(:inv_item) { workplace.items.first }
+      let(:order_comment) { 'comment example' }
       before { Invent::Item.update_all(priority: :high) }
 
       context 'and when :operation attribute is :out' do
@@ -87,6 +88,22 @@ module Warehouse
         it 'broadcasts to archive_orders' do
           expect_any_instance_of(Orders::In::AbstractState).to receive(:broadcast_archive_orders)
           subject.run
+        end
+
+        it 'attribute comment is empty' do
+          subject.run
+
+          expect(Order.first.comment).to be_nil
+        end
+
+        context 'and when order contains comment' do
+          subject { CreateByInvItem.new(current_user, inv_item, :in, order_comment) }
+
+          it 'adds comment in order' do
+            subject.run
+
+            expect(Order.first.comment).to eq order_comment
+          end
         end
 
         context 'and when warehouse_item already exist (with another model)' do
@@ -181,6 +198,22 @@ module Warehouse
           expect_any_instance_of(Orders::WriteOff::AbstractState).to receive(:broadcast_items)
 
           subject.run
+        end
+
+        it 'attribute comment is empty' do
+          subject.run
+
+          expect(Order.first.comment).to be_nil
+        end
+
+        context 'and when order contains comment' do
+          subject { CreateByInvItem.new(current_user, inv_item, :write_off, order_comment) }
+
+          it 'adds comment in order' do
+            subject.run
+
+            expect(Order.first.comment).to eq order_comment
+          end
         end
       end
     end

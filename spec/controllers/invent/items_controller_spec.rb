@@ -151,11 +151,23 @@ module Invent
         expect_any_instance_of(Items::ToStock).to receive(:run)
         post :to_stock, params: params, format: :json
       end
+
+      context 'and when comment for order is present' do
+        let(:order_comment) { 'comment example' }
+        let(:params) { { item_id: workplace.items.first.item_id, location: location, comment: order_comment } }
+
+        it 'creates instance of the Items::ToStock' do
+          post :to_stock, params: params, format: :json
+          expect(assigns(:to_stock)).to be_instance_of Items::ToStock
+        end
+      end
     end
 
     describe 'POST #to_write_off' do
       let(:workplace) { create(:workplace_pk, :add_items, items: %i[pc monitor]) }
-      let(:params) { { item_id: workplace.items.first.item_id } }
+      let(:location) { attributes_for(:location) }
+      let(:order_comment) { 'comment example' }
+      let(:params) { { item_id: workplace.items.first.item_id, location: location, comment: order_comment } }
 
       it 'creates instance of the Items::ToStock' do
         post :to_write_off, params: params, format: :json

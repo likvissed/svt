@@ -52,7 +52,7 @@ module Invent
 
     def update
       @update = Items::Update.new(current_user, params[:item_id], item_params)
-      
+
       if @update.run
         render json: { full_message: I18n.t('controllers.invent/item.updated', barcode: @update.data[:barcode]) }
       else
@@ -101,7 +101,7 @@ module Invent
     end
 
     def to_stock
-      @to_stock = Items::ToStock.new(current_user, params[:item_id], params[:location])
+      @to_stock = Items::ToStock.new(current_user, params[:item_id], params[:location], params[:comment])
 
       if @to_stock.run
         render json: { full_message: I18n.t('controllers.invent/item.sended_to_stock', barcode: @to_stock.data[:barcode]) }
@@ -111,7 +111,7 @@ module Invent
     end
 
     def to_write_off
-      @to_write_off = Items::ToWriteOff.new(current_user, params[:item_id])
+      @to_write_off = Items::ToWriteOff.new(current_user, params[:item_id], params[:location], params[:comment])
 
       if @to_write_off.run
         render json: { full_message: I18n.t('controllers.invent/item.sended_to_stock_and_waiting_write_off', barcode: @to_write_off.data[:barcode]) }

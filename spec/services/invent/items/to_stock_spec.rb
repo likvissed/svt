@@ -26,7 +26,7 @@ module Invent
         its(:run) { is_expected.to be_truthy }
 
         it 'creates Warehouse::Orders::CreateByInvItem instance' do
-          expect(Warehouse::Orders::CreateByInvItem).to receive(:new).with(user, item, :in)
+          expect(Warehouse::Orders::CreateByInvItem).to receive(:new).with(user, item, :in, nil)
 
           subject.run
         end
@@ -123,6 +123,17 @@ module Invent
           expect(item.warehouse_item.location.site_id).to eq new_location.site_id
           expect(item.warehouse_item.location.building_id).to eq new_location.building_id
           expect(item.warehouse_item.location.room_id).to eq new_location.room_id
+        end
+
+        context 'and when comment is present' do
+          let(:order_comment) { 'comment example' }
+          let!(:create_by_inv_item) { Warehouse::Orders::CreateByInvItem.new(user, item, :in, order_comment) }
+
+          it 'adds comment in order' do
+            subject.run
+
+            expect(item.warehouse_orders.first.comment).to eq order_comment
+          end
         end
       end
     end
