@@ -4,6 +4,10 @@ script type="text/ng-template" id="WorkplaceAssignLocationItemCtrl.slim"
       h4 Место складирования
     .modal-body
       location-item selected-item="edit.item"
+      .form-group
+        h4 Комментарий для ордера
+        = text_area_tag "order[comment]", "", class: "form-control", rows: "3", "ng-model": "edit.order_comment"
+
     .modal-footer
-      = button_tag "Отправить", type: :button, class: "btn-success", "ng-click": "edit.sendItemToStock()", "ng-disabled": "edit.disableButton()"
+      = button_tag "Отправить", type: :button, class: "btn-success", "ng-click": "edit.sendItem()", "ng-disabled": "edit.disableButton()"
       = button_tag "Закрыть", type: :button, class: "btn-default", "ng-click": "edit.close()"

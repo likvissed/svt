@@ -131,11 +131,12 @@ import { app } from '../../app/app';
   /**
    * Отправить технику на склад.
    */
-  InventItem.prototype.sendToStock = function(item) {
+  InventItem.prototype.sendToStock = function(item, order_comment = '') {
     return this.Server.Invent.Item.toStock(
       {
         item_id : item.id,
-        location: item.location
+        location: item.location,
+        comment : order_comment
       },
       (response) => this.Flash.notice(response.full_message),
       (response, status) => this.Error.response(response, status)
@@ -145,9 +146,13 @@ import { app } from '../../app/app';
   /**
    * Списать технику.
    */
-  InventItem.prototype.sendToWriteOff = function() {
+  InventItem.prototype.sendToWriteOff = function(item, order_comment = '') {
     return this.Server.Invent.Item.toWriteOff(
-      { item_id: this.data.item.id },
+      {
+        item_id : item.id,
+        location: item.location,
+        comment : order_comment
+      },
       (response) => this.Flash.notice(response.full_message),
       (response, status) => this.Error.response(response, status)
     ).$promise;

@@ -18,6 +18,9 @@ script type="text/ng-template" id="editWriteOffOrderModal.slim"
             td ng-bind="op.item_type"
             td ng-bind="op.invent_num"
             td ng-bind="op.item_model"
+      .form-group
+        = label_tag "order[comment]", "Комментарий", class: "control-label"
+        = text_area_tag "order[comment]", "", class: "form-control", rows: "3", "ng-model": "edit.order.comment"
 
     .modal-footer
       = button_tag "Вернуться к списку", class: "btn-default btn-sm", "ng-click": "edit.cancel()"

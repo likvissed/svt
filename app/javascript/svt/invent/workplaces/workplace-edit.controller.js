@@ -209,11 +209,11 @@ import { app } from '../../app/app';
   };
 
   /**
-   * Открыть модальное окно назначения расположения перед отправлением на склад
+   * Открыть модальное окно назначения расположения перед отправлением на склад или на списание
    *
    * @param item
    */
-  WorkplaceEditCtrl.prototype.openAssignLocation = function(item) {
+  WorkplaceEditCtrl.prototype.openAssignLocation = function(item, type) {
     this.$uibModal.open({
       templateUrl : 'WorkplaceAssignLocationItemCtrl.slim',
       controller  : 'WorkplaceAssignLocationItemCtrl',
@@ -222,23 +222,13 @@ import { app } from '../../app/app';
       size        : 'md',
       resolve     : {
         items: function() {
-          return { item: item };
+          return {
+            item: item,
+            type: type
+          };
         }
       }
     });
-  };
-
-  /**
-   * Пометить технику на списание.
-   *
-   * @param item
-   */
-  WorkplaceEditCtrl.prototype.sendItemToWriteOff = function(item) {
-    let confirm_str = `ВНИМАНИЕ! Техника будет перемещена на склад и помечена на списание! Вы действительно хотите переместить на склад ${item.type.short_description} и создать ордер на списание?`;
-
-    if (!confirm(confirm_str)) { return false; }
-
-    this.InventItem.sendToWriteOff().then(() => this.Workplace.delItem(item));
   };
 
   /**
