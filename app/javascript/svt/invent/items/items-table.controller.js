@@ -236,6 +236,7 @@ import { app } from '../../app/app';
       }
 
       const data = {
+        barcode     : item.barcode,
         item_id     : item.item_id,
         invent_num  : item.invent_num,
         id_tn       : item.workplace.id_tn,

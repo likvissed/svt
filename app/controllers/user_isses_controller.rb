@@ -16,11 +16,11 @@ class UserIssesController < ApplicationController
   end
 
   def items
-    @workplaces = Invent::Workplace.where(id_tn: params[:user_iss_id]).includes(items: %i[type model])
+    @workplaces = Invent::Workplace.where(id_tn: params[:user_iss_id]).includes(items: %i[type model barcode_item])
     result = @workplaces
                .as_json(include: {
                  items: {
-                   include: :type,
+                   include: %i[type barcode_item],
                    except: %i[create_time modify_time],
                    methods: :short_item_model
                  }

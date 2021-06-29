@@ -158,6 +158,14 @@ Rails.application.routes.draw do
       # Очистить кэш во всём приложении
       get 'clear_cache_app', to: 'cache#clear'
     end
+
+    namespace :v2 do
+      namespace :invent do
+        resources :items, only: :search_barcode do
+          get ':barcode', to: 'items#search_barcode', on: :collection
+        end
+      end
+    end
   end
 
   mount ActionCable.server, at: '/cable'
