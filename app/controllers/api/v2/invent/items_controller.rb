@@ -6,13 +6,13 @@ module Api
 
         def search_barcode
           @barcode = Barcode
-                       .includes(codeable: %i[type model barcode_item])
+                       .includes(codeable: %i[type model barcode_item workplace])
                        .find_by(codeable_type: 'Invent::Item', id: params[:barcode])
 
           barcode_item = @barcode
                            .as_json(include: {
                                       codeable: {
-                                        include: %i[type barcode_item],
+                                        include: %i[type barcode_item workplace],
                                         except: %i[create_time modify_time],
                                         methods: :short_item_model
                                       }
