@@ -9,7 +9,6 @@ module Invent
     it { is_expected.to belong_to(:workplace_type).required }
     it { is_expected.to belong_to(:workplace_specialization).required }
     it { is_expected.to belong_to(:workplace_count).required }
-    it { is_expected.to belong_to(:user_iss).with_foreign_key('id_tn').optional }
     it { is_expected.to belong_to(:iss_reference_site).with_foreign_key('location_site_id').required }
     it { is_expected.to belong_to(:iss_reference_building).with_foreign_key('location_building_id').required }
     it { is_expected.to belong_to(:iss_reference_room).with_foreign_key('location_room_id').required }

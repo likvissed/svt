@@ -17,7 +17,6 @@ module Invent
             :iss_reference_site,
             :iss_reference_building,
             :iss_reference_room,
-            :user_iss,
             :workplace_type,
             items: {
               include: [
@@ -35,7 +34,24 @@ module Invent
 
       # Получить список работников указанного отдела.
       def load_users
-        data[:users] = UserIss.select(:id_tn, :fio).where(dept: @division)
+        data[:users] = UsersReference.info_users("departmentForAccounting==#{@division}").map { |employee| employee.slice('fullName', 'id') }
+      end
+
+      def find_employees_page
+        employee_list = @workplaces.map(&:id_tn)
+
+        @employees_wp = UsersReference.info_users("id=in=(#{employee_list.compact.join(',')})")
+      end
+
+      # Возвращает ФИО ответственного
+      def fio_employee(wp)
+        employee = @employees_wp.find { |emp| emp['id'] == wp['id_tn'] }
+
+        if employee.present?
+          employee['fullName']
+        else
+          []
+        end
       end
 
       # Возвращает строку, содержащую расположение РМ.

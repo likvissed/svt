@@ -5,7 +5,7 @@ module Invent
 
       # Получить список работников указанного отдела.
       def load_users
-        data[:users] = UserIss.select(:id_tn, :fio).where(dept: @division)
+        data[:users] = UsersReference.info_users("departmentForAccounting==#{@division}").map { |employee| employee.slice('fullName', 'id') }
       end
     end
   end

@@ -27,7 +27,10 @@ module Invent
     before_destroy :check_items_and_attachments, prepend: true, unless: -> { hard_destroy }
     before_destroy :check_processing_orders, prepend: true
 
-    scope :fullname, ->(fullname) { left_outer_joins(:user_iss).where('fio LIKE ?', "%#{fullname}%") }
+    scope :fullname, ->(fullname) do
+      employees_ids = UsersReference.info_users("fullName=='*#{CGI.escape(fullname)}*'").map { |us| us['id'] }
+      where('id_tn IN (?)', employees_ids)
+    end
     scope :workplace_count_id, ->(workplace_count_id) { where(workplace_count_id: workplace_count_id) }
     scope :workplace_id, ->(workplace_id) { where(workplace_id: workplace_id) }
     scope :workplace_type_id, ->(workplace_type_id) { where(workplace_type_id: workplace_type_id) }

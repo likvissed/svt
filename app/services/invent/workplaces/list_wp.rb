@@ -35,7 +35,6 @@ module Invent
         data[:recordsFiltered] = @workplaces.length
         @workplaces = @workplaces
                         .includes(
-                          :user_iss,
                           :workplace_type,
                           :workplace_specialization,
                           :workplace_count,
@@ -48,10 +47,12 @@ module Invent
       end
 
       def prepare_to_render
+        # Массив всех пользователей на одной странице
+        find_employees_page
+
         data[:data] = @workplaces
                         .as_json(
                           include: [
-                            :user_iss,
                             :workplace_type,
                             :workplace_specialization,
                             :workplace_count,
@@ -71,7 +72,7 @@ module Invent
                             }
                           ]
                         ).map do |wp|
-                          fio = wp['user_iss'] ? wp['user_iss']['fio'] : wrap_problem_string('Ответственный не найден')
+                          fio = fio_employee(wp).presence || wrap_problem_string('Ответственный не найден')
                           workplace = "ФИО: #{fio}; Отдел: #{wp['workplace_count']['division']};
 #{wp['workplace_type']['short_description']}; Расположение: #{wp_location_string(wp)}; Основной вид деятельности:
 #{wp['workplace_specialization']['short_description']}"

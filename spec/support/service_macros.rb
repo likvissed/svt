@@ -10,7 +10,6 @@ module ServiceMacros
           else
             build(
               :workplace,
-              user_iss: nil,
               workplace_specialization: nil,
               workplace_count: workplace_count
             )
