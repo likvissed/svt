@@ -53,11 +53,13 @@ module Invent
                      :barcode_item,
                      { warehouse_item: :location },
                      { property_values: %i[property property_list] },
-                     workplace: %i[user_iss iss_reference_room]
+                     workplace: %i[iss_reference_room]
                    ).order(item_id: :desc).limit(params[:length]).offset(params[:start])
       end
 
       def prepare_to_render
+        find_employees_page
+
         data[:data] = @items.as_json(
           include: [
             :type,
@@ -67,7 +69,6 @@ module Invent
             { property_values: { include: %i[property property_list] } },
             { workplace: {
               include: %i[
-                user_iss
                 iss_reference_room
               ]
             } }
@@ -81,7 +82,20 @@ module Invent
           item['translated_priority'] = Item.translate_enum(:priority, item['priority'])
           item['label_status'] = label_status(item, item['translated_status'])
           item['location'] = location_string(item)
+          item['employee'] = if item['workplace'].present? && @employees_wp.present?
+                               res = @employees_wp.find { |emp| emp['id'] == item['workplace']['id_tn'] }
+                               res.try(:[], 'fullName')
+                             else
+                               ''
+                             end
         end
+      end
+
+      # Массив всех пользователей на одной странице
+      def find_employees_page
+        employee_list = @items.map { |it| it.try(:workplace).try(:id_tn) }
+
+        @employees_wp = UsersReference.info_users("id=in=(#{employee_list.compact.join(',')})")
       end
 
       def load_filters

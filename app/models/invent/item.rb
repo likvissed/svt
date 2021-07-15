@@ -52,7 +52,11 @@ module Invent
     scope :invent_num, ->(invent_num) { where('invent_num LIKE ?', "%#{invent_num}%").limit(RECORD_LIMIT) }
     scope :serial_num, ->(serial_num) { where('serial_num LIKE ?', "%#{serial_num}%").limit(RECORD_LIMIT) }
     scope :item_model, ->(item_model) { left_outer_joins(:model).where('invent_model.item_model LIKE :item_model OR invent_item.item_model LIKE :item_model', item_model: "%#{item_model}%") }
-    scope :responsible, ->(responsible) { left_outer_joins(workplace: :user_iss).where('fio LIKE ?', "%#{responsible}%") }
+    scope :responsible, ->(responsible) do
+      employees_ids = UsersReference.info_users("fullName=='*#{CGI.escape(responsible)}*'").map { |us| us['id'] }
+      result = ['id_tn IN (?)']
+      left_outer_joins(:workplace).where(result.join(' OR '), employees_ids)
+    end
     scope :for_statuses, ->(status_arr) do
       result = []
       values = status_arr.map do |el|
