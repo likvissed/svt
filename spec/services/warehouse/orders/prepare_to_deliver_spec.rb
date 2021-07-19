@@ -3,6 +3,11 @@ require 'feature_helper'
 module Warehouse
   module Orders
     RSpec.describe PrepareToDeliver, type: :model do
+      before do
+        allow_any_instance_of(Order).to receive(:set_consumer)
+        allow_any_instance_of(Order).to receive(:find_employee_by_workplace).and_return([build(:emp_***REMOVED***)])
+      end
+
       let!(:current_user) { create(:***REMOVED***_user) }
       subject { PrepareToDeliver.new(current_user, order.id, order_params) }
 

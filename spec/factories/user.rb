@@ -33,6 +33,20 @@ FactoryBot.define do
   end
 
   factory :***REMOVED***_user, class: User do
+    id_tn { ***REMOVED*** }
+    tn { ***REMOVED*** }
+    phone { '***REMOVED***' }
+    division { ***REMOVED*** }
+    fullname { '***REMOVED***' }
+
+    after(:build) do |user, ev|
+      unless ev.role
+        user.role = Role.find_by(name: :admin) || create(:admin_role)
+      end
+    end
+  end
+
+  factory :***REMOVED***_user, class: User do
     id_tn { 5336 }
     tn { 24_079 }
     phone { '39-45' }

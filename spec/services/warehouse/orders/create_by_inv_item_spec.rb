@@ -3,6 +3,11 @@ require 'feature_helper'
 module Warehouse
   module Orders
     RSpec.describe CreateByInvItem, type: :model do
+      before do
+        allow_any_instance_of(Order).to receive(:find_employee_by_workplace).and_return([employee])
+        allow_any_instance_of(Order).to receive(:set_consumer)
+      end
+      let(:employee) { build(:emp_***REMOVED***) }
       let!(:current_user) { create(:user) }
       let!(:workplace) { create(:workplace_pk, :add_items, items: %i[pc monitor]) }
       let(:inv_item) { workplace.items.first }
@@ -124,8 +129,9 @@ module Warehouse
               op.delete('operations_warehouse_receiver')
             end
 
-            edit.data[:order].delete('consumer_obj')
-            edit.data[:order].delete('fio_user_iss')
+            # edit.data[:order].delete('consumer_obj')
+            edit.data[:order].delete('fio_employee')
+            edit.data[:order].delete('consumer')
             edit.data[:order].delete('attachment_order')
             edit.data[:order].delete('type_ops_warehouse_receiver')
             edit.data[:order].delete('valid_op_warehouse_receiver_fio')

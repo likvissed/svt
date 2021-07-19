@@ -68,8 +68,8 @@ module Invent
 
           it_behaves_like '@data into init_properties_service is filleable'
 
-          it 'puts the :users at least with %w[id_tn fio] keys' do
-            expect(subject.data[:users].first.as_json.keys).to include('id_tn', 'fio')
+          it 'puts the :users at least with %w[lastName firstName middleName id professionForDocuments fullName] keys' do
+            expect(subject.data[:users].first.as_json.keys).to include('lastName', 'firstName', 'middleName', 'id', 'professionForDocuments', 'fullName')
           end
         end
       end

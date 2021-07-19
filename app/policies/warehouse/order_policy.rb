@@ -154,6 +154,14 @@ module Warehouse
               :serial_num,
               :invent_num,
               :_destroy
+            ],
+            location: %i[
+              id
+              site_id
+              building_id
+              room_id
+              comment
+              name
             ]
           ]
         ]

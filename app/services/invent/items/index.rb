@@ -83,8 +83,7 @@ module Invent
           item['label_status'] = label_status(item, item['translated_status'])
           item['location'] = location_string(item)
           item['employee'] = if item['workplace'].present? && @employees_wp.present?
-                               res = @employees_wp.find { |emp| emp['id'] == item['workplace']['id_tn'] }
-                               res.try(:[], 'fullName')
+                               @employees_wp.find { |emp| emp['id'] == item['workplace']['id_tn'] }
                              else
                                ''
                              end

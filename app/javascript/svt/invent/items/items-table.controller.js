@@ -231,8 +231,8 @@ import { app } from '../../app/app';
     let tn;
 
     if (item.workplace) {
-      if (item.workplace.user_iss) {
-        tn = item.workplace.user_iss.tn;
+      if (item.employee) {
+        tn = item.employee.personnelNo;
       }
 
       const data = {

@@ -1,10 +1,10 @@
 <div class="input-group multiline-select">
   <ui-select ng-model="su.selectedUser" theme="bootstrap" ng-disabled="su.disableSearch">
     <ui-select-match placeholder="ФИО или таб. №">
-      {{$select.selected.fio}}
+      {{$select.selected.fullName}}
     </ui-select-match>
     <ui-select-choices refresh="su.searchUsers($select.search)" refresh-delay="300" repeat="user in su.users | filter: $select.search">
-      <div ng-bind-html="user.fio + ' (отд. ' + user.dept + ')' | highlight: $select.search"></div>
+      <div ng-bind-html="user.fullName + ' (отд. ' + user.departmentForAccounting + ')' | highlight: $select.search"></div>
     </ui-select-choices>
   </ui-select>
   <span class="input-group-btn">

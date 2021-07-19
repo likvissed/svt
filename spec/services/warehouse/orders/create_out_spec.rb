@@ -3,6 +3,8 @@ require 'feature_helper'
 module Warehouse
   module Orders
     RSpec.describe CreateOut, type: :model do
+      before { allow_any_instance_of(Order).to receive(:find_employee_by_workplace).and_return([build(:emp_***REMOVED***)]) }
+
       let!(:current_user) { create(:***REMOVED***_user) }
       let!(:workplace) do
         wp = build(:workplace_pk, dept: ***REMOVED***)

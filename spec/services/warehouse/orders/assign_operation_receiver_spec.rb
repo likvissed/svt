@@ -3,6 +3,12 @@ require 'feature_helper'
 module Warehouse
   module Orders
     RSpec.describe AssignOperationReceiver, type: :model do
+      before do
+        allow_any_instance_of(Order).to receive(:set_consumer).and_return([employee])
+        allow_any_instance_of(Order).to receive(:find_employee_by_workplace).and_return([employee])
+      end
+      let(:employee) { build(:emp_***REMOVED***) }
+
       let(:user) { create(:***REMOVED***_user, role: role) }
       let(:operation_one) { build(:order_operation, item: item_one, shift: -1) }
       let(:operation_two) { build(:order_operation, item: item_two, shift: -1) }

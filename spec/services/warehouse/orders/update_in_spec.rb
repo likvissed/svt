@@ -3,6 +3,13 @@ require 'feature_helper'
 module Warehouse
   module Orders
     RSpec.describe UpdateIn, type: :model do
+      before do
+        allow_any_instance_of(Order).to receive(:find_employee_by_workplace).and_return([employee])
+        allow_any_instance_of(Order).to receive(:set_consumer)
+        allow_any_instance_of(Order).to receive(:set_consumer_dept_in)
+      end
+      let(:employee) { build(:emp_***REMOVED***) }
+
       let!(:user) { create(:user) }
       let(:new_user) { create(:***REMOVED***_user, role: Role.find_by(name: :admin)) }
       subject { UpdateIn.new(new_user, order.id, order_params) }
@@ -107,8 +114,8 @@ module Warehouse
             op.delete('operations_warehouse_receiver')
           end
 
-          edit.data[:order].delete('consumer_obj')
-          edit.data[:order].delete('fio_user_iss')
+          edit.data[:order].delete('fio_employee')
+          edit.data[:order].delete('consumer')
           edit.data[:order].delete('attachment_order')
           edit.data[:order].delete('valid_op_warehouse_receiver_fio')
           edit.data[:order]
@@ -295,7 +302,10 @@ module Warehouse
           let(:order_params) do
             order_json['operations_attributes'] = order.operations.as_json
             order_json['operations_attributes'].each_with_index do |op, index|
-              op['_destroy'] = 1 if index.zero?
+              if index.zero?
+                op['_destroy'] = 1
+                op['status'] = 'done'
+              end
             end
             order_json
           end

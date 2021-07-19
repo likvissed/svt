@@ -3,6 +3,11 @@ require 'feature_helper'
 module Warehouse
   module Orders
     RSpec.describe Edit, type: :model do
+      before do
+        allow_any_instance_of(Order).to receive(:find_employee_by_workplace).and_return([employee])
+        allow(UsersReference).to receive(:info_users).and_return(employee)
+      end
+      let(:employee) { build(:emp_***REMOVED***) }
       let(:order) { create(:order, :default_workplace) }
 
       context 'when :check_unreg flag is not set' do
@@ -43,8 +48,8 @@ module Warehouse
           expect(subject.data[:order]['consumer']).to eq subject.data[:order]['consumer_fio']
         end
 
-        it 'adds fio_user_iss key' do
-          expect(subject.data[:order]['fio_user_iss']).to eq order.inv_workplace.user_iss.fio
+        it 'adds fio_employee key' do
+          expect(subject.data[:order]['fio_employee']).to eq employee['fullName']
         end
 
         it 'returns false for assign_barcode for operation item attribute' do
@@ -109,12 +114,16 @@ module Warehouse
         end
 
         context 'when inv_workplace absence' do
+          before do
+            allow_any_instance_of(Order).to receive(:set_consumer_dept_in)
+            allow_any_instance_of(Order).to receive(:find_employee_by_workplace).and_return([])
+          end
           let(:order) { create(:order) }
 
-          it 'sets nil value to :fio_user_iss variable' do
+          it 'sets nil value to :fio_employee variable' do
             subject.run
 
-            expect(subject.data[:order]['fio_user_iss']).to be_nil
+            expect(subject.data[:order]['fio_employee']).to be_nil
           end
         end
       end

@@ -186,8 +186,8 @@ import { app } from '../../app/app';
    * Добавить данные по ответственному к объекту order.
    */
   WarehouseOrder.prototype._setConsumer = function() {
-    this.order.consumer_id_tn = this.order.consumer ? angular.copy(this.order.consumer.id_tn) : null;
-    this.order.consumer_fio = this.order.consumer ? angular.copy(this.order.consumer.fio) : null;
+    this.order.consumer_id_tn = this.order.consumer ? angular.copy(this.order.consumer.id) : null;
+    this.order.consumer_fio = this.order.consumer ? angular.copy(this.order.consumer.fullName) : null;
     this.order.consumer_tn = this.order.consumer ? angular.copy(this.order.consumer.tn) : null;
   };
 
@@ -197,7 +197,7 @@ import { app } from '../../app/app';
   WarehouseOrder.prototype._setReceiver = function() {
     this.order.operations_attributes.forEach(function(op) {
       if (op.warehouse_receiver) {
-        op.warehouse_receiver_fio = op.warehouse_receiver.fio;
+        op.warehouse_receiver_fio = op.warehouse_receiver.fullName;
       }
 
     });

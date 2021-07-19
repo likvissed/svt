@@ -3,7 +3,13 @@ require 'feature_helper'
 module Warehouse
   module Orders
     RSpec.describe UpdateOut, type: :model do
-      let(:user) { create(:user) }
+      before do
+        allow_any_instance_of(Order).to receive(:set_consumer).and_return([employee])
+        allow_any_instance_of(Order).to receive(:find_employee_by_workplace).and_return([employee])
+      end
+      let(:employee) { build(:emp_***REMOVED***) }
+
+      let(:user) { create(:***REMOVED***_user) }
       let(:new_user) { create(:***REMOVED***_user, role: create(:manager_role)) }
       let(:pc_type) { Invent::Type.find_by(name: :pc) }
       let!(:pc_items) { create(:new_item, inv_type: pc_type, item_model: 'Unit', count: 20, invent_num_end: 131) }
@@ -213,8 +219,8 @@ module Warehouse
             op.delete('operations_warehouse_receiver')
           end
 
-          edit.data[:order].delete('consumer_obj')
-          edit.data[:order].delete('fio_user_iss')
+          edit.data[:order].delete('fio_employee')
+          edit.data[:order].delete('consumer')
           edit.data[:order].delete('attachment_order')
           edit.data[:order].delete('valid_op_warehouse_receiver_fio')
           edit.data[:order]

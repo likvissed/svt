@@ -3,6 +3,11 @@ require 'feature_helper'
 module Warehouse
   module Orders
     RSpec.describe ExecuteOut, type: :model do
+      before do
+        allow_any_instance_of(Order).to receive(:set_consumer)
+        allow_any_instance_of(Order).to receive(:present_user_iss)
+      end
+
       let!(:current_user) { create(:***REMOVED***_user) }
       subject { ExecuteOut.new(current_user, order.id, order_params) }
       let!(:inv_item) { create(:item, :with_property_values, type_name: :printer, status: :in_workplace) }

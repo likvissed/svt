@@ -29,7 +29,7 @@ module Invent
           ]
         )
 
-        @data = prepare_to_***REMOVED***_table(@data)
+        @data = prepare_to_***REMOVED***_table(@data, [])
       end
 
       # Получить список работников указанного отдела.

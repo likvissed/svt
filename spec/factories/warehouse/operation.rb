@@ -11,7 +11,7 @@ module Warehouse
       status { :processing }
 
       after(:build) do |op|
-        op.stockman_fio = op.stockman_id_tn ? UserIss.find(op.stockman_id_tn).fio : nil
+        op.stockman_fio = op.stockman_id_tn ? build(:emp_***REMOVED***)['fullName'] : nil
       end
     end
 

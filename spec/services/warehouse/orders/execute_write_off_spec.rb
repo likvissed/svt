@@ -3,6 +3,8 @@ require 'feature_helper'
 module Warehouse
   module Orders
     RSpec.describe ExecuteWriteOff, type: :model do
+      before { allow_any_instance_of(Order).to receive(:set_consumer) }
+
       let!(:current_user) { create(:***REMOVED***_user) }
       let(:order_json) { order.as_json }
       subject { ExecuteWriteOff.new(current_user, order.id, order_params) }

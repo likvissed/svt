@@ -3,10 +3,15 @@ require 'feature_helper'
 module Warehouse
   module Orders
     RSpec.describe ExecuteIn, type: :model do
+      before do
+        allow(UnregistrationWorker).to receive(:perform_async).and_return(true)
+
+        allow_any_instance_of(Order).to receive(:present_user_iss)
+        allow_any_instance_of(Order).to receive(:set_consumer)
+        allow_any_instance_of(Order).to receive(:set_consumer_dept_in).and_return([])
+      end
       let!(:current_user) { create(:***REMOVED***_user) }
       subject { ExecuteIn.new(current_user, order.id, order_params) }
-
-      before { allow(UnregistrationWorker).to receive(:perform_async).and_return(true) }
 
       context 'when operations belongs_to item' do
         let(:first_inv_item) { create(:item, :with_property_values, type_name: :pc, status: :waiting_bring, priority: :high) }

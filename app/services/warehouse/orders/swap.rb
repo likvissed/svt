@@ -153,7 +153,7 @@ module Warehouse
       def init_order(operation)
         @order = Order.new(
           inv_workplace: @workplace,
-          consumer: @workplace.user_iss,
+          consumer_id_tn: @workplace.id_tn,
           operation: operation,
           skip_validator: true
         )
