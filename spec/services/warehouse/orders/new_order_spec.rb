@@ -3,6 +3,8 @@ require 'feature_helper'
 module Warehouse
   module Orders
     RSpec.describe NewOrder, type: :model do
+      skip_users_reference
+
       let!(:user) { create(:user) }
       let(:workplace_count) { create(:active_workplace_count, users: [user]) }
       subject { NewOrder.new(user, :in) }

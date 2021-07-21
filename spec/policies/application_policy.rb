@@ -3,6 +3,7 @@ require 'spec_helper'
 RSpec.describe ApplicationPolicy do
   let(:***REMOVED***_user) { create(:***REMOVED***_user) }
   let(:admin_user) { create(:user) }
+  before { allow_any_instance_of(User).to receive(:presence_user_in_users_reference) }
   subject { ApplicationPolicy }
 
   permissions :authorization? do

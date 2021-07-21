@@ -3,13 +3,10 @@ require 'feature_helper'
 module Warehouse
   module Orders
     RSpec.describe UpdateOut, type: :model do
-      before do
-        allow_any_instance_of(Order).to receive(:set_consumer).and_return([employee])
-        allow_any_instance_of(Order).to receive(:find_employee_by_workplace).and_return([employee])
-      end
-      let(:employee) { build(:emp_***REMOVED***) }
+      skip_users_reference
 
-      let(:user) { create(:***REMOVED***_user) }
+      let(:employee) { build(:emp_***REMOVED***) }
+      let(:user) { create(:user) }
       let(:new_user) { create(:***REMOVED***_user, role: create(:manager_role)) }
       let(:pc_type) { Invent::Type.find_by(name: :pc) }
       let!(:pc_items) { create(:new_item, inv_type: pc_type, item_model: 'Unit', count: 20, invent_num_end: 131) }
@@ -18,6 +15,10 @@ module Warehouse
       let(:mfu_type) { Invent::Type.find_by(name: :mfu) }
       let(:inv_mfu_item) { create(:item, :with_property_values, type_name: :mfu) }
       let!(:mfu_items) { create(:used_item, inv_item: inv_mfu_item, count: 1) }
+      before do
+        allow_any_instance_of(Order).to receive(:set_consumer)
+        allow_any_instance_of(Order).to receive(:find_employee_by_workplace).and_return([employee])
+      end
       subject { UpdateOut.new(new_user, order.id, order_params) }
 
       context 'when warehouse_type is :without_invent_num' do

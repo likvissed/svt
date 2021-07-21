@@ -3,6 +3,8 @@ require 'feature_helper'
 module Warehouse
   module Orders
     RSpec.describe CreateWriteOff, type: :model do
+      skip_users_reference
+
       let!(:current_user) { create(:***REMOVED***_user) }
       let(:item) { create(:item, :with_property_values, type_name: :monitor) }
       let(:invent_item_ids) { [item.item_id] }

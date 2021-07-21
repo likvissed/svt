@@ -2,6 +2,8 @@ require 'feature_helper'
 
 module Users
   RSpec.describe Index, type: :model do
+    skip_users_reference
+
     let!(:t_user) { create(:user) }
     let!(:b_user) { create(:***REMOVED***_user, sign_in_count: 1) }
     let(:data_keys) { %i[recordsTotal recordsFiltered data] }

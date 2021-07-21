@@ -3,15 +3,17 @@ require 'feature_helper'
 module Invent
   module Workplaces
     RSpec.describe Update, type: :model do
+      skip_users_reference
+
+      let(:employee) { [build(:emp_***REMOVED***)] }
       let!(:user) { create(:user) }
       let!(:old_workplace) { create(:workplace_pk, :add_items, items: %i[pc monitor]) }
       let(:workplace_attachments) { [] }
 
       context 'with valid workplace params' do
         let(:room) { IssReferenceSite.first.iss_reference_buildings.first.iss_reference_rooms.last }
-        let(:user_iss) { build(:***REMOVED***_user_iss) }
         let(:new_workplace) do
-          update_workplace_attributes(true, user, old_workplace.workplace_id, location_room_id: room.room_id, user_iss: user_iss)
+          update_workplace_attributes(true, user, old_workplace.workplace_id, location_room_id: room.room_id, employee: employee)
         end
         subject { Update.new(user, old_workplace.workplace_id, new_workplace, workplace_attachments) }
 
@@ -29,7 +31,7 @@ module Invent
           subject.run
           old_workplace.reload
           expect(old_workplace.iss_reference_room).to eq room
-          expect(old_workplace.id_tn).to eq user_iss.id_tn
+          expect(old_workplace.id_tn).to eq employee.first['id']
         end
 
         it 'changes items count' do
@@ -112,15 +114,19 @@ module Invent
       end
 
       context 'when add item from another workplace' do
+        before do
+          allow_any_instance_of(Warehouse::Order).to receive(:set_consumer)
+          allow_any_instance_of(Warehouse::Order).to receive(:find_employee_by_workplace).and_return([employee])
+        end
+        let(:employee) { [build(:emp_***REMOVED***)] }
         let!(:workplace_2) { create(:workplace_pk, :add_items, items: %i[pc monitor]) }
         let(:room) { IssReferenceSite.first.iss_reference_buildings.first.iss_reference_rooms.last }
-        let(:user_iss) { build(:***REMOVED***_user_iss) }
         let(:new_workplace) do
           wp = Invent::LkInvents::EditWorkplace.new(user, old_workplace.workplace_id)
           wp.run
 
           wp.data['location_room_id'] = room.room_id
-          wp.data['id_tn'] = user_iss.id_tn
+          wp.data['id_tn'] = employee.first['id']
 
           new_mon = workplace_2.items.last.as_json(include: :property_values)
           new_mon['status'] = 'prepared_to_swap'
@@ -173,7 +179,7 @@ module Invent
             subject.run
             old_workplace.reload
             expect(old_workplace.iss_reference_room).not_to eq room
-            expect(old_workplace.id_tn).not_to eq user_iss.id_tn
+            expect(old_workplace.id_tn).not_to eq employee.first['id']
           end
         end
       end

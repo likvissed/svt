@@ -2,6 +2,8 @@ require 'feature_helper'
 
 module Users
   RSpec.describe Destroy, type: :model do
+    skip_users_reference
+
     let!(:user) { create(:user) }
     subject { Destroy.new(user.id) }
 

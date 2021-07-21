@@ -7,12 +7,11 @@ class User < ApplicationRecord
   has_many :workplace_counts, through: :workplace_responsibles, class_name: 'Invent::WorkplaceCount'
 
   belongs_to :role
-  belongs_to :user_iss, foreign_key: 'id_tn'
 
   validates :tn, numericality: { only_integer: true }, presence: true, uniqueness: true, reduce: true
   validates :role, presence: true
   # validates :id_tn, uniqueness: { message: :tn_already_exists }
-  validate :presence_user_in_user_iss, if: -> { errors.details.empty? }
+  validate :presence_user_in_users_reference, if: -> { errors.details.empty? }
 
   after_validation :replace_nil
   before_save :truncate_phone
@@ -56,9 +55,11 @@ class User < ApplicationRecord
   end
 
   def fill_data
-    self.user_iss = UserIss.find_by(tn: tn)
-    self.fullname = user_iss.try(:fio)
-    self.phone = user_iss.try(:tel)
+    employee = UsersReference.info_users("personnelNo==#{tn}").first
+
+    self.id_tn = employee.try(:[], 'id')
+    self.fullname = employee.try(:[], 'fullName')
+    self.phone = employee.try(:[], 'phoneText')
   end
 
   # Проверяет, в системе ли пользователь
@@ -66,8 +67,8 @@ class User < ApplicationRecord
     updated_at > self.class.online_time && sign_in_count.positive?
   end
 
-  def presence_user_in_user_iss
-    return if UserIss.find_by(tn: tn)
+  def presence_user_in_users_reference
+    return if UsersReference.info_users("personnelNo==#{tn}").first
 
     errors.add(:tn, :user_not_found, tn: tn)
   end

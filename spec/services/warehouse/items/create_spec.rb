@@ -3,6 +3,8 @@ require 'feature_helper'
 module Warehouse
   module Items
     RSpec.describe Create, type: :model do
+      skip_users_reference
+
       let!(:current_user) { create(:user) }
       let(:location) { build(:location) }
       let(:property_values) do

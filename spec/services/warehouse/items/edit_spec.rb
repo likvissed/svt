@@ -4,6 +4,8 @@ module Warehouse
   module Items
     RSpec.describe Edit, type: :model do
       describe '#run' do
+        skip_users_reference
+
         let!(:current_user) { create(:user) }
         context 'when absent property_values for item' do
           let(:item) { create(:new_item) }

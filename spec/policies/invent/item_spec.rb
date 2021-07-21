@@ -6,7 +6,11 @@ module Invent
     let(:manager) { create(:***REMOVED***_user) }
     let(:worker) { create(:shatunova_user) }
     let(:read_only) { create(:tyulyakova_user) }
-    before { create(:used_item) }
+    before do
+      allow_any_instance_of(User).to receive(:presence_user_in_users_reference)
+      create(:used_item)
+    end
+
     subject { ItemPolicy }
 
     permissions :ctrl_access? do

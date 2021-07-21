@@ -12,9 +12,6 @@ module Warehouse
     has_one :attachment, dependent: :destroy, foreign_key: 'order_id', class_name: 'AttachmentOrder', inverse_of: :order
 
     belongs_to :inv_workplace, foreign_key: 'invent_workplace_id', class_name: 'Invent::Workplace', optional: true
-    # belongs_to :creator, foreign_key: 'creator_id_tn', class_name: 'UserIss', optional: true
-    # belongs_to :consumer, foreign_key: 'consumer_id_tn', class_name: 'UserIss', optional: true
-    # belongs_to :validator, foreign_key: 'validator_id_tn', class_name: 'UserIss', optional: true
 
     validates :operation, :status, :creator_fio, presence: true
     # validates :consumer_dept, presence: true, if: -> { in? && done? }
@@ -23,7 +20,7 @@ module Warehouse
     validates :invent_workplace_id, presence: true, if: -> { out? }
     validates :invent_num, presence: true, if: -> { operation == 'out' && operations.any? { |oop| oop.item.present? && oop.item.warehouse_type == 'without_invent_num' && oop.item.item.blank? } }
 
-    # validate :presence_consumer, if: -> { operations.any?(&:done?) && !write_off? }
+    validate :presence_consumer, if: -> { operations.any?(&:done?) && !write_off? }
     validate :at_least_one_operation
     validate :validate_in_order, if: -> { in? }
     validate :validate_write_off_order, if: -> { write_off? }
@@ -194,7 +191,7 @@ module Warehouse
     end
 
     def presence_consumer
-      return if consumer_fio.present? || errors.details[:consumer].any?
+      return if consumer_fio.present? || consumer_id_tn.present? || errors.details[:consumer].any?
 
       errors.add(:consumer, :blank)
     end
@@ -210,7 +207,7 @@ module Warehouse
     end
 
     def validate_in_order
-      # presence_consumer if operations.any?(&:done?)
+      presence_consumer if operations.any?(&:done?)
       check_operation_list
       uniqueness_of_workplace if any_inv_item_to_operation? || any_w_item_have_inv_item?
       # compare_consumer_dept if any_inv_item_to_operation? && errors.empty?

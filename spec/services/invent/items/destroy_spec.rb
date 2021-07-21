@@ -3,6 +3,8 @@ require 'feature_helper'
 module Invent
   module Items
     RSpec.describe Destroy, type: :model do
+      skip_users_reference
+
       let(:user) { create(:user) }
       let!(:item) { create(:item, :with_property_values, type_name: :monitor) }
       subject { Destroy.new(user, item.item_id) }

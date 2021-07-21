@@ -19,6 +19,7 @@ module Invent
     it { is_expected.to delegate_method(:properties).to(:type) }
     it { is_expected.to accept_nested_attributes_for(:property_values).allow_destroy(true) }
     it { is_expected.to accept_nested_attributes_for(:barcode_item).allow_destroy(true) }
+    skip_users_reference
 
     context 'when status is :waiting_take' do
       before { subject.status = :waiting_take }
@@ -488,6 +489,7 @@ module Invent
     end
 
     describe '#prevent_destroy' do
+      before { allow_any_instance_of(Warehouse::Order).to receive(:find_employee_by_workplace).and_return([build(:emp_***REMOVED***)]) }
       its(:destroy) { is_expected.to be_truthy }
 
       context 'when item has operation with :processing status' do
@@ -599,6 +601,7 @@ module Invent
           let!(:new_item) { create(:new_item, count: 4, inv_type: Invent::Type.find_by(name: :pc), item_model: 'UNIT') }
           let(:operation) { attributes_for(:order_operation, item_id: new_item.id, shift: -1) }
           before do
+            allow_any_instance_of(Warehouse::Order).to receive(:find_employee_by_workplace).and_return([build(:emp_***REMOVED***)])
             order_params = attributes_for(:order, operation: :out, invent_workplace_id: workplace.workplace_id)
             order_params[:operations_attributes] = [operation]
             Warehouse::Orders::CreateOut.new(create(:***REMOVED***_user), order_params.as_json).run

@@ -3,12 +3,13 @@ require 'feature_helper'
 module Warehouse
   module Orders
     RSpec.describe Index, type: :model do
+      skip_users_reference
+
+      let!(:params) { { start: 0, length: 25 } }
       before do
         allow_any_instance_of(Order).to receive(:find_employee_by_workplace).and_return([build(:emp_***REMOVED***)])
         allow_any_instance_of(Order).to receive(:set_consumer_dept_in)
       end
-
-      let!(:params) { { start: 0, length: 25 } }
 
       %i[in out].each do |op_type|
         context "when :operation attribute has :#{op_type} value" do

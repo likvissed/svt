@@ -4,6 +4,7 @@ module Warehouse
   RSpec.describe AttachmentOrdersController, type: :controller do
     sign_in_user
     let(:file) { Rack::Test::UploadedFile.new(Rails.root.join('spec/files/new_pc_config.txt'), 'text/plain') }
+    before { allow_any_instance_of(Warehouse::Order).to receive(:set_consumer_dept_in) }
 
     describe 'POST #create' do
       let(:params) { { attachment_order: file, order_id: order.id } }

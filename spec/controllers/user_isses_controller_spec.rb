@@ -30,7 +30,7 @@ RSpec.describe UserIssesController, type: :controller do
   end
 
   describe 'GET #items' do
-    let(:user_iss_id_tn) { @user.id_tn }
+    let(:user_iss_id_tn) { build(:emp_***REMOVED***)['id'] }
     let!(:workplace) { create(:workplace_pk, :add_items, items: %i[pc monitor], id_tn: user_iss_id_tn) }
     let!(:another_workplace) { create(:workplace_pk, :add_items, items: %i[pc monitor]) }
 

@@ -3,16 +3,18 @@ require 'feature_helper'
 module Warehouse
   module Orders
     RSpec.describe CreateByInvItem, type: :model do
-      before do
-        allow_any_instance_of(Order).to receive(:find_employee_by_workplace).and_return([employee])
-        allow_any_instance_of(Order).to receive(:set_consumer)
-      end
-      let(:employee) { build(:emp_***REMOVED***) }
+      skip_users_reference
+
       let!(:current_user) { create(:user) }
       let!(:workplace) { create(:workplace_pk, :add_items, items: %i[pc monitor]) }
       let(:inv_item) { workplace.items.first }
       let(:order_comment) { 'comment example' }
-      before { Invent::Item.update_all(priority: :high) }
+      before do
+        allow_any_instance_of(Order).to receive(:find_employee_by_workplace).and_return([build(:emp_***REMOVED***)])
+        allow_any_instance_of(Order).to receive(:set_consumer)
+
+        Invent::Item.update_all(priority: :high)
+      end
 
       context 'and when :operation attribute is :out' do
         subject { CreateByInvItem.new(current_user, inv_item, :out) }
@@ -118,6 +120,7 @@ module Warehouse
             edit = Edit.new(Order.last.id)
             edit.run
             edit.data[:order]['consumer_tn'] = current_user.tn
+            edit.data[:order]['consumer_fio'] = current_user.fullname
             edit.data[:order]['operations_attributes'].each do |op|
               op['status'] = 'done'
 
@@ -129,7 +132,6 @@ module Warehouse
               op.delete('operations_warehouse_receiver')
             end
 
-            # edit.data[:order].delete('consumer_obj')
             edit.data[:order].delete('fio_employee')
             edit.data[:order].delete('consumer')
             edit.data[:order].delete('attachment_order')

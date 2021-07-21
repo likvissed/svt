@@ -3,6 +3,8 @@ require 'feature_helper'
 module Invent
   module Workplaces
     RSpec.describe HardDestroy, type: :model do
+      skip_users_reference
+
       let!(:user) { create(:user) }
       let!(:workplace) { create(:workplace_pk, :add_items, items: %i[pc monitor]) }
       subject { HardDestroy.new(user, workplace.workplace_id) }
@@ -43,6 +45,7 @@ module Invent
       end
 
       context 'when item belongs to processing order' do
+        before { allow_any_instance_of(Warehouse::Order).to receive(:find_employee_by_workplace).and_return([build(:emp_***REMOVED***)]) }
         let!(:order) { create(:order, inv_workplace: workplace) }
 
         it 'does not destroy item' do

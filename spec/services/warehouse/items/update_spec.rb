@@ -4,6 +4,8 @@ module Warehouse
   module Items
     RSpec.describe Update, type: :model do
       describe '#run' do
+        skip_users_reference
+
         let(:property) { Invent::Property.all }
         let!(:current_user) { create(:user) }
         let(:location) { create(:location) }

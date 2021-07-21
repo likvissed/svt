@@ -3,12 +3,14 @@ require 'feature_helper'
 module Warehouse
   module Orders
     RSpec.describe PrepareToDeliver, type: :model do
+      skip_users_reference
+
+      let!(:current_user) { create(:***REMOVED***_user) }
+      let(:consumer) { build(:***REMOVED***_user) }
       before do
         allow_any_instance_of(Order).to receive(:set_consumer)
         allow_any_instance_of(Order).to receive(:find_employee_by_workplace).and_return([build(:emp_***REMOVED***)])
       end
-
-      let!(:current_user) { create(:***REMOVED***_user) }
       subject { PrepareToDeliver.new(current_user, order.id, order_params) }
 
       # Техника Б/У с инв. номером
@@ -48,7 +50,8 @@ module Warehouse
 
       context 'and when user selected items with different types' do
         let(:order_params) do
-          order_json['consumer_tn'] = ***REMOVED***
+          order_json['consumer_tn'] = consumer['tn']
+          order_json['consumer_fio'] = consumer['fullname']
           order_json['operations_attributes'] = operations.as_json
           order_json['operations_attributes'].each_with_index do |op, index|
             op['status'] = 'done' if [0, 2, 3].include?(index)
@@ -78,7 +81,8 @@ module Warehouse
 
       context 'and when user does not selected any operation' do
         let(:order_params) do
-          order_json['consumer_tn'] = ***REMOVED***
+          order_json['consumer_tn'] = consumer['tn']
+          order_json['consumer_fio'] = consumer['fullname']
           order_json['operations_attributes'] = operations.as_json
           order_json
         end
@@ -94,7 +98,8 @@ module Warehouse
 
       context 'and when user selected items with the same types' do
         let(:order_params) do
-          order_json['consumer_tn'] = ***REMOVED***
+          order_json['consumer_tn'] = consumer['tn']
+          order_json['consumer_fio'] = consumer['fullname']
           order_json['operations_attributes'] = operations.as_json
           order_json['operations_attributes'].each_with_index do |op, index|
             op['status'] = 'done' if [0, 1, 2, 3].include?(index)

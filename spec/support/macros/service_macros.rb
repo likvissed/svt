@@ -44,7 +44,7 @@ module ServiceMacros
     if valid
       # Меняем общие аттрибуты рабочего места
       wp.data['location_room_id'] = params[:location_room_id]
-      wp.data['id_tn'] = params[:user_iss].id_tn
+      wp.data['id_tn'] = params[:employee].first['id']
     else
       # Меняем общие аттрибуты рабочего места
       wp.data['id_tn'] = nil

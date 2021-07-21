@@ -3,12 +3,13 @@ require 'feature_helper'
 module Warehouse
   module Orders
     RSpec.describe Confirm, type: :model do
+      skip_users_reference
+
+      let(:manager) { create(:***REMOVED***_user) }
       before do
         allow_any_instance_of(Order).to receive(:find_employee_by_workplace).and_return([build(:emp_***REMOVED***)])
         allow_any_instance_of(Order).to receive(:set_consumer_dept_in)
       end
-
-      let(:manager) { create(:***REMOVED***_user) }
       subject { Confirm.new(manager, order.id) }
 
       context 'when :operation attribute is "out"' do

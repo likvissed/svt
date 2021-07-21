@@ -10,6 +10,7 @@ module Invent
     it { is_expected.to validate_presence_of(:time_end) }
     it { is_expected.to accept_nested_attributes_for(:users) }
     it { is_expected.to validate_numericality_of(:division).only_integer }
+    skip_users_reference
 
     context 'when users is blank' do
       subject { build(:active_workplace_count) }

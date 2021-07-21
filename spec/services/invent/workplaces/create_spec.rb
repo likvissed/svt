@@ -3,6 +3,8 @@ require 'feature_helper'
 module Invent
   module Workplaces
     RSpec.describe Create, type: :model do
+      skip_users_reference
+
       let!(:user) { create(:user) }
       let!(:workplace_count) { create(:active_workplace_count, users: [user]) }
       let(:room) { IssReferenceSite.first.iss_reference_buildings.first.iss_reference_rooms.first }
@@ -148,6 +150,11 @@ module Invent
           tmp
         end
         let(:swap) { Warehouse::Orders::Swap.new(user, workplace_2.workplace_id + 1, [workplace['items_attributes'].last['id']]) }
+        let(:employee) { build(:emp_***REMOVED***) }
+        before do
+          allow_any_instance_of(Warehouse::Order).to receive(:set_consumer).and_return([employee])
+          allow_any_instance_of(Warehouse::Order).to receive(:find_employee_by_workplace).and_return([employee])
+        end
 
         its(:run) { is_expected.to be_truthy }
 

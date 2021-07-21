@@ -3,10 +3,8 @@ require 'feature_helper'
 module Invent
   module Workplaces
     RSpec.describe ListWp, type: :model do
-      before do
-        allow_any_instance_of(BaseService).to receive(:find_employees_page)
-        allow_any_instance_of(BaseService).to receive(:fio_employee).and_return(employee)
-      end
+      skip_users_reference
+
       let(:employee) { [build(:emp_***REMOVED***)] }
       let(:user) { create(:user) }
       let(:workplace_count) { create(:active_workplace_count, users: [user]) }
@@ -22,7 +20,12 @@ module Invent
       let!(:workplace_***REMOVED***) { create(:workplace_mob, :add_items, items: %i[notebook], status: :confirmed, workplace_count: workplace_count_***REMOVED***) }
       let(:params) { { start: 0, length: 25 } }
       subject { ListWp.new(user, params) }
-      before { subject.run }
+      before do
+        allow_any_instance_of(BaseService).to receive(:find_employees_page)
+        allow_any_instance_of(BaseService).to receive(:fio_employee).and_return(employee)
+
+        subject.run
+      end
 
       it { is_expected.to be_truthy }
 

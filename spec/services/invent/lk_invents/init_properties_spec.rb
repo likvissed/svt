@@ -3,6 +3,8 @@ require 'feature_helper'
 module Invent
   module LkInvents
     RSpec.describe InitProperties, type: :model do
+      skip_users_reference
+
       let(:user) { build(:user) }
 
       context 'with current_user' do
@@ -59,8 +61,16 @@ module Invent
         its(:data) { is_expected.not_to be_nil }
 
         context 'when @data is filling' do
+          let(:result_subject) do
+            sub = subject
+            sub.data[:users] = [build(:emp_***REMOVED***)]
+            sub
+          end
           let!(:data_keys) { %i[eq_types wp_types specs iss_locations users rooms_security_categories] }
-          before { subject.run }
+          before do
+            allow_any_instance_of(BaseService).to receive(:load_users).and_return(result_subject)
+            subject.run
+          end
 
           it 'fills the @data hash with %i[divisions eq_types wp_types specs iss_locations rooms_security_categories] keys' do
             expect(subject.data.keys).to include(*data_keys)

@@ -3,11 +3,14 @@ require 'feature_helper'
 module Warehouse
   module Items
     RSpec.describe Index, type: :model do
+      skip_users_reference
+
       let(:params) { { start: '0', length: '25', filters: {}.to_json } }
       let!(:item_1) { create(:used_item, count: 0, count_reserved: 0) }
       let!(:items) { create_list(:used_item, 51) }
       let(:barcode) { 'qwerty12345' }
       let!(:item_2) { create(:new_item, warehouse_type: :without_invent_num, count: 10, barcode: barcode) }
+      before { allow_any_instance_of(Order).to receive(:find_employee_by_workplace).and_return([build(:emp_***REMOVED***)]) }
       subject { Index.new(params) }
 
       context 'when items with location' do

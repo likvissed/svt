@@ -4,6 +4,8 @@ module Warehouse
   module Items
     RSpec.describe Split, type: :model do
       describe '#run' do
+        skip_users_reference
+
         let(:current_user) { create(:user) }
         let(:item) { create(:item_with_property_values, status: 'non_used', count: 4, invent_num_end: 114) }
         let(:location) { create(:location) }

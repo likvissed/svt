@@ -3,7 +3,7 @@ require 'feature_helper'
 module Warehouse
   module Orders
     RSpec.describe CreateOut, type: :model do
-      before { allow_any_instance_of(Order).to receive(:find_employee_by_workplace).and_return([build(:emp_***REMOVED***)]) }
+      skip_users_reference
 
       let!(:current_user) { create(:***REMOVED***_user) }
       let!(:workplace) do
@@ -11,6 +11,7 @@ module Warehouse
         wp.save(validate: false)
         wp
       end
+      before { allow_any_instance_of(Order).to receive(:find_employee_by_workplace).and_return([build(:emp_***REMOVED***)]) }
       subject { CreateOut.new(current_user, order_params.as_json) }
 
       context 'when item was not selected' do

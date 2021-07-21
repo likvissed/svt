@@ -3,6 +3,8 @@ require 'feature_helper'
 module Warehouse
   module Orders
     RSpec.describe UpdateWriteOff, type: :model do
+      skip_users_reference
+
       let(:user) { create(:user) }
       let(:new_user) { create(:***REMOVED***_user, role: create(:manager_role)) }
       let(:old_item) { create(:item, :with_property_values, type_name: :monitor, status: :waiting_write_off) }

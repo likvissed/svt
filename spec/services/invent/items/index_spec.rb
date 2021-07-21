@@ -127,7 +127,7 @@ module Invent
 
           it 'returns filtered data' do
             subject.data[:data].each do |el|
-              expect(el['employee']).to eq employee['fullName']
+              expect(el['employee']['fullName']).to eq employee['fullName']
             end
           end
         end

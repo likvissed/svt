@@ -3,6 +3,8 @@ require 'feature_helper'
 module Invent
   module LkInvents
     RSpec.describe EditWorkplace, type: :model do
+      skip_users_reference
+
       let(:user) { create(:user) }
 
       context 'when workplace is found' do

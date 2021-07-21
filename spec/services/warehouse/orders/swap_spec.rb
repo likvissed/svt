@@ -3,16 +3,17 @@ require 'feature_helper'
 module Warehouse
   module Orders
     RSpec.describe Swap, type: :model do
-      before do
-        allow_any_instance_of(Order).to receive(:set_consumer)
-        allow_any_instance_of(Order).to receive(:find_employee_by_workplace).and_return([build(:emp_***REMOVED***)])
-      end
+      skip_users_reference
 
       let!(:current_user) { create(:user) }
       let!(:workplace_1) { create(:workplace_pk, :add_items, items: %i[pc monitor]) }
       let!(:workplace_2) { create(:workplace_pk, :add_items, items: %i[pc monitor]) }
       let!(:workplace_3) { create(:workplace_pk, :add_items, items: %i[pc monitor]) }
       let(:swap_items) { [workplace_2.items.last.item_id, workplace_3.items.first.item_id] }
+      before do
+        allow_any_instance_of(Order).to receive(:set_consumer)
+        allow_any_instance_of(Order).to receive(:find_employee_by_workplace).and_return([build(:emp_***REMOVED***)])
+      end
       subject { Swap.new(current_user, workplace_1.workplace_id, swap_items) }
 
       context 'when present property with barcode fo item' do

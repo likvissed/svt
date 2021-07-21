@@ -3,6 +3,8 @@ require 'feature_helper'
 module Warehouse
   module Supplies
     RSpec.describe Destroy, type: :model do
+      skip_users_reference
+
       let(:user) { create(:user) }
       let!(:supply) { create(:supply) }
       let!(:counts) { Item.pluck(:count) }
