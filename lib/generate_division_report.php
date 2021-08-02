@@ -15,6 +15,11 @@ $env = $argv[1] . '_invent';
 $dept = $argv[2];
 $database = yaml_parse_file('config/database.yml');
 $database[$env]['host'] = $_SERVER['MYSQL_NETADMIN_SLAVE'];
+$token = $argv[3];
+$employee_uri = $argv[4];
+
+  // var_dump($employee_uri);
+  // exit;
 
 if ($_SERVER['RAILS_ENV'] === 'production') {
   $database[$env]['username'] = $_SERVER['MYSQL_PRODUCTION_USER'];
@@ -25,11 +30,64 @@ if ($_SERVER['RAILS_ENV'] === 'production') {
 }
 
 $con = new DBConn ($database[$env]);
-$con->prepare_query('SELECT wi.workplace_id,u.fio_initials,iwt.short_description,irs.name AS site,irb.name as corp, irr.name FROM invent_workplace AS wi, invent_workplace_type as iwt, netadmin.user_iss AS u, netadmin.iss_reference_sites AS irs, netadmin.iss_reference_buildings AS irb, netadmin.iss_reference_rooms AS irr where u.id_tn=wi.id_tn AND irs.site_id=wi.location_site_id AND irb.building_id=wi.location_building_id AND irr.room_id=wi.location_room_id AND iwt.workplace_type_id=wi.workplace_type_id AND u.id_tn IN (SELECT id_tn FROM netadmin.user_iss WHERE dept=:dept) ORDER BY wi.workplace_id;');
+$con->prepare_query('SELECT
+                       WI.workplace_id,
+                       WI.id_tn,
+                       IWT.short_description,
+                       IRS.name AS site,
+                       IRB.name as corp,
+                       IRR.name 
+                     FROM 
+                       invent_workplace AS WI
+                     INNER JOIN (select * from invent_workplace_count where division = :dept) WC ON WC.workplace_count_id = WI.workplace_count_id 
+                     INNER JOIN (select * from invent_workplace_type) IWT ON IWT.workplace_type_id = WI.workplace_type_id
+                        
+                     INNER JOIN (select * from netadmin.iss_reference_sites) IRS ON IRS.site_id = WI.location_site_id
+                     INNER JOIN (select * from netadmin.iss_reference_buildings) IRB ON IRB.building_id = WI.location_building_id
+                     INNER JOIN (select * from netadmin.iss_reference_rooms) IRR ON IRR.room_id = WI.location_room_id
+
+                     ORDER BY WI.workplace_id;
+                   ');
+
 $con->bind(':dept', $dept);
 $workplaces = $con->row_set();
 $wp_count = count($workplaces);
 
+// ======================================== Получение фамилии по id_tn с НСИ ============================================
+
+function get_fio($id_tn)
+{
+  $user_not_found = 'Ответственный не найден';
+
+  if (is_null($id_tn)) {
+    return $user_not_found;
+  }
+
+  $url     = $GLOBALS['employee_uri'] . '=id==' . $id_tn;
+  $options = array(
+    'http'=>array(
+      'method'=>"GET",
+      'header'=>'X-Auth-Token: '.$GLOBALS['token']
+      
+    )
+  );
+
+  $context  = stream_context_create($options);
+  $response = file_get_contents($url, false, $context);
+
+  if ($response) {
+    $array_response = json_decode($response, true);
+    if ($array_response['data']) {
+
+      $fioFull = $array_response['data'][0]['fullName'];
+      $fioArr  = explode(' ', $fioFull);
+      $fio     = $fioArr[0] . ' ' . mb_substr($fioArr[1], 0, 1, 'utf-8') . '. ' . mb_substr($fioArr[2], 0, 1, 'utf-8') . '.';
+
+      return $fio;
+    }
+    return $user_not_found;
+  }
+}
 // ============================================ Инициализация страницы =================================================
 
 PHPRtfLite::registerAutoloader();
@@ -139,7 +197,7 @@ foreach ($workplaces as $wp){
 
     $table->writeToCell($i + 1, 2, $wp['workplace_id'], $font);
     $table->writeToCell($i + 1, 3, $list, $font);
-    $table->writeToCell($i + 1, 4, $wp['fio_initials'], $font);
+    $table->writeToCell($i + 1, 4, get_fio($wp['id_tn']), $font);
     $table->writeToCell($i + 1, 5, 'Пл. ' . $wp['site'] . ', корп. ' . $wp['corp'] . ', комн. ' . $wp['name'], $font);
     $i++;
 }

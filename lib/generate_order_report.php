@@ -12,6 +12,8 @@ $invent_params = json_decode($argv[5], true);
 $warehouse_params = json_decode($argv[6], true);
 $database = yaml_parse_file('config/database.yml');
 $database[$env]['host'] = $_SERVER['MYSQL_NETADMIN_SLAVE'];
+$token = $argv[7];
+$employee_uri = $argv[8];
 
 if ($_SERVER['RAILS_ENV'] === 'production') {
   $database[$env]['username'] = $_SERVER['MYSQL_PRODUCTION_USER'];
@@ -26,7 +28,7 @@ $con = new DBConn ($database[$env]);
 if (!empty($invent_params)) {
   $query = "
   SELECT
-    warehouse_orders.*, invent_item.*, warehouse_operations.item_model, invent_property_value.value as str_val, invent_property_list.short_description as list_val, property.short_description as property, invent_type.short_description as type, iss_reference_buildings.name as building, iss_reference_rooms.name as room, invent_workplace_count.division as division, netadmin.user_iss.tel, netadmin.user_iss.fio
+    warehouse_orders.*, invent_item.*, warehouse_operations.item_model, invent_property_value.value as str_val, invent_property_list.short_description as list_val, property.short_description as property, invent_type.short_description as type, iss_reference_buildings.name as building, iss_reference_rooms.name as room, invent_workplace_count.division as division, invent_workplace.id_tn
   FROM
     warehouse_orders
   INNER JOIN
@@ -83,10 +85,6 @@ if (!empty($invent_params)) {
   ON
     netadmin.iss_reference_rooms.room_id = invent_workplace.location_room_id
   LEFT OUTER JOIN
-    netadmin.user_iss
-  ON
-    netadmin.user_iss.id_tn = invent_workplace.id_tn
-  LEFT OUTER JOIN
     invent_workplace_count
   ON
     invent_workplace_count.workplace_count_id = invent_workplace.workplace_count_id
@@ -118,7 +116,7 @@ if (!empty($invent_params)) {
 if (!empty($warehouse_params)) {
   $query = "
   SELECT
-    warehouse_orders.invent_num AS order_num, warehouse_orders.request_num, warehouse_operations.*, iss_reference_buildings.name as building, iss_reference_rooms.name as room, invent_workplace_count.division as division, netadmin.user_iss.tel, netadmin.user_iss.fio
+    warehouse_orders.invent_num AS order_num, warehouse_orders.request_num, warehouse_operations.*, iss_reference_buildings.name as building, iss_reference_rooms.name as room, invent_workplace_count.division as division
   FROM
     warehouse_orders
   INNER JOIN
@@ -148,10 +146,6 @@ if (!empty($warehouse_params)) {
   ON
     netadmin.iss_reference_rooms.room_id = invent_workplace.location_room_id
   LEFT OUTER JOIN
-    netadmin.user_iss
-  ON
-    netadmin.user_iss.id_tn = invent_workplace.id_tn
-  LEFT OUTER JOIN
     invent_workplace_count
   ON
     invent_workplace_count.workplace_count_id = invent_workplace.workplace_count_id
@@ -171,10 +165,66 @@ if (!empty($warehouse_params)) {
   // return;
 }
 
-$query = "SELECT * FROM netadmin.user_iss WHERE tn = :consumer or fio = :consumer";
-$con->prepare_query($query);
-$con->bind(':consumer', $consumer);
-$sql_consumer_data = $con->row_set();
+
+// Получаюший
+$sql_consumer_data = get_emp_consumer($consumer);
+
+// ===================================== Получение данных по tn или fio с НСИ ============================================
+
+function get_emp_consumer($consumer)
+{
+  $url = $GLOBALS['employee_uri'] . "=fullName=='" . urlencode($consumer) . "',personnelNo==" . intval($consumer);
+  $options = array(
+    'http'=>array(
+      'method'=>"GET",
+      'header'=>'X-Auth-Token: '.$GLOBALS['token']
+    )
+  );
+
+  $context  = stream_context_create($options);
+  $response = file_get_contents($url, false, $context);
+
+  if ($response) {
+    $array_response = json_decode($response, true);
+    if ($array_response['data']) {
+
+      $arr = array();
+      $arr['fio'] = get_fio($array_response['data'][0]['fullName']);
+      $arr['tel'] = $array_response['data'][0]['phoneText'];
+      
+      return $arr;
+    }
+  }
+}
+
+// ======================================== Получение данных по id_tn с НСИ ==============================================
+
+function get_employee($id_tn)
+{
+  $url     = $GLOBALS['employee_uri'] . '=id==' . $id_tn;
+  $options = array(
+    'http'=>array(
+      'method'=>"GET",
+      'header'=>'X-Auth-Token: '.$GLOBALS['token']
+      
+    )
+  );
+
+  $context  = stream_context_create($options);
+  $response = file_get_contents($url, false, $context);
+
+  if ($response) {
+    $array_response = json_decode($response, true);
+    if ($array_response['data']) {
+
+      $arr = array();
+      $arr['fio'] = get_fio($array_response['data'][0]['fullName']);
+      $arr['tel'] = $array_response['data'][0]['phoneText'];
+      
+      return $arr;
+    }
+  }
+}
 
 // ============================================ Преобразование данных =================================================
 
@@ -183,6 +233,9 @@ $result = array();
 $i = 0;
 foreach($sql_invent_data as $row_data) {
   $index = get_result_index($row_data, $result);
+
+  // Ответственный
+  $responsible_wp_employee = get_employee($row_data['id_tn']);
 
   if (is_null($index)) {
     $index = $i;
@@ -204,10 +257,9 @@ foreach($sql_invent_data as $row_data) {
   if (!$common_data['division'])
     $common_data['division'] = $row_data['division'];
   if (!$common_data['tel'])
-    $common_data['tel'] = $row_data['tel'];
+    $common_data['tel'] = $responsible_wp_employee['tel'];
   if (!$common_data['fio'])
-    $common_data['fio'] = $row_data['fio'];
-
+    $common_data['fio'] = $responsible_wp_employee['fio'];
   if (!isset($result[$index]['invent_num'])) {
     foreach ($invent_params as $par) {
       if ($par['item_id'] == $result[$index]['item_id']) {
@@ -392,16 +444,16 @@ $table->addColumnsList(array(10.6, 7.3));
 
 $cell = $table->getCell(1, 2);
 
-// var_dump($sql_consumer_data[0]['fio']);
+// var_dump($common_data);
 // exit;
 
 $table->writeToCell(1, 1, 'Корпус ' . $common_data['building'], $footer_font);
 $table->writeToCell(1, 2, 'Комната ' . $common_data['room'], $footer_font);
 $table->writeToCell(2, 1, 'Подразделение ' . $common_data['division'], $footer_font);
 $table->writeToCell(2, 2, 'Телефон ' . $common_data['tel'], $footer_font);
-$table->writeToCell(3, 1, 'Ответственный: ' . get_fio($common_data['fio']), $footer_font);
+$table->writeToCell(3, 1, 'Ответственный: ' . $common_data['fio'], $footer_font);
 $table->writeToCell(3, 2, 'Подпись  _____________________', $footer_font);
-$table->writeToCell(4, 1, 'Получающий: ' . get_fio($sql_consumer_data[0]['fio']), $footer_font);
+$table->writeToCell(4, 1, 'Получающий: ' . $sql_consumer_data['fio'], $footer_font);
 $table->writeToCell(4, 2, 'Подпись  _____________________', $footer_font);
 $table->writeToCell(5, 2, $date, $footer_font);
 // $table->writeToCell(4, 2, '"_____" ________________ 20 г.', $footer_font);
