@@ -161,9 +161,12 @@ Rails.application.routes.draw do
 
     namespace :v2 do
       namespace :invent do
-        resources :items, only: :search_barcode do
-          get ':barcode', to: 'items#search_barcode', on: :collection
-        end
+        resources :items, only: :index
+
+        # Поиска техники по штрих-коду, возвращает объект
+        get 'items/:barcode', to: 'items#barcode'
+         # Поиска техники по filtering_params, возвращает массив
+        get 'search_items', to: 'items#search_items'#, filtering_params: [:fio, :barcode, :dept, :invent_num]
       end
     end
   end
