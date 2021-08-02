@@ -43,6 +43,7 @@ module Api
 
             result = ::Invent::Item
                        .filter(filtering_params)
+                       .where(status: :in_workplace)
                        .includes(%i[type model barcode_item workplace])
                        .as_json(
                          include: [
