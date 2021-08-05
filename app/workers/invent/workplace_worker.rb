@@ -9,13 +9,24 @@ class Invent::WorkplaceWorker
 
   protected
 
-  # Заморозить РМ, у которых отсутствует ответственный или список привязанной техники
-  def freezing_not_used_workplaces
-    ids = Invent::Workplace.where(status: :confirmed).includes(:user_iss, :workplace_count, :items).find_each.map do |wp|
-      next if wp.user_iss && wp.user_iss.dept.to_i == wp.division.to_i && wp.items.size.positive?
+  def ids_workplace
+    workplaces = Invent::Workplace.where(status: :confirmed).includes(:workplace_count, :items)
+    array_id_tn = workplaces.map(&:id_tn).compact.uniq.join(',')
+    employees = UsersReference.info_users("id=in=(#{array_id_tn})").map { |employee| employee.slice('id', 'departmentForAccounting') }
+
+    workplaces.find_each.map do |wp|
+      # Совпадает ли отдел с отделом пользователя на этом РМ
+      match = employees.find { |value| value['departmentForAccounting'] == wp.division.to_i && value['id'] == wp.id_tn }
+
+      next if match.present? && wp.items.size.positive?
 
       wp.workplace_id
     end.compact
+  end
+
+  # Заморозить РМ, у которых отсутствует ответственный или список привязанной техники
+  def freezing_not_used_workplaces
+    ids = ids_workplace
 
     Invent::Workplace.where(workplace_id: ids).update_all(status: :freezed) if ids.any?
   end

@@ -42,12 +42,12 @@ module Warehouse
       def limit_records
         data[:recordsFiltered] = @orders.count
         @orders = @orders
-                    .includes(:operations, :creator, :consumer, :validator, :attachment)
+                    .includes(:operations, :attachment)
                     .order(id: :desc).limit(params[:length]).offset(params[:start])
       end
 
       def prepare_to_render
-        data[:data] = @orders.as_json(include: %i[creator consumer validator attachment], methods: :operations_to_string).each do |order|
+        data[:data] = @orders.as_json(include: :attachment, methods: :operations_to_string).each do |order|
           order['status_translated'] = Order.translate_enum(:status, order['status'])
           order['operation_translated'] = Order.translate_enum(:operation, order['operation'])
           order['closed_time'] = order['closed_time'].strftime('%d-%m-%Y %H:%M:%S') if order['closed_time']

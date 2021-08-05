@@ -3,8 +3,11 @@ require 'feature_helper'
 module Warehouse
   module Orders
     RSpec.describe ExecuteWriteOff, type: :model do
+      skip_users_reference
+
       let!(:current_user) { create(:***REMOVED***_user) }
       let(:order_json) { order.as_json }
+      before { allow_any_instance_of(Order).to receive(:set_consumer) }
       subject { ExecuteWriteOff.new(current_user, order.id, order_params) }
 
       context 'when operations without invent_num' do

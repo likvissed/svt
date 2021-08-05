@@ -5,6 +5,10 @@ module ControllerMacros
 
   def sign_in_user(**params)
     before do
+      allow(UsersReference).to receive(:info_users)
+      allow_any_instance_of(User).to receive(:presence_user_in_users_reference)
+      allow_any_instance_of(UserIssByIdTnValidator).to receive(:validate_each)
+
       @user = create(:user, params)
       login_with_omniauth
 

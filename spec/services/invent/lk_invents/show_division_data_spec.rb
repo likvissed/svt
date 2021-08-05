@@ -3,11 +3,19 @@ require 'feature_helper'
 module Invent
   module LkInvents
     RSpec.describe ShowDivisionData, type: :model do
+      skip_users_reference
+
+      let(:result_subject) do
+        sub = subject
+        sub.data[:users] = [build(:emp_***REMOVED***)]
+        sub
+      end
       let(:user) { build(:user) }
       let(:workplace_count) { create(:active_workplace_count, users: [user]) }
       let!(:workplace) do
         create(:workplace_pk, :add_items, items: %i[pc monitor], workplace_count: workplace_count)
       end
+      before { allow_any_instance_of(ShowDivisionData).to receive(:load_users).and_return(result_subject) }
 
       subject { ShowDivisionData.new(user, workplace_count.division) }
 

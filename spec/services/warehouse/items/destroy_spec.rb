@@ -3,6 +3,8 @@ require 'feature_helper'
 module Warehouse
   module Items
     RSpec.describe Destroy, type: :model do
+      skip_users_reference
+
       let(:user) { create(:user) }
       let!(:item) { create(:new_item) }
       subject { Destroy.new(user, item.id) }

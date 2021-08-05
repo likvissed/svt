@@ -28,11 +28,10 @@ module Invent
       def load_workplace
         data[:recordsTotal] = Workplace.count
         @workplaces = policy_scope(Workplace)
-                        .left_outer_joins(:workplace_type, :user_iss)
+                        .left_outer_joins(:workplace_type)
                         .select('
                           invent_workplace.*,
-                          invent_workplace_type.short_description as wp_type,
-                          user_iss.fio as responsible
+                          invent_workplace_type.short_description as wp_type
                         ')
                         .group(:workplace_id)
 
@@ -44,13 +43,19 @@ module Invent
         data[:recordsFiltered] = @workplaces.length
         @workplaces = @workplaces
                         .includes(%i[items iss_reference_site iss_reference_building iss_reference_room workplace_count attachments])
-                        .limit(params[:length]).offset(params[:start]).order(order_data)
+                        .limit(params[:length]).offset(params[:start])
+
+        @workplaces = @workplaces.order(order_workplace_id) if order['name'] == 'workplace_id'
       end
 
-      def order_data
-        name = %w[workplace_id responsible].find { |el| order['name'] == el }
+      def order_workplace_id
         type = order['type'] == 'desc' ? 'desc' : 'asc'
-        "#{name} #{type}"
+        "workplace_id #{type}"
+      end
+
+      def order_responsible
+        data[:data] = data[:data].sort_by { |wp| wp['responsible'] }
+        data[:data] = order['type'] == 'asc' ? data[:data] : data[:data].reverse
       end
 
       def order
@@ -58,11 +63,14 @@ module Invent
       end
 
       def prepare_to_render
+        # Массив всех пользователей на одной странице
+        find_employees_page
+
         data[:data] = @workplaces.as_json(
           include: %i[items iss_reference_site iss_reference_building iss_reference_room workplace_count attachments]
         ).each do |wp|
           wp['location'] = wp_location_string(wp)
-          wp['responsible'] ||= 'Ответственный не найден'
+          wp['responsible'] = fio_employee(wp).presence || 'Ответственный не найден'
           wp['label_status'] = label_status(wp['status'])
           # wp['status'] = Workplace.translate_enum(:status, wp['status'])
           wp['division'] = wp['workplace_count']['division']
@@ -75,8 +83,10 @@ module Invent
           wp.delete('iss_reference_site')
           wp.delete('iss_reference_building')
           wp.delete('iss_reference_room')
-          wp.delete('user_iss')
         end
+
+        # Применить сортировку по ФИО ответственного
+        data[:data] = order_responsible if order['name'] == 'responsible'
       end
 
       def label_status(status)

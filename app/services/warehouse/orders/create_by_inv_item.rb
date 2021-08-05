@@ -39,7 +39,7 @@ module Warehouse
       def init_in_order
         @order = Order.new(
           inv_workplace: @inv_item.workplace,
-          consumer: @inv_item.workplace.user_iss,
+          consumer_id_tn: @inv_item.workplace.try(:id_tn),
           operation: :in,
           comment: @comment
         )

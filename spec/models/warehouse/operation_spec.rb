@@ -5,7 +5,6 @@ module Warehouse
     it { is_expected.to have_many(:inv_item_to_operations).dependent(:destroy) }
     it { is_expected.to have_many(:inv_items).through(:inv_item_to_operations).class_name('Invent::Item') }
     it { is_expected.to belong_to(:item).optional }
-    it { is_expected.to belong_to(:stockman).class_name('UserIss').with_foreign_key('stockman_id_tn').optional }
     it { is_expected.to belong_to(:operationable) }
     it { is_expected.to validate_presence_of(:item_type) }
     it { is_expected.to validate_presence_of(:item_model) }
@@ -14,7 +13,12 @@ module Warehouse
     it { is_expected.not_to validate_presence_of(:stockman_fio) }
     it { is_expected.not_to validate_presence_of(:date) }
     it { is_expected.to accept_nested_attributes_for(:inv_items).allow_destroy(false) }
+    skip_users_reference
 
+    before do
+      allow_any_instance_of(Order).to receive(:set_consumer_dept_in)
+      allow_any_instance_of(Order).to receive(:find_employee_by_workplace).and_return([build(:emp_***REMOVED***)])
+    end
     let(:order) { create(:order) }
 
     context 'when :shift attribute is equal zero' do

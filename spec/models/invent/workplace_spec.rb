@@ -9,12 +9,12 @@ module Invent
     it { is_expected.to belong_to(:workplace_type).required }
     it { is_expected.to belong_to(:workplace_specialization).required }
     it { is_expected.to belong_to(:workplace_count).required }
-    it { is_expected.to belong_to(:user_iss).with_foreign_key('id_tn').optional }
     it { is_expected.to belong_to(:iss_reference_site).with_foreign_key('location_site_id').required }
     it { is_expected.to belong_to(:iss_reference_building).with_foreign_key('location_building_id').required }
     it { is_expected.to belong_to(:iss_reference_room).with_foreign_key('location_room_id').required }
     it { is_expected.to accept_nested_attributes_for(:items).allow_destroy(false) }
     it { is_expected.to accept_nested_attributes_for(:attachments).allow_destroy(true) }
+    skip_users_reference
 
     context 'when workplace status is :temporary' do
       before { subject.status = :temporary }
@@ -41,7 +41,11 @@ module Invent
     describe '#check_processing_orders' do
       let!(:wp) { create(:workplace_pk, :add_items, items: %i[pc monitor monitor]) }
       subject { wp }
-      before { wp.hard_destroy = true }
+      before do
+        allow_any_instance_of(Warehouse::Order).to receive(:set_consumer)
+        allow_any_instance_of(Warehouse::Order).to receive(:find_employee_by_workplace).and_return([build(:emp_***REMOVED***)])
+        wp.hard_destroy = true
+      end
 
       context 'when workplace belongs to processing order' do
         let(:operation) { build(:order_operation, inv_items: [subject.items.first]) }
@@ -60,7 +64,7 @@ module Invent
       context 'when workplace belongs to done order' do
         let(:stockman) { create(:***REMOVED***_user) }
         let(:operation) { build(:order_operation, status: :done, inv_items: [subject.items.first], stockman_id_tn: stockman.id_tn) }
-        let!(:order) { create(:order, inv_workplace: subject, operations: [operation], consumer_tn: stockman.tn) }
+        let!(:order) { create(:order, inv_workplace: subject, operations: [operation], consumer_tn: stockman.tn, consumer_fio: stockman.fullname) }
 
         its(:destroy) { is_expected.to be_truthy }
       end

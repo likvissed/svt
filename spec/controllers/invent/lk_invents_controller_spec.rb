@@ -2,15 +2,17 @@ require 'rails_helper'
 
 module Invent
   RSpec.describe LkInventsController, type: :controller do
-    # sign_in_through_***REMOVED***_user
-    let(:***REMOVED***_user) { create(:user) }
-    let!(:workplace_count) { create(:active_workplace_count, users: [***REMOVED***_user]) }
-    let(:***REMOVED***_auth) { LkInvents::LkAuthorization.new('sid') }
     before do
+      allow_any_instance_of(User).to receive(:presence_user_in_users_reference)
+
       allow(LkInvents::LkAuthorization).to receive(:new).and_return(***REMOVED***_auth)
       allow(***REMOVED***_auth).to receive(:run).and_return(true)
       allow(***REMOVED***_auth).to receive(:data).and_return(***REMOVED***_user)
     end
+    # sign_in_through_***REMOVED***_user
+    let(:***REMOVED***_user) { create(:user) }
+    let!(:workplace_count) { create(:active_workplace_count, users: [***REMOVED***_user]) }
+    let(:***REMOVED***_auth) { LkInvents::LkAuthorization.new('sid') }
 
     describe 'GET #svt_access' do
       it 'creates instance of the LkInvents::SvtAccess' do
@@ -37,6 +39,11 @@ module Invent
     end
 
     describe 'GET #show_division_data' do
+      before do
+        allow_any_instance_of(LkInvents::ShowDivisionData).to receive(:load_users)
+        allow_any_instance_of(LkInvents::ShowDivisionData).to receive(:prepare_workplaces)
+      end
+
       it 'creates instance of the LkInvents::ShowDivisionData' do
         get :show_division_data, params: { division: workplace_count.division }
         expect(assigns(:division)).to be_instance_of LkInvents::ShowDivisionData

@@ -3,6 +3,8 @@ require 'feature_helper'
 module Invent
   module Workplaces
     RSpec.describe Edit, type: :model do
+      skip_users_reference
+
       let!(:user) { create(:user) }
       let(:workplace_count) { create(:active_workplace_count, users: [user]) }
       let!(:workplace) do
@@ -29,6 +31,8 @@ module Invent
       end
 
       describe 'format json' do
+        before { allow_any_instance_of(LkInvents::BaseService).to receive(:load_users) }
+
         let(:edit_workplace) { LkInvents::EditWorkplace.new(user, workplace.workplace_id) }
         let(:init_properties) { LkInvents::InitProperties.new(user, workplace.division) }
 

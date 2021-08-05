@@ -3,12 +3,20 @@ require 'feature_helper'
 module Warehouse
   module Orders
     RSpec.describe AssignOperationReceiver, type: :model do
+      skip_users_reference
+
+      let(:employee) { build(:emp_***REMOVED***) }
+
       let(:user) { create(:***REMOVED***_user, role: role) }
       let(:operation_one) { build(:order_operation, item: item_one, shift: -1) }
       let(:operation_two) { build(:order_operation, item: item_two, shift: -1) }
       let(:order) { create(:order, operation: :out, validator_id_tn: user.id_tn, operations: [operation_one, operation_two]) }
       let(:receiver_fio) { 'Example FIO' }
       let(:order_json) { order.as_json }
+      before do
+        allow_any_instance_of(Order).to receive(:set_consumer).and_return([employee])
+        allow_any_instance_of(Order).to receive(:find_employee_by_workplace).and_return([employee])
+      end
       subject { AssignOperationReceiver.new(user, order.id, order_params) }
 
       context 'when all items is not used' do

@@ -3,10 +3,18 @@ require 'feature_helper'
 module Warehouse
   module Orders
     RSpec.describe ExecuteIn, type: :model do
-      let!(:current_user) { create(:***REMOVED***_user) }
-      subject { ExecuteIn.new(current_user, order.id, order_params) }
+      skip_users_reference
 
-      before { allow(UnregistrationWorker).to receive(:perform_async).and_return(true) }
+      let!(:current_user) { create(:***REMOVED***_user) }
+      let(:consumer) { build(:***REMOVED***_user) }
+      before do
+        allow(UnregistrationWorker).to receive(:perform_async).and_return(true)
+
+        allow_any_instance_of(Order).to receive(:present_user_iss)
+        allow_any_instance_of(Order).to receive(:set_consumer)
+        allow_any_instance_of(Order).to receive(:set_consumer_dept_in)
+      end
+      subject { ExecuteIn.new(current_user, order.id, order_params) }
 
       context 'when operations belongs_to item' do
         let(:first_inv_item) { create(:item, :with_property_values, type_name: :pc, status: :waiting_bring, priority: :high) }
@@ -27,7 +35,8 @@ module Warehouse
         let!(:order) { create(:order, inv_workplace: workplace, operations: operations) }
         let(:order_json) { order.as_json }
         let(:order_params) do
-          order_json['consumer_tn'] = ***REMOVED***
+          order_json['consumer_tn'] = consumer['tn']
+          order_json['consumer_fio'] = consumer['fullname']
           order_json['operations_attributes'] = operations.as_json
           order_json['operations_attributes'].each_with_index do |op, index|
             op['status'] = 'done' if index.zero?
@@ -157,7 +166,8 @@ module Warehouse
 
         context 'and when operations is not selected' do
           let(:order_params) do
-            order_json['consumer_tn'] = ***REMOVED***
+            order_json['consumer_tn'] = consumer['tn']
+            order_json['consumer_fio'] = consumer['fullname']
             order_json['operations_attributes'] = operations.as_json
             order_json
           end
@@ -170,7 +180,8 @@ module Warehouse
 
           context 'and when operation has :to_write_off flag' do
             let(:order_params) do
-              order_json['consumer_tn'] = ***REMOVED***
+              order_json['consumer_tn'] = consumer['tn']
+              order_json['consumer_fio'] = consumer['fullname']
               order_json['operations_attributes'] = operations.as_json
               order_json['operations_attributes'].each_with_index do |op, index|
                 next unless index.zero?
@@ -199,7 +210,8 @@ module Warehouse
 
         context 'and when operation has :to_write_off flag' do
           let(:order_params) do
-            order_json['consumer_tn'] = ***REMOVED***
+            order_json['consumer_tn'] = consumer['tn']
+            order_json['consumer_fio'] = consumer['fullname']
             order_json['operations_attributes'] = operations.as_json
             order_json['operations_attributes'].each_with_index do |op, index|
               next unless index.zero?
@@ -243,7 +255,8 @@ module Warehouse
         let!(:order) { create(:order, operations: operations) }
         let(:order_json) { order.as_json }
         let(:order_params) do
-          order_json['consumer_tn'] = ***REMOVED***
+          order_json['consumer_tn'] = consumer['tn']
+          order_json['consumer_fio'] = consumer['fullname']
           order_json['operations_attributes'] = operations.as_json
           order_json['operations_attributes'].each do |op|
             op['status'] = 'done'
@@ -346,10 +359,10 @@ module Warehouse
         let(:first_op) { build(:order_operation, item_type: 'Мышь', item_model: 'Logitech', status: :done, item: item, stockman_id_tn: user.id_tn) }
         let(:sec_op) { build(:order_operation, item_type: 'Клавиатура', item_model: 'OKLICK') }
         let(:operations) { [first_op, sec_op] }
-        let!(:order) { create(:order, inv_workplace: nil, operations: operations, consumer_tn: user.tn) }
+        let!(:order) { create(:order, inv_workplace: nil, operations: operations, consumer_tn: user.tn, consumer_fio: consumer['fullname']) }
         let(:order_json) { order.as_json }
         let(:order_params) do
-          order_json['consumer_tn'] = ***REMOVED***
+          order_json['consumer_tn'] = consumer['tn']
           order_json['operations_attributes'] = operations.as_json
           order_json['operations_attributes'].each do |op|
             op['status'] = 'done'

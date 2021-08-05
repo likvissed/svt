@@ -3,6 +3,8 @@ require 'feature_helper'
 module Invent
   module LkInvents
     RSpec.describe DestroyWorkplace, type: :model do
+      skip_users_reference
+
       let(:user) { create(:user) }
       let(:workplace_count) { create(:active_workplace_count, users: [user]) }
       let!(:workplace) do

@@ -12,9 +12,6 @@ module Warehouse
     has_one :attachment, dependent: :destroy, foreign_key: 'order_id', class_name: 'AttachmentOrder', inverse_of: :order
 
     belongs_to :inv_workplace, foreign_key: 'invent_workplace_id', class_name: 'Invent::Workplace', optional: true
-    belongs_to :creator, foreign_key: 'creator_id_tn', class_name: 'UserIss', optional: true
-    belongs_to :consumer, foreign_key: 'consumer_id_tn', class_name: 'UserIss', optional: true
-    belongs_to :validator, foreign_key: 'validator_id_tn', class_name: 'UserIss', optional: true
 
     validates :operation, :status, :creator_fio, presence: true
     # validates :consumer_dept, presence: true, if: -> { in? && done? }
@@ -123,12 +120,25 @@ module Warehouse
     end
 
     def consumer_from_history
-      return nil unless consumer_fio
+      return nil if consumer_fio.blank?
+
+      consumer = UsersReference.info_users("id==#{consumer_id_tn}").first
+      return nil if consumer.blank?
+
+      tel ||= consumer['phoneText'] if consumer['phoneText']
 
       {
+        tn: consumer['personnelNo'],
         id_tn: consumer_id_tn,
-        fio: consumer_fio
+        fullName: consumer_fio,
+        phoneText: tel
       }
+    end
+
+    def find_employee_by_workplace
+      return [] if inv_workplace.blank?
+
+      UsersReference.info_users("id==#{inv_workplace.id_tn}")
     end
 
     # Метод возвращает в массиве технику, тип которой соответствует назначению штрих-кода
@@ -178,13 +188,13 @@ module Warehouse
 
     # Проверка: существует ли ответственный для существующего рабочего места
     def present_user_iss
-      return if !inv_workplace || inv_workplace&.user_iss
+      return if !inv_workplace || find_employee_by_workplace.present?
 
       errors.add(:base, :absence_responsible)
     end
 
     def presence_consumer
-      return if consumer_fio.present? || errors.details[:consumer].any?
+      return if consumer_fio.present? || consumer_id_tn.present? || errors.details[:consumer].any?
 
       errors.add(:consumer, :blank)
     end
@@ -200,7 +210,7 @@ module Warehouse
     end
 
     def validate_in_order
-      # presence_consumer if operations.any?(&:done?)
+      presence_consumer if operations.any?(&:done?)
       check_operation_list
       uniqueness_of_workplace if any_inv_item_to_operation? || any_w_item_have_inv_item?
       # compare_consumer_dept if any_inv_item_to_operation? && errors.empty?
@@ -233,20 +243,22 @@ module Warehouse
 
     def set_consumer
       if consumer_tn.present?
-        user = UserIss.find_by(tn: consumer_tn)
-        if user
-          self.consumer_fio = user.fio
-          self.consumer = user
+        user = UsersReference.info_users("personnelNo==#{consumer_tn}")
+        if user.present?
+          self.consumer_fio = user.first.try(:[], 'fullName')
+          self.consumer_id_tn = user.first.try(:[], 'id')
         else
           errors.add(:consumer, :user_by_tn_not_found)
         end
-      elsif consumer
-        self.consumer_fio = consumer.fio
+      elsif consumer_id_tn.present?
+        user = UsersReference.info_users("id=='#{consumer_id_tn}'")
+        self.consumer_fio = user.first.try(:[], 'fullName') if user.present?
       elsif consumer_fio_changed? && !consumer_fio_changed?(from: nil, to: '')
         self.consumer_fio = consumer_fio.split.join(' ')
-        user = UserIss.find_by(fio: consumer_fio)
-        if user
-          self.consumer = user
+        user = UsersReference.info_users("fullName=='#{CGI.escape(consumer_fio)}'")
+        if user.present?
+          self.consumer_fio = user.first.try(:[], 'fullName')
+          self.consumer_id_tn = user.first.try(:[], 'id')
         else
           errors.add(:consumer, :user_by_fio_not_found)
         end
@@ -272,7 +284,9 @@ module Warehouse
     end
 
     def set_consumer_dept_in
-      self.consumer_dept = inv_workplace.try(:division) || UserIss.where(tn: consumer_tn).or(UserIss.where(fio: consumer_fio)).first.try(:dept)
+      consumer_fio = '' if consumer_fio.blank?
+
+      self.consumer_dept = inv_workplace.try(:division) || UsersReference.info_users("fullName=='#{CGI.escape(consumer_fio)}', personnelNo==#{consumer_tn}").first.try(:[], 'departmentForAccounting')
     end
 
     def check_operation_list

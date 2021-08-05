@@ -2,6 +2,10 @@ require 'feature_helper'
 
 module Users
   RSpec.describe Update, type: :model do
+    skip_users_reference
+
+    before { allow_any_instance_of(User).to receive(:fill_data) }
+
     let!(:user) { create(:***REMOVED***_user) }
 
     let(:user_params) do

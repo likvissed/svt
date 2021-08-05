@@ -2,9 +2,13 @@ require 'feature_helper'
 
 module Users
   RSpec.describe Create, type: :model do
+    skip_users_reference
+
     let!(:role) { create(:admin_role) }
     let(:user_params) { attributes_for(:user, role_id: role.id) }
     subject { Create.new(user_params.as_json) }
+
+    before { allow_any_instance_of(User).to receive(:fill_data) }
 
     its(:run) { is_expected.to be_truthy }
 

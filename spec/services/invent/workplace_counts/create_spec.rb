@@ -3,10 +3,17 @@ require 'feature_helper'
 module Invent
   module WorkplaceCounts
     RSpec.describe Create, type: :model do
+      skip_users_reference
+
+      let(:emp_user) { build(:emp_***REMOVED***) }
+      let(:result_user_reference) { emp_user }
+
       let!(:current_user) { create(:user) }
       let(:user_new) { build(:***REMOVED***_user) }
       let(:workplace_count_params) { build(:active_workplace_count).as_json }
       before do
+        allow_any_instance_of(Create).to receive(:find_user_reference).and_return(result_user_reference)
+
         workplace_count_params[:user_ids] = []
         workplace_count_params[:users_attributes] = [user_new.as_json]
       end

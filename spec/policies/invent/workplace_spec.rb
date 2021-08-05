@@ -6,6 +6,11 @@ module Invent
     let(:worker) { create(:shatunova_user) }
     let(:read_only) { create(:tyulyakova_user) }
     let(:***REMOVED***_user) { create(:***REMOVED***_user) }
+    before do
+      allow_any_instance_of(User).to receive(:presence_user_in_users_reference)
+      allow_any_instance_of(UserIssByIdTnValidator).to receive(:validate_each)
+    end
+
     subject { WorkplacePolicy }
 
     permissions '.scope' do

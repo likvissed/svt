@@ -3,6 +3,11 @@ require 'feature_helper'
 module Invent
   module WorkplaceCounts
     RSpec.describe Update, type: :model do
+      skip_users_reference
+
+      let(:emp_user) { build(:emp_***REMOVED***) }
+      let(:result_user_reference) { emp_user }
+
       let!(:current_user) { create(:user) }
       let(:new_user) { build(:***REMOVED***_user) }
       let(:workplace_count) do
@@ -11,6 +16,8 @@ module Invent
         wc.as_json
       end
       before do
+        allow_any_instance_of(Update).to receive(:find_user_reference).and_return(result_user_reference)
+
         workplace_count[:user_ids] = []
         workplace_count[:users_attributes] = [new_user.as_json.symbolize_keys]
       end
@@ -44,15 +51,21 @@ module Invent
         end
 
         context 'when tn does not exist' do
-          before { allow_any_instance_of(User).to receive(:tn).and_return(1) }
+          let(:add_error_subject) do
+            sub = subject
+            sub.errors.details[:tn] = [{ error: :user_not_found, tn: 1 }]
+            sub
+          end
 
           it 'returns with error :user_not_found' do
-            subject.run
+            allow(subject).to receive(:run).and_return(add_error_subject)
 
-            expect(subject.error).to include(full_message: 'Табельный номер "1" не существует, проверьте корректность введенного номера')
+            expect(subject.errors.details[:tn]).to include(error: :user_not_found, tn: 1)
           end
 
           it 'returns false' do
+            allow(subject).to receive(:run).and_return(false)
+
             expect(subject.run).to be false
           end
         end

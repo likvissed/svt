@@ -5,7 +5,11 @@ module Invent
     let(:manager) { create(:***REMOVED***_user) }
     let(:worker) { create(:shatunova_user) }
     let(:read_only) { create(:tyulyakova_user) }
-    before { create(:vendor) }
+    before do
+      allow_any_instance_of(User).to receive(:presence_user_in_users_reference)
+      create(:vendor)
+    end
+    
     subject { VendorPolicy }
 
     permissions :ctrl_access? do

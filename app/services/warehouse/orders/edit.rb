@@ -44,7 +44,6 @@ module Warehouse
         data[:order] = @order.as_json(
           include: {
             attachment: {},
-            consumer: {},
             operations: {
               methods: %i[formatted_date to_write_off],
               include: [
@@ -59,14 +58,13 @@ module Warehouse
                 }
               ]
             },
-            inv_workplace: {
-              include: :user_iss
-            }
+            inv_workplace: {}
           }
         )
         data[:order]['operations_attributes'] = data[:order]['operations']
 
-        data[:order]['fio_user_iss'] = data[:order].dig('inv_workplace', 'user_iss', 'fio')
+        data[:order]['fio_employee'] = @order.find_employee_by_workplace.first.try(:[], 'fullName')
+        data[:order]['consumer'] ||= @order.consumer_from_history
 
         data[:order].delete('inv_workplace')
 

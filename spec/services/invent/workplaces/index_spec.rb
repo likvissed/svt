@@ -3,7 +3,13 @@ require 'feature_helper'
 module Invent
   module Workplaces
     RSpec.describe Index, type: :model do
+      before do
+        allow_any_instance_of(BaseService).to receive(:find_employees_page)
+        allow_any_instance_of(BaseService).to receive(:fio_employee).and_return(employee_fio)
+        allow(UsersReference).to receive(:info_users).and_return([build(:emp_***REMOVED***)])
+      end
       let(:user) { create(:user) }
+      let(:employee_fio) { build(:emp_***REMOVED***)['fullName'] }
       let(:workplace_count) { create(:active_workplace_count, users: [user]) }
       let(:workplace_count_***REMOVED***) { create(:active_workplace_count, division: ***REMOVED***, users: [user]) }
       let!(:workplace) { create(:workplace_pk, :add_items, items: %i[pc monitor], workplace_count: workplace_count) }
@@ -73,12 +79,20 @@ module Invent
         end
 
         context 'and with :fullname filter' do
-          let(:filter) { { fullname: workplace.user_iss.fio }.to_json }
+          let(:filter) { { fullname: employee_fio }.to_json }
 
           it 'returns filtered data' do
-            expect(subject.data[:data].count).to eq 1
-            expect(subject.data[:data].first['workplace_count_id']).to eq workplace.workplace_count_id
+            expect(subject.data[:data].count).to eq 2
+            expect(subject.data[:data].last['workplace_count_id']).to eq workplace.workplace_count_id
           end
+        end
+      end
+
+      context 'with filters' do
+        let(:filter) { {} }
+        subject do
+          params[:filters] = filter
+          Index.new(user, params)
         end
 
         context 'and with :invent_num filter' do
@@ -161,6 +175,7 @@ module Invent
       end
 
       context 'when responsible user was dismissed' do
+        let!(:employee_fio) { 'Ответственный не найден' }
         let(:dismissed_user) { build(:invalid_user) }
         let!(:workplace) do
           w = build(
@@ -176,7 +191,7 @@ module Invent
         end
 
         it 'must add "Ответственный не найден" to the responsible field' do
-          expect(subject.data[:data].last['responsible']).to match 'Ответственный не найден'
+          expect(subject.data[:data].last['responsible']).to match employee_fio
         end
       end
     end

@@ -12,7 +12,10 @@ module Invent
       def run
         prepare_tmp_params
         report = Rails.root.join('lib', 'generate_division_report.php')
-        command = "php #{report} #{Rails.env} #{@division}"
+
+        UsersReference.new_token_hr
+
+        command = "php #{report} #{Rails.env} #{@division} #{Rails.cache.read('token_hr')} #{ENV['USERS_REFERENCE_URI_SEARCH']}"
         @data = IO.popen(command)
 
         true

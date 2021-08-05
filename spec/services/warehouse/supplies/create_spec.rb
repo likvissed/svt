@@ -3,6 +3,8 @@ require 'feature_helper'
 module Warehouse
   module Supplies
     RSpec.describe Create, type: :model do
+      skip_users_reference
+
       let!(:user) { create(:user) }
       let(:type) { Invent::Type.find_by(name: :monitor) }
       let(:location) { create(:location) }

@@ -6,7 +6,12 @@ module Warehouse
     let(:manager) { create(:***REMOVED***_user) }
     let(:worker) { create(:shatunova_user) }
     let(:read_only) { create(:tyulyakova_user) }
-    before { create(:order, validator: nil) }
+    before do
+      allow_any_instance_of(User).to receive(:presence_user_in_users_reference)
+      allow_any_instance_of(Order).to receive(:set_consumer_dept_in)
+
+      create(:order)
+    end
     subject { OrderPolicy }
 
     permissions :ctrl_access? do

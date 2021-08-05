@@ -3,6 +3,8 @@ require 'feature_helper'
 module Invent
   module Items
     RSpec.describe Update, type: :model do
+      skip_users_reference
+
       let!(:user) { create(:user) }
       let(:workplace) { create(:workplace_pk, :add_items, items: %i[pc monitor]) }
       let!(:old_item) { create(:item, :with_property_values, type_name: :monitor) }

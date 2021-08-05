@@ -3,9 +3,12 @@ require 'feature_helper'
 module Warehouse
   module Supplies
     RSpec.describe Update, type: :model do
+      skip_users_reference
+
       let!(:user) { create(:user) }
       let!(:supply) { create(:supply) }
       let(:location) { create(:location) }
+      before { allow_any_instance_of(Order).to receive(:find_employee_by_workplace).and_return([build(:emp_***REMOVED***)]) }
       subject { Update.new(user, supply.id, supply_params) }
 
       context 'when add a new operation' do

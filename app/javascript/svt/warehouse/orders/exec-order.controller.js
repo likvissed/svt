@@ -153,7 +153,7 @@ import { FormValidationController } from '../../shared/functions/form-validation
       // Для назначения ФИО получающего технику со склада при исполнении ордера
       this.order.operations_attributes.forEach(function(op) {
         if (op.warehouse_receiver) {
-          op.warehouse_receiver_fio = op.warehouse_receiver.fio;
+          op.warehouse_receiver_fio = op.warehouse_receiver.fullName;
         }
       });
       this._executeOut();
@@ -232,7 +232,7 @@ import { FormValidationController } from '../../shared/functions/form-validation
     if (this.order.operation == 'out') {
       this.order.operations_attributes.forEach(function(op) {
         if (op.warehouse_receiver) {
-          op.warehouse_receiver_fio = op.warehouse_receiver.fio;
+          op.warehouse_receiver_fio = op.warehouse_receiver.fullName;
         }
       });
 

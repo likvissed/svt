@@ -3,6 +3,8 @@ require 'feature_helper'
 module Invent
   module Items
     RSpec.describe Busy, type: :model do
+      skip_users_reference
+
       let!(:user) { create(:user) }
       let!(:workplaces) { create_list(:workplace_pk, 2, :add_items, items: %i[pc monitor monitor]) }
       let!(:items) { create_list(:item, 4, :with_property_values, type_name: 'monitor') }
@@ -60,6 +62,10 @@ module Invent
             subject { Busy.new('', '', warehouse_item.barcode_item.id) }
 
             context 'when warehouse_item belongs to operation with processing status' do
+              before do
+                allow_any_instance_of(Warehouse::Order).to receive(:set_consumer).and_return([build(:emp_***REMOVED***)])
+                allow_any_instance_of(Warehouse::Order).to receive(:set_consumer_dept_in).and_return([])
+              end
               let!(:operation) { build(:order_operation, item_id: warehouse_item.id) }
               let!(:order) { create(:order, operation: :in, consumer_id_tn: user.id_tn, operations: [operation]) }
 
@@ -174,6 +180,10 @@ module Invent
       end
 
       context 'when item belongs to operation with processing status' do
+        before do
+          allow_any_instance_of(Warehouse::Order).to receive(:set_consumer).and_return([build(:emp_***REMOVED***)])
+          allow_any_instance_of(Warehouse::Order).to receive(:find_employee_by_workplace).and_return([build(:emp_***REMOVED***)])
+        end
         let!(:operation_1) { build(:order_operation, stockman_id_tn: user.id_tn, status: :done, inv_items: [item]) }
         let!(:operation_2) { build(:order_operation, inv_items: [item]) }
         let!(:order) { create(:order, operation: :in, consumer_id_tn: user.id_tn, operations: [operation_2]) }

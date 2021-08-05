@@ -2,6 +2,7 @@ require 'spec_helper'
 
 RSpec.describe UserPolicy do
   let(:manager) { create(:***REMOVED***_user) }
+  before { allow_any_instance_of(User).to receive(:presence_user_in_users_reference) }
   subject { UserPolicy }
 
   permissions :ctrl_access? do

@@ -19,9 +19,9 @@ module UserIsses
 
     def find_users
       @data = if @search_key.is_integer?
-                UserIss.select(:id_tn, :tn, :fio, :dept).where(tn: @search_key).limit(UserIss::RECORD_LIMIT)
+                UsersReference.info_users("personnelNo==#{@search_key}&pageSize=100").map { |employee| employee.slice('id', 'personnelNo', 'fullName', 'departmentForAccounting', 'phoneText') }
               else
-                UserIss.select(:id_tn, :tn, :fio, :dept).where('fio LIKE ?', "%#{@search_key}%").limit(UserIss::RECORD_LIMIT)
+                UsersReference.info_users("fullName=='*#{CGI.escape(@search_key)}*'&pageSize=100").map { |employee| employee.slice('id', 'personnelNo', 'fullName', 'departmentForAccounting', 'phoneText') }
               end
     end
   end

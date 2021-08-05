@@ -76,8 +76,8 @@ import { app } from '../../app/app';
     if (!this.users) { return ''; }
 
     for (let i = 0; i < this.users.length; i++) {
-      if (id_tn === this.users[i].id_tn) {
-        return this.users[i].fio;
+      if (id_tn === this.users[i].id) {
+        return this.users[i].fullName;
       }
     }
   };

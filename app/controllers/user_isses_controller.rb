@@ -12,7 +12,7 @@ class UserIssesController < ApplicationController
   end
 
   def users_from_division
-    render json: UserIss.select(:id_tn, :fio).order(:fio).where(dept: params[:division])
+    render json: UsersReference.info_users("departmentForAccounting==#{params[:division]}").map { |employee| employee.slice('fullName', 'id') }
   end
 
   def items

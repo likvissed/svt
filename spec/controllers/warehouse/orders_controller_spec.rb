@@ -4,6 +4,7 @@ module Warehouse
   RSpec.describe OrdersController, type: :controller do
     sign_in_user
     let(:params) { { start: 0, length: 25 } }
+    before { allow_any_instance_of(Warehouse::Order).to receive(:set_consumer_dept_in) }
 
     describe 'GET #index_in' do
       let(:index) { Orders::Index.new(params) }

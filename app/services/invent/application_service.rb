@@ -10,17 +10,19 @@ class Invent::ApplicationService < ApplicationService
     Invent::Item.priorities.map { |key, _val| [key, Invent::Item.translate_enum(:priority, key)] }.to_h
   end
 
-  def prepare_to_***REMOVED***_table(wp)
+  def prepare_to_***REMOVED***_table(wp, employee)
     wp['short_description'] = wp['workplace_type']['short_description'] if wp['workplace_type']
-    wp['fio'] = wp['user_iss'] ? wp['user_iss']['fio_initials'] : 'Ответственный не найден'
-    wp['duty'] = wp['user_iss'] ? wp['user_iss']['duty'] : 'Ответственный не найден'
+
+    user_wp = employee.find { |emp| emp['id'] == wp['id_tn'] }
+    wp['fio'] = user_wp ? "#{user_wp['lastName'].capitalize} #{user_wp['firstName'][0]}.#{user_wp['middleName'][0]}." : 'Ответственный не найден'
+    wp['duty'] = user_wp ? user_wp['professionForDocuments'].downcase : 'Ответственный не найден'
+
     wp['location'] = "Пл. '#{wp['iss_reference_site']['name']}', корп. #{wp['iss_reference_building']['name']}, комн. #{wp['iss_reference_room']['name']}"
     wp['status'] = Invent::Workplace.translate_enum(:status, wp['status'])
 
     wp.delete('iss_reference_site')
     wp.delete('iss_reference_building')
     wp.delete('iss_reference_room')
-    wp.delete('user_iss')
     wp.delete('workplace_type')
 
     wp

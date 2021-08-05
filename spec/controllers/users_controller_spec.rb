@@ -1,6 +1,7 @@
 require 'rails_helper'
 
 RSpec.describe UsersController, type: :controller do
+  before { allow_any_instance_of(User).to receive(:fill_data) }
   sign_in_user
 
   describe 'GET #index' do

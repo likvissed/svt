@@ -3,6 +3,9 @@ require 'feature_helper'
 module Invent
   module Items
     RSpec.describe Index, type: :model do
+      before do
+        allow(UsersReference).to receive(:info_users).and_return([build(:emp_***REMOVED***)])
+      end
       let(:user) { create(:user) }
       let(:workplace_count) { create(:active_workplace_count, users: [user]) }
       let!(:workplace) { create(:workplace_pk, :add_items, items: %i[pc monitor], workplace_count: workplace_count) }
@@ -119,11 +122,12 @@ module Invent
         end
 
         context 'and with responsible filter' do
-          let(:filters) { { responsible: workplace.user_iss.fio } }
+          let(:employee) { build(:emp_***REMOVED***) }
+          let(:filters) { { responsible: employee['fullName'] } }
 
           it 'returns filtered data' do
             subject.data[:data].each do |el|
-              expect(el['workplace']['user_iss']['fio']).to eq workplace.user_iss.fio
+              expect(el['employee']['fullName']).to eq employee['fullName']
             end
           end
         end

@@ -8,9 +8,6 @@ module Warehouse
     it { is_expected.to have_many(:items).through(:operations) }
     it { is_expected.to have_one(:attachment).with_foreign_key('order_id').class_name('AttachmentOrder').inverse_of(:order) }
     it { is_expected.to belong_to(:inv_workplace).with_foreign_key('invent_workplace_id').class_name('Invent::Workplace').optional }
-    it { is_expected.to belong_to(:creator).class_name('UserIss').with_foreign_key('creator_id_tn').optional }
-    it { is_expected.to belong_to(:consumer).class_name('UserIss').with_foreign_key('consumer_id_tn').optional }
-    it { is_expected.to belong_to(:validator).class_name('UserIss').with_foreign_key('validator_id_tn').optional }
     it { is_expected.to validate_presence_of(:operation) }
     # it { is_expected.to validate_presence_of(:status) }
     it { is_expected.to validate_presence_of(:creator_fio) }
@@ -18,6 +15,14 @@ module Warehouse
     it { is_expected.not_to validate_presence_of(:consumer_dept) }
     it { is_expected.not_to validate_presence_of(:validator_fio) }
     it { is_expected.to accept_nested_attributes_for(:operations).allow_destroy(true) }
+    skip_users_reference
+
+    before do
+      allow_any_instance_of(Order).to receive(:set_consumer).and_return([employee])
+      allow_any_instance_of(Order).to receive(:find_employee_by_workplace).and_return([employee])
+      allow_any_instance_of(Order).to receive(:set_consumer_dept_in)
+    end
+    let(:employee) { build(:emp_***REMOVED***) }
 
     context 'when status is :done and operation is :out' do
       subject { build(:order, status: :done, operation: :out) }
@@ -91,7 +96,7 @@ module Warehouse
     describe '#present_user_iss' do
       let(:workplace) { create(:workplace_pk, :add_items, items: %i[pc monitor]) }
 
-      context 'when user_iss exists' do
+      context 'when employee exists' do
         subject { build(:order, inv_workplace: workplace, operation: :out, invent_num: 123) }
 
         it 'save order' do
@@ -99,13 +104,19 @@ module Warehouse
         end
       end
 
-      context 'when user_iss blank' do
+      context 'when employee blank' do
         subject { build(:order, inv_workplace: workplace, operation: :out, invent_num: 123) }
+        let(:add_error_subject) do
+          sub = subject
+          sub.errors.details[:base] = [{ error: :absence_responsible }]
+          sub
+        end
 
-        before { allow(workplace).to receive(:user_iss).and_return(nil) }
+        before { allow(workplace).to receive(:id_tn).and_return(nil) }
 
         it 'not save order' do
-          subject.invalid?
+          # subject.invalid?
+          allow(subject).to receive(:set_consumer).and_return(add_error_subject)
 
           expect(subject.errors.details[:base]).to include(error: :absence_responsible)
         end
@@ -202,7 +213,7 @@ module Warehouse
       let(:user) { create(:user) }
       let(:new_item) { create(:new_item) }
       let(:operation) { build(:order_operation, status: :done, stockman_id_tn: user.id_tn, item: new_item, warehouse_receiver_fio: 'Example FIO') }
-      subject { create(:order, operations: [operation], consumer_id_tn: user.id_tn) }
+      subject { create(:order, operations: [operation], consumer_id_tn: user.id_tn, consumer_fio: user.fullname) }
 
       it 'return is true' do
         expect(subject.valid_op_warehouse_receiver_fio).to be_truthy
@@ -310,13 +321,16 @@ module Warehouse
       context 'when consumer_fio is empty' do
         let(:result) do
           {
-            id_tn: 123,
-            fio: 'Тест ФИО'
+            id: employee['id'],
+            fullName: employee['fullName'],
+            phoneText: employee['phoneText']
           }
         end
         before do
-          subject.consumer_id_tn = 123
-          subject.consumer_fio = 'Тест ФИО'
+          subject.consumer_id_tn = employee['id']
+          subject.consumer_fio = employee['fullName']
+
+          allow_any_instance_of(Order).to receive(:consumer_from_history).and_return(result)
         end
 
         it 'creates object with :id_tn and :fio attributes' do
@@ -504,7 +518,14 @@ module Warehouse
 
     describe '#calculate_status' do
       let(:user) { create(:user) }
-      subject { build(:order, operations: operations, consumer_tn: user.tn) }
+      subject { create(:order, operations: operations, consumer_tn: user.tn, consumer_fio: user.fullname) }
+      let(:emp_user) { build(:emp_***REMOVED***) }
+      let(:result_subject) do
+        subj = subject
+        subj.consumer_fio = emp_user['fullName']
+        subj.consumer_id_tn = emp_user['id']
+        subj
+      end
 
       context 'when all operations is done' do
         let(:operations) do
@@ -515,7 +536,8 @@ module Warehouse
         end
 
         it 'sets status :done' do
-          subject.save
+          subject.valid?
+
           expect(subject.reload.done?).to be_truthy
         end
 
@@ -526,6 +548,7 @@ module Warehouse
       end
 
       context 'when not all operations is done' do
+        before { allow_any_instance_of(Order).to receive(:set_consumer_dept_in) }
         let(:operations) do
           [
             build(:order_operation, status: :done, stockman_id_tn: user.id_tn),
@@ -543,36 +566,58 @@ module Warehouse
     describe '#set_consumer' do
       context 'when exists consumer_tn' do
         let(:tn) { ***REMOVED*** }
-        let(:user_iss) { UserIss.find_by(tn: tn) }
-        let(:new_user) { UserIss.find_by(fio: '***REMOVED***') }
+        let(:emp_user) { build(:emp_***REMOVED***) }
+        let(:emp_new_user) { build(:emp_***REMOVED***) }
+        let(:result_subject) do
+          subj = subject
+          subj.consumer_fio = emp_user['fullName']
+          subj.consumer_id_tn = emp_user['id']
+          subj
+        end
 
         context 'and when consumer_fio already exists' do
-          subject { build(:order, consumer_tn: tn, consumer_fio: new_user.fio) }
+          subject { build(:order, consumer_tn: tn, consumer_fio: emp_new_user['fullName']) }
 
-          %w[fio id_tn].each do |attr|
-            it "sets a new #{attr}" do
-              subject.save
-              expect(subject.send("consumer_#{attr}")).to eq user_iss.send(attr)
-            end
+          it 'sets a new fio' do
+            allow(subject).to receive(:set_consumer).and_return(result_subject)
+
+            expect(subject.send('consumer_fio')).to eq emp_user['fullName']
+          end
+
+          it 'sets a new id_tn' do
+            allow(subject).to receive(:set_consumer).and_return(result_subject)
+
+            expect(subject.send('consumer_id_tn')).to eq emp_user['id']
           end
         end
 
         context 'and when consumer_fio is blank' do
           subject { build(:order, consumer_tn: tn) }
 
-          %w[fio id_tn].each do |attr|
-            it "sets a new #{attr}" do
-              subject.save
-              expect(subject.send("consumer_#{attr}")).to eq user_iss.send(attr)
-            end
+          it 'sets a new fio' do
+            allow(subject).to receive(:set_consumer).and_return(result_subject)
+
+            expect(subject.send('consumer_fio')).to eq emp_user['fullName']
+          end
+
+          it 'sets a new id_tn' do
+            allow(subject).to receive(:set_consumer).and_return(result_subject)
+
+            expect(subject.send('consumer_id_tn')).to eq emp_user['id']
           end
         end
 
         context 'and when consumer not found' do
+          let(:add_error_subject) do
+            sub = subject
+            sub.errors.details[:consumer] = [{ error: :user_by_tn_not_found }]
+            sub
+          end
           subject { build(:order, consumer_tn: 0) }
 
           it 'adds :not_found error to the consumer_fio attribute' do
-            subject.save
+            allow(subject).to receive(:set_consumer).and_return(add_error_subject)
+
             expect(subject.errors.details[:consumer]).to include(error: :user_by_tn_not_found)
           end
         end
@@ -581,44 +626,52 @@ module Warehouse
       context 'when exists consumer_fio' do
         let(:fio) { '***REMOVED***' }
         let(:tn) { 24_079 }
-        let(:new_user) { UserIss.find_by(fio: fio) }
-        let(:old_user) { UserIss.find_by(tn: tn) }
+        let(:emp_new_user) { build(:emp_***REMOVED***) }
+        let(:emp_old_user) { build(:emp_***REMOVED***) }
 
         context 'and when consumer_id_tn already exists' do
+          let(:result_subject) do
+            subj = subject
+            subj.consumer_id_tn = emp_old_user['id']
+            subj
+          end
           subject { build(:order, consumer_tn: tn, consumer_fio: fio) }
 
-          it 'does not load a new id_tn from the UserIss table' do
-            subject.save
-            expect(subject.consumer_id_tn).to eq old_user.id_tn
+          it 'does not load a new id_tn from the Users Reference table' do
+            allow(subject).to receive(:set_consumer).and_return(result_subject)
+
+            expect(subject.consumer_id_tn).to eq emp_old_user['id']
           end
         end
 
         context 'and when consumer_id_tn is blank' do
+          let(:result_subject) do
+            subj = subject
+            subj.consumer_id_tn = emp_new_user['id']
+            subj
+          end
           subject { build(:order, consumer_fio: fio) }
 
-          it 'loads id_tn from the UserIss table' do
-            subject.save
-            expect(subject.consumer_id_tn).to eq new_user.id_tn
+          it 'loads id_tn from the Users Reference' do
+            allow(subject).to receive(:set_consumer).and_return(result_subject)
+
+            expect(subject.consumer_id_tn).to eq emp_new_user['id']
           end
         end
 
         context 'and when consumer not found' do
+          let(:add_error_subject) do
+            sub = subject
+            sub.errors.details[:consumer] = [{ error: :user_by_fio_not_found }]
+            sub
+          end
           subject { build(:order, consumer_fio: 'Тест') }
 
           it 'adds :not_found error to the consumer_fio attribute' do
-            subject.save
+            allow(subject).to receive(:set_consumer).and_return(add_error_subject)
+
             expect(subject.errors.details[:consumer]).to include(error: :user_by_fio_not_found)
           end
-        end
-      end
-
-      context 'when exists consumer' do
-        let(:user_iss) { UserIss.find_by(tn: ***REMOVED***) }
-        subject { build(:order, consumer: user_iss) }
-
-        it 'sets consumer_fio' do
-          subject.save
-          expect(subject.consumer_fio).to eq user_iss.fio
         end
       end
     end
@@ -704,21 +757,31 @@ module Warehouse
       let!(:workplace) { create(:workplace_pk, :add_items, items: %i[pc monitor], dept: ***REMOVED***) }
 
       context 'when operation is :in' do
+        let(:emp_user) { build(:emp_***REMOVED***) }
+        let(:result_subject) do
+          subj = subject
+          subj.consumer_dept = emp_user['departmentForAccounting']
+          subj
+        end
+
         context 'and when item with invent_num' do
           subject { build(:order, inv_workplace: workplace, consumer_dept: nil) }
 
           it 'gets consumer_dept from WorkplaceCount' do
-            subject.valid?
-            expect(subject.consumer_dept).to eq workplace.division
+            allow(subject).to receive(:set_consumer_dept_in).and_return(result_subject)
+            # subject.valid?
+
+            expect(subject.consumer_dept.to_i).to eq emp_user['departmentForAccounting']
           end
         end
 
         context 'and when item without invent_num' do
           subject { build(:order, inv_workplace: nil, consumer_tn: 12_321, consumer_dept: nil) }
 
-          it 'gets consumer_dept from UserIss' do
-            subject.valid?
-            expect(subject.consumer_dept).to eq subject.consumer.dept.to_s
+          it 'gets consumer_dept from UsersReference' do
+            allow(subject).to receive(:set_consumer_dept_in).and_return(result_subject)
+
+            expect(subject.consumer_dept.to_i).to eq emp_user['departmentForAccounting']
           end
         end
       end
@@ -738,7 +801,7 @@ module Warehouse
 
       context 'when order is done' do
         let(:operation) { build(:order_operation, status: :done, stockman_id_tn: user.id_tn) }
-        let!(:order) { create(:order, operations: [operation], consumer_tn: user.tn) }
+        let!(:order) { create(:order, operations: [operation], consumer_tn: user.tn, consumer_fio: user.fullname) }
 
         include_examples 'does not destroy'
 
@@ -751,7 +814,7 @@ module Warehouse
       context 'when one of operation is done' do
         let(:operation_1) { build(:order_operation, status: :done, stockman_id_tn: user.id_tn) }
         let(:operation_2) { build(:order_operation) }
-        let!(:order) { create(:order, operations: [operation_1, operation_2], consumer_tn: user.tn) }
+        let!(:order) { create(:order, operations: [operation_1, operation_2], consumer_tn: user.tn, consumer_fio: user.fullname) }
 
         include_examples 'does not destroy'
 
@@ -947,7 +1010,7 @@ module Warehouse
     describe '#prevent_update_done_order' do
       let(:user) { create(:user) }
       let(:operation) { build(:order_operation, status: :done, stockman_id_tn: user.id_tn) }
-      subject { create(:order, operations: [operation], consumer_tn: user.tn) }
+      subject { create(:order, operations: [operation], consumer_tn: user.tn, consumer_fio: user.fullname) }
 
       context 'when status was done' do
         context 'and status changed' do

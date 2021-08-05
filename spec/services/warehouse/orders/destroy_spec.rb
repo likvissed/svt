@@ -3,7 +3,10 @@ require 'feature_helper'
 module Warehouse
   module Orders
     RSpec.describe Destroy, type: :model do
+      skip_users_reference
+
       let!(:user) { create(:user) }
+      before { allow_any_instance_of(Order).to receive(:find_employee_by_workplace).and_return([build(:emp_***REMOVED***)]) }
       subject { Destroy.new(user, order.id) }
 
       context 'when operation is :in' do

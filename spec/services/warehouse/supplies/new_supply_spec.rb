@@ -3,6 +3,8 @@ require 'feature_helper'
 module Warehouse
   module Supplies
     RSpec.describe NewSupply, type: :model do
+      skip_users_reference
+
       let(:user) { create(:user) }
       subject { NewSupply.new(user) }
       before { subject.run }

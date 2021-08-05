@@ -11,8 +11,8 @@ module Invent
       end
 
       def run
-        load_workplace
         load_users
+        load_workplace
 
         true
       rescue RuntimeError => e
@@ -27,7 +27,7 @@ module Invent
       # Получить рабочие места указанного отдела
       def load_workplace
         data[:workplaces] = policy_scope(Workplace)
-                              .includes(:iss_reference_site, :iss_reference_building, :iss_reference_room, :user_iss)
+                              .includes(:iss_reference_site, :iss_reference_building, :iss_reference_room)
                               .left_outer_joins(:workplace_count, :workplace_type)
                               .select('invent_workplace.*, invent_workplace_type.name as type_name,
 invent_workplace_type.short_description')
@@ -40,8 +40,17 @@ invent_workplace_type.short_description')
       # Преобразовать данные в вид, необходимый для таблицы ЛК.
       def prepare_workplaces
         data[:workplaces] = data[:workplaces].as_json(
-          include: %i[iss_reference_site iss_reference_building iss_reference_room user_iss]
-        ).each { |wp| prepare_to_***REMOVED***_table(wp) }
+          include: %i[iss_reference_site iss_reference_building iss_reference_room]
+        ).each { |wp| prepare_to_***REMOVED***_table(wp, data[:users]) }
+
+        # Преобразуем в вид, который был до удаления user_iss
+        data[:users] = data[:users].map do |employee|
+          emp = {}
+          emp['fio'] = employee['fullName']
+          emp['id_tn'] = employee['id']
+
+          emp
+        end
       end
     end
   end

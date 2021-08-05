@@ -1,15 +1,15 @@
 module Invent
   shared_examples 'user phone is changing' do
-    let(:user_iss) { UserIss.find_by(tn: new_user.tn) }
+    let(:emp_user) { build(:emp_***REMOVED***) }
     let(:user) { User.find_by(tn: new_user.tn) }
 
     context 'when the phone is manually removed' do
       before { workplace_count[:users_attributes].first[:phone] = nil }
 
-      it 'сhange the phone in User from UserIss' do
+      it 'сhange the phone in User from UsersReference' do
         subject.run
 
-        expect(user.phone).to eq user_iss.tel
+        expect(user.phone).to eq emp_user['phoneText']
       end
     end
 

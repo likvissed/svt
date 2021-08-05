@@ -8,7 +8,7 @@
       = label_tag :workplace_id_tn, "ФИО ответственного", class: "control-label"
       = text_field_tag "workplace[id_tn]", "", class: "form-control", autocomplete: "off",
         placeholder: "Введите ФИО", "ng-model": "wp.workplace.id_tn",
-        "uib-typeahead": "user.id_tn as user.fio for user in wp.users | filter:$viewValue", "typeahead-show-hint": true,
+        "uib-typeahead": "user.id as user.fullName for user in wp.users | filter:$viewValue", "typeahead-show-hint": true,
         "typeahead-min-length": 0, "typeahead-input-formatter": "wp.formatLabel($model)"
 .row
   .col-sm-24

@@ -24,7 +24,7 @@ module Invent
 
       def users_attributes
         @workplace_count_params[:users_attributes].each do |user_attr|
-          user_iss = UserIss.find_by(tn: user_attr[:tn])
+          employee = find_user_reference(user_attr[:tn])
 
           user = User.find_by(tn: user_attr[:tn])
 
@@ -34,15 +34,19 @@ module Invent
                                   Role.find_by(name: '***REMOVED***_user').id
                                 end
 
-          next unless user_iss
+          next if employee.blank?
 
           user_attr[:id] = user.try(:id)
           @workplace_count_params[:user_ids].push(user_attr[:id])
-          user_attr[:id_tn] = user_iss.id_tn
-          user_attr[:fullname] = user_iss.fio
+          user_attr[:id_tn] = employee.try(:[], 'id')
+          user_attr[:fullname] = employee.try(:[], 'fullName')
 
-          user_attr[:phone] = user_attr[:phone].presence || user_iss.tel
+          user_attr[:phone] = user_attr[:phone].presence || employee.try(:[], 'phoneText')
         end
+      end
+
+      def find_user_reference(tn)
+        UsersReference.info_users("personnelNo==#{tn}").first
       end
 
       def save_workplace_count

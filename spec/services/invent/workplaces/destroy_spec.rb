@@ -3,6 +3,8 @@ require 'feature_helper'
 module Invent
   module Workplaces
     RSpec.describe Destroy, type: :model do
+      skip_users_reference
+
       let!(:user) { create(:user) }
       let!(:workplace) do
         wp = build(:workplace_pk)

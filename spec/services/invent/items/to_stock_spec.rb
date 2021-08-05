@@ -3,6 +3,9 @@ require 'feature_helper'
 module Invent
   module Items
     RSpec.describe ToStock, type: :model do
+      skip_users_reference
+
+      let(:employee) { build(:emp_***REMOVED***) }
       let!(:user) { create(:user) }
       let(:workplace) { create(:workplace_pk, :add_items, items: %i[pc monitor]) }
       let!(:item) { workplace.items.first }
@@ -17,10 +20,14 @@ module Invent
         w_item['location_attributes'] = new_location.as_json
         w_item
       end
-      subject { ToStock.new(user, item.item_id, new_location) }
+      before do
+        allow(Warehouse::Orders::CreateByInvItem).to receive(:new).and_return(create_by_inv_item)
+        allow(UnregistrationWorker).to receive(:perform_async).and_return(true)
 
-      before { allow(Warehouse::Orders::CreateByInvItem).to receive(:new).and_return(create_by_inv_item) }
-      before { allow(UnregistrationWorker).to receive(:perform_async).and_return(true) }
+        allow_any_instance_of(Warehouse::Order).to receive(:set_consumer).and_return([employee])
+        allow_any_instance_of(Warehouse::Order).to receive(:find_employee_by_workplace).and_return([employee])
+      end
+      subject { ToStock.new(user, item.item_id, new_location) }
 
       context 'when warehouse_item is empty for item' do
         its(:run) { is_expected.to be_truthy }

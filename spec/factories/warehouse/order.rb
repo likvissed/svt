@@ -2,7 +2,8 @@ module Warehouse
   FactoryBot.define do
     factory :order, class: Order do
       inv_workplace { nil }
-      creator_id_tn { ***REMOVED*** }
+      creator_id_tn { build(:emp_***REMOVED***)['id'] }
+      creator_fio { build(:emp_***REMOVED***)['fullName'] }
       # validator_id_tn 5336
       operation { :in }
       status { 'processing' }
@@ -24,8 +25,8 @@ module Warehouse
       end
 
       after(:build) do |order, ev|
-        order.creator_fio = order.creator_id_tn ? UserIss.find(order.creator_id_tn).fio : ''
-        order.validator_fio = order.validator_id_tn ? UserIss.find(order.validator_id_tn).fio : ''
+        order.creator_fio = order.creator_id_tn ? build(:emp_***REMOVED***)['fullName'] : ''
+        order.validator_fio = order.validator_id_tn ? build(:emp_***REMOVED***)['fullName'] : ''
 
         if order.operation.to_s == 'in'
           if order.operations.empty? && !ev.without_operations

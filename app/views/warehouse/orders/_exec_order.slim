@@ -53,8 +53,8 @@ script type="text/ng-template" id="execOrder.slim"
               disabled: true
         .row
           .col-sm-10
-            = label_tag "order['fio_user_iss']", "Ответственный за ВТ"
-            = text_field_tag "order['fio_user_iss']", "", class: "form-control", autocomplete: "off", "ng-value": "exec.order.fio_user_iss", disabled: true
+            = label_tag "order['fio_employee']", "Ответственный за ВТ"
+            = text_field_tag "order['fio_employee']", "", class: "form-control", autocomplete: "off", "ng-value": "exec.order.fio_employee", disabled: true
         .form-group
           h4 Позиции
           table.table.table-condensed.table-tbody-striped
