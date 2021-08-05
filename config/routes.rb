@@ -166,7 +166,7 @@ Rails.application.routes.draw do
         # Поиска техники по штрих-коду, возвращает объект
         get 'items/:barcode', to: 'items#barcode'
          # Поиска техники по filtering_params, возвращает массив
-        get 'search_items', to: 'items#search_items'#, filtering_params: [:fio, :barcode, :dept, :invent_num]
+        get 'search_items', to: 'items#search_items'
       end
     end
   end

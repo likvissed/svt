@@ -6,7 +6,7 @@ module Invent
       skip_users_reference
 
       let(:emp_user) { build(:emp_***REMOVED***) }
-      let(:result_user_reference) { [emp_user] }
+      let(:result_user_reference) { emp_user }
 
       let!(:current_user) { create(:user) }
       let(:user_new) { build(:***REMOVED***_user) }

@@ -113,6 +113,7 @@ module Invent
     end
     scope :priority, ->(priority) { where(priority: priority) }
     scope :workplace_count_id, ->(workplace_count_id) { left_outer_joins(:workplace).where(invent_workplace: { workplace_count_id: workplace_count_id }) }
+    scope :id_tn, ->(id_tn) { left_outer_joins(:workplace).where(invent_workplace: { id_tn: id_tn }) }
 
     attr_accessor :disable_filters
     attr_accessor :destroy_from_order

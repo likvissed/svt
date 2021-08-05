@@ -12,6 +12,11 @@ module Api
                 include: [
                   :barcode_item,
                   {
+                    workplace: {
+                      except: %i[create_time]
+                    }
+                  },
+                  {
                     type: {
                       except: %i[create_time modify_time]
                     }

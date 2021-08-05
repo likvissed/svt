@@ -123,7 +123,10 @@ module Warehouse
       return nil if consumer_fio.blank?
 
       consumer = UsersReference.info_users("id==#{consumer_id_tn}").first
-      tel ||= consumer['phoneText'] if consumer && consumer['phoneText']
+      return nil if consumer.blank?
+
+      tel ||= consumer['phoneText'] if consumer['phoneText']
+
       {
         tn: consumer['personnelNo'],
         id_tn: consumer_id_tn,

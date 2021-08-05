@@ -8,10 +8,15 @@ module Api
           result = if params[:invent_num].present?
                      ::Invent::Item
                        .where(invent_num: params[:invent_num], status: :in_workplace)
-                       .includes(%i[type model barcode_item])
+                       .includes(%i[type model barcode_item workplace])
                        .as_json(
                          include: [
                            :barcode_item,
+                           {
+                             workplace: {
+                               except: %i[create_time]
+                             }
+                           },
                            {
                              type: {
                                except: %i[create_time modify_time]

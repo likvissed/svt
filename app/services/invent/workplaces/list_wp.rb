@@ -27,7 +27,7 @@ module Invent
 
       def load_workplace
         data[:recordsTotal] = Workplace.count
-        @workplaces = policy_scope(Workplace)
+        @workplaces = policy_scope(Workplace).group(:workplace_id)
         run_filters if params[:filters]
       end
 

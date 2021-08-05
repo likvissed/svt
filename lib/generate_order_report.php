@@ -116,7 +116,7 @@ if (!empty($invent_params)) {
 if (!empty($warehouse_params)) {
   $query = "
   SELECT
-    warehouse_orders.invent_num AS order_num, warehouse_orders.request_num, warehouse_operations.*, iss_reference_buildings.name as building, iss_reference_rooms.name as room, invent_workplace_count.division as division
+    warehouse_orders.invent_num AS order_num, warehouse_orders.request_num, warehouse_operations.*, iss_reference_buildings.name as building, iss_reference_rooms.name as room, invent_workplace_count.division as division, invent_workplace.id_tn
   FROM
     warehouse_orders
   INNER JOIN
@@ -233,7 +233,7 @@ $result = array();
 $i = 0;
 foreach($sql_invent_data as $row_data) {
   $index = get_result_index($row_data, $result);
-
+  
   // Ответственный
   $responsible_wp_employee = get_employee($row_data['id_tn']);
 
@@ -287,6 +287,9 @@ foreach($sql_warehouse_data as $row_data) {
   $obj['item_model'] = $row_data['item_model'];
   $obj['count'] = abs($row_data['shift']);
 
+  // Ответственный
+  $responsible_wp_employee = get_employee($row_data['id_tn']);
+
   if (!$common_data['building'])
     $common_data['building'] = $row_data['building'];
   if (!$common_data['room'])
@@ -294,9 +297,9 @@ foreach($sql_warehouse_data as $row_data) {
   if (!$common_data['division'])
     $common_data['division'] = $row_data['division'];
   if (!$common_data['tel'])
-    $common_data['tel'] = $row_data['tel'];
+    $common_data['tel'] = $responsible_wp_employee['tel'];
   if (!$common_data['fio'])
-    $common_data['fio'] = $row_data['fio'];
+    $common_data['fio'] = $responsible_wp_employee['fio'];
 
   array_push($result, $obj);
 }

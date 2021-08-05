@@ -10,7 +10,6 @@ module Invent
     belongs_to :workplace_type, optional: false
     belongs_to :workplace_specialization, optional: false
     belongs_to :workplace_count, optional: false
-    # belongs_to :user_iss, foreign_key: 'id_tn', optional: true
     belongs_to :iss_reference_site, foreign_key: 'location_site_id', optional: false
     belongs_to :iss_reference_building, foreign_key: 'location_building_id', optional: false
     belongs_to :iss_reference_room, foreign_key: 'location_room_id', optional: false
