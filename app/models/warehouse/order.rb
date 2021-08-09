@@ -172,7 +172,6 @@ module Warehouse
 
     # Проверка, заполнения всех необходимых ФИО принявнего технику на складе
     def valid_op_warehouse_receiver_fio
-      # Rails.logger.info "op: #{operations.inspect}".green
       operations.each do |op|
         # Если техника в операциях включена в список для назначения получающего со склада
         # и если уже позиция исполнена, то не учитывать в проверке

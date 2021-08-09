@@ -5,3 +5,6 @@
     # cron: '0 0 4 * * *' #
     # cron: '0 * * * * *'
     class: Invent::WorkplaceWorker
+  user_worker:
+    cron: '30 3 * * *'   # Запуск каждый день в 3:30 ночи
+    class: UserWorker
