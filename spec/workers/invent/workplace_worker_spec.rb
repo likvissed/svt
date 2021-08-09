@@ -38,7 +38,10 @@ module Invent
 
     context 'when workplace has responsible user' do
       context 'and when the user dept and workplace division do not match' do
-        before { allow(subject).to receive(:ids_workplace).and_return([]) }
+        before do
+          allow(subject).to receive(:ids_workplace_not_used).and_return([])
+          allow(subject).to receive(:ids_workplace_in_decree).and_return([])
+        end
 
         it 'does not change workplace status' do
           subject.perform
@@ -47,12 +50,38 @@ module Invent
         end
 
         context 'and when the user dept and workplace division are the same' do
-          before { allow(subject).to receive(:ids_workplace).and_return([workplace.workplace_id]) }
+          before { allow(subject).to receive(:ids_workplace_not_used).and_return([workplace.workplace_id]) }
 
           it 'does change workplace status' do
             subject.perform
 
             expect(workplace.reload.status).not_to eq 'confirmed'
+          end
+        end
+      end
+
+      context 'anw when user in decree' do
+        let(:emp_decree) { build(:emp_***REMOVED***) }
+        let!(:workplace_two) { create(:workplace_pk, :add_items, items: %i[pc monitor], status: :confirmed, id_tn: emp_decree['id'], comment: '01') }
+        before do
+          allow(subject).to receive(:ids_workplace_not_used).and_return([])
+          allow(subject).to receive(:ids_workplace_in_decree).and_return([emp_decree])
+        end
+
+        it 'changes workplace status and adds comment' do
+          subject.perform
+
+          expect(workplace_two.reload.status).to eq 'freezed'
+          expect(workplace_two.reload.comment).to match("/ В декрете до #{emp_decree['vacationTo']} /")
+        end
+
+        context 'and when workplaces does not have any item' do
+          before { workplace_two.items = [] }
+
+          it 'not changes workplace status' do
+            subject.perform
+
+            expect(workplace_two.reload.status).to eq 'confirmed'
           end
         end
       end
@@ -69,10 +98,10 @@ module Invent
     end
 
     context 'when workplaces does not have any item' do
-      # before { allow_any_instance_of(Workplace).to receive(:items).and_return([]) }
       before do
         allow_any_instance_of(Workplace).to receive(:items).and_return([])
-        allow(subject).to receive(:ids_workplace).and_return([workplace.workplace_id])
+        allow(subject).to receive(:ids_workplace_not_used).and_return([workplace.workplace_id])
+        allow(subject).to receive(:ids_workplace_in_decree).and_return([])
       end
 
       it 'changes workplace status' do
