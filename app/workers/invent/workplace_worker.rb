@@ -14,7 +14,10 @@ class Invent::WorkplaceWorker
   def freezing_not_used_workplaces
     ids = ids_workplace_not_used
 
-    Invent::Workplace.where(workplace_id: ids).update_all(status: :freezed) if ids.any?
+    if ids.any?
+      Sidekiq.logger.info "freezing_not_used_workplaces: #{ids}"
+      Invent::Workplace.where(workplace_id: ids).update_all(status: :freezed)
+    end
   end
 
   # Заморозить временные РМ, у которых прошел срок работы.
@@ -40,7 +43,8 @@ class Invent::WorkplaceWorker
       # Для получения замороженных в данный момент массива id РМ
       ids << wp.workplace_id
     end
-    Rails.logger.info "ids: #{ids}" if ids.present?
+
+    Sidekiq.logger.info "freezing_decree_workplaces: #{ids}" if ids.present?
   end
 
   # Очистить кэш, для того, чтобы обновлённые статусы отображались у пользователей
@@ -49,18 +53,27 @@ class Invent::WorkplaceWorker
   end
 
   def ids_workplace_not_used
-    workplaces = Invent::Workplace.where(status: :confirmed).includes(:workplace_count, :items)
-    array_id_tn = workplaces.map(&:id_tn).compact.uniq.join(',')
-    employees = UsersReference.info_users("id=in=(#{array_id_tn})").map { |employee| employee.slice('id', 'departmentForAccounting') }
+    ids = []
+    # Временно до добавления номера отдела в НСИ
+    workplace_count_ids = Invent::WorkplaceCount.where(division: [1001,1002,1003,1004,1005,1006,1007,1008,1009,1010,1011,1012,1013,1014,1015,1016,1017,1018,1019,1020,1021,1022,1023,1024]).pluck(:workplace_count_id)
 
-    workplaces.find_each.map do |wp|
-      # Совпадает ли отдел с отделом пользователя на этом РМ
-      match = employees.find { |value| value['departmentForAccounting'] == wp.division.to_i && value['id'] == wp.id_tn }
+    workplaces = Invent::Workplace.includes(:workplace_count, :items).where(status: :confirmed).where.not(workplace_count_id: workplace_count_ids)
 
-      next if match.present? && wp.items.size.positive?
+    # Для того, чтобы предотвратить ошибку большого запроса в НСИ
+    workplaces.each_slice(500) do |wps|
+      employee_list = wps.map(&:id_tn).compact.uniq.join(',')
+      employees = UsersReference.info_users("id=in=(#{employee_list})")
 
-      wp.workplace_id
-    end.compact
+      wps.each do |wp|
+        match = employees.find { |value| value['id'] == wp.id_tn }
+
+        # Если пользователь существует и у него соответствует отдел -  отделу на РМ
+        next if match.present? && match['departmentForAccounting'] == wp.division.to_i && wp.items.size.positive?
+
+        ids << wp.workplace_id
+      end
+    end
+    ids
   end
 
   def ids_workplace_in_decree

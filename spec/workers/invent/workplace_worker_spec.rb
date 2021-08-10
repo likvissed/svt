@@ -60,7 +60,7 @@ module Invent
         end
       end
 
-      context 'anw when user in decree' do
+      context 'and when user in decree' do
         let(:emp_decree) { build(:emp_***REMOVED***) }
         let!(:workplace_two) { create(:workplace_pk, :add_items, items: %i[pc monitor], status: :confirmed, id_tn: emp_decree['id'], comment: '01') }
         before do

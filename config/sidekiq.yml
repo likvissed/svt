@@ -1,6 +1,8 @@
 :schedule:
   workplace_worker:
-    # every: ["30s"]
+    #  every: ["30s"]
+    # cron: '1 * * * *'
+    # cron: "*/1 * * * *"
     cron: '0 4 * * *'   # Запуск каждый день в 4 ночи
     # cron: '0 0 4 * * *' #
     # cron: '0 * * * * *'
