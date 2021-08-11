@@ -38,13 +38,22 @@ class Invent::WorkplaceWorker
       next unless match.present? && wp.items.size.positive?
 
       message = "/ В декрете до #{match.try(:[], 'vacationTo')} /"
-      wp.update(status: :freezed, comment: "#{wp.comment} #{message}", disabled_filters: true)
+
+      # Если записи об окончании декрета нет, то добавить
+      # (Для того, чтобы одинаковые записи не дублировались)
+      if wp.comment.exclude?(message)
+        wp.comment = "#{wp.comment} #{message}"
+        wp.save(validate: false)
+      end
 
       # Для получения замороженных в данный момент массива id РМ
       ids << wp.workplace_id
     end
 
-    Sidekiq.logger.info "freezing_decree_workplaces: #{ids}" if ids.present?
+    if ids.present?
+      Sidekiq.logger.info "freezing_decree_workplaces: #{ids}"
+      Invent::Workplace.where(workplace_id: ids).update_all(status: :freezed)
+    end
   end
 
   # Очистить кэш, для того, чтобы обновлённые статусы отображались у пользователей
@@ -54,10 +63,7 @@ class Invent::WorkplaceWorker
 
   def ids_workplace_not_used
     ids = []
-    # Временно до добавления номера отдела в НСИ
-    workplace_count_ids = Invent::WorkplaceCount.where(division: [1001,1002,1003,1004,1005,1006,1007,1008,1009,1010,1011,1012,1013,1014,1015,1016,1017,1018,1019,1020,1021,1022,1023,1024]).pluck(:workplace_count_id)
-
-    workplaces = Invent::Workplace.includes(:workplace_count, :items).where(status: :confirmed).where.not(workplace_count_id: workplace_count_ids)
+    workplaces = Invent::Workplace.includes(:workplace_count, :items).where(status: :confirmed)
 
     # Для того, чтобы предотвратить ошибку большого запроса в НСИ
     workplaces.each_slice(500) do |wps|
