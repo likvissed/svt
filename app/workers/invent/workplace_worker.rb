@@ -41,7 +41,7 @@ class Invent::WorkplaceWorker
 
       # Если записи об окончании декрета нет, то добавить
       # (Для того, чтобы одинаковые записи не дублировались)
-      if wp.comment.exclude?(message)
+      if wp.comment.nil? || wp.comment.to_s.exclude?(message)
         wp.comment = "#{wp.comment} #{message}"
         wp.save(validate: false)
       end
