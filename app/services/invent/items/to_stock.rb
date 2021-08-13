@@ -38,7 +38,10 @@ module Invent
         if @order.run
           data[:barcode] = @item.barcode_item.id
           location_for_w_item
-          UnregistrationWorker.perform_async(@item.invent_num, current_user.access_token)
+
+          if Invent::Type::NAME_FOR_UNREGISTRATION_ITEM.include?(@item.type.name)
+            UnregistrationWorker.perform_async(@item.invent_num, current_user.access_token)
+          end
 
           return
         else

@@ -67,12 +67,14 @@ module Invent
           allow(subject).to receive(:ids_workplace_not_used).and_return([])
           allow(subject).to receive(:ids_workplace_in_decree).and_return([emp_decree])
         end
+        let(:date_decree) { Time.zone.parse(emp_decree['vacationTo']).strftime('%d-%m-%Y') }
+        let(:fio_decree) { emp_decree['fullName'].split(' ') }
 
         it 'changes workplace status and adds comment' do
           subject.perform
 
           expect(workplace_two.reload.status).to eq 'freezed'
-          expect(workplace_two.reload.comment).to match("/ В декрете до #{emp_decree['vacationTo']} /")
+          expect(workplace_two.reload.comment).to match("/ #{fio_decree[0]} #{fio_decree[1][0]}.#{fio_decree[2][0]}. в декрете до #{date_decree} /")
         end
 
         context 'and when workplaces does not have any item' do

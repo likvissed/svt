@@ -42,7 +42,7 @@ module AuthCenter
                                              name: 'invent_unreg',
                                              severity: 'INFO',
                                              subject: invent_num,
-                                             description: ''
+                                             description: 'Отправка на склад'
                                            },
                                            headers: {
                                              'Authorization' => "Bearer #{access_token}"
