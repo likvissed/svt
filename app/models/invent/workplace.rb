@@ -23,7 +23,7 @@ module Invent
     validates :comment, presence: true, if: -> { status == 'temporary' }
     validate :check_workplace_conditions, if: -> { workplace_type && !disabled_filters }
 
-    before_destroy :check_items_and_attachments, prepend: true, unless: -> { hard_destroy }
+    before_destroy :check_items_and_attachments_and_comment, prepend: true, unless: -> { hard_destroy }
     before_destroy :check_processing_orders, prepend: true
     after_update :assign_data_change_id_tn, if: -> { saved_change_to_id_tn? }
 
@@ -55,7 +55,7 @@ module Invent
     attr_accessor :division, :room_category_id
     # Поле указывает, нужно ли использовать валидаторы при создании/редактировании текущей модели
     attr_accessor :disabled_filters
-    # Указывает, что нужно пропустить валидацию check_items_and_attachments
+    # Указывает, что нужно пропустить валидацию check_items_and_attachments_and_comment
     attr_accessor :hard_destroy
     # Содержит информацию о старом и новом id_tn (для создания события о смене пользователя на РМ)
     attr_accessor :data_change_id_tn
@@ -92,11 +92,12 @@ module Invent
       throw(:abort)
     end
 
-    def check_items_and_attachments
-      return if items.empty? && attachments.empty?
+    def check_items_and_attachments_and_comment
+      return if items.empty? && attachments.empty? && comment.blank?
 
       errors.add(:base, :cannot_destroy_workplace_with_items) if items.exists?
       errors.add(:base, :cannot_destroy_workplace_with_attachments) if attachments.exists?
+      errors.add(:base, :cannot_destroy_workplace_with_comments) if comment.present?
       throw(:abort)
     end
 

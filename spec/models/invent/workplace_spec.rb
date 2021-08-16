@@ -74,7 +74,7 @@ module Invent
       end
     end
 
-    describe '#check_items_and_attachments' do
+    describe '#check_items_and_attachments_and_comment' do
       context 'when workplace includes any item' do
         let!(:wp) { create(:workplace_pk, :add_items, items: %i[pc monitor monitor]) }
         subject { wp }
@@ -96,6 +96,16 @@ module Invent
             subject.destroy
 
             expect(subject.errors.details[:base]).to include(error: :cannot_destroy_workplace_with_attachments)
+          end
+        end
+
+        context 'and when include comment' do
+          before { wp.comment = 'not deleted!' }
+
+          it 'adds :cannot_destroy_workplace_with_attachments error' do
+            subject.destroy
+
+            expect(subject.errors.details[:base]).to include(error: :cannot_destroy_workplace_with_comments)
           end
         end
       end
@@ -133,7 +143,7 @@ module Invent
 
       context 'when runned :hard_destroy method' do
         it 'does not run validation' do
-          expect(subject).not_to receive(:check_items_and_attachments)
+          expect(subject).not_to receive(:check_items_and_attachments_and_comment)
           subject.hard_destroy
         end
       end

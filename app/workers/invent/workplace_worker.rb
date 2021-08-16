@@ -155,13 +155,12 @@ class Invent::WorkplaceWorker
     @workplaces.where(workplace_id: ids).find_each do |wp|
       if wp.items.blank?
         @items_one << wp.workplace_id
-        break
+      else
+        types = wp.items.map { |it| it.type.name }
+
+        @items_one << wp.workplace_id if types.any? { |type| @office_equipment.include?(type) }
+        @items_two << wp.workplace_id if types.any? { |type| @types_print.include?(type) }
       end
-
-      types = wp.items.map { |it| it.type.name }
-
-      @items_one << wp.workplace_id if types.any? { |type| @office_equipment.include?(type) }
-      @items_two << wp.workplace_id if types.any? { |type| @types_print.include?(type) }
     end
 
     [@items_one, @items_two]
