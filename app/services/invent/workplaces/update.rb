@@ -49,6 +49,8 @@ module Invent
         if @workplace.update(@workplace_params)
           create_attachments if @workplace_attachments.present?
 
+          Invent::ChangeOwnerWpWorker.perform_async(@workplace.workplace_id, @workplace.data_change_id_tn, current_user.access_token) if @workplace.data_change_id_tn.present?
+
           # Чтобы избежать N+1 запрос в методе 'transform_workplace' нужно создать объект ActiveRecord (например,
           # вызвать find)
           @workplace = Workplace

@@ -13,7 +13,9 @@ module Warehouse
           order.operations.each do |op|
             op.inv_items.each do |inv_item|
               inv_item.to_stock!
-              UnregistrationWorker.perform_async(inv_item.invent_num, access_token)
+              if Invent::Type::NAME_FOR_UNREGISTRATION_ITEM.include?(inv_item.type.name)
+                UnregistrationWorker.perform_async(inv_item.invent_num, access_token)
+              end
             end
           end
         end

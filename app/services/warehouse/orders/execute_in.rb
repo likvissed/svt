@@ -120,7 +120,9 @@ module Warehouse
             next if op.inv_items.blank?
 
             op.inv_items.first.to_stock!
-            UnregistrationWorker.perform_async(op.inv_items.first.invent_num, current_user.access_token)
+            if Invent::Type::NAME_FOR_UNREGISTRATION_ITEM.include?(op.inv_items.first.type.name)
+              UnregistrationWorker.perform_async(op.inv_items.first.invent_num, current_user.access_token)
+            end
           end
         end
       end

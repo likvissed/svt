@@ -92,8 +92,8 @@ FactoryBot.define do
     emailText { '***REMOVED***' }
     position { '3А-320' }
     vacation { 'Декретный отпуск' }
-    vacationFrom { '2222.11.11' }
-    vacationTo { '2222.22.22' }
+    vacationFrom { '2222-11-11' }
+    vacationTo { '2222-02-22' }
 
     initialize_with { attributes.stringify_keys }
   end

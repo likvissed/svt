@@ -65,7 +65,9 @@ module Invent
         @order = Warehouse::Orders::CreateByInvItem.new(current_user, @item, :write_off, @comment)
 
         if @order.run
-          UnregistrationWorker.perform_async(@item.invent_num, current_user.access_token)
+          if Invent::Type::NAME_FOR_UNREGISTRATION_ITEM.include?(@item.type.name)
+            UnregistrationWorker.perform_async(@item.invent_num, current_user.access_token)
+          end
 
           return true
         else
