@@ -3,6 +3,7 @@ require 'feature_helper'
 module Invent
   module Workplaces
     RSpec.describe Update, type: :model do
+      before { allow(Invent::ChangeOwnerWpWorker).to receive(:perform_async).and_return(true) }
       skip_users_reference
 
       let(:employee) { [build(:emp_***REMOVED***)] }

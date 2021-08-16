@@ -36,13 +36,30 @@ module AuthCenter
   def unreg_host(invent_num, access_token)
     RestClient.proxy = ''
     JSON.parse(RestClient::Request.execute(method: :post,
-                                           url: ENV['UNREG_HOST_URI'],
+                                           url: ENV['CREATE_EVENT_URI'],
                                            payload: {
                                              class: 'HOSTREG',
                                              name: 'invent_unreg',
                                              severity: 'INFO',
                                              subject: invent_num,
                                              description: 'Отправка на склад'
+                                           },
+                                           headers: {
+                                             'Authorization' => "Bearer #{access_token}"
+                                           }))
+  end
+
+  def change_owner_wp(workplace_id, data, access_token)
+    RestClient.proxy = ''
+    JSON.parse(RestClient::Request.execute(method: :post,
+                                           url: ENV['CREATE_EVENT_URI'],
+                                           payload: {
+                                             class: 'CHANGE_OWNER',
+                                             name: 'invent_change_owner',
+                                             severity: 'INFO',
+                                             subject: workplace_id,
+                                             data: data,
+                                             description: 'Изменение ответственного на РМ'
                                            },
                                            headers: {
                                              'Authorization' => "Bearer #{access_token}"

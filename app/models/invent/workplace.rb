@@ -25,6 +25,7 @@ module Invent
 
     before_destroy :check_items_and_attachments, prepend: true, unless: -> { hard_destroy }
     before_destroy :check_processing_orders, prepend: true
+    after_update :assign_data_change_id_tn, if: -> { saved_change_to_id_tn? }
 
     scope :fullname, ->(fullname) do
       employees_ids = UsersReference.info_users("fullName=='*#{CGI.escape(fullname)}*'").map { |us| us['id'] }
@@ -56,6 +57,8 @@ module Invent
     attr_accessor :disabled_filters
     # Указывает, что нужно пропустить валидацию check_items_and_attachments
     attr_accessor :hard_destroy
+    # Содержит информацию о старом и новом id_tn (для создания события о смене пользователя на РМ)
+    attr_accessor :data_change_id_tn
 
     delegate :division, to: :workplace_count
 
@@ -318,6 +321,13 @@ module Invent
       end
 
       printer_count
+    end
+
+    def assign_data_change_id_tn
+      if id_tn.present? && id_tn != id_tn_before_last_save
+
+        self.data_change_id_tn = { 'old_owner': id_tn_before_last_save, 'new_owner': id_tn }
+      end
     end
   end
 end
