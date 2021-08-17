@@ -54,7 +54,7 @@ module AuthCenter
     JSON.parse(RestClient::Request.execute(method: :post,
                                            url: ENV['CREATE_EVENT_URI'],
                                            payload: {
-                                             class: 'CHANGE_OWNER',
+                                             class: 'HOSTREG',
                                              name: 'invent_change_owner',
                                              severity: 'INFO',
                                              subject: workplace_id,
