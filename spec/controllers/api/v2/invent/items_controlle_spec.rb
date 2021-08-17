@@ -131,12 +131,8 @@ module Api
             context 'and when the parameter not present' do
               let(:params) { { not_present: '321' } }
 
-              it 'adds message error' do
-                expect(JSON.parse(response.body)['error']).to eq('Требуемые параметры не найдены')
-              end
-
-              it 'response with error status' do
-                expect(response.status).to eq(404)
+              it 'returns is blank result' do
+                expect(response.body).to eq '[]'
               end
             end
 
@@ -144,12 +140,12 @@ module Api
               let(:invalid_dept) { 111_111 }
               let(:params) { { dept: invalid_dept } }
 
-              it 'adds message error' do
-                expect(JSON.parse(response.body)['error']).to eq("Отдел №#{invalid_dept} не существует")
+              it 'returns is blank result' do
+                expect(response.body).to eq '[]'
               end
 
-              it 'response with error status' do
-                expect(response.status).to eq(404)
+              it 'response with status 200' do
+                expect(response.status).to eq(200)
               end
             end
 
@@ -157,12 +153,12 @@ module Api
               let(:invalid_barcode) { '123Bs@' }
               let(:params) { { barcode: invalid_barcode } }
 
-              it 'adds message error' do
-                expect(JSON.parse(response.body)['error']).to eq('Параметр barcode содержит не только цифры')
+              it 'returns is blank result' do
+                expect(response.body).to eq '[]'
               end
 
-              it 'response with error status' do
-                expect(response.status).to eq(404)
+              it 'response with status 200' do
+                expect(response.status).to eq(200)
               end
             end
           end

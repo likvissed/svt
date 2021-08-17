@@ -38,15 +38,9 @@ module Api
         def search_items
           workplace_count = params[:dept].present? ? ::Invent::WorkplaceCount.find_by(division: params[:dept]) : ''
 
-          if params[:dept].present? && workplace_count.blank?
-            message = "Отдел №#{params[:dept]} не существует"
-            render  json: { error: message }, status: :not_found
-          elsif params[:fio].blank? && params[:invent_num].blank? && params[:barcode].blank? && params[:dept].blank? && params[:id_tn].blank?
-            message = 'Требуемые параметры не найдены'
-            render  json: { error: message }, status: :not_found
-          elsif params[:barcode].present? && params[:barcode].scan(/\D/).empty? == false
-            message = 'Параметр barcode содержит не только цифры'
-            render  json: { error: message }, status: :not_found
+          if (params[:dept].present? && workplace_count.blank?) || (params[:barcode].present? && params[:barcode].scan(/\D/).empty? == false) ||
+            (params[:fio].blank? && params[:invent_num].blank? && params[:barcode].blank? && params[:dept].blank? && params[:id_tn].blank?)
+            render  json: []
           else
             filtering_params = {}
             filtering_params[:responsible] = params[:fio]
@@ -91,7 +85,7 @@ module Api
               end
             end
 
-            render status: :ok, json: result
+            render json: result
           end
         end
       end

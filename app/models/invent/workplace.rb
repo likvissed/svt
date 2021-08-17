@@ -327,7 +327,7 @@ module Invent
     def assign_data_change_id_tn
       if id_tn.present? && id_tn != id_tn_before_last_save
 
-        self.data_change_id_tn = { 'old_owner': id_tn_before_last_save, 'new_owner': id_tn }
+        self.data_change_id_tn = { 'old_owner_id_tn': id_tn_before_last_save, 'new_owner_id_tn': id_tn }
       end
     end
   end
