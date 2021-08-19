@@ -98,6 +98,10 @@ import { app } from '../../app/app';
             method: 'POST',
             url   : '/invent/items/to_write_off'
           },
+          assignInvalidBarcodeAsTrue: {
+            method: 'GET',
+            url   : '/invent/items/assign_invalid_barcode_as_true/:item_id'
+          },
           update: { method: 'PUT' }
         }),
         Vendor: $resource('/invent/vendors/:vendor_id.json', {}),

@@ -120,6 +120,16 @@ module Invent
       end
     end
 
+    def assign_invalid_barcode_as_true
+      item = InvalidBarcode.find_by(item_id: params[:item_id], actual: false)
+
+      if item.present? && item.update(actual: true, user_update: current_user.fullname)
+        render json: {}
+      else
+        render json: { full_message: I18n.t('controllers.invent/item.invalid_item_not_found') }, status: 422
+      end
+    end
+
     protected
 
     def check_access
