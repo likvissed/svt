@@ -5,14 +5,16 @@ import { app } from '../../app/app';
 
   app.controller('EditInventItemCtrl', EditInventItemCtrl);
 
-  EditInventItemCtrl.$inject = ['$uibModal', 'InventItem', 'WorkplaceItem', 'Config', 'Flash'];
+  EditInventItemCtrl.$inject = ['$uibModal', 'InventItem', 'WorkplaceItem', 'Config', 'Flash', 'Server', 'Error'];
 
-  function EditInventItemCtrl($uibModal, InventItem, WorkplaceItem, Config, Flash) {
+  function EditInventItemCtrl($uibModal, InventItem, WorkplaceItem, Config, Flash, Server, Error) {
     this.$uibModal = $uibModal;
     this.Item = InventItem;
     this.WorkplaceItem = WorkplaceItem;
     this.Config = Config;
     this.Flash = Flash;
+    this.Server = Server;
+    this.Error = Error;
 
     this.item_o = InventItem.data;
     this.additional = WorkplaceItem.getAdditional();
@@ -60,5 +62,20 @@ import { app } from '../../app/app';
    */
   EditInventItemCtrl.prototype.FillWithDefaultData = function() {
     this.Item.fillPcWithDefaultData();
+  };
+
+  /**
+   * Отметить, что штрих-код переклеен на правильный
+   */
+  EditInventItemCtrl.prototype.assignInvalidBarcodeAsTrue = function() {
+    let confirm_str = 'Вы действительно хотите отметить штрих-код как переклеенный?';
+
+    if (!confirm(confirm_str)) { return false; }
+
+    return this.Server.Invent.Item.assignInvalidBarcodeAsTrue(
+      { item_id: this.item_o.item.id },
+      () => (this.item_o.item.invalid_barcode.actual = true),
+      (response, status) => this.Error.response(response, status)
+    ).$promise;
   };
 })();

@@ -87,6 +87,8 @@ Rails.application.routes.draw do
         post 'to_stock', to: 'items#to_stock'
         # Списать технику
         post 'to_write_off', to: 'items#to_write_off'
+        # Отметить как правильно переклеенный штрих-код
+        get 'assign_invalid_barcode_as_true/:item_id', to: 'items#assign_invalid_barcode_as_true'
       end
     end
 

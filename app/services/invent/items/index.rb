@@ -51,6 +51,7 @@ module Invent
                      :type,
                      :model,
                      :barcode_item,
+                     :invalid_barcode,
                      { warehouse_item: :location },
                      { property_values: %i[property property_list] },
                      workplace: %i[iss_reference_room]
@@ -65,6 +66,7 @@ module Invent
             :type,
             :model,
             :barcode_item,
+            :invalid_barcode,
             { warehouse_item: { include: :location } },
             { property_values: { include: %i[property property_list] } },
             { workplace: {
@@ -87,6 +89,12 @@ module Invent
                              else
                                ''
                              end
+          item['is_invalid_barcode'] = if item['invalid_barcode'].present? && item['invent_num'] == item['invalid_barcode']['invent_num'] &&
+                                          item['invalid_barcode']['actual'] == false
+                                         false
+                                       else
+                                         true
+                                       end
         end
       end
 

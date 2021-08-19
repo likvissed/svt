@@ -21,6 +21,7 @@ ru:
       destroyed: 'Техника удалена'
       sended_to_stock: 'Техника №%{barcode} отправлена на склад'
       sended_to_stock_and_waiting_write_off: 'Техника №%{barcode} отправлена на склад, создан ордер на списание'
+      invalid_item_not_found: 'Техника c неправильным штрих-кодом не найдена'
     invent/model:
       created: 'Модель создана'
       updated: 'Модель обновлена'

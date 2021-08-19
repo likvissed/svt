@@ -1,6 +1,8 @@
+require: 
+  - rubocop-rails
 AllCops:
   DisplayCopNames: true
-  TargetRubyVersion: 2.3
+  TargetRubyVersion: 2.5
   Exclude:
     - config/**/*
     - db/**/*

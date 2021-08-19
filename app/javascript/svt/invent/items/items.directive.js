@@ -4,7 +4,8 @@ import { app } from '../../app/app';
   'use strict';
 
   app
-    .directive('ngCompileItemRows', ngCompileItemRows);
+    .directive('ngCompileItemRows', ngCompileItemRows)
+    .directive('ngInvalidBarcode', ngInvalidBarcode);
 
   ngCompileItemRows.$inject = ['$compile'];
 
@@ -27,4 +28,16 @@ import { app } from '../../app/app';
       $compile(element)(scope);
     }
   }
+
+  function ngInvalidBarcode() {
+    return {
+        restrict: 'A',
+        scope   : {
+          value: '=ngInvalidBarcode',
+          flag : '=ngInvalidFlag'
+        },
+        template: "<div ng-class=\"{ 'bcInvalidBarcode': flag == false }\"> {{ value }} </div>"
+        }
+      }
+
 })();

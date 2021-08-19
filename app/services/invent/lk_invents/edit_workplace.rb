@@ -27,7 +27,7 @@ module Invent
       # Получить данные из БД.
       def load_workplace
         @workplace = Workplace
-                       .includes(:workplace_count, :iss_reference_room, :attachments, items: [:barcode_item, { property_values: :property }])
+                       .includes(:workplace_count, :iss_reference_room, :attachments, items: [:barcode_item, :invalid_barcode, { property_values: :property }])
                        .find(@workplace_id)
         authorize workplace, :edit?
 
@@ -45,6 +45,7 @@ module Invent
               include: [
                 :warehouse_orders,
                 :barcode_item,
+                :invalid_barcode,
                 property_values: {
                   include: :property
                 }

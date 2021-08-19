@@ -9,7 +9,7 @@ module Invent
       end
 
       def run
-        @data = Item.includes(:type, :model, :barcode_item, property_values: %i[property property_list])
+        @data = Item.includes(:type, :model, :barcode_item, :invalid_barcode, property_values: %i[property property_list])
                   .by_item_id(@condition[:item_id])
                   .by_invent_num(@condition[:invent_num])
                   .by_type_id(@condition[:type_id])
@@ -17,6 +17,7 @@ module Invent
                   .as_json(
                     include: [
                       :barcode_item,
+                      :invalid_barcode,
                       property_values: {
                         include: %i[property property_list]
                       }

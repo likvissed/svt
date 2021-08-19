@@ -1,5 +1,5 @@
 class CacheSweeper < ActionController::Caching::Sweeper
-  observe Invent::Workplace, Invent::Item, Warehouse::Item, Invent::Model
+  observe Invent::Workplace, Invent::Item, Warehouse::Item, Invent::Model, InvalidBarcode
 
   def after_save(_record)
     expire_cache
