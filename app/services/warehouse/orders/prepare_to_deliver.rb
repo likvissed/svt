@@ -38,6 +38,7 @@ module Warehouse
         data[:selected_op].each do |op|
           op.set_stockman(current_user)
           op.presence_w_receiver_fio = true
+          op.re_stick_barcode = true
         end
 
         return true unless data[:selected_op].empty?

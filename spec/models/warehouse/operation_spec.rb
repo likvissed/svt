@@ -508,5 +508,22 @@ module Warehouse
         expect(subject.errors.details[:base]).to include(error: :denied_access_for_assign_receiver_fio, item_type: subject.item.item_type)
       end
     end
+
+    describe '#presence_re_stick_barcode' do
+      let(:order) { create(:order, operation: :out) }
+      let(:user) { create(:user) }
+      let(:inv_item) { create(:item, :with_property_values, type_name: :monitor) }
+      let!(:invalid_barcode) { InvalidBarcode.create(item_id: inv_item.item_id, invent_num: inv_item.invent_num, actual: false) }
+      subject { create(:order_operation, status: :done, stockman_id_tn: user.id_tn, operationable: order, inv_items: [inv_item]) }
+      before do
+        subject.re_stick_barcode = true
+      end
+
+      it 'adds :re_stick_barcode error' do
+        subject.valid?
+
+        expect(subject.errors.details[:base]).to include(error: :re_stick_barcode, item_type: subject.item_type)
+      end
+    end
   end
 end

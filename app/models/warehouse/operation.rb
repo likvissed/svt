@@ -14,6 +14,7 @@ module Warehouse
     validate :uniq_item_by_processing_operation, if: -> { item.try(:used?) && item_id_changed? }
     validate :presence_warehouse_receiver_fio, if: -> { presence_w_receiver_fio == true && operationable.try(:operation) == 'out' && done? }
     validate :check_worker_w_receiver_fio, if: -> { worker_w_receiver_fio == true && warehouse_receiver_fio_changed? }
+    validate :presence_re_stick_barcode, if: -> { re_stick_barcode == true && operationable.try(:operation) == 'out' && done? }
 
     after_initialize :set_initial_status, if: -> { new_record? }
     after_initialize :set_initial_shift, if: -> { new_record? }
@@ -32,6 +33,8 @@ module Warehouse
     attr_accessor :presence_w_receiver_fio
     # Для проверки доступа у роли Работник
     attr_accessor :worker_w_receiver_fio
+    # Для проверки, если техника с неправильно наклеенным штрих-кодом
+    attr_accessor :re_stick_barcode
 
     def set_stockman(user)
       self.stockman_id_tn = user.id_tn
@@ -193,6 +196,13 @@ module Warehouse
       return unless item.status == 'non_used' && Order::LIST_TYPE_FOR_ASSIGN_OP_RECEIVER.include?(item_type.to_s.downcase) && warehouse_receiver_fio.present?
 
       errors.add(:base, :denied_access_for_assign_receiver_fio, item_type: item_type)
+    end
+
+    # Отобразить сообщение о том, что необходимо отметить переклеенный штрих-код, если он имеется в таблице InvalidBarcode и actual = false
+    def presence_re_stick_barcode
+      inv_items_with_invalid_barcode = inv_items.select { |it| InvalidBarcode.find_by(actual: false, item_id: it.item_id, invent_num: it.invent_num).present? }
+
+      errors.add(:base, :re_stick_barcode, item_type: item_type) if inv_items_with_invalid_barcode.present?
     end
   end
 end
