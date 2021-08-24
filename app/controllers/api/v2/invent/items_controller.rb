@@ -7,7 +7,7 @@ module Api
         # Получение объекта техники (на РМ) по штрих-коду (barcode)
         def barcode
           @barcode = Barcode
-                       .includes(codeable: %i[type model barcode_item workplace])
+                       .includes(codeable: [:type, :model, :barcode_item, { workplace: %i[workplace_type iss_reference_site iss_reference_building iss_reference_room] }])
                        .find_by(codeable_type: 'Invent::Item', id: params[:barcode])
 
           barcode_item = @barcode
@@ -20,6 +20,14 @@ module Api
                                           },
                                           {
                                             workplace: {
+                                              include: [
+                                                :workplace_type,
+                                                :iss_reference_site,
+                                                :iss_reference_building,
+                                                {
+                                                  iss_reference_room: { except: :security_category_id }
+                                                }
+                                              ],
                                               except: %i[create_time]
                                             }
                                           }
@@ -39,8 +47,8 @@ module Api
           workplace_count = params[:dept].present? ? ::Invent::WorkplaceCount.find_by(division: params[:dept]) : ''
 
           if (params[:dept].present? && workplace_count.blank?) || (params[:barcode].present? && params[:barcode].scan(/\D/).empty? == false) ||
-            (params[:fio].blank? && params[:invent_num].blank? && params[:barcode].blank? && params[:dept].blank? && params[:id_tn].blank?)
-            render  json: []
+             (params[:fio].blank? && params[:invent_num].blank? && params[:barcode].blank? && params[:dept].blank? && params[:id_tn].blank?)
+            render json: []
           else
             filtering_params = {}
             filtering_params[:responsible] = params[:fio]
@@ -52,12 +60,20 @@ module Api
             result = ::Invent::Item
                        .filter(filtering_params)
                        .where(status: :in_workplace)
-                       .includes(%i[type model barcode_item workplace])
+                       .includes(:type, :model, :barcode_item, { workplace: %i[workplace_type iss_reference_site iss_reference_building iss_reference_room] })
                        .as_json(
                          include: [
                            :barcode_item,
                            {
                              workplace: {
+                               include: [
+                                 :workplace_type,
+                                 :iss_reference_site,
+                                 :iss_reference_building,
+                                 {
+                                   iss_reference_room: { except: :security_category_id }
+                                 }
+                               ],
                                except: %i[create_time]
                              }
                            },

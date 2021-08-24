@@ -17,6 +17,14 @@ module Api
                                                  },
                                                  {
                                                    workplace: {
+                                                     include: [
+                                                       :workplace_type,
+                                                       :iss_reference_site,
+                                                       :iss_reference_building,
+                                                       {
+                                                         iss_reference_room: { except: :security_category_id }
+                                                       }
+                                                     ],
                                                      except: %i[create_time]
                                                    }
                                                  }
@@ -62,6 +70,14 @@ module Api
                 :barcode_item,
                 {
                   workplace: {
+                    include: [
+                      :workplace_type,
+                      :iss_reference_site,
+                      :iss_reference_building,
+                      {
+                        iss_reference_room: { except: :security_category_id }
+                      }
+                    ],
                     except: %i[create_time]
                   }
                 },
