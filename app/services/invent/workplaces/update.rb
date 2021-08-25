@@ -48,6 +48,7 @@ module Invent
       def update_workplace
         if @workplace.update(@workplace_params)
           create_attachments if @workplace_attachments.present?
+          update_data_in_order
 
           Invent::ChangeOwnerWpWorker.perform_async(@workplace.workplace_id, @workplace.data_change_id_tn, current_user.access_token) if @workplace.data_change_id_tn.present?
 
@@ -69,6 +70,19 @@ module Invent
           error[:full_message] = [workplace_errors, operation_errors].flatten.uniq.join('. ')
 
           raise 'Данные не обновлены'
+        end
+      end
+
+      # Обновить конфигурацию в открытых ордерах, если они есть
+      def update_data_in_order
+        return if @workplace.orders.blank?
+
+        open_orders = @workplace.orders.where(status: :processing)
+
+        open_orders.each do |order|
+          order.operations.each do |op|
+            op.update(item_model: op.item.inv_item.full_item_model) if op.try(:item).try(:inv_item)
+          end
         end
       end
     end

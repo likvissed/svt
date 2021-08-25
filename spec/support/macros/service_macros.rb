@@ -70,6 +70,7 @@ module ServiceMacros
 
     wp.data['items_attributes'].each do |item|
       item.delete('warehouse_orders')
+      item.delete('is_open_order')
     end
     wp.data
   end

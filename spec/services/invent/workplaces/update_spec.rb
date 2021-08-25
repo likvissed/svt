@@ -111,6 +111,26 @@ module Invent
           end
         end
 
+        context 'when wp have order is processing and updates property_values for item' do
+          let(:inv_item) { old_workplace.items.first }
+          let(:w_item) { create(:used_item, count_reserved: 1, inv_item: inv_item, status: :waiting_write_off) }
+          let(:operation) { build(:order_operation, item: w_item, inv_item_ids: [inv_item.item_id], shift: 1) }
+          let!(:order) { create(:order, inv_workplace: old_workplace, operations: [operation]) }
+
+          let(:new_value) { 'New str value' }
+          before do
+            new_workplace['items_attributes'].first['property_values_attributes'].each do |prop_val|
+              prop_val['value'] = new_value
+            end
+          end
+
+          it 'updates item_model in operation' do
+            subject.run
+
+            expect(operation.reload.item_model).to eq inv_item.reload.full_item_model
+          end
+        end
+
         its(:run) { is_expected.to be_truthy }
       end
 
