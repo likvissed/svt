@@ -130,7 +130,10 @@ import { FormValidationController } from '../../shared/functions/form-validation
    */
   ExecOrderController.prototype.confirmOrder = function() {
     this.Server.Warehouse.Order.confirm(
-      { id: this.order.id },
+      {
+        id     : this.order.id,
+        comment: this.order.comment
+      },
       {},
       (response) => {
         this.Flash.notice(response.full_message);

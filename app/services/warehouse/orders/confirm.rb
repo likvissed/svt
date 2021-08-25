@@ -1,9 +1,10 @@
 module Warehouse
   module Orders
     class Confirm < BaseService
-      def initialize(current_user, order_id)
+      def initialize(current_user, order_id, comment = nil)
         @current_user = current_user
         @order_id = order_id
+        @comment = comment
 
         super
       end
@@ -33,7 +34,9 @@ module Warehouse
       def find_order
         @order = Order.find(@order_id)
         authorize @order, :confirm?
+
         @order.set_validator(current_user)
+        @order.comment = @comment
       end
     end
   end
