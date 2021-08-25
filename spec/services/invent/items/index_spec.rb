@@ -20,9 +20,9 @@ module Invent
         expect(subject.data.keys).to include(*data_keys)
       end
 
-      it 'adds %w[barcode model description translated_status label_status location] field to each item' do
+      it 'adds %w[barcode model description translated_status label_status location etc] field to each item' do
         subject.run
-        expect(subject.data[:data].first).to include('barcode', 'model', 'description', 'translated_status', 'label_status', 'location')
+        expect(subject.data[:data].first).to include('barcode', 'model', 'description', 'translated_status', 'translated_priority', 'label_status', 'location', 'employee', 'is_invalid_barcode', 'modify_time')
       end
 
       context 'with init_filters' do

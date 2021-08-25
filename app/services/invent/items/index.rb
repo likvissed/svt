@@ -95,6 +95,7 @@ module Invent
                                        else
                                          true
                                        end
+          item['modify_time'] = item['modify_time'].strftime('%d-%m-%Y') if item['modify_time'].present?
         end
       end
 
