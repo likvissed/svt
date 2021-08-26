@@ -23,6 +23,7 @@ module Invent
           delete_property_value
         end
 
+        set_responsible_fio
         fill_swap_arr
 
         Workplace.transaction do

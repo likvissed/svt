@@ -128,6 +128,12 @@ module Invent
                                        .left_outer_joins(:iss_reference_site)
         data[:filters][:priorities] = item_priorities
       end
+
+      def set_responsible_fio
+        employee = UsersReference.info_users("id==#{@workplace_params['id_tn'].to_i}").first
+
+        @workplace_params['responsible_fio'] = employee.try(:[], 'fullName') if employee.present?
+      end
     end
   end
 end
