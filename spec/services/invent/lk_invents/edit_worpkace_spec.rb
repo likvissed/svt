@@ -20,7 +20,7 @@ module Invent
           before { subject.run }
 
           it 'fills @data at least with %w[items_attributes attachments_attributes new_attachment] keys' do
-            expect(subject.data).to include('items_attributes', 'attachments_attributes', 'new_attachment')
+            expect(subject.data).to include('items_attributes', 'attachments_attributes', 'new_attachment', 'required_show_responsible')
           end
 
           it 'fills each items_attribute at least with %w[warehouse_orders id property_values_attributes] keys' do

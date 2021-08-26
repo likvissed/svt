@@ -108,7 +108,7 @@ script type="text/ng-template" id="execOrder.slim"
     .modal-footer
       - if current_user.one_of_roles? :admin, :manager
         .pull-left ng-if="(exec.order.operation == 'out' || exec.order.operation == 'write_off') && exec.order.status == 'processing' && !exec.order.validator_id_tn"
-          = button_tag "Утвердить", class: "btn-success", "ng-click": "exec.confirmOrder()"
+          = button_tag "Утвердить", class: "btn-success", "ng-click": "exec.confirmOrder()", "uib-tooltip": "Утвердить ордер и обновить комментарий"
 
       .pull-left ng-if="exec.order.operation == 'out'"
         span class='label label-success' ng-show="exec.order.validator_id_tn" Утвержден

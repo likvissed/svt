@@ -22,6 +22,7 @@
                 th Статус
                 th Расположение
                 th Описание
+                th.text-center Дата изменения
                 th
             tbody ng-repeat="item in table.items"
               tr ng-compile-item-rows=true
@@ -47,6 +48,7 @@
                 td.col-sm-1 ng-bind-html="item.label_status"
                 td.col-sm-4 ng-bind-html="item.location"
                 td.col-sm-9 ng-bind-html="item.description"
+                td.col-sm-1 ng-bind="item.modify_time"
                 td.text-center
                   = fa_icon "trash-o fw", class: "text-danger pointer", id: "destroyItem",
                     "uib-tooltip": "Удалить технику", "tooltip-append-to-body": true

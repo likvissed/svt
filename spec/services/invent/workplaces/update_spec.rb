@@ -33,6 +33,7 @@ module Invent
           old_workplace.reload
           expect(old_workplace.iss_reference_room).to eq room
           expect(old_workplace.id_tn).to eq employee.first['id']
+          expect(old_workplace.responsible_fio).to eq employee.first['fullName']
         end
 
         it 'changes items count' do
@@ -62,6 +63,17 @@ module Invent
         it 'broadcasts to archive_orders' do
           expect(subject).not_to receive(:broadcast_archive_orders)
           subject.run
+        end
+
+        context 'and when update in_tn user' do
+          let(:new_employee) { build(:emp_***REMOVED***) }
+          before { new_workplace['id_tn'] = new_employee['id'] }
+
+          it 'set responsible_fio' do
+            subject.run
+
+            expect(old_workplace.reload.responsible_fio).to eq new_employee['fullName']
+          end
         end
 
         context 'and when have item with properties assign barcode' do
@@ -111,6 +123,26 @@ module Invent
           end
         end
 
+        context 'when wp have order is processing and updates property_values for item' do
+          let(:inv_item) { old_workplace.items.first }
+          let(:w_item) { create(:used_item, count_reserved: 1, inv_item: inv_item, status: :waiting_write_off) }
+          let(:operation) { build(:order_operation, item: w_item, inv_item_ids: [inv_item.item_id], shift: 1) }
+          let!(:order) { create(:order, inv_workplace: old_workplace, operations: [operation]) }
+
+          let(:new_value) { 'New str value' }
+          before do
+            new_workplace['items_attributes'].first['property_values_attributes'].each do |prop_val|
+              prop_val['value'] = new_value
+            end
+          end
+
+          it 'updates item_model in operation' do
+            subject.run
+
+            expect(operation.reload.item_model).to eq inv_item.reload.full_item_model
+          end
+        end
+
         its(:run) { is_expected.to be_truthy }
       end
 
@@ -128,6 +160,8 @@ module Invent
 
           wp.data['location_room_id'] = room.room_id
           wp.data['id_tn'] = employee.first['id']
+
+          wp.data.delete('required_show_responsible')
 
           new_mon = workplace_2.items.last.as_json(include: :property_values)
           new_mon['status'] = 'prepared_to_swap'

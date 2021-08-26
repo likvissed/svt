@@ -13,6 +13,7 @@ module Invent
       end
 
       def run
+        set_responsible_fio
         fill_swap_arr
         if @workplace_params['items_attributes'].present?
           assing_barcode

@@ -28,6 +28,11 @@ import { app } from '../../app/app';
       .then(() => {
         this.items = this.Item.items;
         this.$scope.$emit('removeDuplicateInvItems', this.items);
+
+        // Запрет на добавление дублирующей операции с одинаковой техникой и вывода ошибки "Необходимо указать инвентарный номер (или штрих-код) и выбрать технику"
+        if (this.items.length == 0) {
+          this.$scope.$parent.select.FindExistingItemService.selectedItem = null;
+        }
       }
     );
   };

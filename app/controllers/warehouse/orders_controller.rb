@@ -141,7 +141,7 @@ module Warehouse
     end
 
     def confirm
-      @confirm = Orders::Confirm.new(current_user, params[:id])
+      @confirm = Orders::Confirm.new(current_user, params[:id], params[:comment])
 
       if @confirm.run
         render json: { full_message: I18n.t('controllers.warehouse/order.confirmed', order_id: params[:id]) }

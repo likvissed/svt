@@ -10,6 +10,11 @@
         placeholder: "Введите ФИО", "ng-model": "wp.workplace.id_tn",
         "uib-typeahead": "user.id as user.fullName for user in wp.users | filter:$viewValue", "typeahead-show-hint": true,
         "typeahead-min-length": 0, "typeahead-input-formatter": "wp.formatLabel($model)"
+
+  .col-sm-24
+    .form-group ng-if="wp.workplace.required_show_responsible == true && wp.workplace.responsible_fio"
+      = label_tag :workplace_id_tn, "* ФИО предыдущего ответственного", class: "control-label"
+      = text_field_tag "workplace[responsible_fio]", "", class: "form-control", "ng-model": "wp.workplace.responsible_fio", "ng-disabled": "true"
 .row
   .col-sm-24
     .form-group

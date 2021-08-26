@@ -26,6 +26,16 @@ module Warehouse
           expect(subject).to receive(:broadcast_out_orders)
           subject.run
         end
+
+        context 'and when in order adds comment' do
+          let(:comment) { 'Ордер утвержден, и это комментарий к нему' }
+          subject { Confirm.new(manager, order.id, comment) }
+
+          it 'comment is update' do
+            subject.run
+            expect(order.reload.comment).to eq comment
+          end
+        end
       end
 
       context 'when :operation attribute is "in"' do

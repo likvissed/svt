@@ -7,7 +7,8 @@ module Warehouse
         end
 
         def update_warehouse_item(w_item, inv_item)
-          w_item.update!(item_model: inv_item.full_item_model)
+          # атрибут allow_update_model_or_type добавлен, тк в DoneState(сразу исполнение ордера) он передан
+          w_item.update!(item_model: inv_item.full_item_model, allow_update_model_or_type: true)
         end
 
         def broadcast_data
