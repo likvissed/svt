@@ -320,7 +320,16 @@ module Invent
 
     def prevent_destroy
       order = warehouse_orders.find(&:processing?)
-      return unless order
+      unless order
+        # Для сохранения информации об удаленной техники в логах
+        obj_item = {}
+        obj_item[:item] = inspect
+        obj_item[:barcode_item] = barcode_item.inspect
+        obj_item[:property_values] = property_values.inspect
+        Rails.logger.info "delete item: #{obj_item}".red
+
+        return
+      end
 
       errors.add(:base, :cannot_destroy_with_processing_operation, order_id: order.id)
       throw(:abort)
