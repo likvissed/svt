@@ -78,6 +78,7 @@ module Warehouse
 
           op_selected = true
           op.set_stockman(current_user)
+          op.re_stick_barcode = true
           if op.item
             if Invent::Property::LIST_TYPE_FOR_BARCODES.include?(op.item.item_type.to_s.downcase)
               op.item.count = 1

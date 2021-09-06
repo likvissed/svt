@@ -14,7 +14,7 @@ module Warehouse
     validate :uniq_item_by_processing_operation, if: -> { item.try(:used?) && item_id_changed? }
     validate :presence_warehouse_receiver_fio, if: -> { presence_w_receiver_fio == true && operationable.try(:operation) == 'out' && done? }
     validate :check_worker_w_receiver_fio, if: -> { worker_w_receiver_fio == true && warehouse_receiver_fio_changed? }
-    validate :presence_re_stick_barcode, if: -> { re_stick_barcode == true && operationable.try(:operation) == 'out' && done? }
+    validate :presence_re_stick_barcode, if: -> { re_stick_barcode == true }
 
     after_initialize :set_initial_status, if: -> { new_record? }
     after_initialize :set_initial_shift, if: -> { new_record? }

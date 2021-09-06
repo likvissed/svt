@@ -124,7 +124,12 @@ module Warehouse
         @order_state = @order.done? && @order.dont_calculate_status ? Orders::In::DoneState.new(@order) : Orders::In::ProcessingState.new(@order)
 
         # Если ордер сразу создается и исполняется, проверить существует ли связь между inv_item и warehouse_item
-        @order.execute_in = true if @order.dont_calculate_status
+        if @order.dont_calculate_status
+          @order.execute_in = true
+
+          # И проверить имеется ли техника с неправильным штри-кодом
+          @order.operations.each { |op| op.re_stick_barcode = true }
+        end
 
         @order.set_creator(current_user)
 

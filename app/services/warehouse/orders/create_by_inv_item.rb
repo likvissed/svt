@@ -82,6 +82,7 @@ module Warehouse
           item_model: @inv_item.full_item_model
         )
         op.set_stockman(current_user)
+        op.re_stick_barcode = true
         op.inv_item_ids = [@inv_item.item_id]
       end
 
@@ -114,6 +115,7 @@ module Warehouse
         )
         op.change_inv_item(new_status)
         op.item.status = new_status
+        op.re_stick_barcode = true
         @order_state.edit_warehouse_item_for(op)
       end
 
