@@ -92,7 +92,7 @@ module Warehouse
         ).each do |item|
           item['range_inv_nums'] = item['invent_num_end'].to_i.zero? ? '' : "#{item['invent_num_start']} - #{item['invent_num_end']}"
 
-          item['barcode_item'] = if item['invent_item_id'].present?
+          item['barcode_item'] = if item['invent_item_id'].present? && item['inv_item'].present?
                                    item['inv_item']['barcode_item']['id']
                                  elsif item['barcode_item'].present?
                                    item['barcode_item']['id']
