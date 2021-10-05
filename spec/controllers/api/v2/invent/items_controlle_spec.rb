@@ -18,6 +18,7 @@ module Api
                                                  {
                                                    workplace: {
                                                      include: [
+                                                       :workplace_count,
                                                        :workplace_type,
                                                        :iss_reference_site,
                                                        :iss_reference_building,
@@ -71,6 +72,7 @@ module Api
                 {
                   workplace: {
                     include: [
+                      :workplace_count,
                       :workplace_type,
                       :iss_reference_site,
                       :iss_reference_building,

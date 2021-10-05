@@ -47,7 +47,7 @@ module Api
           workplace_count = params[:dept].present? ? ::Invent::WorkplaceCount.find_by(division: params[:dept]) : ''
 
           if (params[:dept].present? && workplace_count.blank?) || (params[:barcode].present? && params[:barcode].scan(/\D/).empty? == false) ||
-             (params[:fio].blank? && params[:invent_num].blank? && params[:barcode].blank? && params[:dept].blank? && params[:id_tn].blank?)
+             (params[:fio].blank? && params[:invent_num].blank? && params[:barcode].blank? && params[:dept].blank? && params[:id_tn].blank? && params[:type_id].blank?)
             render json: []
           else
             filtering_params = {}
@@ -55,18 +55,20 @@ module Api
             filtering_params[:invent_num] = params[:invent_num]
             filtering_params[:barcode_item] = params[:barcode]
             filtering_params[:workplace_count_id] = workplace_count.try(:workplace_count_id)
+            filtering_params[:type_id] = params[:type_id]
             filtering_params[:id_tn] = params[:id_tn]
 
             result = ::Invent::Item
                        .filter(filtering_params)
                        .where(status: :in_workplace)
-                       .includes(:type, :model, :barcode_item, { workplace: %i[workplace_type iss_reference_site iss_reference_building iss_reference_room] })
+                       .includes(:type, :model, :barcode_item, { workplace: %i[workplace_count workplace_type iss_reference_site iss_reference_building iss_reference_room] })
                        .as_json(
                          include: [
                            :barcode_item,
                            {
                              workplace: {
                                include: [
+                                 :workplace_count,
                                  :workplace_type,
                                  :iss_reference_site,
                                  :iss_reference_building,
