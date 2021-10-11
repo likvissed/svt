@@ -4,6 +4,8 @@ x-app: &app
   build:
     context: .
     dockerfile: .docker/app/app.prod.Dockerfile
+    cache_from:
+      - ${CI_REGISTRY_IMAGE}/${DEPLOY_PROJECT_NAME}_app:latest
     args:
       RUBY_VERSION: 2.5.5
       BUNDLER_VERSION: 2.0.2
@@ -54,13 +56,15 @@ services:
 
   nginx:
     <<: *syslog-driver
+    image: ${CI_REGISTRY_IMAGE}/${DEPLOY_PROJECT_NAME}_nginx
     build:
       context: .
       dockerfile: .docker/nginx/nginx.Dockerfile
+      cache_from:
+        - ${CI_REGISTRY_IMAGE}/${DEPLOY_PROJECT_NAME}_nginx:latest
       args:
         RAILS_ROOT: /app
         APP_HOSTNAME: svt
-    image: ${CI_REGISTRY_IMAGE}/${DEPLOY_PROJECT_NAME}_nginx
     restart: unless-stopped
     ports:
       - 80:80
