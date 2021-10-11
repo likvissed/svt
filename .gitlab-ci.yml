@@ -12,6 +12,8 @@ docker-build-master:
     - cp $DOTENV .env
     - cp $DATABASE config/database.yml
   script:
+    - export COMPOSE_DOCKER_CLI_BUILD=1 DOCKER_BUILDKIT=1
+    - docker-compose -f docker-compose.prod.yml -p svt pull
     - docker-compose -f docker-compose.prod.yml -p svt build --build-arg http_proxy=$http_proxy --build-arg https_proxy=$https_proxy
     - docker-compose -f docker-compose.prod.yml -p svt push
     - docker-compose -f docker-compose.prod.yml -p svt -H "ssh://$DEPLOY_USER@$PRODUCTION_SERVER" pull
