@@ -61,6 +61,8 @@ module Invent
         data['items_attributes'] = data['items']
         data['attachments_attributes'] = data['attachments']
 
+        data['count_freeze'] = Workplace.where(status: :freezed).where(workplace_count_id: data['workplace_count_id']).count
+
         employee = UsersReference.info_users("id==#{data['id_tn'].to_i}").first
         data['required_show_responsible'] = (employee.try(:[], 'fullName') != data['responsible_fio'])
 

@@ -72,12 +72,14 @@ module Api
                 {
                   workplace: {
                     include: [
-                      :workplace_count,
                       :workplace_type,
                       :iss_reference_site,
                       :iss_reference_building,
                       {
                         iss_reference_room: { except: :security_category_id }
+                      },
+                      {
+                        workplace_count: { except: %i[time_start time_end] }
                       }
                     ],
                     except: %i[create_time]
@@ -92,6 +94,7 @@ module Api
               except: %i[create_time modify_time],
               methods: :short_item_model
             )
+
             data['workplace']['user_fio'] = employee['fullName']
             data
           end
@@ -132,6 +135,15 @@ module Api
               before { allow(response).to receive(:body).and_return(result_data) }
 
               it 'loads item with barcode' do
+                expect(response.body).to eq result_data
+              end
+            end
+
+            context 'and when the parameter type_id is received' do
+              let(:params) { { type_id: item.type_id } }
+              before { allow(response).to receive(:body).and_return(result_data) }
+
+              it 'loads item with type_id' do
                 expect(response.body).to eq result_data
               end
             end

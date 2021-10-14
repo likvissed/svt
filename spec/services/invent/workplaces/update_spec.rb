@@ -162,6 +162,7 @@ module Invent
           wp.data['id_tn'] = employee.first['id']
 
           wp.data.delete('required_show_responsible')
+          wp.data.delete('count_freeze')
 
           new_mon = workplace_2.items.last.as_json(include: :property_values)
           new_mon['status'] = 'prepared_to_swap'
