@@ -53,6 +53,7 @@ module ServiceMacros
     end
     wp.data.delete('new_attachment')
     wp.data.delete('required_show_responsible')
+    wp.data.delete('count_freeze')
 
     # Меняем состав рабочего места
     new_mon = wp.data['items_attributes'].deep_dup.last

@@ -1,3 +1,12 @@
+.row ng-show="wp.workplace.count_freeze != 0 && wp.workplace.division"
+  - if current_user.one_of_roles? :admin, :manager, :worker
+    .col-sm-24
+      p.bg-extra.context-info
+        ' В отделе №
+        | {{ wp.workplace.division.division }} 
+        ' замороженных рабочих мест 
+        | {{ wp.workplace.count_freeze }} 
+        ' шт.
 .row.animate-show.ng-hide ng-show="wp.workplace.workplace_type.workplace_type_id != 0"
   - if current_user.one_of_roles? :admin, :manager, :worker  
     span ng-if="wp.workplace.location_obj.room && wp.workplace.location_obj.room.security_category_id != wp.workplace.no_secrecy.id"
