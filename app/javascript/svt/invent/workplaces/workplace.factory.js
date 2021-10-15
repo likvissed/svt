@@ -225,9 +225,24 @@ import { app } from '../../app/app';
 
     this.workplace.workplace_count_id = this.workplace.division.workplace_count_id;
 
+    this.loadCountFreeze();
+
     return this.Server.UserIss.usersFromDivision(
       { division: this.workplace.division.division },
       (data) => this.users = angular.copy(data),
+      (response, status) => this.Error.response(response, status)
+    ).$promise;
+  };
+
+  /**
+   * Загрузить информацию о замороженных рабочих местах для выбранного отдела
+   */
+  Workplace.prototype.loadCountFreeze = function() {
+    return this.Server.Invent.Workplace.countFreeze(
+      { workplace_count_id: this.workplace.workplace_count_id },
+      (data) => {
+        this.workplace.count_freeze = data.count;
+      },
       (response, status) => this.Error.response(response, status)
     ).$promise;
   };

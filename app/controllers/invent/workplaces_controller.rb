@@ -128,6 +128,10 @@ module Invent
       send_file(Rails.root.join('public', 'downloads', 'SysInfo.exe'), disposition: 'attachment')
     end
 
+    def count_freeze
+      render json: { count: Workplace.where(status: :freezed).where(workplace_count_id: params['workplace_count_id']).count }
+    end
+
     protected
 
     def workplace_params

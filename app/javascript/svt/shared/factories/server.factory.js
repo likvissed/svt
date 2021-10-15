@@ -53,6 +53,10 @@ import { app } from '../../app/app';
           hardDelete: {
             method: 'DELETE',
             url   : '/invent/workplaces/:workplace_id/hard_destroy'
+          },
+          countFreeze: {
+            method: 'GET',
+            url   : '/invent/workplaces/count_freeze/:workplace_count_id'
           }
         }),
         /**

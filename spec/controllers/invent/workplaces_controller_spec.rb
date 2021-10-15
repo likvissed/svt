@@ -187,5 +187,16 @@ module Invent
         put :confirm
       end
     end
+
+    describe 'GET #count_freeze' do
+      let!(:workplace) { create(:workplace_pk, :add_items, items: %i[pc monitor], workplace_count: workplace_count, status: :freezed) }
+      let(:params) { { workplace_count_id: workplace_count.workplace_count_id } }
+
+      it 'load the count of frozen workpalces' do
+        get :count_freeze, params: params
+
+        expect(JSON.parse(response.body)['count']).to eq(1)
+      end
+    end
   end
 end

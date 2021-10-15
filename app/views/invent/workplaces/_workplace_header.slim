@@ -10,12 +10,14 @@
         ' Отдел:
 
     .navbar-form.navbar-left
-      .form-group.ui-select
-        ui-select ng-model="wp.workplace.division" on-select="wp.loadUsers()" theme="bootstrap"
-          ui-select-match
-            | {{ $select.selected.division }}
-          ui-select-choices repeat="obj in wp.divisions | filter: $select.search"
-            div ng-bind-html="obj.division | highlight: $select.search"
+      .form-group
+        span ng-class="{ 'bg-freeze ': wp.workplace.count_freeze && wp.workplace.count_freeze != 0 }" uib-tooltip="В текущем отделе имеются замороженные рабочие места" tooltip-enable="wp.workplace.count_freeze && wp.workplace.count_freeze != 0"
+          .ui-select
+            ui-select ng-model="wp.workplace.division" on-select="wp.loadUsers()" theme="bootstrap"
+              ui-select-match 
+                | {{ $select.selected.division }}
+              ui-select-choices repeat="obj in wp.divisions | filter: $select.search"
+                div ng-bind-html="obj.division | highlight: $select.search"
       span<>
       - if !current_user.role? :***REMOVED***_user
         .form-group

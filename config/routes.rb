@@ -35,6 +35,8 @@ Rails.application.routes.draw do
         put 'confirm', to: 'workplaces#confirm'
         # Скачать скрипт для генерации файла конфигурации ПК
         get 'pc_script', to: 'workplaces#send_pc_script'
+        # Получить количество замороженных рабочих мест у данного отдела
+        get 'count_freeze/:workplace_count_id', to: 'workplaces#count_freeze', constraints: { workplace_count_id: /\d+/ }
       end
 
       put 'update', as: 'update', on: :collection
