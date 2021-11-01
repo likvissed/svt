@@ -270,6 +270,18 @@ import { app } from '../../app/app';
             headers         : { 'Content-Type': undefined },
             transformRequest: angular.identity
           }
+        }),
+        Request: $resource('/warehouse/requests/:id.json', {}, {
+          query    : { isArray: false },
+          newSupply: {
+            method : 'GET',
+            url    : '/warehouse/requests/new',
+            isArray: false
+          },
+          edit: {
+            method: 'GET',
+            url   : '/warehouse/requests/:id/edit.json'
+          }
         })
       },
       Statistics: $resource('/statistics', {}, {

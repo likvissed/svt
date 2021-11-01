@@ -1,0 +1,64 @@
+script type="text/ng-template" id="editRequestModal.slim"
+  form role="form" name="edit.form" data-method="edit.method"
+    .modal-header
+      .pull-left
+        h4
+          = "Заявка №: {{ edit.request.request_id }}"
+      .pull-right
+        h4
+          = "{{ edit.request.status_translated }}"
+        / .icon-block
+          = render partial: 'templates/load_spinner'
+        / .icon-block ng-show="edit.supply.id"
+          = fa_icon "refresh 2x fw", class: "pointer", "tooltip-placement": "top", "tooltip-append-to-body": true, "uib-tooltip": "Загрузить данные о поставке заново",
+            "ng-click": "edit.reloadSupply()"
+    .modal-body
+      .row
+        .col-lg-24.col-xs-22
+          uib-accordion ng-cloak="true"
+            div uib-accordion-group="true" class="panel-default" is-open="edit.tabs.user"
+              uib-accordion-heading
+                | Информация о пользователе
+                i.pull-right
+                  span ng-if="edit.tabs.user"
+                    = fa_icon "chevron-down"
+                  span ng-if="!edit.tabs.user"
+                    = fa_icon "chevron-right"
+              .row
+                .col-lg-12
+                  .form-group
+                    = label_tag "request[user_fio]", "ФИО:", class: "control-label"
+                    span.col-lg-offset-1 ng-bind="edit.request.user_fio"
+
+                .col-lg-12
+                  .form-group
+                    = label_tag "request[user_dept]", "Отдел:", class: "control-label"
+                    span.col-lg-offset-1 ng-bind="edit.request.user_dept"
+              .row
+                .col-lg-12
+                  .form-group
+                    = label_tag "request[user_phone]", "Телефон:", class: "control-label"
+                    span.col-lg-offset-1 ng-bind="edit.request.user_phone"
+      .row
+        .col-sm-24
+          uib-accordion ng-cloak="true"
+            div uib-accordion-group="true" class="panel-default" is-open="edit.tabs.req"
+              uib-accordion-heading
+                | Данные заявки
+                i.pull-right
+                  span ng-if="edit.tabs.req"
+                    = fa_icon "chevron-down"
+                  span ng-if="!edit.tabs.req"
+                    = fa_icon "chevron-right"
+
+              .row
+                
+
+
+
+    / pre 
+      | {{ edit.request | json }}
+    .modal-footer
+      = button_tag "Сохранить", class: "btn-success btn-sm", "ng-click": "edit.ok()"
+      = button_tag "Закрыть", class: "btn-default btn-sm", "ng-click": "edit.cancel()"
+

@@ -139,6 +139,8 @@ Rails.application.routes.draw do
     get 'attachment_orders/download/:id', to: 'attachment_orders#download', as: 'attachment_orders/download'
 
     resources :supplies
+
+    resources :requests
   end
 
   # Получить html-код кнопки "Добавить запись"
@@ -171,6 +173,13 @@ Rails.application.routes.draw do
         get 'items/:barcode', to: 'items#barcode'
          # Поиска техники по filtering_params, возвращает массив
         get 'search_items', to: 'items#search_items'
+      end
+    end
+
+    namespace :v3 do
+      namespace :warehouse do
+        # Добавление новой заявки
+        post 'new', to: 'requests#new'
       end
     end
   end

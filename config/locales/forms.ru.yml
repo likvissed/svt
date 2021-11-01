@@ -1,0 +1,15 @@
+ru:
+  activemodel:
+    attributes:
+      warehouse/requests/new/office_equipment:
+        category: 'Наименование категории'
+        number_***REMOVED***: '№ заявки в системе "Орбита"'
+        user_tn: 'Табельный номер пользователя'
+        user_fio: 'ФИО пользователя'
+
+    errors:
+      models:
+        warehouse/requests/new/office_equipment:
+          attributes:
+            base:
+              warehouse_request_items_is_blank: 'Список требуемой техники не может быть пустым'

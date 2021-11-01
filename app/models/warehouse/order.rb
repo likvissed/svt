@@ -10,6 +10,7 @@ module Warehouse
     has_many :inv_items, through: :operations
     has_many :items, through: :operations
     has_one :attachment, dependent: :destroy, foreign_key: 'order_id', class_name: 'AttachmentOrder', inverse_of: :order
+    has_one :request, dependent: :destroy, foreign_key: 'order_id', inverse_of: :order
 
     belongs_to :inv_workplace, foreign_key: 'invent_workplace_id', class_name: 'Invent::Workplace', optional: true
 

@@ -200,6 +200,20 @@ ru:
       warehouse/attachment_order:
         document: 'Вложенный файл'
 
+      warehouse/request:
+        statuses:
+          new: 'Новая'
+          analysis: 'Анализ'
+          check: 'Проверка'
+          on_signature: 'На подписи'
+          waiting_confirmation_for_user: 'Ожидает подтверждение пользователя'
+          in_work: 'В работе'
+          closed: 'Закрытая'
+        categories:
+          office_equipment: 'Оргтехника'
+          printing: 'Печатная техника'
+          expendable_materials: 'Расходка'
+
       user:
         tn: Табельный номер
         role: Роль

@@ -74,6 +74,9 @@ gem 'redis-rails'
 gem 'actionpack-action_caching'
 gem 'rails-observers'
 
+gem "reform"
+gem "reform-rails"
+
 group :test do
   gem 'database_cleaner'
   gem 'json_spec'
