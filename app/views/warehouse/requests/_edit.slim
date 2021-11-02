@@ -3,7 +3,9 @@ script type="text/ng-template" id="editRequestModal.slim"
     .modal-header
       .pull-left
         h4
-          = "Заявка №: {{ edit.request.request_id }}"
+          = "Заявка № {{ edit.request.request_id }}"
+          |  
+          = "(заявка в Orbita № {{ edit.request.number_***REMOVED*** }})"
       .pull-right
         h4
           = "{{ edit.request.status_translated }}"
@@ -52,13 +54,61 @@ script type="text/ng-template" id="editRequestModal.slim"
                     = fa_icon "chevron-right"
 
               .row
+                table.table
+                  thead
+                    tr
+                      th.text-center №
+                      th Наименование
+                      th Описание
+                      th.text-center Количество
+                      th Обоснование
+                  tbody
+                    tr  ng-repeat="item in edit.request.request_items track by $index"
+                      td.col-fhd-1.text-center ng-bind="$index + 1"
+                      td.col-fhd-2 ng-bind="item.name"
+                      td.col-fhd-2 ng-bind="item.properties_string"
+                      td.col-fhd-1.text-center ng-bind="item.count"
+                      td.col-fhd-4 ng-bind="item.reason"
+              .row ng-if="edit.request.attachments.length"
+                .panel.panel-default
+                  .panel-heading
+                    .form-group
+                      = label_tag "request[files]", "Прикрепленные файлы:", class: "control-label"
+                      li ng-repeat="attachment in edit.request.attachments"
+                        a ng-href="/warehouse/attachment_requests/download/{{ attachment.id }}" target="_blank"
+                          | {{ attachment.filename }}
+              span ng-if="edit.request.category == 'office_equipment'"
+                = render partial: 'office_equipment'
                 
+      .row ng-if="edit.request.order"
+        .col-sm-24
+          uib-accordion ng-cloak="true"
+            div uib-accordion-group="true" class="panel-default" is-open="edit.tabs.req"
+              uib-accordion-heading
+                | Расходный ордер
+                i.pull-right
+                  span ng-if="edit.tabs.req"
+                    = fa_icon "chevron-down"
+                  span ng-if="!edit.tabs.req"
+                    = fa_icon "chevron-right"
+
+              .row
+                table.table
+                  thead
+                    tr
+                      th.text-center №
+                  tbody
+                    tr ng-repeat=""
+                      td.col-fhd-1 ng-bind="$index + 1"
 
 
 
     / pre 
       | {{ edit.request | json }}
     .modal-footer
-      = button_tag "Сохранить", class: "btn-success btn-sm", "ng-click": "edit.ok()"
+      - if current_user.role? :admin
+        span ng-if="edit.request.category == 'office_equipment' && edit.request.status == 'new'"
+          .pull-left
+            = button_tag "Назначить", class: "btn-success", "ng-click": "edit.assignUser()", "uib-tooltip": "Назначить исполнителя и сохранить комментарий"
       = button_tag "Закрыть", class: "btn-default btn-sm", "ng-click": "edit.cancel()"
 

@@ -1,11 +1,31 @@
 ru:
   activemodel:
     attributes:
+      warehouse/requests/send_for_analysis:
+        executor_fio: 'wewe'
+  activemodel:
+    errors:
+      models:
+        warehouse/requests/send_for_analysis:
+          attributes:
+            executor_fio: 'Наименование категории'
+  activemodel:
+    models:
+      warehouse/request:
+        attributes:
+          one: 'eew'
+          executor_fio: 'Наименование категории'
+          count: '23'
+    attributes:
+      warehouse/requests:
+        executor_fio: 'Наименование категории'
       warehouse/requests/new/office_equipment:
         category: 'Наименование категории'
         number_***REMOVED***: '№ заявки в системе "Орбита"'
         user_tn: 'Табельный номер пользователя'
         user_fio: 'ФИО пользователя'
+      warehouse/requests/send_for_analysis:
+        executor_fio: 'Наименование категории'
 
     errors:
       models:
@@ -13,3 +33,8 @@ ru:
           attributes:
             base:
               warehouse_request_items_is_blank: 'Список требуемой техники не может быть пустым'
+        warehouse/requests/send_for_analysis:
+          attributes:
+            executor_fio: 'Наименование категории'
+
+              

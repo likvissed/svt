@@ -201,6 +201,7 @@ ru:
         document: 'Вложенный файл'
 
       warehouse/request:
+        executor_fio: 'ФИО исполнителя'
         statuses:
           new: 'Новая'
           analysis: 'Анализ'

@@ -272,10 +272,10 @@ import { app } from '../../app/app';
           }
         }),
         Request: $resource('/warehouse/requests/:id.json', {}, {
-          query    : { isArray: false },
-          newSupply: {
-            method : 'GET',
-            url    : '/warehouse/requests/new',
+          query          : { isArray: false },
+          sendForAnalysis: {
+            method : 'PUT',
+            url    : '/warehouse/requests/:id/send_for_analysis',
             isArray: false
           },
           edit: {

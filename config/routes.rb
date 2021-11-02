@@ -140,7 +140,11 @@ Rails.application.routes.draw do
 
     resources :supplies
 
-    resources :requests
+    resources :requests, only: [:index] do
+      put 'send_for_analysis', to: 'requests#send_for_analysis', on: :member
+    end
+
+    get 'attachment_requests/download/:id', to: 'attachment_requests#download', as: 'attachment_requests/download'
   end
 
   # Получить html-код кнопки "Добавить запись"

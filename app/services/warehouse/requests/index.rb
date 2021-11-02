@@ -25,7 +25,7 @@ module Warehouse
 
       def load_requests
         data[:recordsTotal] = Request.count
-        @requests = Request.all.as_json #.includes(:operations)
+        @requests = Request.all.includes(:request_items, :attachments, :order) #.includes(:operations)
       end
 
       def limit_records
@@ -34,10 +34,25 @@ module Warehouse
       end
 
       def prepare_to_render
-        data[:data] = @requests.each do |request| #.as_json(include: :operations)
+        # Rails.logger.info "@requests: #{@requests.inspect}".red
+        data[:data] = @requests.as_json(include: %i[request_items attachments order]).each do |request|
           request['created_at'] = request['created_at'].strftime('%d-%m-%Y')
           request['status_translated'] = Request.translate_enum(:status, request['status'])
           request['category_translate'] = Request.translate_enum(:category, request['category'])
+
+          request['request_items'].each do |item|
+            item['properties_string'] = item['properties'].present? ? properties_string(item['properties']) : 'Отсутствует'
+          end
+
+          if request['attachments'].present?
+            request['attachments'].each { |att| att['filename'] = att['document'].file.nil? ? 'Файл отсутствует' : att['document'].identifier }
+          end
+        end
+      end
+
+      def properties_string(properties)
+        properties.map do |prop|
+          "#{prop['name']} - #{prop['value']}"
         end
       end
     end

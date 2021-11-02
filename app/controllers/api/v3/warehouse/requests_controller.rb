@@ -6,8 +6,7 @@ module Api
         # skip_before_action :verify_authenticity_token
 
         def new
-          @request_form = ::Api::V3::Warehouse::Requests::NewOfficeEquipmentForm.new(::Warehouse::Request.new)
-          # Rails.logger.info "request_form: #{@request_form.inspect}".magenta
+          @form = ::Api::V3::Warehouse::Requests::NewOfficeEquipmentForm.new(::Warehouse::Request.new)
 
           case params['category']
           when 1
@@ -50,13 +49,13 @@ module Api
             render json: { full_message: 'Неверная категория заявки' }, status: 422
           end
 
-          if @request_form.validate(request_json)
-            # @request_form.save
-            # Rails.logger.info "success: #{@request_form.inspect}".green
+          if @form.validate(request_json)
+            @form.save
+            # Rails.logger.info "success: #{@form.inspect}".green
             render json: { full_message: 'Заявка создана' }, status: 200
           else
-            # Rails.logger.info "error: #{@request_form.inspect}".red
-            render json: { full_message: @request_form.errors.full_messages.join('. ') }, status: 422
+            # Rails.logger.info "error: #{@form.inspect}".red
+            render json: { full_message: @form.errors.full_messages.join('. ') }, status: 422
           end
         end
       end

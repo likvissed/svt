@@ -1,0 +1,18 @@
+.row
+  .col-lg-12
+    .form-group
+      = label_tag "request[executor_fio]", "Исполнитель", class: "control-label"
+      span ng-if="edit.request.status == 'new'"
+        = hidden_field_tag "request[executor]", "", "ng-model": "edit.request.executor"
+        search-user.full-width selected-user="edit.request.executor"
+      span ng-if="edit.request.status != 'new'"
+        = text_field_tag "request[executor_fio]", "", class: "form-control", "ng-model": "edit.request.executor_fio", "ng-disabled": "edit.request.status != 'new'"
+.row
+  .col-lg-24
+    .form-group
+      = label_tag "request[comment]", "Комментарий:", class: "control-label"
+      = text_area_tag "request[comment]", "", class: "form-control", "ng-model": "edit.request.comment", rows: "2", "ng-disabled": "edit.request.status != 'new'"
+/ .row.pull-right
+  .col-lg-12
+    .form-group
+      = button_tag "Назначить", class: "btn-success btn", "ng-click": "edit.ok(true)"
