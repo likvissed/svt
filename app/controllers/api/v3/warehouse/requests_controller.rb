@@ -5,58 +5,62 @@ module Api
         skip_before_action :authenticate_user!
         # skip_before_action :verify_authenticity_token
 
-        def new
+        def new_office_equipment
           @form = ::Api::V3::Warehouse::Requests::NewOfficeEquipmentForm.new(::Warehouse::Request.new)
 
-          case params['category']
-          when 1
-            request = ::Warehouse::Request.new(
-              number_***REMOVED***: params['number_***REMOVED***'],
+          request = ::Warehouse::Request.new(
+            status: 'new',
+            category: 'office_equipment',
+            number_***REMOVED***: params['id'],
 
-              user_tn: params['parametrs']['user_tn'],
-              user_fio: params['parametrs']['user_fio'],
-              user_dept: params['parametrs']['user_dept'],
-              user_phone: params['parametrs']['user_phone']
+            user_tn:  params['parameters']['common']['tn'],
+            user_fio: params['parameters']['common']['fio']
+          )
+
+          user = find_user(request.user_tn)
+          request.user_dept = user.first.try(:[], 'departmentForAccounting')
+          request.user_phone = user.first.try(:[], 'phoneText')
+
+          params['parameters']['table_data'].each do |data|
+            request.request_items.build(
+              type_name: data['type'],
+              name: 'Системный блок',
+              count: 1,
+              reason: data['reason'],
+              invent_num: data['invent_num'],
+              properties: data['properties']
             )
-
-            params['parametrs']['columns'].each do |item|
-              request.request_items.build(
-                name: item['name'],
-                reason: item['reason'],
-                count: item['count'],
-                properties: item['properties']
-              )
-            end
-
-            # Если имеются прикрепленные файлы
-            if params['files'].present?
-              params['files'].each do |file|
-                request.attachments.build(document: file['doc'])
-              end
-            end
-
-            # fo = File.new "/home/lika/Загрузки/123211.pdf"
-            # request.attachments.build(document: fo)
-
-            # Преобразование в json params
-            request_json = request.as_json
-            request_json['request_items'] = request.request_items.as_json
-            request_json['attachments'] = request.attachments.as_json if request.attachments.present?
-            Rails.logger.info "request json: #{request_json}".red
-          when 2
-          when 3
-          else
-            render json: { full_message: 'Неверная категория заявки' }, status: 422
           end
 
+          # Если имеются прикрепленные файлы
+          if params['parameters']['files'].present?
+            params['files'].each do |file|
+              request.attachments.build(document: file['doc'])
+            end
+          end
+
+          # fo = File.new "/home/lika/Загрузки/123211.pdf"
+          # request.attachments.build(document: fo)
+
+          # Преобразование в json params
+          request_json = request.as_json
+          request_json['request_items'] = request.request_items.as_json
+          request_json['attachments'] = request.attachments.as_json if request.attachments.present?
+          Rails.logger.info "request json: #{request_json}".yellow
+
           if @form.validate(request_json)
-            @form.save
+            # @form.save
             # Rails.logger.info "success: #{@form.inspect}".green
             render json: { full_message: 'Заявка создана' }, status: 200
           else
             # Rails.logger.info "error: #{@form.inspect}".red
             render json: { full_message: @form.errors.full_messages.join('. ') }, status: 422
           end
+        end
+
+        # Поиск пользователя в НСИ
+        def find_user(tn)
+          UsersReference.info_users("personnelNo==#{tn}")
         end
       end
     end

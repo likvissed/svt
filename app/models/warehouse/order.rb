@@ -10,9 +10,9 @@ module Warehouse
     has_many :inv_items, through: :operations
     has_many :items, through: :operations
     has_one :attachment, dependent: :destroy, foreign_key: 'order_id', class_name: 'AttachmentOrder', inverse_of: :order
-    has_one :request, dependent: :destroy, foreign_key: 'order_id', inverse_of: :order
 
     belongs_to :inv_workplace, foreign_key: 'invent_workplace_id', class_name: 'Invent::Workplace', optional: true
+    belongs_to :request, foreign_key: 'request_id', optional: true, inverse_of: :order
 
     validates :operation, :status, :creator_fio, presence: true
     # validates :consumer_dept, presence: true, if: -> { in? && done? }
@@ -29,6 +29,7 @@ module Warehouse
     validate :present_user_iss
     validate :present_item_for_barcode, if: -> { operation == 'out' && invent_num.present? && property_with_barcode == true }
     validate :check_absent_warehouse_items_for_inv_item, if: -> { execute_in == true }
+    validate :present_request_id, if: -> { request_id.present? }
 
     after_initialize :set_initial_status, if: -> { new_record? }
     before_validation :set_consumer, if: -> { consumer_fio.blank? || consumer_id_tn.blank? }
@@ -42,6 +43,7 @@ module Warehouse
     before_update :prevent_update_done_order
     before_update :prevent_update_attributes
     before_destroy :prevent_destroy, prepend: true
+    after_create :update_status_for_request, if: -> { out? && request.present? }
 
     scope :id, ->(id) { where(id: id) }
     scope :invent_workplace_id, ->(invent_workplace_id) { where(invent_workplace_id: invent_workplace_id) }
@@ -232,6 +234,14 @@ module Warehouse
       errors.add(:base, :workplace_not_present, workplace_id: invent_workplace_id)
     end
 
+    def present_request_id
+      return errors.add(:base, :request_not_present, request_id: request_id) if request.blank?
+
+      return if request.status == 'analysis'
+
+      errors.add(:base, :status_request_not_analysis, request_id: request_id)
+    end
+
     def set_initial_status
       self.status ||= :processing
     end
@@ -368,6 +378,11 @@ module Warehouse
         errors.add(:base, :cannot_destroy_with_done_operations)
         throw(:abort)
       end
+    end
+
+    # Изменить статус заявки
+    def update_status_for_request
+      request.update(status: :check)
     end
 
     # Проверка перед созданием расходного ордера и его исполнением на существование РМ,

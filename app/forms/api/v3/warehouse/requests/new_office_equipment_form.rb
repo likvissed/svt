@@ -3,20 +3,20 @@ module Api
     module Warehouse
       module Requests
         class NewOfficeEquipmentForm < Reform::Form
-          property :category, default: 'office_equipment'
-          property :status, default: 'new'
-
           property :number_***REMOVED***, validates: { presence: true }
+          property :status, validates: { presence: true }
+          property :category, validates: { presence: true }
 
           property :user_tn, validates: { presence: true }
           property :user_fio, validates: { presence: true }
-          property :user_dept
+          property :user_dept, validates: { presence: true }
           property :user_phone
 
           collection :request_items, populate_if_empty: ::Warehouse::RequestItem do
-            property :name, presence: true
+            property :name, validates: { presence: true }
+            property :type_name
             property :reason, validates: { presence: true }
-            property :count
+            property :invent_num
           end
 
           collection :attachments, populate_if_empty: ::Warehouse::AttachmentRequest do

@@ -1,10 +1,13 @@
 .row
   .col-lg-12
     .form-group
-      = label_tag "request[executor_fio]", "Исполнитель", class: "control-label"
+      = label_tag "request[executor_fio]", "Исполнитель:", class: "control-label"
       span ng-if="edit.request.status == 'new'"
-        = hidden_field_tag "request[executor]", "", "ng-model": "edit.request.executor"
-        search-user.full-width selected-user="edit.request.executor"
+        ui-select ng-model="edit.request.executor" on-select="edit.setExecutor()" theme="bootstrap"
+          ui-select-match placeholder="Выберите работника"
+            | {{ $select.selected.fullname }}
+          ui-select-choices repeat="executor in edit.workers | filter: $select.search"
+            div ng-bind-html="executor.fullname | highlight: $select.search"
       span ng-if="edit.request.status != 'new'"
         = text_field_tag "request[executor_fio]", "", class: "form-control", "ng-model": "edit.request.executor_fio", "ng-disabled": "edit.request.status != 'new'"
 .row

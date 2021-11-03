@@ -63,6 +63,9 @@ module Warehouse
               op.item.save!
             end
             destroy_order
+
+            # Закрытие заявки, если она существует для удаляемого ордера
+            Requests::Close.new(@current_user, @order.request_id).run if @order.request_id.present?
           end
         end
       end

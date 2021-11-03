@@ -83,32 +83,46 @@ script type="text/ng-template" id="editRequestModal.slim"
       .row ng-if="edit.request.order"
         .col-sm-24
           uib-accordion ng-cloak="true"
-            div uib-accordion-group="true" class="panel-default" is-open="edit.tabs.req"
+            div uib-accordion-group="true" class="panel-default" is-open="edit.tabs.order"
               uib-accordion-heading
-                | Расходный ордер
+                | Расходный ордер № {{ edit.request.order.id  }}
+
                 i.pull-right
-                  span ng-if="edit.tabs.req"
+                  span ng-if="edit.tabs.order"
                     = fa_icon "chevron-down"
-                  span ng-if="!edit.tabs.req"
+                  span ng-if="!edit.tabs.order"
                     = fa_icon "chevron-right"
 
               .row
                 table.table
                   thead
                     tr
-                      th.text-center №
-                  tbody
-                    tr ng-repeat=""
-                      td.col-fhd-1 ng-bind="$index + 1"
-
-
-
+                      th №
+                      th Тип
+                      th Инв.№
+                      th Количество
+                      th Модель
+                  tbody ng-repeat="op in edit.request.order.operations" 
+                    tr
+                      td ng-bind="$index + 1"
+                      td ng-bind="op.item_type || op.item.item_type || op.inv_items[0].type.short_description"
+                      td ng-bind="(op.inv_items | inventNumsToStr) || exec.order.invent_num"
+                      td ng-bind="op.shift | positiveVal"
+                      td ng-bind="op.item_model || op.item.item_model || op.inv_items[0].full_item_model" 
     / pre 
-      | {{ edit.request | json }}
+      | {{ edit.request.order | json }}
     .modal-footer
       - if current_user.role? :admin
         span ng-if="edit.request.category == 'office_equipment' && edit.request.status == 'new'"
           .pull-left
-            = button_tag "Назначить", class: "btn-success", "ng-click": "edit.assignUser()", "uib-tooltip": "Назначить исполнителя и сохранить комментарий"
+            = button_tag "Назначить", class: "btn-success", "ng-click": "edit.sendForAnalysis()", "uib-tooltip": "Назначить исполнителя и сохранить комментарий"
+          .pull-left style="margin-left: 4px;"
+            = button_tag "Отклонить и закрыть заявку", class: "btn-danger", "ng-click": "edit.closeRequest()", "uib-tooltip": "Заявка будет закрыта и отправлена в архив"
+
+      - if current_user.role? :worker
+        span ng-if="edit.request.category == 'office_equipment' && edit.request.status == 'analysis'"
+          .pull-left
+            = button_tag "Отклонить и закрыть заявку", class: "btn-danger", "ng-click": "edit.closeRequest()", "uib-tooltip": "Заявка будет закрыта и отправлена в архив"
+
       = button_tag "Закрыть", class: "btn-default btn-sm", "ng-click": "edit.cancel()"
 

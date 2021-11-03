@@ -14,7 +14,7 @@ import { app } from '../../app/app';
     this.Flash = Flash;
     this.Error = Error;
     this.Server = Server;
-    // this.pagination = TablePaginator.config();
+    this.pagination = TablePaginator.config();
 
     // console.log('WarehouseRequestsCtrl', this)
     this._loadRequests();
@@ -23,34 +23,43 @@ import { app } from '../../app/app';
   WarehouseRequestsCtrl.prototype._loadRequests = function() {
     this.Server.Warehouse.Request.query(
       {
-        // start : this.TablePaginator.startNum(),
-        // length: this.Config.global.uibPaginationConfig.itemsPerPage
+        start : this.TablePaginator.startNum(),
+        length: this.Config.global.uibPaginationConfig.itemsPerPage
       },
       (response) => {
-        // console.log('response', response)
-
         this.requests = response.data || [];
-        // // Данные для составления нумерации страниц
+        // Данные для составления нумерации страниц
         this.TablePaginator.setData(response);
       },
       (response, status) => this.Error.response(response, status)
     );
   }
 
-
   WarehouseRequestsCtrl.prototype.editRequest = function(request) {
     // console.log('editRequest', request)
 
-    this.$uibModal.open({
-      templateUrl : 'editRequestModal.slim',
-      controller  : 'EditRequestCtrl',
-      controllerAs: 'edit',
-      size        : 'lg',
-      backdrop    : 'static',
-      resolve     : {
-        request: () => request
+    this.Server.Warehouse.Request.edit(
+      { id: request.request_id },
+      (response) => {
+        // console.log('response', response)
+        this.$uibModal.open({
+          templateUrl : 'editRequestModal.slim',
+          controller  : 'EditRequestCtrl',
+          controllerAs: 'edit',
+          size        : 'lg',
+          backdrop    : 'static',
+          resolve     : {
+            data: {
+              request: response.request,
+              workers: response.workers }
+          }
+        });
+
+      },
+      (response, status) => {
+        this.Error.response(response, status);
       }
-    });
+    );
   }
 
 })();

@@ -43,6 +43,8 @@ module Warehouse
         Invent::Item.transaction do
           begin
             save_order(@order)
+            # Обновляем статус у заявки
+            @order.request.update(status: :check) if @order.request.present?
 
             true
           rescue ActiveRecord::RecordNotSaved, ActiveRecord::RecordInvalid => e

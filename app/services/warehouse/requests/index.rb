@@ -2,7 +2,8 @@ module Warehouse
   module Requests
     # Загрузить список заявок
     class Index < Warehouse::ApplicationService
-      def initialize(params)
+      def initialize(current_user, params)
+        @current_user = current_user
         @params = params
 
         super
@@ -24,35 +25,23 @@ module Warehouse
       protected
 
       def load_requests
-        data[:recordsTotal] = Request.count
-        @requests = Request.all.includes(:request_items, :attachments, :order) #.includes(:operations)
+        @requests = Request.all.includes(:request_items, :attachments, :order)
       end
 
       def limit_records
         data[:recordsFiltered] = @requests.count
-        # @requests = @requests.order(request_id: :desc) #.limit(params[:length]).offset(params[:start])
+
+        # Отображаем для Работников только заявки, в каторых назначены только они
+        @requests = @requests.where(executor_tn: @current_user.tn) if @current_user.role.name == 'worker'
+
+        @requests = @requests.order(request_id: :asc).limit(params[:length]).offset(params[:start])
       end
 
       def prepare_to_render
-        # Rails.logger.info "@requests: #{@requests.inspect}".red
         data[:data] = @requests.as_json(include: %i[request_items attachments order]).each do |request|
           request['created_at'] = request['created_at'].strftime('%d-%m-%Y')
           request['status_translated'] = Request.translate_enum(:status, request['status'])
           request['category_translate'] = Request.translate_enum(:category, request['category'])
-
-          request['request_items'].each do |item|
-            item['properties_string'] = item['properties'].present? ? properties_string(item['properties']) : 'Отсутствует'
-          end
-
-          if request['attachments'].present?
-            request['attachments'].each { |att| att['filename'] = att['document'].file.nil? ? 'Файл отсутствует' : att['document'].identifier }
-          end
-        end
-      end
-
-      def properties_string(properties)
-        properties.map do |prop|
-          "#{prop['name']} - #{prop['value']}"
         end
       end
     end

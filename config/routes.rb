@@ -140,8 +140,10 @@ Rails.application.routes.draw do
 
     resources :supplies
 
-    resources :requests, only: [:index] do
+    resources :requests, only: [:index, :edit] do
       put 'send_for_analysis', to: 'requests#send_for_analysis', on: :member
+      get 'close', to: 'requests#close', on: :member
+
     end
 
     get 'attachment_requests/download/:id', to: 'attachment_requests#download', as: 'attachment_requests/download'
@@ -182,8 +184,8 @@ Rails.application.routes.draw do
 
     namespace :v3 do
       namespace :warehouse do
-        # Добавление новой заявки
-        post 'new', to: 'requests#new'
+        # Добавление новой заявки категории 1
+        post 'new_office_equipment', to: 'requests#new_office_equipment'
       end
     end
   end

@@ -22,8 +22,8 @@
                 td.col-fhd-1.text-center ng-bind="request.request_id"
                 td.col-fhd-1 ng-bind="request.category_translate"
                 td.col-fhd-1
-                  span ng-if="request.order_id" ng-bind="request.order_id"
-                  span ng-if="!request.order_id" Отсутствуют
+                  span ng-if="request.order.id" ng-bind="request.order.id"
+                  span ng-if="!request.order.id" Отсутствует
                 td.col-fhd-1 ng-bind="request.status_translated"
                 td.col-fhd-1 ng-bind="request.created_at"
                 td.col-fhd-1.text-center
@@ -35,6 +35,9 @@
       .row
         .col-xs-12
           .animate-show ng-table-info="" info-attrs="table.pagination" ng-if="table.supplies"
+        .col-xs-12
+          ul{ uib-pagination="true" total-items="table.pagination.filteredRecords" ng-model="table.pagination.currentPage"
+            max-size="table.pagination.maxSize" class="pagination-sm pull-right" ng-change="table.changePage()" }
         / .col-xs-12
           ul{ uib-pagination="true" total-items="table.pagination.filteredRecords" ng-model="table.pagination.currentPage"
             max-size="table.pagination.maxSize" class="pagination-sm pull-right" ng-change="table.changePage()

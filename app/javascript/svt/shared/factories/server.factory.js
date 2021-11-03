@@ -281,6 +281,10 @@ import { app } from '../../app/app';
           edit: {
             method: 'GET',
             url   : '/warehouse/requests/:id/edit.json'
+          },
+          close: {
+            method: 'GET',
+            url   : '/warehouse/requests/:id/close.json'
           }
         })
       },

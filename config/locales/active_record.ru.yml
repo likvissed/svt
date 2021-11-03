@@ -204,11 +204,12 @@ ru:
         executor_fio: 'ФИО исполнителя'
         statuses:
           new: 'Новая'
-          analysis: 'Анализ'
-          check: 'Проверка'
-          on_signature: 'На подписи'
-          waiting_confirmation_for_user: 'Ожидает подтверждение пользователя'
-          in_work: 'В работе'
+          analysis: 'Обработка'
+          check: 'На рассмотрении у администратора'
+          waiting_confirmation_for_user: 'Ожидает подтверждение от пользователя'
+          on_signature: 'На подписи у начальника'
+          in_work: 'Подготовка к выдаче'
+          completed: 'Завершена'
           closed: 'Закрытая'
         categories:
           office_equipment: 'Оргтехника'
@@ -363,6 +364,8 @@ ru:
               status_item_on_workplace_not_in_workplace: 'Статус техники %{item_barcode} не соответствует статусу "На рабочем месте"'
               warehouse_items_is_present: "Невозможно исполнить ордер, так как в нем содержится техника, у которой имеются свойства (%{arr_type_with_barcode}), необходимые для переноса на склад"
               workplace_not_present: 'Рабочее место %{workplace_id} не существует. Проверьте корректность введенных данных'
+              request_not_present: 'Заявка №%{request_id} не существует'
+              status_request_not_analysis: 'Статус заявки №%{request_id} должен быть "Обработка"'
             consumer:
               user_by_tn_not_found: 'с указанным табельным номером не найден. Проверьте корректность
               введенных данных'
@@ -419,7 +422,7 @@ ru:
             base:
               warehouse_order_is_not_present: 'Ордер №%{order_id} не существует'
               warehouse_order_is_not_out_or_done: 'Добавление документа допустимо только для исполненного расходного ордера'
-              warehouse_order_is_present_attachment: 'Ордер №%{order_id} уже имеет вложенный документ'
+              warehouse_order_is_present_attachment: 'Ордер №%{order_id} уже имеет вложенный документ'             
 
         user:
           attributes:

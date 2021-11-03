@@ -5,7 +5,7 @@ module Warehouse
       respond_to do |format|
         format.html
         format.json do
-          @index = Requests::Index.new(params)
+          @index = Requests::Index.new(current_user, params)
 
           if @index.run
             render json: @index.data
@@ -13,6 +13,16 @@ module Warehouse
             render json: { full_message: I18n.t('controllers.app.unprocessable_entity') }, status: 422
           end
         end
+      end
+    end
+
+    def edit
+      edit = Requests::Edit.new(current_user, params[:id])
+
+      if edit.run
+        render json: edit.data
+      else
+        render json: { full_message: I18n.t('controllers.app.unprocessable_entity') }, status: 422
       end
     end
 
@@ -30,6 +40,16 @@ module Warehouse
       end
     end
 
+    def close
+      close = Requests::Close.new(current_user, params[:id])
+
+      if close.run
+        render json: { full_message: "Заявка №#{params[:id]} закрыта" }, status: 200
+      else
+        render json: { full_message: I18n.t('controllers.app.unprocessable_entity') }, status: 422
+      end
+    end
+
     protected
 
     def request_params
@@ -37,8 +57,8 @@ module Warehouse
         :request_id,
         :category,
         :number_***REMOVED***,
-        :order_id,
         :executor_fio,
+        :executor_tn,
         :comment,
         :status
       )

@@ -129,8 +129,11 @@ import { app } from '../../app/app';
    */
   OrdersController.prototype.destroyOrder = function(order) {
     let confirm_str = `Вы действительно хотите удалить ордер "${order.id}"?`;
+    let confirm_str_with_request = `Внимание, заявка №${order.request_id} будет закрыта. ${confirm_str}`;
 
-    if (!confirm(confirm_str)) { return false; }
+    let question_str = order.request_id ? confirm_str_with_request :confirm_str;
+
+    if (!confirm(question_str)) { return false; }
 
     this.Server.Warehouse.Order.delete(
       { id: order.id },
