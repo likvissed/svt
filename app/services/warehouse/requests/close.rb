@@ -27,9 +27,6 @@ module Warehouse
 
       def load_request
         @request = Request.find(@request_id)
-        Rails.logger.info "request: #{@request.inspect}".red
-        Rails.logger.info "current_user: #{@current_user.inspect}".green
-
         # authorize @data, :close?
       end
 
@@ -42,7 +39,7 @@ module Warehouse
       end
 
       def send_into_***REMOVED***
-
+        Orbita.add_event(@request.number_***REMOVED***, current_user.id_tn, 'close')
       end
     end
   end

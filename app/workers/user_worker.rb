@@ -13,7 +13,7 @@ class UserWorker
 
     if ids.any?
       users = User.where(id: ids)
-      
+
       Sidekiq.logger.info "delete_fired_users: #{users.pluck(:fullname)}"
       users.destroy_all if ids.any?
     end

@@ -43,7 +43,7 @@ module Warehouse
     before_update :prevent_update_done_order
     before_update :prevent_update_attributes
     before_destroy :prevent_destroy, prepend: true
-    after_create :update_status_for_request, if: -> { out? && request.present? && request.category == 'office_equipment' }
+    # after_create :update_status_for_request, if: -> { out? && request.present? && request.category == 'office_equipment' }
 
     scope :id, ->(id) { where(id: id) }
     scope :invent_workplace_id, ->(invent_workplace_id) { where(invent_workplace_id: invent_workplace_id) }
@@ -381,10 +381,11 @@ module Warehouse
       end
     end
 
-    # Изменить статус заявки
-    def update_status_for_request
-      request.update(status: :check)
-    end
+    # # Изменить статус заявки
+    # def update_status_for_request
+    #   request.update(status: :check)
+    #   # Orbita.add_event(1,2,3)
+    # end
 
     # Проверка перед созданием расходного ордера и его исполнением на существование РМ,
     # техники с инв.№ на этом РМ, и чтобы она соответствовала назначению штрих-кода

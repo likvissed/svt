@@ -50,6 +50,9 @@ module Warehouse
               status = @current_user.role.name == 'admin' ? 'waiting_confirmation_for_user' : 'check'
 
               @order.request.update(status: status)
+
+              message = status == 'check' ? "Создан ордер №#{@order.id}" : "Создан и подтверждён ордер №#{@order.id}"
+              Orbita.add_event(@order.request.number_***REMOVED***, @current_user.id_tn, 'workflow', { message: message })
             end
 
             true

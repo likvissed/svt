@@ -31,7 +31,8 @@ module Warehouse
 
       if @form.validate(request_params)
         @form.save
-        # Rails.logger.info "success: #{@form.inspect}".green
+        Orbita.add_event(@form.model.number_***REMOVED***, current_user.id_tn, 'workflow', { message: "Назначен исполнитель: #{@form.executor_fio}" })
+        # Rails.logger.info "success: #{@form.executor_fio}".red
         render json: { full_message: 'Статус заявки успешно изменен' }, status: 200
       else
         # Rails.logger.info "error: #{@form.inspect}".red

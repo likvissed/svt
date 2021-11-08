@@ -1,6 +1,6 @@
 module Warehouse
   module Requests
-    # Подтвердить ордер и заявку
+    # Подтвердить ордер и заявку (Этап №3)
     class SendForConfirm < Warehouse::ApplicationService
       def initialize(current_user, request_id, order_id)
         @current_user = current_user
@@ -13,7 +13,6 @@ module Warehouse
       def run
         load_request
         update_status_and_confirm_order
-
 
         true
       rescue RuntimeError => e
@@ -45,7 +44,7 @@ module Warehouse
       end
 
       def send_into_***REMOVED***
-
+        Orbita.add_event(@request.number_***REMOVED***, @current_user.id_tn, 'workflow', { message: "Ордер №#{@request.order.id} подтверждён" })
       end
     end
   end
