@@ -29,7 +29,7 @@ module Warehouse
     validate :present_user_iss
     validate :present_item_for_barcode, if: -> { operation == 'out' && invent_num.present? && property_with_barcode == true }
     validate :check_absent_warehouse_items_for_inv_item, if: -> { execute_in == true }
-    validate :present_request_id, if: -> { request_id.present? }
+    validate :present_request_id, if: -> { new_record? && out? && request_id.present? }
 
     after_initialize :set_initial_status, if: -> { new_record? }
     before_validation :set_consumer, if: -> { consumer_fio.blank? || consumer_id_tn.blank? }
@@ -43,7 +43,7 @@ module Warehouse
     before_update :prevent_update_done_order
     before_update :prevent_update_attributes
     before_destroy :prevent_destroy, prepend: true
-    after_create :update_status_for_request, if: -> { out? && request.present? }
+    after_create :update_status_for_request, if: -> { out? && request.present? && request.category == 'office_equipment' }
 
     scope :id, ->(id) { where(id: id) }
     scope :invent_workplace_id, ->(invent_workplace_id) { where(invent_workplace_id: invent_workplace_id) }
@@ -234,6 +234,7 @@ module Warehouse
       errors.add(:base, :workplace_not_present, workplace_id: invent_workplace_id)
     end
 
+    # Проверка, чтобы создать ордер можно было только если заявка имеет статус  - "Обработка"
     def present_request_id
       return errors.add(:base, :request_not_present, request_id: request_id) if request.blank?
 

@@ -60,6 +60,7 @@ script type="text/ng-template" id="editRequestModal.slim"
                       th.text-center №
                       th Наименование
                       th Описание
+                      th Инв.№
                       th.text-center Количество
                       th Обоснование
                   tbody
@@ -67,6 +68,7 @@ script type="text/ng-template" id="editRequestModal.slim"
                       td.col-fhd-1.text-center ng-bind="$index + 1"
                       td.col-fhd-2 ng-bind="item.name"
                       td.col-fhd-2 ng-bind="item.properties_string"
+                      td.col-fhd-2 ng-bind="item.invent_num"
                       td.col-fhd-1.text-center ng-bind="item.count"
                       td.col-fhd-4 ng-bind="item.reason"
               .row ng-if="edit.request.attachments.length"
@@ -111,16 +113,22 @@ script type="text/ng-template" id="editRequestModal.slim"
                       td ng-bind="op.item_model || op.item.item_model || op.inv_items[0].full_item_model" 
     / pre 
       | {{ edit.request.order | json }}
-    .modal-footer
+    .modal-footer ng-if="edit.request.category == 'office_equipment'"
       - if current_user.role? :admin
-        span ng-if="edit.request.category == 'office_equipment' && edit.request.status == 'new'"
+        span ng-if="edit.request.status == 'new'"
           .pull-left
             = button_tag "Назначить", class: "btn-success", "ng-click": "edit.sendForAnalysis()", "uib-tooltip": "Назначить исполнителя и сохранить комментарий"
+        span ng-if="edit.request.status == 'check' && edit.request.order"
+          .pull-left
+            = button_tag "Утвердить заявку и ордер", class: "btn-success", "ng-click": "edit.confirmRequestAndOrder()", "uib-tooltip": "Заявка будет утверждена и ордер автоматически"
+          .pull-left style="margin-left: 4px;"
+            = button_tag "Закрыть заявку и удалить ордер", class: "btn-danger", "ng-click": "edit.closeRequest()", "uib-tooltip": "Заявка будет закрыта и ордер удален"
+        span ng-if="edit.request.status == 'new'"
           .pull-left style="margin-left: 4px;"
             = button_tag "Отклонить и закрыть заявку", class: "btn-danger", "ng-click": "edit.closeRequest()", "uib-tooltip": "Заявка будет закрыта и отправлена в архив"
 
       - if current_user.role? :worker
-        span ng-if="edit.request.category == 'office_equipment' && edit.request.status == 'analysis'"
+        span ng-if="edit.request.status == 'analysis'"
           .pull-left
             = button_tag "Отклонить и закрыть заявку", class: "btn-danger", "ng-click": "edit.closeRequest()", "uib-tooltip": "Заявка будет закрыта и отправлена в архив"
 

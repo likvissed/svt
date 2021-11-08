@@ -59,11 +59,26 @@ import { FormValidationController } from '../../shared/functions/form-validation
     );
   }
 
-  // Назначить выбранного исполнителя, сохранить комментарий и изменить статус заявки как "Анализ"
+  // Назначить выбранного исполнителя, сохранить комментарий и изменить статус заявки как "Обработка"
   EditRequestCtrl.prototype.sendForAnalysis = function() {
     this.Server.Warehouse.Request.sendForAnalysis(
       { id: this.request.request_id },
       { request: this.request },
+      (response) => {
+        this.Flash.notice(response.full_message);
+        this.$uibModalInstance.close();
+      },
+      (response, status) => {
+        this.Error.response(response, status);
+      }
+    );
+  }
+
+  // Утвердить расходный ордер и изменить статус заявки как "Ожидает подтверждение от пользователя"
+  EditRequestCtrl.prototype.confirmRequestAndOrder = function() {
+    this.Server.Warehouse.Request.confirmRequestAndOrder(
+      { id: this.request.request_id },
+      { order_id: this.request.order.id },
       (response) => {
         this.Flash.notice(response.full_message);
         this.$uibModalInstance.close();

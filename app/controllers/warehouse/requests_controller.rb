@@ -50,6 +50,18 @@ module Warehouse
       end
     end
 
+    def confirm_request_and_order
+      Rails.logger.info "params: #{params.inspect}".red
+
+      request = Requests::SendForConfirm.new(current_user, params[:id], params[:order_id])
+
+      if request.run
+        render json: { full_message: "Заявка №#{params[:id]} и ордер №#{params[:order_id]} утверждены" }, status: 200
+      else
+        render json: { full_message: I18n.t('controllers.app.unprocessable_entity') }, status: 422
+      end
+    end
+
     protected
 
     def request_params

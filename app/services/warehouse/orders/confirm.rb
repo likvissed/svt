@@ -37,6 +37,11 @@ module Warehouse
 
         @order.set_validator(current_user)
         @order.comment = @comment
+
+        # Утвердить заявку если она существует
+        if @order.request.present? && request.category == 'office_equipment'
+          @order.request.update(status: :waiting_confirmation_for_user)
+        end
       end
     end
   end

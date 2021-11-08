@@ -285,7 +285,12 @@ import { app } from '../../app/app';
           close: {
             method: 'GET',
             url   : '/warehouse/requests/:id/close.json'
-          }
+          },
+          confirmRequestAndOrder: {
+            method : 'PUT',
+            url    : '/warehouse/requests/:id/confirm_request_and_order',
+            isArray: false
+          },
         })
       },
       Statistics: $resource('/statistics', {}, {

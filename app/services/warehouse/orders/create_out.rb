@@ -43,8 +43,14 @@ module Warehouse
         Invent::Item.transaction do
           begin
             save_order(@order)
+
             # Обновляем статус у заявки
-            @order.request.update(status: :check) if @order.request.present?
+            if @order.request.present? && @order.request.category == 'office_equipment'
+              # т.к. если создает ордер администратор, то ордер автоматически утверждается и этап подтверждения пропускается
+              status = @current_user.role.name == 'admin' ? 'waiting_confirmation_for_user' : 'check'
+
+              @order.request.update(status: status)
+            end
 
             true
           rescue ActiveRecord::RecordNotSaved, ActiveRecord::RecordInvalid => e

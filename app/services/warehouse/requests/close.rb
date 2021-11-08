@@ -12,6 +12,7 @@ module Warehouse
       def run
         load_request
         update_status
+        delete_order if @request.order.present?
         send_into_***REMOVED***
 
         true
@@ -34,6 +35,10 @@ module Warehouse
 
       def update_status
         @request.update(status: 'closed')
+      end
+
+      def delete_order
+        @request.order.destroy
       end
 
       def send_into_***REMOVED***
