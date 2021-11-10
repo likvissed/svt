@@ -41,6 +41,7 @@ module Warehouse
         # Утвердить заявку если она существует
         if @order.request.present? && request.category == 'office_equipment'
           @order.request.update(status: :waiting_confirmation_for_user)
+          Requests::SendAnswerToUser.new(@current_user, @order.request.request_id).run
         end
       end
     end

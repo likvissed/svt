@@ -20,6 +20,7 @@ module Api
           user = find_user(request.user_tn)
           request.user_dept = user.first.try(:[], 'departmentForAccounting')
           request.user_phone = user.first.try(:[], 'phoneText')
+          request.user_id_tn = user.first.try(:[], 'id')
 
           params['parameters']['table_data'].each do |data|
             request.request_items.build(
@@ -61,6 +62,21 @@ module Api
         # Поиск пользователя в НСИ
         def find_user(tn)
           UsersReference.info_users("personnelNo==#{tn}")
+        end
+
+        # Ответ от пользователя
+        def answer_from_user
+          request = ::Warehouse::Request.find_by(request_id: params[:id])
+
+          return Rails.logger.info "Заявка не найдена: #{params[:id]}".red if request.blank?
+
+          if params[:answer] == true
+            request.update(status: :on_signature)
+
+            # Описать этап №5
+          else
+            ::Warehouse::Requests::Close.new(request.user_id_tn, params[:id]).run
+          end
         end
       end
     end

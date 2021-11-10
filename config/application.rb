@@ -60,8 +60,7 @@ module Inv
         resource '/user_isses*', headers: :any,  methods: [:get]
         resource '/api/v1/invent/items*', headers: :any,  methods: [:get]
         resource '/api/v2/invent/items*', headers: :any,  methods: [:get]
-        resource '/api/v3/warehouse/new_office_equipment', headers: :any,  methods: [:post]
-
+        resource '/api/v3/warehouse/requests*', headers: :any,  methods: [:post]
       end
     end
 

@@ -53,6 +53,9 @@ module Warehouse
 
               message = status == 'check' ? "Создан ордер №#{@order.id}" : "Создан и подтверждён ордер №#{@order.id}"
               Orbita.add_event(@order.request.number_***REMOVED***, @current_user.id_tn, 'workflow', { message: message })
+
+              # Отправляется запрос на подтверждение пользователю
+              Requests::SendAnswerToUser.new(@current_user, @order.request.request_id).run if status == 'waiting_confirmation_for_user'
             end
 
             true

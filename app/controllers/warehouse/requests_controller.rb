@@ -42,7 +42,7 @@ module Warehouse
     end
 
     def close
-      close = Requests::Close.new(current_user, params[:id])
+      close = Requests::Close.new(current_user.id_tn, params[:id])
 
       if close.run
         render json: { full_message: "Заявка №#{params[:id]} закрыта" }, status: 200

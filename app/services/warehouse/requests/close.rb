@@ -2,8 +2,8 @@ module Warehouse
   module Requests
     # Загрузить список заявок
     class Close < Warehouse::ApplicationService
-      def initialize(current_user, request_id)
-        @current_user = current_user
+      def initialize(current_user_id_tn, request_id)
+        @current_user_id_tn = current_user_id_tn
         @request_id = request_id
 
         super
@@ -39,7 +39,7 @@ module Warehouse
       end
 
       def send_into_***REMOVED***
-        Orbita.add_event(@request.number_***REMOVED***, current_user.id_tn, 'close')
+        Orbita.add_event(@request.number_***REMOVED***, @current_user_id_tn, 'close')
       end
     end
   end

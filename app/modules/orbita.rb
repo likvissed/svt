@@ -16,7 +16,8 @@ module Orbita
       verify_ssl: false,
       url: ENV['ORBITA_EVENTS_URI'],
       headers: {
-        'Content-Type' => 'application/json'
+        'Accept' => 'application/json',
+        'Content-Type' => 'application/rtf'
       },
       payload: data.to_json
     )

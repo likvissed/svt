@@ -186,7 +186,9 @@ Rails.application.routes.draw do
     namespace :v3 do
       namespace :warehouse do
         # Добавление новой заявки категории 1
-        post 'new_office_equipment', to: 'requests#new_office_equipment'
+        post 'requests/new_office_equipment', to: 'requests#new_office_equipment'
+        # Ответ от пользователя (подтверждение/отклонение обработанной заявки)
+        post 'requests/answer_from_user/:id', to: 'requests#answer_from_user'
       end
     end
   end
