@@ -27,7 +27,8 @@ module Warehouse
 
       def load_request
         @request = Request.find(@request_id)
-        # authorize @data, :close?
+
+        authorize @data, :close?
       end
 
       def update_status

@@ -26,21 +26,29 @@ module Warehouse
       end
     end
 
+    # Этап № 2 - Назначить исполнителя и поменять статус
     def send_for_analysis
-      @form = Requests::SendForAnalysisForm.new(Request.find(params['id']))
+      analysis = Requests::SendForAnalysis.new(current_user, params[:id], request_params)
 
-      if @form.validate(request_params)
-        @form.save
-        Orbita.add_event(@form.model.number_***REMOVED***, current_user.id_tn, 'workflow', { message: "Назначен исполнитель: #{@form.executor_fio}" })
-        # Rails.logger.info "success: #{@form.executor_fio}".red
+      if analysis.run
         render json: { full_message: 'Статус заявки успешно изменен' }, status: 200
       else
-        # Rails.logger.info "error: #{@form.inspect}".red
-        # .model_name.i18n_key
-        render json: { full_message: @form.errors.full_messages.join('. ') }, status: 422
+        render json: { full_message: I18n.t('controllers.app.unprocessable_entity') }, status: 422
       end
     end
 
+    # Сменить исполнителя для заявки
+    def assign_new_executor
+      executor = Requests::AssignNewExecutor.new(current_user, params[:id], params[:executor])
+
+      if executor.run
+        render json: { full_message: 'Исполнитель успешно переназначен' }, status: 200
+      else
+        render json: { full_message: I18n.t('controllers.app.unprocessable_entity') }, status: 422
+      end
+    end
+
+    # Закрыть заявку и удалить ордер если имеется
     def close
       close = Requests::Close.new(current_user.id_tn, params[:id])
 
@@ -51,6 +59,7 @@ module Warehouse
       end
     end
 
+    # Этап № 3 Администратор подтверждает/отклоняет заявку и ордер
     def confirm_request_and_order
       Rails.logger.info "params: #{params.inspect}".red
 

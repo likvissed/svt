@@ -143,6 +143,7 @@ Rails.application.routes.draw do
     resources :requests, only: [:index, :edit] do
       put 'send_for_analysis', to: 'requests#send_for_analysis', on: :member
       put 'confirm_request_and_order', to: 'requests#confirm_request_and_order', on: :member
+      put 'assign_new_executor', to: 'requests#assign_new_executor', on: :member
 
       get 'close', to: 'requests#close', on: :member
     end

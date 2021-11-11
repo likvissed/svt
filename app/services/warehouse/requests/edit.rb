@@ -35,7 +35,7 @@ module Warehouse
           }
         ).find(@request_id)
 
-        # authorize data[:request], :edit?
+        authorize data[:request], :edit?
       end
 
       def load_workers

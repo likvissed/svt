@@ -291,6 +291,11 @@ import { app } from '../../app/app';
             url    : '/warehouse/requests/:id/confirm_request_and_order',
             isArray: false
           },
+          assignNewExecutor: {
+            method : 'PUT',
+            url    : '/warehouse/requests/:id/assign_new_executor',
+            isArray: false
+          }
         })
       },
       Statistics: $resource('/statistics', {}, {

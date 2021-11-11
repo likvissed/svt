@@ -10,6 +10,12 @@ module Warehouse
 
     def create_out?
       record.set_validator(user) if for_manager
+
+      if user.role? :worker
+        if request_present?
+          return user_match? ? true : false
+        end
+      end
       for_worker
     end
 
@@ -168,6 +174,18 @@ module Warehouse
           ]
         ]
       end
+    end
+
+    protected
+
+    # Существует ли связанная заявка категории 1
+    def request_present?
+      record.request.present? && record.request.category == 'office_equipment'
+    end
+
+    # Совпадает ли текущий пользователь с назначенным для заявки
+    def user_match?
+      user.tn == record.request.executor_tn
     end
   end
 end

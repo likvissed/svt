@@ -26,6 +26,13 @@ import { FormValidationController } from '../../shared/functions/form-validation
       order: true
     }
 
+    // Найти выбранного исполнителя для возможности смены
+    if (this.request.executor_fio) {
+      this.request.executor = this.workers.find((attr) => {
+        return attr.fullname == this.request.executor_fio;
+      });
+    }
+
   }
 
   // Унаследовать методы класса FormValidationController
@@ -64,6 +71,21 @@ import { FormValidationController } from '../../shared/functions/form-validation
     this.Server.Warehouse.Request.sendForAnalysis(
       { id: this.request.request_id },
       { request: this.request },
+      (response) => {
+        this.Flash.notice(response.full_message);
+        this.$uibModalInstance.close();
+      },
+      (response, status) => {
+        this.Error.response(response, status);
+      }
+    );
+  }
+
+  // Переназначить исполнителя заявки (Чтобы только выбранный пользователь мог создать ордер на эту заявку)
+  EditRequestCtrl.prototype.assignNewWorker = function() {
+    this.Server.Warehouse.Request.assignNewExecutor(
+      { id: this.request.request_id },
+      { executor: this.request.executor },
       (response) => {
         this.Flash.notice(response.full_message);
         this.$uibModalInstance.close();

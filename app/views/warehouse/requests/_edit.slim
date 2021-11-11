@@ -112,12 +112,15 @@ script type="text/ng-template" id="editRequestModal.slim"
                       td ng-bind="op.shift | positiveVal"
                       td ng-bind="op.item_model || op.item.item_model || op.inv_items[0].full_item_model" 
     / pre 
-      | {{ edit.request.order | json }}
+      | {{ edit.request.status | json }}
     .modal-footer ng-if="edit.request.category == 'office_equipment'"
-      - if current_user.role? :admin
+      - if current_user.one_of_roles? :admin, :manager  
         span ng-if="edit.request.status == 'new'"
           .pull-left
             = button_tag "Назначить", class: "btn-success", "ng-click": "edit.sendForAnalysis()", "uib-tooltip": "Назначить исполнителя и сохранить комментарий"
+        span ng-if="edit.request.status == 'analysis'"
+          .pull-left
+            = button_tag "Изменить исполнителя", class: "btn-success", "ng-click": "edit.assignNewWorker()", "uib-tooltip": "Назначить нового исполнителя"
         span ng-if="edit.request.status == 'check' && edit.request.order"
           .pull-left
             = button_tag "Утвердить заявку и ордер", class: "btn-success", "ng-click": "edit.confirmRequestAndOrder()", "uib-tooltip": "Заявка будет утверждена и ордер автоматически"
