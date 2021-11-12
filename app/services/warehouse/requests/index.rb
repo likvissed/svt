@@ -12,6 +12,7 @@ module Warehouse
       def run
         load_requests
         limit_records
+        init_filters
         prepare_to_render
 
         true
@@ -25,13 +26,35 @@ module Warehouse
       protected
 
       def load_requests
+        data[:recordsTotal] = Request.count
         @requests = policy_scope(Request).includes(:request_items, :attachments, :order)
+        run_filters if params[:filters]
+      end
+
+      def run_filters
+        @requests = @requests.filter(filtering_params)
+      end
+
+      def filtering_params
+        JSON.parse(params[:filters]).slice('request_id', 'order_id', 'category', 'for_statuses')
       end
 
       def limit_records
-        data[:recordsFiltered] = @requests.count
+        data[:recordsFiltered] = @requests.length
 
         @requests = @requests.order(request_id: :asc).limit(params[:length]).offset(params[:start])
+      end
+
+      def init_filters
+        data[:filters] = {}
+        data[:filters][:categories] = Request.categories.map { |key, _val| [key, Request.translate_enum(:category, key)] }.to_h
+        data[:filters][:statuses] = request_statuses
+      end
+
+      def request_statuses
+        statuses = Request.statuses.map { |key, val| { id: val, status: key, label: Request.translate_enum(:status, key) } }
+        statuses.each { |status| status[:default] = Request::DEFAULT_STATUS_FILTER.include?(status[:status]) }
+        statuses
       end
 
       def prepare_to_render

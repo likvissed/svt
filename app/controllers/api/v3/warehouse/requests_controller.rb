@@ -50,11 +50,10 @@ module Api
           Rails.logger.info "request json: #{request_json}".yellow
 
           if @form.validate(request_json)
-            # @form.save
-            # Rails.logger.info "success: #{@form.inspect}".green
-            render json: { full_message: 'Заявка создана' }, status: 200
+            @form.save
+
+            render json: { id: @form.model.request_id }, status: 200
           else
-            # Rails.logger.info "error: #{@form.inspect}".red
             render json: { full_message: @form.errors.full_messages.join('. ') }, status: 422
           end
         end

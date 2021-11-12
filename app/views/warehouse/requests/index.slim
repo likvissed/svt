@@ -4,8 +4,7 @@
   .well
     .table-block
       .row
-        / .col-fhd-2.col-xlg-3.col-lg-4.col-md-4.col-sm-5
-        /   = button_tag "Новая поставка", type: :button, class: "btn-primary btn-sm btn-block", "ng-click": "table.newSupply()"
+        = render partial: 'filters'
       .row
         .col-fhd-24
           table.table.table-striped.table-condensed
@@ -33,14 +32,12 @@
                     "ng-click": "table.editRequest(request)", "tooltip-append-to-body": "true"
 
       / pre 
-        | {{ table.requests | json }}
+        | {{ table.pagination | json }}
       .row
         .col-xs-12
-          .animate-show ng-table-info="" info-attrs="table.pagination" ng-if="table.supplies"
+          .animate-show ng-table-info="" info-attrs="table.pagination" ng-if="table.requests"
         .col-xs-12
           ul{ uib-pagination="true" total-items="table.pagination.filteredRecords" ng-model="table.pagination.currentPage"
-            max-size="table.pagination.maxSize" class="pagination-sm pull-right" ng-change="table.changePage()" }
-        / .col-xs-12
-          ul{ uib-pagination="true" total-items="table.pagination.filteredRecords" ng-model="table.pagination.currentPage"
-            max-size="table.pagination.maxSize" class="pagination-sm pull-right" ng-change="table.changePage()
+            max-size="table.pagination.maxSize" class="pagination-sm pull-right" ng-change="table.reloadRequests()" }
+
 = render partial: 'edit'
