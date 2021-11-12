@@ -6,9 +6,10 @@ ru:
   activemodel:
     errors:
       models:
-        warehouse/requests/send_for_analysis:
+        api/v3/warehouse/requests/new_office_equipment:
           attributes:
-            executor_fio: 'Наименование категории'
+            base:
+              warehouse_request_items_is_blank: 'Наименование категории'
   activemodel:
     models:
       warehouse/request:

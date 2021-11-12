@@ -190,6 +190,8 @@ Rails.application.routes.draw do
         post 'requests/new_office_equipment', to: 'requests#new_office_equipment'
         # Ответ от пользователя (подтверждение/отклонение обработанной заявки)
         post 'requests/answer_from_user/:id', to: 'requests#answer_from_user'
+        # Ответ от начальника (подтверждение/отклонение сформированного расходного ордера)
+        post 'requests/answer_from_owner/:id', to: 'requests#answer_from_owner'
       end
     end
   end

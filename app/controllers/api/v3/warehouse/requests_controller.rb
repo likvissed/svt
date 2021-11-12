@@ -3,8 +3,9 @@ module Api
     module Warehouse
       class RequestsController < ApplicationController
         skip_before_action :authenticate_user!
-        # skip_before_action :verify_authenticity_token
+        skip_before_action :verify_authenticity_token
 
+        # Api с орбиты для создания заявки
         def new_office_equipment
           @form = ::Api::V3::Warehouse::Requests::NewOfficeEquipmentForm.new(::Warehouse::Request.new)
 
@@ -13,8 +14,8 @@ module Api
             category: 'office_equipment',
             number_***REMOVED***: params['id'],
 
-            user_tn:  params['parameters']['common']['tn'],
-            user_fio: params['parameters']['common']['fio']
+            user_tn: JSON.parse(params['parameters'])['common']['tn'],
+            user_fio: JSON.parse(params['parameters'])['common']['fio']
           )
 
           user = find_user(request.user_tn)
@@ -22,7 +23,7 @@ module Api
           request.user_phone = user.first.try(:[], 'phoneText')
           request.user_id_tn = user.first.try(:[], 'id')
 
-          params['parameters']['table_data'].each do |data|
+          JSON.parse(params['parameters'])['table_data'].each do |data|
             request.request_items.build(
               type_name: data['type'],
               name: 'Системный блок',
@@ -34,14 +35,11 @@ module Api
           end
 
           # Если имеются прикрепленные файлы
-          if params['parameters']['files'].present?
+          if params['files'].present?
             params['files'].each do |file|
-              request.attachments.build(document: file['doc'])
+              request.attachments.build(document: file)
             end
           end
-
-          # fo = File.new "/home/lika/Загрузки/123211.pdf"
-          # request.attachments.build(document: fo)
 
           # Преобразование в json params
           request_json = request.as_json
@@ -63,7 +61,7 @@ module Api
           UsersReference.info_users("personnelNo==#{tn}")
         end
 
-        # Ответ от пользователя
+        # Api для орбиты для ответа от пользователя
         def answer_from_user
           request = ::Warehouse::Request.find_by(request_id: params[:id])
 
@@ -75,6 +73,20 @@ module Api
             # Описать этап №5
           else
             ::Warehouse::Requests::Close.new(request.user_id_tn, params[:id]).run
+          end
+        end
+
+        # Api для ssd о подписанном/отклоненном документе от начальника
+        def answer_from_owner
+          request = ::Warehouse::Request.find_by(request_id: params[:id])
+
+          return Rails.logger.info "Заявка не найдена: #{params[:id]}".red if request.blank?
+
+          if params[:answer] == true
+            # Этап №6 - Идет подготовка к выдаче
+            request.update(status: :in_work)
+          else
+            ::Warehouse::Requests::Close.new(request.user_id_tn, request.request_id).run
           end
         end
       end

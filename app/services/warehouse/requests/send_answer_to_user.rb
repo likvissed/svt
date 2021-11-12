@@ -15,6 +15,8 @@ module Warehouse
         generate_report
         send_file
         send_answer
+
+        true
       rescue RuntimeError => e
         Rails.logger.error e.inspect.red
         Rails.logger.error e.backtrace[0..5].inspect
@@ -91,10 +93,7 @@ module Warehouse
       end
 
       def send_file
-        # file = Tempfile.create { |f| f << @data.read; f.rewind; f.read }
-        # s = File.new(file)
-
-        t = Tempfile.new
+        t = Tempfile.new(['Шаблон_ордера_', '.rtf'])
         t << @data.read
         t.rewind
 

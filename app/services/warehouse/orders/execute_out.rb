@@ -14,6 +14,10 @@ module Warehouse
         raise 'Неверные данные (тип операции или аттрибут :shift)' unless order_out?
 
         find_order
+
+        # Для проверка статуса заявки
+        @order.present_request_execute_out = true if @order.request.present? && @order.request.category == 'office_equipment'
+
         return false unless wrap_order
 
         broadcast_out_orders
@@ -57,7 +61,22 @@ module Warehouse
               assing_new_operations if @order.operations.any? { |op| Invent::Property::LIST_TYPE_FOR_BARCODES.include?(op.item.item_type.to_s.downcase) }
 
               save_order(@order)
-              update_items if @item_ids.any?
+
+              if @item_ids.any?
+                update_items
+
+                # Отправка модели всех исполненных позиций за 1 раз
+                if @order.present_request_execute_out == true
+                  Orbita.add_event(@order.request.request_id, @current_user.id_tn, 'workflow', { message: "Выдана техника: #{@str_model_ops.join(', ')}" })
+                end
+              end
+
+              # Закрываем заявку если все позиции ордера исполнены
+              if @order.present_request_execute_out == true && @order.operations.all? { |op| op.done? }
+                @order.request.update(status: :completed)
+
+                Orbita.add_event(@order.request.request_id, @current_user.id_tn, 'workflow', { message: "Ордер исполнен №#{@order.id}" })
+              end
             end
 
             true
@@ -77,10 +96,13 @@ module Warehouse
 
       def processing_params
         op_selected = false
+        @str_model_ops = []
 
         @order.assign_attributes(@order_params)
         @item_ids = @order.operations.map do |op|
           next unless op.status_changed? && op.done?
+
+          @str_model_ops << op.item_model
 
           op.worker_w_receiver_fio = true if @current_user.role.name == 'worker'
 

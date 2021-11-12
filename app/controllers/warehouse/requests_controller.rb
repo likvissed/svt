@@ -61,8 +61,6 @@ module Warehouse
 
     # Этап № 3 Администратор подтверждает/отклоняет заявку и ордер
     def confirm_request_and_order
-      Rails.logger.info "params: #{params.inspect}".red
-
       request = Requests::SendForConfirm.new(current_user, params[:id], params[:order_id])
 
       if request.run
