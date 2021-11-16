@@ -4,6 +4,7 @@ module Api
       module Requests
         class NewOfficeEquipmentForm < Reform::Form
           property :number_***REMOVED***, validates: { presence: true }
+          property :number_***REMOVED***, validates: { presence: true }
           property :status, validates: { presence: true }
           property :category, validates: { presence: true }
 

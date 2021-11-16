@@ -26,6 +26,16 @@ module Warehouse
       for_manager
     end
 
+    def ready?
+      return true if admin?
+
+      user.one_of_roles? :manager, :worker
+    end
+
+    def send_answer_to_user?
+      for_manager
+    end
+
     class Scope < Scope
       def resolve
         if user.role? :worker

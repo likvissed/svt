@@ -70,6 +70,17 @@ module Warehouse
       end
     end
 
+    # Этап № 7 Исполнитель подтверждает готовность к выдаче техники пользователю
+    def ready
+      request = Requests::Ready.new(current_user, params[:id])
+
+      if request.run
+        render json: { full_message: 'Уведомление о готовности к выдаче техники пользователю отправлено' }, status: 200
+      else
+        render json: { full_message: I18n.t('controllers.app.unprocessable_entity') }, status: 422
+      end
+    end
+
     protected
 
     def request_params

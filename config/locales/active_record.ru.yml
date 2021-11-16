@@ -209,6 +209,7 @@ ru:
           waiting_confirmation_for_user: 'Ожидает подтверждение от пользователя'
           on_signature: 'На подписи у начальника'
           in_work: 'Подготовка к выдаче'
+          ready: 'Готов к выдаче'
           completed: 'Завершена'
           closed: 'Закрытая'
         categories:
@@ -366,7 +367,7 @@ ru:
               workplace_not_present: 'Рабочее место %{workplace_id} не существует. Проверьте корректность введенных данных'
               request_not_present: 'Заявка №%{request_id} не существует'
               status_request_not_analysis: 'Статус заявки №%{request_id} должен быть "Обработка"'
-              status_request_not_in_work: 'Невозможно исполнить расходный ордер пока статус заявки №%{request_id} не будет равен "Подготовка к выдаче"'
+              status_request_not_ready: 'Невозможно исполнить расходный ордер пока статус заявки №%{request_id} не будет равен "Готов к выдаче"'
             consumer:
               user_by_tn_not_found: 'с указанным табельным номером не найден. Проверьте корректность
               введенных данных'

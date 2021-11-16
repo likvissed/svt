@@ -295,6 +295,10 @@ import { app } from '../../app/app';
             method : 'PUT',
             url    : '/warehouse/requests/:id/assign_new_executor',
             isArray: false
+          },
+          ready: {
+            method: 'PUT',
+            url   : '/warehouse/requests/:id/ready'
           }
         })
       },

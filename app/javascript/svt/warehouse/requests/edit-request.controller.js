@@ -111,4 +111,19 @@ import { FormValidationController } from '../../shared/functions/form-validation
     );
   }
 
+  // Изменить статус заявки как "Готов к выдаче" и отправка уведомления об этому пользователю
+  EditRequestCtrl.prototype.readyRequest = function() {
+    this.Server.Warehouse.Request.ready(
+      { id: this.request.request_id },
+      { request: this.request },
+      (response) => {
+        this.Flash.notice(response.full_message);
+        this.$uibModalInstance.close();
+      },
+      (response, status) => {
+        this.Error.response(response, status);
+      }
+    );
+  }
+
 })();

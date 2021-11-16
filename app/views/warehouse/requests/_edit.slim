@@ -3,9 +3,8 @@ script type="text/ng-template" id="editRequestModal.slim"
     .modal-header
       .pull-left
         h4
-          = "Заявка № {{ edit.request.request_id }}"
-          |  
-          = "(заявка в Orbita № {{ edit.request.number_***REMOVED*** }})"
+          = "Заявка в СВТ № {{ edit.request.request_id }}"
+          / = "(заявка в Orbita № {{ edit.request.number_***REMOVED*** }})"
       .pull-right
         h4
           = "{{ edit.request.status_translated }}"
@@ -16,7 +15,7 @@ script type="text/ng-template" id="editRequestModal.slim"
             "ng-click": "edit.reloadSupply()"
     .modal-body
       .row
-        .col-lg-24.col-xs-22
+        .col-sm-24
           uib-accordion ng-cloak="true"
             div uib-accordion-group="true" class="panel-default" is-open="edit.tabs.user"
               uib-accordion-heading
@@ -30,17 +29,27 @@ script type="text/ng-template" id="editRequestModal.slim"
                 .col-lg-12
                   .form-group
                     = label_tag "request[user_fio]", "ФИО:", class: "control-label"
-                    span.col-lg-offset-1 ng-bind="edit.request.user_fio"
+                    |  
+                    span ng-bind="edit.request.user_fio"
 
                 .col-lg-12
                   .form-group
                     = label_tag "request[user_dept]", "Отдел:", class: "control-label"
-                    span.col-lg-offset-1 ng-bind="edit.request.user_dept"
+                    |  
+                    span ng-bind="edit.request.user_dept"
               .row
                 .col-lg-12
                   .form-group
                     = label_tag "request[user_phone]", "Телефон:", class: "control-label"
-                    span.col-lg-offset-1 ng-bind="edit.request.user_phone"
+                    |  
+                    span ng-bind="edit.request.user_phone"
+              .row
+                .col-lg-24
+                  .form-group
+                    = label_tag "request[user_phone]", "Список замороженных РМ:", class: "control-label"
+                    |  
+                    span ng-if="edit.request.freeze_ids" ng-bind="edit.request.freeze_ids"
+                    span ng-if="!edit.request.freeze_ids" Отсутствует
       .row
         .col-sm-24
           uib-accordion ng-cloak="true"
@@ -53,6 +62,17 @@ script type="text/ng-template" id="editRequestModal.slim"
                   span ng-if="!edit.tabs.req"
                     = fa_icon "chevron-right"
 
+              .row
+                .col-lg-12
+                  .form-group
+                    = label_tag "request[number_***REMOVED***]", "Заявка в Orbita №:", class: "control-label"
+                    |  
+                    span ng-bind="edit.request.number_***REMOVED***"
+                .col-lg-12
+                  .form-group
+                    = label_tag "request[number_***REMOVED***]", "Заявка в ЛК №:", class: "control-label"
+                    |  
+                    span ng-bind="edit.request.number_***REMOVED***"
               .row
                 table.table
                   thead
@@ -112,15 +132,15 @@ script type="text/ng-template" id="editRequestModal.slim"
                       td ng-bind="op.shift | positiveVal"
                       td ng-bind="op.item_model || op.item.item_model || op.inv_items[0].full_item_model" 
     / pre 
-      | {{ edit.request.status | json }}
+      | {{ edit.request.freeze_ids | json }}
     .modal-footer ng-if="edit.request.category == 'office_equipment'"
       - if current_user.one_of_roles? :admin, :manager  
         span ng-if="edit.request.status == 'new'"
           .pull-left
-            = button_tag "Назначить", class: "btn-success", "ng-click": "edit.sendForAnalysis()", "uib-tooltip": "Назначить исполнителя и сохранить комментарий"
-        span ng-if="edit.request.status == 'analysis'"
-          .pull-left
-            = button_tag "Изменить исполнителя", class: "btn-success", "ng-click": "edit.assignNewWorker()", "uib-tooltip": "Назначить нового исполнителя"
+            = button_tag "Назначить исполнителя", class: "btn-success", "ng-click": "edit.sendForAnalysis()", "uib-tooltip": "Назначить исполнителя и сохранить комментарий"
+        span ng-if="!(edit.request.status == 'new' || edit.request.status == 'completed' || edit.request.status == 'closed')"
+          .pull-left style="margin-right: 4px;"
+            = button_tag "Изменить исполнителя", class: "btn-warning", "ng-click": "edit.assignNewWorker()", "uib-tooltip": "Назначить нового исполнителя"
         span ng-if="edit.request.status == 'check' && edit.request.order"
           .pull-left
             = button_tag "Утвердить заявку и ордер", class: "btn-success", "ng-click": "edit.confirmRequestAndOrder()", "uib-tooltip": "Заявка будет утверждена и ордер автоматически"
@@ -134,6 +154,9 @@ script type="text/ng-template" id="editRequestModal.slim"
         span ng-if="edit.request.status == 'analysis'"
           .pull-left
             = button_tag "Отклонить и закрыть заявку", class: "btn-danger", "ng-click": "edit.closeRequest()", "uib-tooltip": "Заявка будет закрыта и отправлена в архив"
+        span ng-if="edit.request.status == 'in_work'"
+          .pull-left
+            = button_tag "Готово к выдаче", class: "btn-success", "ng-click": "edit.readyRequest()", "uib-tooltip": "Пользователю будет отправлено уведомление о готовности"
 
       = button_tag "Закрыть", class: "btn-default btn-sm", "ng-click": "edit.cancel()"
 

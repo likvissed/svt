@@ -236,23 +236,27 @@ module Warehouse
       errors.add(:base, :workplace_not_present, workplace_id: invent_workplace_id)
     end
 
-    # Проверка, чтобы создать ордер можно было только если заявка имеет статус  - "Обработка"
+    # Проверка, чтобы создать ордер можно было только если заявка имеет статус - "Обработка"
     def present_request_id
       return errors.add(:base, :request_not_present, request_id: request_id) if request.blank?
 
       # Проверка для категории №1
       return if request.category != 'office_equipment'
 
-      return if request.status == 'analysis'
+      if request.status == 'analysis'
+        self.request_num = request.number_***REMOVED***
+
+        return true
+      end
 
       errors.add(:base, :status_request_not_analysis, request_id: request_id)
     end
 
     # Проверяем статус заявки для расходного ордера
     def check_status_for_request
-      return if request.status == 'in_work'
+      return if request.status == 'ready'
 
-      errors.add(:base, :status_request_not_in_work, request_id: request_id)
+      errors.add(:base, :status_request_not_ready, request_id: request_id)
     end
 
     def set_initial_status

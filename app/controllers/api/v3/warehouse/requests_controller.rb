@@ -14,6 +14,8 @@ module Api
             category: 'office_equipment',
             number_***REMOVED***: params['id'],
 
+            number_***REMOVED***: JSON.parse(params['parameters'])['common']['***REMOVED***_id'],
+
             user_tn: JSON.parse(params['parameters'])['common']['tn'],
             user_fio: JSON.parse(params['parameters'])['common']['fio']
           )
@@ -24,9 +26,16 @@ module Api
           request.user_id_tn = user.first.try(:[], 'id')
 
           JSON.parse(params['parameters'])['table_data'].each do |data|
+            name = case data['type']
+                   when 'pc'
+                     'Системный блок'
+                   else
+                     'Неизвестный тип'
+                   end
+
             request.request_items.build(
               type_name: data['type'],
-              name: 'Системный блок',
+              name: name,
               count: 1,
               reason: data['reason'],
               invent_num: data['invent_num'],

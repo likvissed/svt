@@ -12,8 +12,9 @@ module Warehouse
       def run
         load_request
         load_order_params
-        generate_report
-        send_file
+        generate_params_order
+        # generate_report
+        # send_file
         send_answer
 
         true
@@ -29,7 +30,7 @@ module Warehouse
       def load_request
         @request = Request.find(@request_id)
 
-        # authorize @request, :send_for_confirm?
+        authorize @request, :send_answer_to_user?
       end
 
       def load_order_params
@@ -99,16 +100,26 @@ module Warehouse
 
         file = File.new(t.path)
 
-        Orbita.add_event(@request.number_***REMOVED***, @current_user.id_tn, 'add_files', { is_public: true }, [file])
+        Orbita.add_event(@request.request_id, @current_user.id_tn, 'add_files', { is_public: true }, [file])
+      end
+
+      def generate_params_order
+        @ops_type_with_model = @order_params['operations'].map do |op|
+          type = op['item_type'] || op['item']['item_type'] || op['inv_items'][0]['type']['short_description']
+          model = op['item_model'] || op['item']['item_model'] || op['inv_items'][0]['full_item_model']
+          count = op['shift'].abs
+
+          "#{type}: #{model} (#{count} шт.)"
+        end.join(', ')
       end
 
       def send_answer
         payload = {
-          message: 'Подтвердите, что вас устраивает расходный ордер на получение вычислительной техники',
+          message: "Подтвердите, что вас устраивает получение вычислительной техники: #{@ops_type_with_model}",
           accept_endpoint: "https://#{ENV['APP_HOSTNAME']}.***REMOVED***.ru/api/v3/warehouse/requests/answer_from_user/#{@request_id}"
         }
 
-        Orbita.add_event(@request.number_***REMOVED***, @current_user.id_tn, 'to_user_accept', payload)
+        Orbita.add_event(@request.request_id, @current_user.id_tn, 'to_user_accept', payload)
       end
     end
   end

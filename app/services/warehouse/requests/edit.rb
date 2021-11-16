@@ -59,6 +59,12 @@ module Warehouse
           ]
         )
 
+        workplace_count_id = Invent::WorkplaceCount.find_by(division: data[:request]['user_dept'])
+        # workplace_count_id = Invent::WorkplaceCount.find_by(division: '23232')
+        if workplace_count_id.present?
+          data[:request]['freeze_ids'] = Invent::Workplace.where(status: :freezed).where(workplace_count_id: workplace_count_id).pluck(:workplace_id).join(', ')
+        end
+
         data[:request]['status_translated'] = Request.translate_enum(:status, data[:request]['status'])
         data[:request]['request_items'].each do |item|
           item['properties_string'] = item['properties'].present? ? properties_string(item['properties']) : 'Отсутствует'

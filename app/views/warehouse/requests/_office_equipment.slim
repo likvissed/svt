@@ -3,7 +3,7 @@
     .form-group
       = label_tag "request[executor_fio]", "Исполнитель:", class: "control-label"
       span
-        ui-select ng-model="edit.request.executor" on-select="edit.setExecutor()" theme="bootstrap" ng-disabled="!(edit.request.status == 'new' || edit.request.status == 'analysis')"
+        ui-select ng-model="edit.request.executor" on-select="edit.setExecutor()" theme="bootstrap" ng-disabled="(edit.request.status == 'completed' || edit.request.status == 'closed')"
           ui-select-match placeholder="Выберите работника"
             | {{ $select.selected.fullname }}
           ui-select-choices repeat="executor in edit.workers | filter: $select.search"
@@ -14,7 +14,7 @@
   .col-lg-24
     .form-group
       = label_tag "request[comment]", "Комментарий:", class: "control-label"
-      = text_area_tag "request[comment]", "", class: "form-control", "ng-model": "edit.request.comment", rows: "2", "ng-disabled": "edit.request.status != 'new'"
+      = text_area_tag "request[comment]", "", class: "form-control", "ng-model": "edit.request.comment", rows: "2", "ng-disabled": "(edit.request.status == 'completed' || edit.request.status == 'closed')"
 / .row.pull-right
   .col-lg-12
     .form-group
