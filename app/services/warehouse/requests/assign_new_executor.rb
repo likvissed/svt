@@ -32,11 +32,14 @@ module Warehouse
       def check_executor
         return if @request.executor_fio == @executor['fullname']
 
+        @old_user_tn = @request.executor_tn
+
         @request.executor_fio = @executor['fullname']
         @request.executor_tn = @executor['tn']
 
         if @request.save
-          Orbita.add_event(@request_id, @current_user.id_tn, 'workflow', { message: "Изменён исполнитель: #{@executor['fullname']}" })
+          Orbita.add_event(@request_id, @current_user.id_tn, 'add_workers', { tns: [@executor['tn']] })
+          Orbita.add_event(@request_id, @current_user.id_tn, 'del_workers', { tns: [@old_user_tn] })
         end
       end
     end

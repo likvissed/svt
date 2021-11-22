@@ -16,8 +16,10 @@ module Api
           collection :request_items, populate_if_empty: ::Warehouse::RequestItem do
             property :name, validates: { presence: true }
             property :type_name
+            property :count
             property :reason, validates: { presence: true }
             property :invent_num
+            property :description
           end
 
           collection :attachments, populate_if_empty: ::Warehouse::AttachmentRequest do

@@ -5,9 +5,9 @@ import { app } from '../../app/app';
 
   app.controller('WarehouseRequestsCtrl', WarehouseRequestsCtrl);
 
-  WarehouseRequestsCtrl.$inject = ['$uibModal', 'TablePaginator', 'ActionCableChannel', 'Config', 'WarehouseSupply', 'WarehouseOrder', 'Flash', 'Error', 'Server'];
+  WarehouseRequestsCtrl.$inject = ['$uibModal', 'TablePaginator', 'ActionCableChannel', 'Config', 'Flash', 'Error', 'Server'];
 
-  function WarehouseRequestsCtrl($uibModal, TablePaginator, ActionCableChannel, Config, WarehouseSupply, WarehouseOrder, Flash, Error, Server) {
+  function WarehouseRequestsCtrl($uibModal, TablePaginator, ActionCableChannel, Config, Flash, Error, Server) {
     this.$uibModal = $uibModal;
     this.Config = Config;
     this.Flash = Flash;
@@ -15,6 +15,7 @@ import { app } from '../../app/app';
     this.Server = Server;
     this.pagination = TablePaginator.config();
     this.TablePaginator = TablePaginator;
+    this.ActionCableChannel = ActionCableChannel;
 
     // Фильтры с вариантом выбора значений
     this.filters = {
@@ -47,6 +48,7 @@ import { app } from '../../app/app';
     };
 
     this._loadRequests();
+    this._initActionCable();
   }
 
   WarehouseRequestsCtrl.prototype._loadRequests = function() {
@@ -71,10 +73,20 @@ import { app } from '../../app/app';
   }
 
   /**
+   * Инициировать подключение к каналу RequestsChannel.
+   */
+     WarehouseRequestsCtrl.prototype._initActionCable = function() {
+      let consumer = new this.ActionCableChannel('Warehouse::RequestsChannel');
+
+      consumer.subscribe(() => this._loadRequests());
+    };
+
+  /**
    * Применение фильтров
    */
   WarehouseRequestsCtrl.prototype.reloadRequests = function() {
     this._loadRequests();
+    this._initActionCable()
   };
 
   WarehouseRequestsCtrl.prototype.editRequest = function(request) {

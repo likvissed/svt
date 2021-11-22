@@ -50,7 +50,7 @@ module Warehouse
 
     # Закрыть заявку и удалить ордер если имеется
     def close
-      close = Requests::Close.new(current_user.id_tn, params[:id])
+      close = Requests::Close.new(current_user, params[:id])
 
       if close.run
         render json: { full_message: "Заявка №#{params[:id]} закрыта" }, status: 200
@@ -87,7 +87,6 @@ module Warehouse
       params.require(:request).permit(
         :request_id,
         :category,
-        :number_***REMOVED***,
         :executor_fio,
         :executor_tn,
         :comment,

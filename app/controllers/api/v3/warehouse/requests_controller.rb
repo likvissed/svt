@@ -16,11 +16,11 @@ module Api
 
             number_***REMOVED***: JSON.parse(params['parameters'])['common']['***REMOVED***_id'],
 
-            user_tn: JSON.parse(params['parameters'])['common']['tn'],
-            user_fio: JSON.parse(params['parameters'])['common']['fio']
+            user_tn: JSON.parse(params['parameters'])['common']['tn']
           )
 
           user = find_user(request.user_tn)
+          request.user_fio = user.first.try(:[], 'fullName')
           request.user_dept = user.first.try(:[], 'departmentForAccounting')
           request.user_phone = user.first.try(:[], 'phoneText')
           request.user_id_tn = user.first.try(:[], 'id')
@@ -39,15 +39,13 @@ module Api
               count: 1,
               reason: data['reason'],
               invent_num: data['invent_num'],
-              properties: data['properties']
+              description: data['description']
             )
           end
 
           # Если имеются прикрепленные файлы
           if params['files'].present?
-            params['files'].each do |file|
-              request.attachments.build(document: file)
-            end
+            params['files'].each { |file| request.attachments.build(document: file) }
           end
 
           # Преобразование в json params
@@ -65,24 +63,25 @@ module Api
           end
         end
 
-        # Поиск пользователя в НСИ
-        def find_user(tn)
-          UsersReference.info_users("personnelNo==#{tn}")
-        end
-
         # Api для орбиты для ответа от пользователя
         def answer_from_user
           request = ::Warehouse::Request.find_by(request_id: params[:id])
 
-          return Rails.logger.info "Заявка не найдена: #{params[:id]}".red if request.blank?
+          raise "Заявка не найдена: #{params[:id]}" if request.blank?
 
           if params[:answer] == true
             request.update(status: :on_signature)
 
             # Описать этап №5
           else
-            ::Warehouse::Requests::Close.new(request.user_id_tn, params[:id]).run
+            request.update(status: :closed)
+
+            request.order.destroy if request.order.present?
+
+            Orbita.add_event(request.request_id, request.user_id_tn, 'close')
           end
+
+          ActionCable.server.broadcast 'requests', nil
         end
 
         # Api для ssd о подписанном/отклоненном документе от начальника
@@ -95,8 +94,18 @@ module Api
             # Этап №6 - Идет подготовка к выдаче
             request.update(status: :in_work)
           else
-            ::Warehouse::Requests::Close.new(request.user_id_tn, request.request_id).run
+            # ::Warehouse::Requests::Close.new(request.user_id_tn, request.request_id).run
           end
+
+          # Orbita.add_event - отправить ответ от начальника (событие)
+          ActionCable.server.broadcast 'requests', nil
+        end
+
+        private
+
+        # Поиск пользователя в НСИ
+        def find_user(tn)
+          UsersReference.info_users("personnelNo==#{tn}")
         end
       end
     end

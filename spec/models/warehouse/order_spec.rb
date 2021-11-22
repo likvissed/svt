@@ -8,6 +8,7 @@ module Warehouse
     it { is_expected.to have_many(:items).through(:operations) }
     it { is_expected.to have_one(:attachment).with_foreign_key('order_id').class_name('AttachmentOrder').inverse_of(:order) }
     it { is_expected.to belong_to(:inv_workplace).with_foreign_key('invent_workplace_id').class_name('Invent::Workplace').optional }
+    it { is_expected.to belong_to(:request).with_foreign_key('request_id').inverse_of(:order).optional }
     it { is_expected.to validate_presence_of(:operation) }
     # it { is_expected.to validate_presence_of(:status) }
     it { is_expected.to validate_presence_of(:creator_fio) }
@@ -90,6 +91,66 @@ module Warehouse
 
           expect(subject.errors.details[:base]).to include(error: :workplace_not_present, workplace_id: workplace.workplace_id)
         end
+      end
+    end
+
+    describe '#present_request_id' do
+      let(:request) { create(:request_category_one) }
+      subject { build(:order, operation: :out, request: request) }
+
+      context 'when status request is "analysis"' do
+        before { request.status = 'analysis' }
+
+        it { is_expected.to be_valid }
+
+        it 'assign request_num for order' do
+          subject.valid?
+
+          expect(subject.request_num).to eq request.number_***REMOVED***.to_s
+        end
+      end
+
+      context 'when request_id does not exist' do
+        before { subject.request_id = 951_950 }
+
+        it 'adds :request_not_present error' do
+          subject.valid?
+
+          expect(subject.errors.details[:base]).to include(error: :request_not_present, request_id: subject.request_id)
+        end
+      end
+
+      context 'when category request not "office_equipment"' do
+        before { request.category = 'printing' }
+
+        it { is_expected.to be_valid }
+      end
+
+      context 'when status request not "analysis"' do
+        before { request.status = 'new' }
+
+        it 'adds :status_request_not_analysis error' do
+          subject.valid?
+
+          expect(subject.errors.details[:base]).to include(error: :status_request_not_analysis, request_id: subject.request_id)
+        end
+      end
+    end
+
+    describe '#check_status_for_request' do
+      let(:request) { create(:request_category_one) }
+      subject { build(:order, request: request, present_request_execute_out: true) }
+
+      context 'when status request is "ready"' do
+        before { request.status = 'ready' }
+
+        it { is_expected.to be_valid }
+      end
+
+      it 'adds :status_request_not_ready error' do
+        subject.valid?
+
+        expect(subject.errors.details[:base]).to include(error: :status_request_not_ready, request_id: subject.request_id)
       end
     end
 

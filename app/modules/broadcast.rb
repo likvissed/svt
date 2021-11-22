@@ -42,4 +42,8 @@ module Broadcast
   def broadcast_write_off_orders
     ActionCable.server.broadcast 'write_off_orders', nil
   end
+
+  def broadcast_requests
+    ActionCable.server.broadcast 'requests', nil
+  end
 end

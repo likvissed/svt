@@ -1,8 +1,8 @@
 module Warehouse
   module Requests
     class Close < Warehouse::ApplicationService
-      def initialize(current_user_id_tn, request_id)
-        @current_user_id_tn = current_user_id_tn
+      def initialize(current_user, request_id)
+        @current_user = current_user
         @request_id = request_id
 
         super
@@ -13,6 +13,8 @@ module Warehouse
         update_status
         delete_order if @request.order.present?
         send_into_***REMOVED***
+
+        broadcast_requests
 
         true
       rescue RuntimeError => e
@@ -27,7 +29,7 @@ module Warehouse
       def load_request
         @request = Request.find(@request_id)
 
-        authorize @data, :close?
+        authorize @request, :close?
       end
 
       def update_status
@@ -39,7 +41,7 @@ module Warehouse
       end
 
       def send_into_***REMOVED***
-        Orbita.add_event(@request.request_id, @current_user_id_tn, 'close')
+        Orbita.add_event(@request.request_id, @current_user.id_tn, 'close')
       end
     end
   end

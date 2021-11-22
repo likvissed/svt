@@ -42,7 +42,7 @@ module Warehouse
       def limit_records
         data[:recordsFiltered] = @requests.length
 
-        @requests = @requests.order(request_id: :asc).limit(params[:length]).offset(params[:start])
+        @requests = @requests.order(request_id: :desc).limit(params[:length]).offset(params[:start])
       end
 
       def init_filters

@@ -19,6 +19,7 @@ module Warehouse
         broadcast_items
         broadcast_workplaces
         broadcast_workplaces_list
+        broadcast_requests
 
         true
       rescue RuntimeError => e
@@ -51,7 +52,7 @@ module Warehouse
 
               @order.request.update(status: status)
 
-              message = status == 'check' ? "Создан ордер №#{@order.id}" : "Создан и подтверждён ордер №#{@order.id}"
+              message = status == 'check' ? "Создан ордер на выдачу ВТ №#{@order.id}" : "Создан и подтверждён ордер на выдачу ВТ №#{@order.id}"
               Orbita.add_event(@order.request.request_id, @current_user.id_tn, 'workflow', { message: message })
 
               # Отправляется запрос на подтверждение пользователю

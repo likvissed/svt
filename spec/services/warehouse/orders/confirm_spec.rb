@@ -69,6 +69,19 @@ module Warehouse
           subject.run
         end
       end
+
+      context 'when request for order is present' do
+        let(:current_status) { 'analysis' }
+        let(:request) { create(:request_category_one, status: current_status) }
+        let!(:order) { create(:order, operation: :out, request: request) }
+        before { allow(Orbita).to receive(:add_event) }
+
+        it 'changed status from request' do
+          subject.run
+
+          expect(request.reload.status).to eq('waiting_confirmation_for_user')
+        end
+      end
     end
   end
 end

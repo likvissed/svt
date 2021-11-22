@@ -24,6 +24,7 @@ module Warehouse
         broadcast_archive_orders
         broadcast_items
         broadcast_workplaces_list
+        broadcast_requests
 
         true
       rescue RuntimeError => e
@@ -75,7 +76,8 @@ module Warehouse
               if @order.present_request_execute_out == true && @order.operations.all? { |op| op.done? }
                 @order.request.update(status: :completed)
 
-                Orbita.add_event(@order.request.request_id, @current_user.id_tn, 'workflow', { message: "Ордер исполнен №#{@order.id}" })
+                Orbita.add_event(@order.request.request_id, @current_user.id_tn, 'workflow', { message: "Ордер на выдачу ВТ исполнен №#{@order.id}" })
+                Orbita.add_event(@order.request.request_id, @current_user.id_tn, 'close')
               end
             end
 

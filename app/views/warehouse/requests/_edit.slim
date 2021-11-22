@@ -87,10 +87,10 @@ script type="text/ng-template" id="editRequestModal.slim"
                     tr  ng-repeat="item in edit.request.request_items track by $index"
                       td.col-fhd-1.text-center ng-bind="$index + 1"
                       td.col-fhd-2 ng-bind="item.name"
-                      td.col-fhd-2 ng-bind="item.properties_string"
+                      td.col-fhd-2 ng-bind="item.description"
                       td.col-fhd-2 ng-bind="item.invent_num"
                       td.col-fhd-1.text-center ng-bind="item.count"
-                      td.col-fhd-4 ng-bind="item.reason"
+                      td.col-fhd-3 ng-bind="item.reason"
               .row ng-if="edit.request.attachments.length"
                 .panel.panel-default
                   .panel-heading

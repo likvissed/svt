@@ -1,4 +1,36 @@
 ru:
+  # form
+  activemodel:
+    attributes:
+      test:
+        number_***REMOVED***: 'Ничего не понятно'
+      api/v3/warehouse/requests/new_office_equipment:
+        number_***REMOVED***: '№ Заявки в Orbita'
+        number_***REMOVED***: '№ Заявки в ЛК'
+        status: 'Статус'
+        category: 'Категория'
+        user_tn: 'Таб.номер пользователя'
+        user_fio: 'ФИО пользователя'
+        user_dept: 'Отдел пользователя'
+        user_phone: 'Телефон пользователя'
+
+        request_items:
+          name: 'Наименование'
+          type_name: 'Тип'
+          count: 'Количество'
+          reason: 'Обоснование'
+          invent_num: 'Инв.номер'
+          description: 'Описание'
+
+        attachments:
+          document: 'Файл'
+    errors:
+      models:
+        test:
+          attributes:
+            base:
+              warehouse_request_items_is_blank: 'Cписок требуемой техники не может быть пустым'
+
   errors:
     messages:
       max_size_error: 'невозможно загрузить, размером больше 100 мегабайт'
@@ -213,7 +245,7 @@ ru:
           completed: 'Завершена'
           closed: 'Закрытая'
         categories:
-          office_equipment: 'Оргтехника'
+          office_equipment: 'Вычислительная техника'
           printing: 'Печатная техника'
           expendable_materials: 'Расходка'
 

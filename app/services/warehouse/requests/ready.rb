@@ -13,6 +13,8 @@ module Warehouse
         update_status
         send_notice_to_user
 
+        broadcast_requests
+
         true
       rescue RuntimeError => e
         Rails.logger.error e.inspect.red
@@ -34,8 +36,11 @@ module Warehouse
       end
 
       def send_notice_to_user
+        arr_fio = @request.user_fio.split(' ')
+        user_initial = "#{arr_fio[0]} #{arr_fio[1][0]}.#{arr_fio[2][0]}."
+
         # Обязательно присутствие пользователя для его подписи при выдаче
-        Orbita.add_event(@request_id, @current_user.id_tn, 'to_user_message', { message: 'Техника готова к выдаче. Необходима будет личная подпись' })
+        Orbita.add_event(@request_id, @current_user.id_tn, 'to_user_message', { message: "Техника готова к выдаче. Необходима будет личная подпись: #{user_initial}" })
       end
     end
   end

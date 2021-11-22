@@ -14,6 +14,8 @@ module Warehouse
         load_request
         update_status
 
+        broadcast_requests
+
         true
       rescue RuntimeError => e
         Rails.logger.error e.inspect.red
@@ -35,7 +37,7 @@ module Warehouse
 
         if @form.validate(@request_params)
           @form.save
-          Orbita.add_event(@request_id, @current_user.id_tn, 'workflow', { message: "Назначен исполнитель: #{@form.executor_fio}" })
+          Orbita.add_event(@request_id, @current_user.id_tn, 'add_workers', { tns: [@form.executor_tn] })
         end
       end
     end
