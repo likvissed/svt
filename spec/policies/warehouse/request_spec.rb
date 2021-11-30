@@ -64,6 +64,12 @@ module Warehouse
       include_examples 'policy for manager'
     end
 
+    permissions :send_to_owner? do
+      let(:model) { Request.first }
+
+      include_examples 'policy for manager'
+    end
+
     permissions :ready? do
       let(:request) { create(:request_category_one) }
 
@@ -81,6 +87,44 @@ module Warehouse
     end
 
     permissions :send_answer_to_user? do
+      let(:model) { Request.first }
+
+      include_examples 'policy for manager'
+    end
+
+    permissions :update? do
+      let(:request) { create(:request_category_one) }
+
+      context 'with :manager role and with valid user' do
+        it 'grants access to the request' do
+          expect(subject).to permit(manager, Request.find(request.request_id))
+        end
+      end
+
+      context 'with :***REMOVED***_user role and with invalid user' do
+        it 'denies access to the request' do
+          expect(subject).not_to permit(***REMOVED***_user, Request.find(request.request_id))
+        end
+      end
+    end
+
+    permissions :save_recommendation? do
+      let(:request) { create(:request_category_one) }
+
+      context 'with :manager role and with valid user' do
+        it 'grants access to the request' do
+          expect(subject).to permit(manager, Request.find(request.request_id))
+        end
+      end
+
+      context 'with :***REMOVED***_user role and with invalid user' do
+        it 'denies access to the request' do
+          expect(subject).not_to permit(***REMOVED***_user, Request.find(request.request_id))
+        end
+      end
+    end
+
+    permissions :expected_is_stock? do
       let(:model) { Request.first }
 
       include_examples 'policy for manager'

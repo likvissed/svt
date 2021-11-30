@@ -140,10 +140,13 @@ Rails.application.routes.draw do
 
     resources :supplies
 
-    resources :requests, only: [:index, :edit] do
+    resources :requests, only: [:index, :edit, :update] do
       put 'send_for_analysis', to: 'requests#send_for_analysis', on: :member
       put 'confirm_request_and_order', to: 'requests#confirm_request_and_order', on: :member
       put 'assign_new_executor', to: 'requests#assign_new_executor', on: :member
+      put 'send_to_owner', to: 'requests#send_to_owner', on: :member
+      put 'save_recommendation', to: 'requests#save_recommendation', on: :member
+      put 'expected_is_stock', to: 'requests#expected_is_stock', on: :member
       
       get 'close', to: 'requests#close', on: :member
     end
@@ -189,10 +192,12 @@ Rails.application.routes.draw do
       namespace :warehouse do
         # Добавление новой заявки категории 1
         post 'requests/new_office_equipment', to: 'requests#new_office_equipment'
-        # Ответ от пользователя (подтверждение/отклонение обработанной заявки)
+        # Ответ от пользователя (подтверждение/отклонение обработанной заявки) из Orbita
         post 'requests/answer_from_user/:id', to: 'requests#answer_from_user'
-        # Ответ от начальника (подтверждение/отклонение сформированного расходного ордера)
+        # Ответ от начальника (подтверждение/отклонение сформированного расходного ордера) из SSD
         post 'requests/answer_from_owner/:id', to: 'requests#answer_from_owner'
+        # Получение файлов конкретной заявки для SSD (Приложения)
+        get 'requests/request_files', to: 'requests#request_files'
       end
     end
   end

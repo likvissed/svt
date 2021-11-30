@@ -86,16 +86,13 @@ import { app } from '../../app/app';
    */
   WarehouseRequestsCtrl.prototype.reloadRequests = function() {
     this._loadRequests();
-    this._initActionCable()
+    this._initActionCable();
   };
 
   WarehouseRequestsCtrl.prototype.editRequest = function(request) {
-    // console.log('editRequest', request)
-
     this.Server.Warehouse.Request.edit(
       { id: request.request_id },
       (response) => {
-        // console.log('response', response)
         this.$uibModal.open({
           templateUrl : 'editRequestModal.slim',
           controller  : 'EditRequestCtrl',
@@ -104,8 +101,10 @@ import { app } from '../../app/app';
           backdrop    : 'static',
           resolve     : {
             data: {
-              request: response.request,
-              workers: response.workers }
+              request             : response.request,
+              workers             : response.workers,
+              list_recommendations: response.list_recommendations
+             }
           }
         });
 

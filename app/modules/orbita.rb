@@ -22,7 +22,6 @@ module Orbita
         },
         payload: data
       )
-      # Rails.logger.info "data #{data}".cyan
 
       response = request.execute { |resp| resp }
 

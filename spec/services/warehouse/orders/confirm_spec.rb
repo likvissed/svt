@@ -71,7 +71,7 @@ module Warehouse
       end
 
       context 'when request for order is present' do
-        let(:current_status) { 'analysis' }
+        let(:current_status) { 'create_order' }
         let(:request) { create(:request_category_one, status: current_status) }
         let!(:order) { create(:order, operation: :out, request: request) }
         before { allow(Orbita).to receive(:add_event) }

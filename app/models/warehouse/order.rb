@@ -243,13 +243,13 @@ module Warehouse
       # Проверка для категории №1
       return if request.category != 'office_equipment'
 
-      if request.status == 'analysis'
+      if request.status == 'create_order'
         self.request_num = request.number_***REMOVED***
 
         return true
       end
 
-      errors.add(:base, :status_request_not_analysis, request_id: request_id)
+      errors.add(:base, :status_request_not_create_order, request_id: request_id)
     end
 
     # Проверяем статус заявки для расходного ордера

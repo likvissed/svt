@@ -15,6 +15,8 @@ import { FormValidationController } from '../../shared/functions/form-validation
     this.$uibModalInstance = $uibModalInstance;
     this.request = data.request;
     this.workers = data.workers;
+    this.list_recommendations = data.list_recommendations;
+    this.list_recommendations.unshift({ 'id': -1, 'name': 'Выберите рекомендацию' });
 
     this.Flash = Flash;
     this.Error = Error;
@@ -32,7 +34,6 @@ import { FormValidationController } from '../../shared/functions/form-validation
         return attr.fullname == this.request.executor_fio;
       });
     }
-
   }
 
   // Унаследовать методы класса FormValidationController
@@ -83,6 +84,12 @@ import { FormValidationController } from '../../shared/functions/form-validation
 
   // Переназначить исполнителя заявки (Чтобы только выбранный пользователь мог создать ордер на эту заявку)
   EditRequestCtrl.prototype.assignNewWorker = function() {
+    if (!this.request.executor) {
+      this.Flash.alert('Необходимо выбрать исполнителя');
+
+      return false;
+    }
+
     this.Server.Warehouse.Request.assignNewExecutor(
       { id: this.request.request_id },
       { executor: this.request.executor },
@@ -116,6 +123,96 @@ import { FormValidationController } from '../../shared/functions/form-validation
     this.Server.Warehouse.Request.ready(
       { id: this.request.request_id },
       { request: this.request },
+      (response) => {
+        this.Flash.notice(response.full_message);
+        this.$uibModalInstance.close();
+      },
+      (response, status) => {
+        this.Error.response(response, status);
+      }
+    );
+  }
+
+  // Изменить статус заявки как "На подписи у начальника" и отправить в ССД
+  EditRequestCtrl.prototype.sendToOwner = function() {
+    if (!this.owner) {
+      this.Flash.alert('Необходимо выбрать руководителя');
+
+      return false;
+    }
+
+    if (!confirm('Вы действительно хотите отправить список рекомендаций на подпись?')) { return false; }
+
+    this.Server.Warehouse.Request.sendToOwner(
+      { id: this.request.request_id },
+      { owner: this.owner },
+      (response) => {
+        this.Flash.notice(response.full_message);
+        this.$uibModalInstance.close();
+      },
+      (response, status) => {
+        this.Error.response(response, status);
+      }
+    );
+  }
+
+  EditRequestCtrl.prototype.updateComment = function() {
+    this.Server.Warehouse.Request.update(
+      { id: this.request.request_id },
+      { request: this.request },
+      (response) => {
+        this.Flash.notice(response.full_message);
+      },
+      (response, status) => {
+        this.Error.response(response, status);
+      }
+    );
+  }
+
+  EditRequestCtrl.prototype.addRecommendation = function() {
+    if (this.request.recommendation_json === null) {
+      this.request.recommendation_json = [];
+    }
+
+    this.request.recommendation_json.push(this.list_recommendations[0]);
+  };
+
+  EditRequestCtrl.prototype.deleteRecommendation = function(index) {
+    this.request.recommendation_json.splice(index, 1);
+
+    if (this.request.recommendation_json.length == 0) {
+      this.request.recommendation_json = null;
+    }
+  };
+
+  // Сохранить список рекомендаций и изменить статус заявки как "Требуется отправить руководителю в ССД"
+  EditRequestCtrl.prototype.saveRecommendation = function() {
+    if (this.request.recommendation_json === null) {
+      this.Flash.alert('Необходимо заполнить список рекомендаций');
+
+      return false;
+    }
+
+    this.Server.Warehouse.Request.saveRecommendation(
+      { id: this.request.request_id },
+      { request: this.request },
+      (response) => {
+        this.Flash.notice(response.full_message);
+        this.$uibModalInstance.close();
+      },
+      (response, status) => {
+        this.Error.response(response, status);
+      }
+    );
+  }
+
+  // Изменить статус заявки как "Ожидается техника в наличии"
+  EditRequestCtrl.prototype.expectedInStock = function(flag) {
+    if (!confirm('Вы действительно хотите изменить статус заявки?')) { return false; }
+
+    this.Server.Warehouse.Request.expectedInStock(
+      { id: this.request.request_id },
+      { flag: flag },
       (response) => {
         this.Flash.notice(response.full_message);
         this.$uibModalInstance.close();

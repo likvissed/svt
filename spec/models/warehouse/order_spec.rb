@@ -98,8 +98,8 @@ module Warehouse
       let(:request) { create(:request_category_one) }
       subject { build(:order, operation: :out, request: request) }
 
-      context 'when status request is "analysis"' do
-        before { request.status = 'analysis' }
+      context 'when status request is "create_order"' do
+        before { request.status = 'create_order' }
 
         it { is_expected.to be_valid }
 
@@ -126,13 +126,13 @@ module Warehouse
         it { is_expected.to be_valid }
       end
 
-      context 'when status request not "analysis"' do
+      context 'when status request not "create_order"' do
         before { request.status = 'new' }
 
-        it 'adds :status_request_not_analysis error' do
+        it 'adds :status_request_not_create_order error' do
           subject.valid?
 
-          expect(subject.errors.details[:base]).to include(error: :status_request_not_analysis, request_id: subject.request_id)
+          expect(subject.errors.details[:base]).to include(error: :status_request_not_create_order, request_id: subject.request_id)
         end
       end
     end

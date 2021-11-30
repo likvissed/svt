@@ -1,8 +1,8 @@
 ru:
   activemodel:
     attributes:
-      warehouse/requests/send_for_analysis:
-        executor_fio: 'wewe'
+      warehouse/requests/save_recommendation:
+        recommendation_json: 'Список рекомендаций'
   activemodel:
     errors:
       models:

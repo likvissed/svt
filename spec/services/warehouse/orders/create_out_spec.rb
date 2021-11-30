@@ -265,7 +265,7 @@ module Warehouse
       end
 
       context 'when add request_id for order' do
-        let(:request) { create(:request_category_one, executor_tn: current_user.tn, status: :analysis) }
+        let(:request) { create(:request_category_one, executor_tn: current_user.tn, status: :create_order) }
         let!(:inv_item) { create(:item, :with_property_values, type_name: :printer, status: :in_workplace) }
         let(:workplace) do
           w = build(:workplace_net_print, items: [inv_item])
@@ -293,7 +293,7 @@ module Warehouse
           it 'change status from request' do
             subject.run
 
-            expect(request.reload.status).to eq('check')
+            expect(request.reload.status).to eq('check_order')
           end
         end
 

@@ -68,8 +68,6 @@ module Warehouse
         # Получение точно действительного токена
         UsersReference.new_token_hr
 
-        Rails.logger.info "invent_item_params: #{invent_item_params.inspect}".yellow
-
         report = Rails.root.join('lib', 'request_generate_order_report.php')
         command = "php #{report} #{Rails.env} #{@order.id} '#{@order_params['consumer_fio'] || @order_params['consumer_tn']}' '#{l_date}' '#{invent_item_params.to_json}' '#{warehouse_item_params.to_json}' '#{Rails.cache.read('token_hr')}'  '#{ENV['USERS_REFERENCE_URI_SEARCH']}' '#{@order.request_num}' '#{@request_id}'"
         @data = IO.popen(command)

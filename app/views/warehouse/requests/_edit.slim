@@ -4,15 +4,9 @@ script type="text/ng-template" id="editRequestModal.slim"
       .pull-left
         h4
           = "Заявка в СВТ № {{ edit.request.request_id }}"
-          / = "(заявка в Orbita № {{ edit.request.number_***REMOVED*** }})"
       .pull-right
         h4
           = "{{ edit.request.status_translated }}"
-        / .icon-block
-          = render partial: 'templates/load_spinner'
-        / .icon-block ng-show="edit.supply.id"
-          = fa_icon "refresh 2x fw", class: "pointer", "tooltip-placement": "top", "tooltip-append-to-body": true, "uib-tooltip": "Загрузить данные о поставке заново",
-            "ng-click": "edit.reloadSupply()"
     .modal-body
       .row
         .col-sm-24
@@ -63,44 +57,49 @@ script type="text/ng-template" id="editRequestModal.slim"
                     = fa_icon "chevron-right"
 
               .row
-                .col-lg-12
-                  .form-group
-                    = label_tag "request[number_***REMOVED***]", "Заявка в Orbita №:", class: "control-label"
-                    |  
-                    span ng-bind="edit.request.number_***REMOVED***"
-                .col-lg-12
-                  .form-group
-                    = label_tag "request[number_***REMOVED***]", "Заявка в ЛК №:", class: "control-label"
-                    |  
-                    span ng-bind="edit.request.number_***REMOVED***"
-              .row
-                table.table
-                  thead
-                    tr
-                      th.text-center №
-                      th Наименование
-                      th Описание
-                      th Инв.№
-                      th.text-center Количество
-                      th Обоснование
-                  tbody
-                    tr  ng-repeat="item in edit.request.request_items track by $index"
-                      td.col-fhd-1.text-center ng-bind="$index + 1"
-                      td.col-fhd-2 ng-bind="item.name"
-                      td.col-fhd-2 ng-bind="item.description"
-                      td.col-fhd-2 ng-bind="item.invent_num"
-                      td.col-fhd-1.text-center ng-bind="item.count"
-                      td.col-fhd-3 ng-bind="item.reason"
-              .row ng-if="edit.request.attachments.length"
-                .panel.panel-default
-                  .panel-heading
+                .col-lg-24
+                  .col-lg-12
                     .form-group
-                      = label_tag "request[files]", "Прикрепленные файлы:", class: "control-label"
-                      li ng-repeat="attachment in edit.request.attachments"
-                        a ng-href="/warehouse/attachment_requests/download/{{ attachment.id }}" target="_blank"
-                          | {{ attachment.filename }}
+                      = label_tag "request[number_***REMOVED***]", "Заявка в Orbita №:", class: "control-label"
+                      |  
+                      span ng-bind="edit.request.number_***REMOVED***"
+                  .col-lg-12
+                    .form-group
+                      = label_tag "request[number_***REMOVED***]", "Заявка в ЛК №:", class: "control-label"
+                      |  
+                      span ng-bind="edit.request.number_***REMOVED***"
+              .row
+                .col-lg-24
+                  table.table
+                    thead
+                      tr
+                        th.text-center №
+                        th Наименование
+                        th Описание
+                        th Инв.№
+                        th.text-center Количество
+                        th Обоснование
+                    tbody
+                      tr  ng-repeat="item in edit.request.request_items track by $index"
+                        td.col-fhd-1.text-center ng-bind="$index + 1"
+                        td.col-fhd-2 ng-bind="item.name"
+                        td.col-fhd-2 ng-bind="item.description"
+                        td.col-fhd-2 ng-bind="item.invent_num"
+                        td.col-fhd-1.text-center ng-bind="item.count"
+                        td.col-fhd-3 ng-bind="item.reason"
+              .row ng-if="edit.request.attachments.length"
+                .col-lg-24
+                  .form-group
+                    .panel.panel-default
+                      .panel-heading
+                        = label_tag "request[files]", "Прикрепленные файлы:", class: "control-label"
+                        li ng-repeat="attachment in edit.request.attachments"
+                          a ng-href="/warehouse/attachment_requests/download/{{ attachment.id }}" target="_blank"
+                            | {{ attachment.filename }}
               span ng-if="edit.request.category == 'office_equipment'"
                 = render partial: 'office_equipment'
+                span ng-if="edit.request.status == 'send_to_owner'"
+                  = render partial: 'send_to_owner'
                 
       .row ng-if="edit.request.order"
         .col-sm-24
@@ -131,32 +130,47 @@ script type="text/ng-template" id="editRequestModal.slim"
                       td ng-bind="(op.inv_items | inventNumsToStr) || exec.order.invent_num"
                       td ng-bind="op.shift | positiveVal"
                       td ng-bind="op.item_model || op.item.item_model || op.inv_items[0].full_item_model" 
-    / pre 
-      | {{ edit.request.freeze_ids | json }}
+
     .modal-footer ng-if="edit.request.category == 'office_equipment'"
       - if current_user.one_of_roles? :admin, :manager  
         span ng-if="edit.request.status == 'new'"
           .pull-left
-            = button_tag "Назначить исполнителя", class: "btn-success", "ng-click": "edit.sendForAnalysis()", "uib-tooltip": "Назначить исполнителя и сохранить комментарий"
-        span ng-if="!(edit.request.status == 'new' || edit.request.status == 'completed' || edit.request.status == 'closed')"
+            = button_tag "Назначить исполнителя", class: "btn-success", "ng-click": "edit.sendForAnalysis()", "uib-tooltip": "Назначить исполнителя"
+        span ng-if="!(edit.request.status == 'new' || edit.request.status == 'completed' || edit.request.status == 'reject')"
           .pull-left style="margin-right: 4px;"
             = button_tag "Изменить исполнителя", class: "btn-warning", "ng-click": "edit.assignNewWorker()", "uib-tooltip": "Назначить нового исполнителя"
-        span ng-if="edit.request.status == 'check' && edit.request.order"
+        span ng-if="edit.request.status == 'check_order' && edit.request.order"
           .pull-left
             = button_tag "Утвердить заявку и ордер", class: "btn-success", "ng-click": "edit.confirmRequestAndOrder()", "uib-tooltip": "Заявка будет утверждена и ордер автоматически"
           .pull-left style="margin-left: 4px;"
             = button_tag "Закрыть заявку и удалить ордер", class: "btn-danger", "ng-click": "edit.closeRequest()", "uib-tooltip": "Заявка будет закрыта и ордер удален"
         span ng-if="edit.request.status == 'new'"
           .pull-left style="margin-left: 4px;"
-            = button_tag "Отклонить и закрыть заявку", class: "btn-danger", "ng-click": "edit.closeRequest()", "uib-tooltip": "Заявка будет закрыта и отправлена в архив"
+            = button_tag "Отклонить и закрыть заявку", class: "btn-danger", "ng-click": "edit.closeRequest()", "uib-tooltip": "Заявка будет отклонена"
+        span ng-if="edit.request.status == 'create_order'"
+          .pull-left style="margin-left: 4px;"
+            = button_tag "Ожидание техники в наличии", class: "btn-primary", "ng-click": "edit.expectedInStock(true)", "uib-tooltip": "Изменить статус заявки"
+        span ng-if="edit.request.status == 'expected_in_stock'"
+          .pull-left style="margin-left: 4px;"
+            = button_tag "Продолжить работу заявки", class: "btn-success", "ng-click": "edit.expectedInStock(false)", "uib-tooltip": "Можно будет создавать ордер"
+      
+      - if current_user.one_of_roles? :admin, :manager
+        span ng-if="edit.request.status == 'send_to_owner'"
+          .pull-left
+            = button_tag "Отправить на подпись в ССД", class: "btn-primary", "ng-click": "edit.sendToOwner()", "uib-tooltip": "Отправить выбранному руководителю расходный ордер на подпись"
+
+      - if current_user.one_of_roles? :admin, :manager, :worker
+        span ng-if="!(edit.request.status == 'completed' || edit.request.status == 'reject')" style="margin-right: 4px;"
+          = button_tag "Обновить комментарий", class: "btn-success", "ng-click": "edit.updateComment()"
+        span ng-if="(edit.request.status == 'analysis')"
+          .pull-left style="margin-right: 4px;"
+            = button_tag "Сохранить список рекомендаций", class: "btn-success", "ng-click": "edit.saveRecommendation()"
 
       - if current_user.role? :worker
         span ng-if="edit.request.status == 'analysis'"
           .pull-left
-            = button_tag "Отклонить и закрыть заявку", class: "btn-danger", "ng-click": "edit.closeRequest()", "uib-tooltip": "Заявка будет закрыта и отправлена в архив"
+            = button_tag "Отклонить и закрыть заявку", class: "btn-danger", "ng-click": "edit.closeRequest()", "uib-tooltip": "Заявка будет отклонена"
         span ng-if="edit.request.status == 'in_work'"
           .pull-left
             = button_tag "Готово к выдаче", class: "btn-success", "ng-click": "edit.readyRequest()", "uib-tooltip": "Пользователю будет отправлено уведомление о готовности"
-
       = button_tag "Закрыть", class: "btn-default btn-sm", "ng-click": "edit.cancel()"
-

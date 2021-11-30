@@ -326,7 +326,6 @@ module Invent
         obj_item[:item] = inspect
         obj_item[:barcode_item] = barcode_item.inspect
         obj_item[:property_values] = property_values.inspect
-        Rails.logger.info "delete item: #{obj_item}".red
 
         return
       end

@@ -33,7 +33,7 @@ module Warehouse
       end
 
       def update_status
-        @request.update(status: 'closed')
+        @request.update(status: 'reject')
       end
 
       def delete_order

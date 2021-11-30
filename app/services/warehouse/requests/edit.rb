@@ -11,6 +11,7 @@ module Warehouse
       def run
         load_request
         load_workers
+        load_recommendations
         transform_to_json
 
         true
@@ -40,6 +41,16 @@ module Warehouse
 
       def load_workers
         data[:workers] = Role.find_by(name: 'worker').users.as_json
+      end
+
+      def load_recommendations
+        data[:list_recommendations] = [
+          { 'name': 'Intel Core i3' },
+          { 'name': 'RAM 4Gb' },
+          { 'name': 'HDD 500Gb' },
+          { 'name': 'Клавиатура' },
+          { 'name': 'Мышь' }
+        ]
       end
 
       def transform_to_json
@@ -72,6 +83,8 @@ module Warehouse
         if data[:request]['attachments'].present?
           data[:request]['attachments'].each { |att| att['filename'] = att['document'].file.nil? ? 'Файл отсутствует' : att['document'].identifier }
         end
+
+        data[:request]['recommendations'] = []
       end
 
       def properties_string(properties)

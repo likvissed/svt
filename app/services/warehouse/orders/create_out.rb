@@ -48,11 +48,11 @@ module Warehouse
             # Обновляем статус у заявки
             if @order.request.present? && @order.request.category == 'office_equipment'
               # т.к. если создает ордер администратор, то ордер автоматически утверждается и этап подтверждения пропускается
-              status = @current_user.role.name == 'admin' ? 'waiting_confirmation_for_user' : 'check'
+              status = @current_user.role.name == 'admin' ? 'waiting_confirmation_for_user' : 'check_order'
 
               @order.request.update(status: status)
 
-              message = status == 'check' ? "Создан ордер на выдачу ВТ №#{@order.id}" : "Создан и подтверждён ордер на выдачу ВТ №#{@order.id}"
+              message = status == 'check_order' ? "Создан ордер на выдачу ВТ №#{@order.id}" : "Создан и подтверждён ордер на выдачу ВТ №#{@order.id}"
               Orbita.add_event(@order.request.request_id, @current_user.id_tn, 'workflow', { message: message })
 
               # Отправляется запрос на подтверждение пользователю

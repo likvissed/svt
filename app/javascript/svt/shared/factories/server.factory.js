@@ -299,6 +299,22 @@ import { app } from '../../app/app';
           ready: {
             method: 'PUT',
             url   : '/warehouse/requests/:id/ready'
+          },
+          sendToOwner: {
+            method: 'PUT',
+            url   : '/warehouse/requests/:id/send_to_owner'
+          },
+          update: {
+            method: 'PUT',
+            url   : '/warehouse/requests/:id'
+          },
+          saveRecommendation: {
+            method: 'PUT',
+            url   : '/warehouse/requests/:id/save_recommendation'
+          },
+          expectedInStock: {
+            method: 'PUT',
+            url   : '/warehouse/requests/:id/expected_is_stock'
           }
         })
       },

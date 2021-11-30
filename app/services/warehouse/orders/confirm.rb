@@ -45,7 +45,7 @@ module Warehouse
           broadcast_requests
 
           # Отправляется уведомление
-          Orbita.add_event(@order.request_id, @current_user.id_tn, 'workflow', { message: "Ордер №#{@order.id} на выдачу ВТ подтверждён" })
+          Orbita.add_event(@order.request_id, @current_user.id_tn, 'workflow', { message: "Ордер на выдачу ВТ №#{@order.id} подтверждён" })
 
           # Отправляется на подтверждение пользователю
           Requests::SendAnswerToUser.new(@current_user, @order.request_id).run

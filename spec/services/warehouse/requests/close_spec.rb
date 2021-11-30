@@ -19,7 +19,7 @@ module Warehouse
       it 'updates status for request' do
         subject.run
 
-        expect(request.reload.status).to eq('closed')
+        expect(request.reload.status).to eq('reject')
       end
 
       it 'destroys order' do

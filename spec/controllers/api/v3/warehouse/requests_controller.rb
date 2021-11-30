@@ -118,7 +118,7 @@ module Api
             it 'update status and closing the request' do
               post :answer_from_user, params: params
 
-              expect(request.reload.status).to eq('closed')
+              expect(request.reload.status).to eq('reject')
             end
 
             it 'destroys order' do
@@ -134,6 +134,14 @@ module Api
             end
           end
         end
+
+        # describe 'GET #request_files' do
+        #   it 'check' do
+        #     get :request_files, format: :json
+
+        #     expect(JSON.parse(response.body)).to include('full_message')
+        #   end
+        # end
       end
     end
   end

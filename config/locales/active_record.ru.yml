@@ -2,8 +2,6 @@ ru:
   # form
   activemodel:
     attributes:
-      test:
-        number_***REMOVED***: 'Ничего не понятно'
       api/v3/warehouse/requests/new_office_equipment:
         number_***REMOVED***: '№ Заявки в Orbita'
         number_***REMOVED***: '№ Заявки в ЛК'
@@ -24,9 +22,17 @@ ru:
 
         attachments:
           document: 'Файл'
+      warehouse/requests/save_recommendation:
+        comment: 'Комментарий'
+        status: 'Статус'
+        recommendation_json: 'Список рекомендаций'
     errors:
       models:
-        test:
+        warehouse/requests/update_comment:
+          attributes:
+            base:
+              request_is_close: 'Невозможно обновить комментарий у закрытой заявки'
+        api/v3/warehouse/requests/new_office_equipment:
           attributes:
             base:
               warehouse_request_items_is_blank: 'Cписок требуемой техники не может быть пустым'
@@ -236,14 +242,17 @@ ru:
         executor_fio: 'ФИО исполнителя'
         statuses:
           new: 'Новая'
-          analysis: 'Обработка'
-          check: 'На рассмотрении у администратора'
+          analysis: 'Требуется создать рекомендации'
+          send_to_owner: 'Требуется отправить руководителю в ССД'
+          on_signature: 'На подписи у руководителя'
+          expected_in_stock: 'Ожидается техника в наличии'
+          create_order: 'Требуется создать ордер'
+          check_order: 'На рассмотрении у администратора'
           waiting_confirmation_for_user: 'Ожидает подтверждение от пользователя'
-          on_signature: 'На подписи у начальника'
           in_work: 'Подготовка к выдаче'
           ready: 'Готов к выдаче'
           completed: 'Завершена'
-          closed: 'Закрытая'
+          reject: 'Отклонена'
         categories:
           office_equipment: 'Вычислительная техника'
           printing: 'Печатная техника'
@@ -398,7 +407,7 @@ ru:
               warehouse_items_is_present: "Невозможно исполнить ордер, так как в нем содержится техника, у которой имеются свойства (%{arr_type_with_barcode}), необходимые для переноса на склад"
               workplace_not_present: 'Рабочее место %{workplace_id} не существует. Проверьте корректность введенных данных'
               request_not_present: 'Заявка №%{request_id} не существует'
-              status_request_not_analysis: 'Статус заявки №%{request_id} должен быть "Обработка"'
+              status_request_not_create_order: 'Статус заявки №%{request_id} должен быть "Требуется создать ордер"'
               status_request_not_ready: 'Невозможно исполнить расходный ордер пока статус заявки №%{request_id} не будет равен "Готов к выдаче"'
             consumer:
               user_by_tn_not_found: 'с указанным табельным номером не найден. Проверьте корректность

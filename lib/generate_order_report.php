@@ -359,6 +359,14 @@ $fontBold->setBold();
 $footer_underline_font->setUnderline();
 $section = $rtf->addSection();
 
+$headFormat = new PHPRtfLite_ParFormat('center');
+$fontHeader = new PHPRtfLite_Font(12, 'Times New Roman');
+
+// ============================================ Заголовок ================================================================
+
+$section->writeText('<br> Расходный ордер № ' . $order_id . ' от '. $date, $fontBold, $headFormat);
+$section->writeText('на получение вычислительной техники ' . '<br>', $fontHeader, $headFormat);
+
 // ============================================ Контент ================================================================
 
 $table = $section->addTable();
@@ -376,6 +384,8 @@ $table->setBorderForCellRange($border, 1, 1, $rows, $cols);
 $cell = $table->getCell(1, 2);
 
 $i = 0;
+
+// ============================================ Таблица ================================================================
 
 foreach($result as $data) {
 
@@ -411,7 +421,7 @@ foreach($result as $data) {
     $nested_table->writeToCell(1, 2, ' ');
     $nested_table->writeToCell(2, 1, ' ');
     $nested_table->writeToCell(2, 2, ' ');
-    $nested_table->writeToCell(3, 1, 'Заявка № ' . $data['request_num'], $table_font);
+    $nested_table->writeToCell(3, 1, 'Заявка в ЛК № ' . $data['request_num'], $table_font);
     $nested_table->writeToCell(3, 2, 'Сер. № ' . $data['serial_num'], $table_font);
     $nested_table->writeToCell(4, 1, ' ');
     $nested_table->writeToCell(4, 2, 'Инв. № ' . $data['invent_num'], $table_font);
@@ -429,7 +439,7 @@ foreach($result as $data) {
     $nested_table->writeToCell(1, 2, ' ');
     $nested_table->writeToCell(2, 1, ' ');
     $nested_table->writeToCell(2, 2, ' ');
-    $nested_table->writeToCell(3, 1, 'Заявка № ' . $data['request_num'], $table_font);
+    $nested_table->writeToCell(3, 1, 'Заявка в ЛК № ' . $data['request_num'], $table_font);
     $nested_table->writeToCell(3, 2, 'Сер. № ' . $data['serial_num'], $table_font);
     $nested_table->writeToCell(4, 1, ' ');
     $nested_table->writeToCell(4, 2, 'Инв. № ' . $data['order_num'], $table_font);
@@ -442,6 +452,14 @@ foreach($result as $data) {
   $i++;
 }
 
+// =====================================================================================================================
+
+$base_text = 'Ознакомлен с Положением: «о локальной сети Общества», «о вычислительной технике», «о центре обработки данных», «о центре обработки данных», «о видеонаблюдении и видеоконференцсвязи», «о рабочем месте цветной печати», «о подключении оборудования сторонних организаций к информационным системам ***REMOVED*** «***REMOVED***», «об антивирусной защите информационных систем ***REMOVED*** «***REMOVED***»';
+
+$section->writeText( '     ' . $base_text . '<br>', $footer_font);
+
+// =====================================================================================================================
+
 $section->writeText('', $font, $tableFormat);
 
 $table = $section->addTable();
@@ -453,15 +471,14 @@ $cell = $table->getCell(1, 2);
 // var_dump($common_data);
 // exit;
 
-$table->writeToCell(1, 1, 'Корпус ' . $common_data['building'], $footer_font);
-$table->writeToCell(1, 2, 'Комната ' . $common_data['room'], $footer_font);
-$table->writeToCell(2, 1, 'Подразделение ' . $common_data['division'], $footer_font);
-$table->writeToCell(2, 2, 'Телефон ' . $common_data['tel'], $footer_font);
-$table->writeToCell(3, 1, 'Ответственный: ' . $common_data['fio'], $footer_font);
-$table->writeToCell(3, 2, 'Подпись  _____________________', $footer_font);
+$table->writeToCell(1, 1, 'Ответственный: ' . $common_data['fio'], $footer_font);
+$table->writeToCell(1, 2, 'Подпись  _____________________', $footer_font);
+$table->writeToCell(2, 1, 'Корпус ' . $common_data['building'], $footer_font);
+$table->writeToCell(2, 2, 'Комната ' . $common_data['room'], $footer_font);
+$table->writeToCell(3, 1, 'Подразделение ' . $common_data['division'], $footer_font);
+$table->writeToCell(3, 2, 'Телефон ' . $common_data['tel'], $footer_font);
 $table->writeToCell(4, 1, 'Получающий: ' . $sql_consumer_data['fio'], $footer_font);
 $table->writeToCell(4, 2, 'Подпись  _____________________', $footer_font);
-$table->writeToCell(5, 2, $date, $footer_font);
 // $table->writeToCell(4, 2, '"_____" ________________ 20 г.', $footer_font);
 
 $rtf->sendRtf($dept);

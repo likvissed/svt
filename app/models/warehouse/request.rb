@@ -25,6 +25,6 @@ module Warehouse
     end
 
     enum category: { office_equipment: 1, printing: 2, expendable_materials: 3 }, _prefix: true
-    enum status: { new: 1, analysis: 2, check: 3, waiting_confirmation_for_user: 4, on_signature: 5, in_work: 6, ready: 7, completed: 8, closed: 9 }, _prefix: true
+    enum status: { new: 1, analysis: 2, send_to_owner: 3, on_signature: 4, expected_in_stock: 5, create_order: 6, check_order: 7, waiting_confirmation_for_user: 8, in_work: 9, ready: 10, completed: 11, reject: 12 }, _prefix: true
   end
 end

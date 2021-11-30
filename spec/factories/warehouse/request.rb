@@ -13,6 +13,7 @@ module Warehouse
       executor_tn { build(:emp_***REMOVED***)['personnelNo'] }
       comment { nil }
       status { 'new' }
+      recommendation_json { nil }
 
       request_items { [create(:request_item)] }
     end

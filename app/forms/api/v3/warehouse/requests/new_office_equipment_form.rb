@@ -29,7 +29,7 @@ module Api
           validate :request_items?
 
           def request_items?
-            errors.add(:base, :warehouse_request_items_is_blank) unless request_items.size.positive?
+            errors.add(:warehouse_request_items_is_blank) unless request_items.size.positive?
           end
         end
       end

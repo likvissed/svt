@@ -19,7 +19,7 @@ module Api
             user_tn: JSON.parse(params['parameters'])['common']['tn']
           )
 
-          user = find_user(request.user_tn)
+          user = find_user("personnelNo==#{request.user_tn}")
           request.user_fio = user.first.try(:[], 'fullName')
           request.user_dept = user.first.try(:[], 'departmentForAccounting')
           request.user_phone = user.first.try(:[], 'phoneText')
@@ -52,7 +52,6 @@ module Api
           request_json = request.as_json
           request_json['request_items'] = request.request_items.as_json
           request_json['attachments'] = request.attachments.as_json if request.attachments.present?
-          Rails.logger.info "request json: #{request_json}".yellow
 
           if @form.validate(request_json)
             @form.save
@@ -68,11 +67,10 @@ module Api
           request = ::Warehouse::Request.find_by(request_id: params[:id])
 
           raise "Заявка не найдена: #{params[:id]}" if request.blank?
+          raise "Расходного ордера на выдачу ВТ не существует: #{params[:id]}" if request.order.blank?
 
           if params[:answer] == true
-            request.update(status: :on_signature)
-
-            # Описать этап №5
+            request.update(status: :in_work)
           else
             request.update(status: :closed)
 
@@ -86,26 +84,41 @@ module Api
 
         # Api для ssd о подписанном/отклоненном документе от начальника
         def answer_from_owner
-          request = ::Warehouse::Request.find_by(request_id: params[:id])
+          request = ::Warehouse::Request.find_by(ssd_id: params[:process_id])
+          raise "Заявка не найдена c process_id: #{params[:process_id]}" if request.blank?
 
-          return Rails.logger.info "Заявка не найдена: #{params[:id]}".red if request.blank?
+          owner_id_tn = find_user("login==#{params[:sign_***REMOVED***_user]}").first.try(:[], 'id') # CGI.escape
 
-          if params[:answer] == true
-            # Этап №6 - Идет подготовка к выдаче
-            request.update(status: :in_work)
+          if params[:status] == 'SIGNED'
+            raise "Файл отсутствует для заявки c process_id: #{params[:process_id]}" if params[:files].blank?
+
+            params[:files].original_filename = 'Рекомендации.pdf'
+            request.attachments.build(document: params[:files], is_public: false)
+
+            request.status = :create_order
+
+            request.save
+
+            message = params[:sign_comment].present? ? "Рекомендации подписаны, комментарий: '#{params[:sign_comment]}'" : 'Рекомендации подписаны'
+            Orbita.add_event(request.request_id, owner_id_tn, 'workflow', { message: message })
           else
-            # ::Warehouse::Requests::Close.new(request.user_id_tn, request.request_id).run
+            request.update(status: :closed)
+
+            Orbita.add_event(request.request_id, owner_id_tn, 'workflow', { message: "Рекомендации отклонены, комментарий: '#{params[:sign_comment]}'" })
+            Orbita.add_event(request.request_id, owner_id_tn, 'close')
           end
 
-          # Orbita.add_event - отправить ответ от начальника (событие)
           ActionCable.server.broadcast 'requests', nil
+        end
+
+        def request_files
         end
 
         private
 
         # Поиск пользователя в НСИ
-        def find_user(tn)
-          UsersReference.info_users("personnelNo==#{tn}")
+        def find_user(search)
+          UsersReference.info_users(search)
         end
       end
     end

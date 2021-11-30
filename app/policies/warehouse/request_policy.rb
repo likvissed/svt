@@ -26,6 +26,10 @@ module Warehouse
       for_manager
     end
 
+    def send_to_owner?
+      for_manager
+    end
+
     def ready?
       return true if admin?
 
@@ -33,6 +37,22 @@ module Warehouse
     end
 
     def send_answer_to_user?
+      for_manager
+    end
+
+    def update?
+      return true if admin?
+
+      user.one_of_roles? :manager, :worker
+    end
+
+    def save_recommendation?
+      return true if admin?
+
+      user.one_of_roles? :manager, :worker
+    end
+
+    def expected_is_stock?
       for_manager
     end
 
