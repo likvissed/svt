@@ -140,13 +140,51 @@ module Api
           end
         end
 
-        # describe 'GET #request_files' do
-        #   it 'check' do
-        #     get :request_files, format: :json
+        describe 'GET #request_files' do
+          let(:attachment_request) { create(:attachment_request) }
+          let(:request) { create(:request_category_one, attachments: [attachment_request]) }
+          let(:url) { "https://#{ENV['APP_HOSTNAME']}.***REMOVED***.ru/api/v3/warehouse/requests/download_adddiitional_files/#{attachment_request.id}" }
 
-        #     expect(JSON.parse(response.body)).to include('full_message')
-        #   end
-        # end
+          %w[url format description].each do |i|
+            it "has :#{i} attribute" do
+              get :request_files, params: { process_id: request.ssd_id }, format: :json
+
+              expect(JSON.parse(response.body).first.key?(i)).to be_truthy
+            end
+          end
+
+          it 'attribute :url is present' do
+            get :request_files, params: { process_id: request.ssd_id }, format: :json
+
+            expect(JSON.parse(response.body).first['url']).to eq(url)
+          end
+
+          it 'attribute :description is present' do
+            get :request_files, params: { process_id: request.ssd_id }, format: :json
+
+            expect(JSON.parse(response.body).first['description']).to eq('Список ПО или др.вложенные документы')
+          end
+
+          it 'attribute :format is present and correct' do
+            get :request_files, params: { process_id: request.ssd_id }, format: :json
+
+            expect(JSON.parse(response.body).first['format']).to eq(attachment_request.document.content_type)
+          end
+        end
+
+        describe 'GET #download_attachment_request' do
+          let(:attachment_request) { create(:attachment_request) }
+          let(:request) { create(:request_category_one, attachments: [attachment_request]) }
+          let(:file_options) { { filename: attachment_request.document.identifier, type: attachment_request.document.content_type, disposition: 'inline' } }
+
+          it 'file is send' do
+            @request.env['HTTP_SSD_FILE_TOKEN'] = request.ssd_id
+
+            expect(controller).to receive(:send_file).with(attachment_request.document.path, file_options).and_call_original
+
+            get :download_attachment_request, params: { id: attachment_request.id }, format: :html
+          end
+        end
       end
     end
   end

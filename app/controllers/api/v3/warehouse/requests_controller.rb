@@ -94,7 +94,7 @@ module Api
           request = ::Warehouse::Request.find_by(ssd_id: params[:process_id])
           raise "Заявка не найдена c process_id: #{params[:process_id]}" if request.blank?
 
-          owner_id_tn = find_user("login==#{params[:sign_***REMOVED***_user]}").first.try(:[], 'id') # CGI.escape
+          owner_id_tn = find_user("login==#{params[:sign_***REMOVED***_user]}").first.try(:[], 'id')
 
           if params[:status] == 'SIGNED'
             raise "Файл отсутствует для заявки c process_id: #{params[:process_id]}" if params[:files].blank?
@@ -118,7 +118,34 @@ module Api
           ActionCable.server.broadcast 'requests', nil
         end
 
+        # Получение url ссылок на скачивание вложенных файлов к заявке
         def request_files
+          request = ::Warehouse::Request.find_by(ssd_id: params[:process_id])
+          raise "Заявка не найдена c process_id: #{params[:process_id]}" if request.blank?
+
+          array = []
+
+          request.attachments.where(is_public: true).each do |attachment|
+            array << {
+              url: "https://#{ENV['APP_HOSTNAME']}.***REMOVED***.ru/api/v3/warehouse/requests/download_adddiitional_files/#{attachment.id}",
+              format: attachment.document.content_type,
+              description: 'Список ПО или др.вложенные документы'
+            }
+          end
+
+          render json: array
+        end
+
+        def download_attachment_request
+          w_request = ::Warehouse::Request.find_by(ssd_id: request.env['HTTP_SSD_FILE_TOKEN'])
+          raise "Заявка не найдена c process_id: #{params[:process_id]}" if w_request.blank?
+
+          attachment = w_request.attachments.find_by(id: params[:id], is_public: true)
+          if attachment.present?
+            send_file attachment.document.path, filename: attachment.document.identifier, type: attachment.document.content_type, disposition: 'inline'
+          else
+            render json: 'Доступные вложения отсуствуют'
+          end
         end
 
         private

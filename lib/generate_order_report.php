@@ -372,13 +372,13 @@ $section->writeText('на получение вычислительной тех
 $table = $section->addTable();
 
 $rows = count($result);
-$cols = 3;
+$cols = 2; // 3
 $height = 3.0;
 $mainBorder = new PHPRtfLite_Border_Format(1); //Формат барьера
 $border = new PHPRtfLite_Border($rtf, $mainBorder, $mainBorder, $mainBorder, $mainBorder);
 
 $table->addRows($rows, $height);
-$table->addColumnsList(array(2.6, 12.7, 2.6));
+$table->addColumnsList(array(15.3, 2.6)); // array(2.6, 12.7, 2.6)
 $table->setBorderForCellRange($border, 1, 1, $rows, $cols);
 
 $cell = $table->getCell(1, 2);
@@ -389,34 +389,34 @@ $i = 0;
 
 foreach($result as $data) {
 
-  $cell = $table->getCell($i + 1, 1);
-  $cell->setBackgroundColor('#dddddd');
+  // $cell = $table->getCell($i + 1, 1);
+  // $cell->setBackgroundColor('#dddddd');
 
-  $cell = $table->getCell($i + 1, 2);
+  $cell = $table->getCell($i + 1, 1);
   $cell->setCellPaddings(0.2, 0.2, 0.2, 0.2);
 
   if ($data['warehouse_type'] == 'with_invent_num') {
-    $table->writeToCell($i + 1, 2, $data['type'], $fontBold);
+    $table->writeToCell($i + 1, 1, $data['type'], $fontBold);
     if ($data['type'] != 'Системный блок') {
-      $table->writeToCell($i + 1, 2, ' ' . $data['item_model'], $fontBold);
+      $table->writeToCell($i + 1, 1, ' ' . $data['item_model'], $fontBold);
 
     }
-    $table->writeToCell($i + 1, 2, "\n", $fontBold);
+    $table->writeToCell($i + 1, 1, "\n", $fontBold);
     foreach($data['property_values'] as $prop_val) {
 
       if (isset($prop_val['property'])) {
-        $table->writeToCell($i + 1, 2, $prop_val['property'] . ': ' . $prop_val['value'] . "\n", $table_font);
+        $table->writeToCell($i + 1, 1, $prop_val['property'] . ': ' . $prop_val['value'] . "\n", $table_font);
       }
     }
-    $table->writeToCell($i + 1, 3, $data['count'], $table_font);
+    $table->writeToCell($i + 1, 2, $data['count'], $table_font);
 
     // var_dump($sql_consumer_data[0]['fio']);
     // exit;
 
     $nested_table = $cell->addTable();
     $nested_table->addRows(4, 0.5);
-    $nested_table->addColumnsList(array(6, 6));
-    $nested_table->setBorderForCellRange($border, 1, 1, $rows, $cols);
+    $nested_table->addColumnsList(array(5, 5));
+    // $nested_table->setBorderForCellRange($border, 1, 1, $rows, $cols);
     $nested_table->writeToCell(1, 1, ' ');
     $nested_table->writeToCell(1, 2, ' ');
     $nested_table->writeToCell(2, 1, ' ');
@@ -426,15 +426,15 @@ foreach($result as $data) {
     $nested_table->writeToCell(4, 1, ' ');
     $nested_table->writeToCell(4, 2, 'Инв. № ' . $data['invent_num'], $table_font);
   } else if ($data['warehouse_type'] == 'without_invent_num') {
-    $table->writeToCell($i + 1, 2, $data['item_type'] . ' ', $fontBold);
-    $table->writeToCell($i + 1, 2, $data['item_model'] . ' ', $fontBold);
+    $table->writeToCell($i + 1, 1, $data['item_type'] . ' ', $fontBold); //12
+    $table->writeToCell($i + 1, 1, $data['item_model'] . ' ', $fontBold); // 12
 
-    $table->writeToCell($i + 1, 3, $data['count'], $table_font);
+    $table->writeToCell($i + 1, 2, $data['count'], $table_font); //13
 
     $nested_table = $cell->addTable();
     $nested_table->addRows(4, 0.5);
-    $nested_table->addColumnsList(array(6, 6));
-    $nested_table->setBorderForCellRange($border, 1, 1, $rows, $cols);
+    $nested_table->addColumnsList(array(5, 5));
+    // $nested_table->setBorderForCellRange($border, 1, 1, $rows, $cols);
     $nested_table->writeToCell(1, 1, ' ');
     $nested_table->writeToCell(1, 2, ' ');
     $nested_table->writeToCell(2, 1, ' ');
@@ -445,7 +445,7 @@ foreach($result as $data) {
     $nested_table->writeToCell(4, 2, 'Инв. № ' . $data['order_num'], $table_font);
   }
 
-  $cell = $table->getCell($i + 1, 3);
+  $cell = $table->getCell($i + 1, 2); //13
   $cell->setTextAlignment(PHPRtfLite_ParFormat::TEXT_ALIGN_CENTER);
   $cell->setVerticalAlignment(PHPRtfLite_Table_Cell::VERTICAL_ALIGN_CENTER);
 

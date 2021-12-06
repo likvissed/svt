@@ -14,6 +14,7 @@ module Warehouse
       comment { nil }
       status { 'new' }
       recommendation_json { nil }
+      ssd_id { 'f11391dd-5640-11ec-8064-00505691df09' }
 
       request_items { [create(:request_item)] }
     end

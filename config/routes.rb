@@ -194,10 +194,13 @@ Rails.application.routes.draw do
         post 'requests/new_office_equipment', to: 'requests#new_office_equipment'
         # Ответ от пользователя (подтверждение/отклонение обработанной заявки) из Orbita
         post 'requests/answer_from_user/:id', to: 'requests#answer_from_user'
+
         # Ответ от начальника (подтверждение/отклонение сформированного расходного ордера) из SSD
         post 'requests/answer_from_owner/:id', to: 'requests#answer_from_owner'
-        # Получение файлов конкретной заявки для SSD (Приложения)
+        # Получение json ссылок на скачивание файлов конкретной заявки для SSD (Приложения)
         get 'requests/request_files', to: 'requests#request_files'
+        # Скачивать вложенный документ заявки в SSD "Приложения"
+        get 'requests/download_attachment_request/:id', to: 'requests#download_attachment_request'
       end
     end
   end
