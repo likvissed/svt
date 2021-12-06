@@ -97,7 +97,7 @@ import { app } from '../../app/app';
           templateUrl : 'editRequestModal.slim',
           controller  : 'EditRequestCtrl',
           controllerAs: 'edit',
-          size        : 'lg',
+          size        : 'xl',
           backdrop    : 'static',
           resolve     : {
             data: {

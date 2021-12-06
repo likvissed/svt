@@ -61,7 +61,7 @@ module Warehouse
 
     # Этап № 3 Отправить список рекомендаций в ССД руководителю
     def send_to_owner
-      request = Requests::SendToOwner.new(current_user, params[:id], params[:owner])
+      request = Requests::SendToOwner.new(current_user, params[:id], params[:owner], request_params)
 
       if request.run
         render json: { full_message: "Заявка №#{params[:id]} отправлена на подпись в ССД" }, status: 200

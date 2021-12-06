@@ -29,13 +29,21 @@ module Warehouse
         ord
       end
       let(:owner) { build(:emp_***REMOVED***) }
+      let(:new_recommendation) { [{ 'name': 'RAM 4Gb' }] }
+      let(:request_params) { attributes_for(:request_category_one, recommendation_json: new_recommendation) }
 
-      subject { SendToOwner.new(current_user, request.request_id, owner) }
+      subject { SendToOwner.new(current_user, request.request_id, owner, request_params) }
 
       it 'updates status for request' do
         subject.run
 
         expect(request.reload.status).to eq('on_signature')
+      end
+
+      it 'updates recommendation_json for request' do
+        subject.run
+
+        expect(request.reload.recommendation_json[0]).to eq(new_recommendation[0].stringify_keys)
       end
 
       it 'updates data from ssd for request' do

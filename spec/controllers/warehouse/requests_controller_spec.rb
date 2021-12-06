@@ -162,7 +162,8 @@ module Warehouse
         ord
       end
       let(:owner) { attributes_for(:***REMOVED***_user) }
-      let(:params) { { id: request.request_id, owner: owner } }
+      let(:request_params) { attributes_for(:request_category_one) }
+      let(:params) { { id: request.request_id, owner: owner, request: request_params } }
       before { allow_any_instance_of(Requests::SendToOwner).to receive(:run).and_return(true) }
 
       it 'adds success message' do

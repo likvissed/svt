@@ -70,9 +70,16 @@ module Api
           raise "Расходного ордера на выдачу ВТ не существует: #{params[:id]}" if request.order.blank?
 
           if params[:answer] == true
-            request.update(status: :in_work)
+            if params[:comment].present?
+              user_comment = "\n / Ответ пользователя: #{params[:comment]} /"
+
+              request.comment = "#{request.comment} #{user_comment}"
+            end
+
+            request.status = :in_work
+            request.save
           else
-            request.update(status: :closed)
+            request.update(status: :reject)
 
             request.order.destroy if request.order.present?
 
@@ -92,7 +99,7 @@ module Api
           if params[:status] == 'SIGNED'
             raise "Файл отсутствует для заявки c process_id: #{params[:process_id]}" if params[:files].blank?
 
-            params[:files].original_filename = 'Рекомендации.pdf'
+            params[:files].original_filename = 'Рекомендация_с_подписью.pdf'
             request.attachments.build(document: params[:files], is_public: false)
 
             request.status = :create_order

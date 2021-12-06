@@ -31,8 +31,6 @@
                   = fa_icon "pencil-square-o fw", class: "pointer", "uib-tooltip": "Редактировать заявку",
                     "ng-click": "table.editRequest(request)", "tooltip-append-to-body": "true"
 
-      / pre 
-        | {{ table.pagination | json }}
       .row
         .col-xs-12
           .animate-show ng-table-info="" info-attrs="table.pagination" ng-if="table.requests"

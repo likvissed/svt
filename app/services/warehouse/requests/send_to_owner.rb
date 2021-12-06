@@ -2,16 +2,18 @@ module Warehouse
   module Requests
     # Отправить файл на подпись в ССД выбранному руководителю
     class SendToOwner < Warehouse::ApplicationService
-      def initialize(current_user, request_id, owner)
+      def initialize(current_user, request_id, owner, new_request_params)
         @current_user = current_user
         @request_id = request_id
         @owner = owner
+        @new_request_params = new_request_params
 
         super
       end
 
       def run
         load_request
+        save_recommendations
         load_request_params
         generate_report
         find_login
@@ -37,6 +39,20 @@ module Warehouse
         ).find(@request_id)
 
         authorize @request, :send_to_owner?
+      end
+
+      def save_recommendations
+        @form = Requests::SaveRecommendationForm.new(Request.find(@request_id))
+
+        if @form.validate(@new_request_params)
+          @form.save
+
+          load_request
+        else
+          error[:full_message] = @form.errors.full_messages.join('. ')
+
+          raise 'Данные не обновлены'
+        end
       end
 
       def load_request_params

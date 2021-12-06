@@ -34,6 +34,9 @@ import { FormValidationController } from '../../shared/functions/form-validation
         return attr.fullname == this.request.executor_fio;
       });
     }
+
+    // Заблокировать кнопку пока отправляется список рекомендаций в SSD
+    this.loadOwner = true;
   }
 
   // Унаследовать методы класса FormValidationController
@@ -143,15 +146,21 @@ import { FormValidationController } from '../../shared/functions/form-validation
 
     if (!confirm('Вы действительно хотите отправить список рекомендаций на подпись?')) { return false; }
 
+    this.loadOwner = false;
+
     this.Server.Warehouse.Request.sendToOwner(
       { id: this.request.request_id },
-      { owner: this.owner },
+      {
+        request: this.request,
+        owner  : this.owner
+      },
       (response) => {
         this.Flash.notice(response.full_message);
         this.$uibModalInstance.close();
       },
       (response, status) => {
         this.Error.response(response, status);
+        this.loadOwner = true;
       }
     );
   }

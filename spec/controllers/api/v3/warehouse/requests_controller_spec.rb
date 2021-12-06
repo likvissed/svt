@@ -100,12 +100,17 @@ module Api
               comment: nil
             }
           end
+          let!(:order) do
+            order = build(:order, operation: :out, request: request)
+            order.save(validate: false)
+            order
+          end
           before { allow_any_instance_of(::Warehouse::Order).to receive(:set_consumer_dept_in) }
 
           it 'the status of the request is updated' do
             post :answer_from_user, params: params, as: :json
 
-            expect(request.reload.status).to eq('on_signature')
+            expect(request.reload.status).to eq('in_work')
           end
 
           context 'when user disagree' do

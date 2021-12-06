@@ -46,6 +46,7 @@ module Warehouse
 
         if @form.validate(@request_params)
           @form.save
+          @request.update(status: :send_to_owner)
 
           Orbita.add_event(@request_id, @current_user.id_tn, 'workflow', { message: 'Создан список рекомендаций' })
         else

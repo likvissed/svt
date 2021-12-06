@@ -14,7 +14,7 @@
   .col-lg-24
     .form-group
       = label_tag "request[comment]", "Комментарий:", class: "control-label"
-      = text_area_tag "request[comment]", "", class: "form-control", "ng-model": "edit.request.comment", rows: "2", "ng-disabled": "(edit.request.status == 'completed' || edit.request.status == 'reject')"
+      = text_area_tag "request[comment]", "", class: "form-control", "ng-model": "edit.request.comment", rows: "3", "ng-disabled": "(edit.request.status == 'completed' || edit.request.status == 'reject')"
 
 - if current_user.one_of_roles? :admin, :manager, :worker
   .row
@@ -34,7 +34,7 @@
             tbody
               tr ng-repeat="recomend in edit.request.recommendation_json track by $index"
                 td.col-fhd-1.text-center ng-bind="$index + 1"
-                td
+                td.col-fhd-22
                   = select_tag "request[recommendations]", "", class: "form-control", "ng-model": "edit.request.recommendation_json[$index]",
                     "ng-options": "recommendation.name disable when recommendation.id for recommendation in edit.list_recommendations track by recommendation.name",
                     "ng-disabled": "(edit.request.status == 'completed' || edit.request.status == 'reject')"
