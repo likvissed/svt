@@ -141,23 +141,17 @@ script type="text/ng-template" id="editRequestModal.slim"
             = button_tag "Изменить исполнителя", class: "btn-warning", "ng-click": "edit.assignNewWorker()", "uib-tooltip": "Назначить нового исполнителя"
         span ng-if="edit.request.status == 'check_order' && edit.request.order"
           .pull-left
-            = button_tag "Утвердить заявку и ордер", class: "btn-success", "ng-click": "edit.confirmRequestAndOrder()", "uib-tooltip": "Заявка будет утверждена и ордер автоматически"
+            = button_tag "Утвердить ордер", class: "btn-success", "ng-click": "edit.confirmRequestAndOrder()", "uib-tooltip": "Заявка будет утверждена и ордер автоматически"
           .pull-left style="margin-left: 4px;"
             = button_tag "Закрыть заявку и удалить ордер", class: "btn-danger", "ng-click": "edit.closeRequest()", "uib-tooltip": "Заявка будет закрыта и ордер удален"
         span ng-if="edit.request.status == 'new'"
           .pull-left style="margin-left: 4px;"
             = button_tag "Отклонить и закрыть заявку", class: "btn-danger", "ng-click": "edit.closeRequest()", "uib-tooltip": "Заявка будет отклонена"
-        span ng-if="edit.request.status == 'create_order'"
-          .pull-left style="margin-left: 4px;"
-            = button_tag "Ожидание техники в наличии", class: "btn-primary", "ng-click": "edit.expectedInStock(true)", "uib-tooltip": "Изменить статус заявки"
-        span ng-if="edit.request.status == 'expected_in_stock'"
-          .pull-left style="margin-left: 4px;"
-            = button_tag "Продолжить работу заявки", class: "btn-success", "ng-click": "edit.expectedInStock(false)", "uib-tooltip": "Можно будет создавать ордер"
       
       - if current_user.one_of_roles? :admin, :manager
         span ng-if="edit.request.status == 'send_to_owner'"
           .pull-left
-            = button_tag "Отправить на подпись в ССД", class: "btn-primary", "ng-click": "edit.sendToOwner()", "uib-tooltip": "Отправить выбранному руководителю расходный ордер на подпись",
+            = button_tag "Отправить на подпись в ССД", class: "btn-primary", "ng-click": "edit.sendToOwner()", "uib-tooltip": "Отправить выбранному согласующему расходный ордер на подпись",
               "ng-disabled": "!edit.loadOwner", "ng-class": "{'waiting': !edit.loadOwner}"
 
       - if current_user.one_of_roles? :admin, :manager, :worker
@@ -166,6 +160,12 @@ script type="text/ng-template" id="editRequestModal.slim"
         span ng-if="(edit.request.status == 'analysis')"
           .pull-left style="margin-right: 4px;"
             = button_tag "Сохранить список рекомендаций", class: "btn-success", "ng-click": "edit.saveRecommendation()"
+        span ng-if="edit.request.status == 'create_order'"
+          .pull-left style="margin-left: 4px;"
+            = button_tag "Ожидание наличия техники", class: "btn-primary", "ng-click": "edit.expectedInStock(true)", "uib-tooltip": "Изменить статус заявки"
+        span ng-if="edit.request.status == 'expected_in_stock'"
+          .pull-left style="margin-left: 4px;"
+            = button_tag "Продолжить работу заявки", class: "btn-success", "ng-click": "edit.expectedInStock(false)", "uib-tooltip": "Можно будет создавать ордер"
 
       - if current_user.role? :worker
         span ng-if="edit.request.status == 'analysis'"

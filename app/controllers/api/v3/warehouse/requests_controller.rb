@@ -104,12 +104,21 @@ module Api
 
             request.status = :create_order
 
+            message = 'Подписал рекомендации'
+
+            if params[:sign_comment].present?
+              owner_comment = "\n / Комментарий согласующего: #{params[:sign_comment]} /"
+
+              request.comment = "#{request.comment} #{owner_comment}"
+
+              message = "Подписал рекомендации, комментарий: '#{params[:sign_comment]}'"
+            end
+
             request.save
 
-            message = params[:sign_comment].present? ? "Рекомендации подписаны, комментарий: '#{params[:sign_comment]}'" : 'Рекомендации подписаны'
             Orbita.add_event(request.request_id, owner_id_tn, 'workflow', { message: message })
           else
-            request.update(status: :closed)
+            request.update(status: :reject)
 
             Orbita.add_event(request.request_id, owner_id_tn, 'workflow', { message: "Рекомендации отклонены, комментарий: '#{params[:sign_comment]}'" })
             Orbita.add_event(request.request_id, owner_id_tn, 'close')
@@ -127,7 +136,7 @@ module Api
 
           request.attachments.where(is_public: true).each do |attachment|
             array << {
-              url: "https://#{ENV['APP_HOSTNAME']}.***REMOVED***.ru/api/v3/warehouse/requests/download_adddiitional_files/#{attachment.id}",
+              url: "https://#{ENV['APP_HOSTNAME']}.***REMOVED***.ru/api/v3/warehouse/requests/download_attachment_request/#{attachment.id}",
               format: attachment.document.content_type,
               description: 'Список ПО или др.вложенные документы'
             }

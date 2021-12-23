@@ -28,7 +28,7 @@ script type="text/ng-template" id="editOutOrderModal.slim"
         = text_field_tag "order[request_num]", "", class: "form-control", autocomplete: "off", "ng-model": "edit.order.request_num"
 
       .form-group
-        = label_tag "order[request_id]", "№ заявки в инвентаризации", class: "control-label"
+        = label_tag "order[request_id]", "№ заявки в СВТ", class: "control-label"
         = text_field_tag "order[request_id]", "", class: "form-control", autocomplete: "off", "ng-model": "edit.order.request_id"
 
       .form-group ng-class="edit.errorClass('order[invent_num]')"

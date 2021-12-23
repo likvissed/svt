@@ -9,6 +9,7 @@ module Api
           property :category, validates: { presence: true }
 
           property :user_tn, validates: { presence: true }
+          property :user_id_tn, validates: { presence: true }
           property :user_fio, validates: { presence: true }
           property :user_dept, validates: { presence: true }
           property :user_phone

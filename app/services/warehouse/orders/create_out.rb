@@ -52,7 +52,7 @@ module Warehouse
 
               @order.request.update(status: status)
 
-              message = status == 'check_order' ? "Создан ордер на выдачу ВТ №#{@order.id}" : "Создан и подтверждён ордер на выдачу ВТ №#{@order.id}"
+              message = status == 'check_order' ? "Создал ордер на выдачу ВТ №#{@order.id}" : "Создал и подтвердил ордер на выдачу ВТ №#{@order.id}"
               Orbita.add_event(@order.request.request_id, @current_user.id_tn, 'workflow', { message: message })
 
               # Отправляется запрос на подтверждение пользователю

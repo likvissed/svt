@@ -388,6 +388,12 @@ module Warehouse
     end
 
     def prevent_destroy
+      if request.present? && %w[waiting_confirmation_for_user in_work ready].include?(request.status)
+
+        errors.add(:base, :cannot_destroy_with_request)
+        throw(:abort)
+      end
+
       if done?
         errors.add(:base, :cannot_destroy_done)
         throw(:abort)

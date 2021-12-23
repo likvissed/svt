@@ -106,7 +106,7 @@ import { FormValidationController } from '../../shared/functions/form-validation
     );
   }
 
-  // Утвердить расходный ордер и изменить статус заявки как "Ожидает подтверждение от пользователя"
+  // Утвердить расходный ордер и изменить статус заявки как "Ожидает подтверждения пользователя"
   EditRequestCtrl.prototype.confirmRequestAndOrder = function() {
     this.Server.Warehouse.Request.confirmRequestAndOrder(
       { id: this.request.request_id },
@@ -194,7 +194,7 @@ import { FormValidationController } from '../../shared/functions/form-validation
     }
   };
 
-  // Сохранить список рекомендаций и изменить статус заявки как "Требуется отправить руководителю в ССД"
+  // Сохранить список рекомендаций и изменить статус заявки как "Ожидает отправки в ССД"
   EditRequestCtrl.prototype.saveRecommendation = function() {
     if (this.request.recommendation_json === null) {
       this.Flash.alert('Необходимо заполнить список рекомендаций');
@@ -215,7 +215,7 @@ import { FormValidationController } from '../../shared/functions/form-validation
     );
   }
 
-  // Изменить статус заявки как "Ожидается техника в наличии"
+  // Изменить статус заявки как "Ожидание наличия техники"
   EditRequestCtrl.prototype.expectedInStock = function(flag) {
     if (!confirm('Вы действительно хотите изменить статус заявки?')) { return false; }
 

@@ -191,6 +191,22 @@ module Warehouse
             include_examples 'failed destroy :out order'
           end
         end
+
+        context 'and when request_id is present' do
+          let(:request) { create(:request_category_one) }
+          let(:order) do
+            order = build(:order, operation: :out, request: request)
+            order.save(validate: false)
+            order
+          end
+          before { allow(Orbita).to receive(:add_event) }
+
+          it 'the status request is updated' do
+            subject.run
+
+            expect(request.reload.status).to eq('create_order')
+          end
+        end
       end
 
       context 'when operation is :write_off' do

@@ -125,9 +125,19 @@ module Warehouse
     end
 
     permissions :expected_is_stock? do
-      let(:model) { Request.first }
+      let(:request) { create(:request_category_one) }
 
-      include_examples 'policy for manager'
+      context 'with :manager role and with valid user' do
+        it 'grants access to the request' do
+          expect(subject).to permit(manager, Request.find(request.request_id))
+        end
+      end
+
+      context 'with :***REMOVED***_user role and with invalid user' do
+        it 'denies access to the request' do
+          expect(subject).not_to permit(***REMOVED***_user, Request.find(request.request_id))
+        end
+      end
     end
   end
 end

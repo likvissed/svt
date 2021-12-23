@@ -84,7 +84,7 @@ module Api
             end
 
             it 'adds error messages' do
-              post :new_office_equipment, params: params
+              post :new_office_equipment, params: params, format: :json
 
               expect(JSON.parse(response.body)).to include('full_message')
             end
@@ -140,10 +140,46 @@ module Api
           end
         end
 
+        describe 'POST #answer_from_owner' do
+          let(:request) { create(:request_category_one) }
+          let(:file) do
+            Rack::Test::UploadedFile.new(File.open(Rails.root.join('spec/files/new_pc_config.txt')))
+          end
+          let(:params) do
+            {
+              id: request.request_id,
+              process_id: request.ssd_id,
+              status: 'SIGNED',
+              files: file
+            }
+          end
+          before { allow(Orbita).to receive(:add_event) }
+
+          it 'the status of the request is updated' do
+            post :answer_from_owner, params: params
+
+            expect(request.reload.status).to eq('create_order')
+          end
+
+          it 'increase count of warehouse_attachment_requests' do
+            expect { post :answer_from_owner, params: params }.to change(::Warehouse::AttachmentRequest, :count).by(1)
+          end
+
+          context 'when owner disagree' do
+            before { params[:status] = 'UNSIGNED' }
+
+            it 'update status and closing the request' do
+              post :answer_from_owner, params: params
+
+              expect(request.reload.status).to eq('reject')
+            end
+          end
+        end
+
         describe 'GET #request_files' do
           let(:attachment_request) { create(:attachment_request) }
           let(:request) { create(:request_category_one, attachments: [attachment_request]) }
-          let(:url) { "https://#{ENV['APP_HOSTNAME']}.***REMOVED***.ru/api/v3/warehouse/requests/download_adddiitional_files/#{attachment_request.id}" }
+          let(:url) { "https://#{ENV['APP_HOSTNAME']}.***REMOVED***.ru/api/v3/warehouse/requests/download_attachment_request/#{attachment_request.id}" }
 
           %w[url format description].each do |i|
             it "has :#{i} attribute" do

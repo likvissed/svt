@@ -45,12 +45,43 @@ module Warehouse
 
       def load_recommendations
         data[:list_recommendations] = [
-          { 'name': 'Intel Core i3' },
-          { 'name': 'RAM 4Gb' },
-          { 'name': 'HDD 500Gb' },
-          { 'name': 'Клавиатура' },
-          { 'name': 'Мышь' }
+          { 'name': 'New i3' },
+          { 'name': 'New i5' },
+          { 'name': 'New i7' },
+
+          { 'name': 'Ref i3' },
+          { 'name': 'Ref i5' },
+          { 'name': 'Ref i7' },
+
+          { 'name': 'Самосбор i3' },
+          { 'name': 'Самосбор i5' },
+
+          { 'name': '2duo-quad' },
+
+          { 'name': 'Без монитора' },
+          { 'name': 'Монитор 22”' },
+          { 'name': 'Монитор 24”' },
+          { 'name': 'Монитор 27”' },
+
+          { 'name': 'Видео графическая' },
+          { 'name': 'Видео офисная' },
+          { 'name': 'Без видео' },
+
+          { 'name': 'Память 4 гб' },
+          { 'name': 'Память 8 гб' },
+          { 'name': 'Память 16 гб' },
+          { 'name': 'Память 32 гб' },
+
+          { 'name': 'SSD' },
+          { 'name': 'm.2' }
         ]
+
+        # Для случаев, когда выбранной рекомендации нет в общем списке (для отображения на форме)
+        data[:request]['recommendation_json'].try(:each) do |rec|
+          next if data[:list_recommendations].include?(rec)
+
+          data[:list_recommendations] << rec
+        end
       end
 
       def transform_to_json

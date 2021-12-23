@@ -860,6 +860,27 @@ module Warehouse
     describe '#prevent_destroy' do
       let(:user) { create(:user) }
 
+      context 'when request is present for order' do
+        let(:request) { create(:request_category_one) }
+        let(:order) do
+          order = build(:order, operation: :out, request: request)
+          order.save(validate: false)
+          order
+        end
+
+        %w[waiting_confirmation_for_user in_work ready].each do |status|
+          context "when status request is '#{status}'" do
+            before { request.status = status }
+
+            it 'adds :cannot_destroy_with_request error' do
+              order.destroy
+
+              expect(order.errors.details[:base]).to include(error: :cannot_destroy_with_request)
+            end
+          end
+        end
+      end
+
       context 'when order is done' do
         let(:operation) { build(:order_operation, status: :done, stockman_id_tn: user.id_tn) }
         let!(:order) { create(:order, operations: [operation], consumer_tn: user.tn, consumer_fio: user.fullname) }

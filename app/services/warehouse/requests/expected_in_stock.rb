@@ -36,11 +36,11 @@ module Warehouse
         when true
           raise 'Статус заявки не изменён' unless @request.update(status: :expected_in_stock)
 
-          Orbita.add_event(@request_id, @current_user.id_tn, 'workflow', { message: 'Изменён статус на "Ожидается техника в наличии"' })
+          Orbita.add_event(@request_id, @current_user.id_tn, 'workflow', { message: 'Изменил статус на "Ожидание наличия техники"' })
         when false
           raise 'Статус заявки не изменён' unless @request.update(status: :create_order)
 
-          Orbita.add_event(@request_id, @current_user.id_tn, 'workflow', { message: 'Изменён статус на "Требуется создать ордер"' })
+          Orbita.add_event(@request_id, @current_user.id_tn, 'workflow', { message: 'Изменил статус на "Требуется создать ордер"' })
         end
       end
     end

@@ -14,7 +14,7 @@
   .col-lg-24
     .form-group
       = label_tag "request[comment]", "Комментарий:", class: "control-label"
-      = text_area_tag "request[comment]", "", class: "form-control", "ng-model": "edit.request.comment", rows: "3", "ng-disabled": "(edit.request.status == 'completed' || edit.request.status == 'reject')"
+      = text_area_tag "request[comment]", "", class: "form-control", "ng-model": "edit.request.comment", rows: "5", "ng-disabled": "(edit.request.status == 'completed' || edit.request.status == 'reject')"
 
 - if current_user.one_of_roles? :admin, :manager, :worker
   .row

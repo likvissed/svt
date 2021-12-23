@@ -53,7 +53,9 @@ module Warehouse
     end
 
     def expected_is_stock?
-      for_manager
+      return true if admin?
+
+      user.one_of_roles? :manager, :worker
     end
 
     class Scope < Scope

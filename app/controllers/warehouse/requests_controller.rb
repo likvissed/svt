@@ -70,7 +70,7 @@ module Warehouse
       end
     end
 
-    # Изменить статус как "Ожидается техника в наличии" или обратно "Требуется создать ордер"
+    # Изменить статус как "Ожидание наличия техники" или обратно "Требуется создать ордер"
     def expected_is_stock
       expect = Requests::ExpectedInStock.new(current_user, params[:id], params[:flag])
 
