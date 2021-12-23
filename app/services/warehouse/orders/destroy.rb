@@ -63,6 +63,12 @@ module Warehouse
               op.item.save!
             end
             destroy_order
+
+            # Вернуть статус "Требуется создать ордер", если существует заявка
+            if @order.request_id.present?
+              Orbita.add_event(@order.request_id, @current_user.id_tn, 'workflow', { message: "Ордер на выдачу ВТ удален №#{@order_id}" })
+              Requests::ExpectedInStock.new(@current_user, @order.request_id, false).run
+            end
           end
         end
       end
@@ -110,6 +116,7 @@ module Warehouse
           broadcast_out_orders
           broadcast_workplaces
           broadcast_workplaces_list
+          broadcast_requests
         when 'write_off'
           write_off_order
           broadcast_write_off_orders

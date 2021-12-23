@@ -263,6 +263,67 @@ module Warehouse
           end
         end
       end
+
+      context 'when add request_id for order' do
+        let(:request) { create(:request_category_one, executor_tn: current_user.tn, status: :create_order) }
+        let!(:inv_item) { create(:item, :with_property_values, type_name: :printer, status: :in_workplace) }
+        let(:workplace) do
+          w = build(:workplace_net_print, items: [inv_item])
+          w.save(validate: false)
+          w
+        end
+        let(:item) { create(:used_item, warehouse_type: :without_invent_num, item_type: 'Картридж', item_model: '6515DNI', count: 1) }
+        let(:operation) { attributes_for(:order_operation, item_id: item.id, shift: -1) }
+        let(:order_params) do
+          order = attributes_for(:order, operation: :out, invent_workplace_id: workplace.workplace_id, request_id: request.request_id)
+          order[:operations_attributes] = [operation]
+          order
+        end
+        let(:order) { build(:order, :without_operations, operation: :out, invent_workplace_id: workplace.workplace_id) }
+        before do
+          order_params[:request_id] = request.request_id
+          allow_any_instance_of(Order).to receive(:present_item_for_barcode).and_return(true)
+          allow(Orbita).to receive(:add_event)
+        end
+
+        context 'and when role users is :worker' do
+          let(:worker_role) { create(:worker_role) }
+          before { current_user.role_id = worker_role.id }
+
+          it 'change status from request' do
+            subject.run
+
+            expect(request.reload.status).to eq('check_order')
+          end
+        end
+
+        context 'and when role users is :manager or :admin' do
+          before { current_user.role = Role.find_by(name: :admin) }
+
+          it 'change status from request' do
+            subject.run
+
+            expect(request.reload.status).to eq('waiting_confirmation_for_user')
+          end
+        end
+
+        context 'and when category not :office_equipment' do
+          let(:current_status) { 'analysis' }
+          let(:request) { create(:request_category_two, status: current_status) }
+
+          it 'status to request not changed' do
+            subject.run
+
+            expect(request.reload.status).to eq(current_status)
+          end
+        end
+
+        context 'and when request not present' do
+          before { order_params[:request_id] = 990_990 }
+
+          its(:run) { is_expected.to be_falsey }
+        end
+      end
     end
   end
 end

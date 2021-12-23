@@ -37,6 +37,19 @@ module Warehouse
 
         @order.set_validator(current_user)
         @order.comment = @comment
+
+        # Утвердить заявку если она существует
+        if @order.request.present? && @order.request.category == 'office_equipment'
+          # Обновляется статус заявки
+          @order.request.update(status: :waiting_confirmation_for_user)
+          broadcast_requests
+
+          # Отправляется уведомление
+          Orbita.add_event(@order.request_id, @current_user.id_tn, 'workflow', { message: "Ордер на выдачу ВТ №#{@order.id} подтверждён" })
+
+          # Отправляется на подтверждение пользователю
+          Requests::SendAnswerToUser.new(@current_user, @order.request_id).run
+        end
       end
     end
   end

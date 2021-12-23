@@ -270,6 +270,52 @@ import { app } from '../../app/app';
             headers         : { 'Content-Type': undefined },
             transformRequest: angular.identity
           }
+        }),
+        Request: $resource('/warehouse/requests/:id.json', {}, {
+          query          : { isArray: false },
+          sendForAnalysis: {
+            method : 'PUT',
+            url    : '/warehouse/requests/:id/send_for_analysis',
+            isArray: false
+          },
+          edit: {
+            method: 'GET',
+            url   : '/warehouse/requests/:id/edit.json'
+          },
+          close: {
+            method: 'GET',
+            url   : '/warehouse/requests/:id/close.json'
+          },
+          confirmRequestAndOrder: {
+            method : 'PUT',
+            url    : '/warehouse/requests/:id/confirm_request_and_order',
+            isArray: false
+          },
+          assignNewExecutor: {
+            method : 'PUT',
+            url    : '/warehouse/requests/:id/assign_new_executor',
+            isArray: false
+          },
+          ready: {
+            method: 'PUT',
+            url   : '/warehouse/requests/:id/ready'
+          },
+          sendToOwner: {
+            method: 'PUT',
+            url   : '/warehouse/requests/:id/send_to_owner'
+          },
+          update: {
+            method: 'PUT',
+            url   : '/warehouse/requests/:id'
+          },
+          saveRecommendation: {
+            method: 'PUT',
+            url   : '/warehouse/requests/:id/save_recommendation'
+          },
+          expectedInStock: {
+            method: 'PUT',
+            url   : '/warehouse/requests/:id/expected_is_stock'
+          }
         })
       },
       Statistics: $resource('/statistics', {}, {

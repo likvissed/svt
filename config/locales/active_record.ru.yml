@@ -1,4 +1,42 @@
 ru:
+  # form
+  activemodel:
+    attributes:
+      api/v3/warehouse/requests/new_office_equipment:
+        number_***REMOVED***: '№ Заявки в Orbita'
+        number_***REMOVED***: '№ Заявки в ЛК'
+        status: 'Статус'
+        category: 'Категория'
+        user_tn: 'Таб.номер пользователя'
+        user_fio: 'ФИО пользователя'
+        user_dept: 'Отдел пользователя'
+        user_phone: 'Телефон пользователя'
+
+        request_items:
+          name: 'Наименование'
+          type_name: 'Тип'
+          count: 'Количество'
+          reason: 'Обоснование'
+          invent_num: 'Инв.номер'
+          description: 'Описание'
+
+        attachments:
+          document: 'Файл'
+      warehouse/requests/save_recommendation:
+        comment: 'Комментарий'
+        status: 'Статус'
+        recommendation_json: 'Список рекомендаций'
+    errors:
+      models:
+        warehouse/requests/update_comment:
+          attributes:
+            base:
+              request_is_close: 'Невозможно обновить комментарий у закрытой заявки'
+        api/v3/warehouse/requests/new_office_equipment:
+          attributes:
+            base:
+              warehouse_request_items_is_blank: 'Cписок требуемой техники не может быть пустым'
+
   errors:
     messages:
       max_size_error: 'невозможно загрузить, размером больше 100 мегабайт'
@@ -200,6 +238,26 @@ ru:
       warehouse/attachment_order:
         document: 'Вложенный файл'
 
+      warehouse/request:
+        executor_fio: 'ФИО исполнителя'
+        statuses:
+          new: 'Новая'
+          analysis: 'Требуется анализ'
+          send_to_owner: 'Ожидает отправки в ССД'
+          on_signature: 'На подписи в ССД'
+          expected_in_stock: 'Ожидание наличия техники'
+          create_order: 'Требуется создать ордер'
+          check_order: 'Ордер ожидает подтверждения'
+          waiting_confirmation_for_user: 'Ожидает подтверждения пользователя'
+          in_work: 'Подготовка к выдаче'
+          ready: 'Готов к выдаче'
+          completed: 'Завершена'
+          reject: 'Отклонена'
+        categories:
+          office_equipment: 'Вычислительная техника'
+          printing: 'Печатная техника'
+          expendable_materials: 'Расходка'
+
       user:
         tn: Табельный номер
         role: Роль
@@ -331,6 +389,7 @@ ru:
             base:
               cannot_destroy_done: 'Невозможно удалить исполненный ордер'
               cannot_destroy_with_done_operations: 'Невозможно удалить ордер с исполненными операциями'
+              cannot_destroy_with_request: 'Невозможно удалить с подтвержденной заявкой'
               uniq_workplace: 'Ордер может содержать технику только одного рабочего места'
               dept_does_not_match: 'Выбранная техника не входит в состав рабочих мест отдела %{dept}'
               at_least_one_operation: 'Необходимо добавить хотя бы одну позицию'
@@ -348,6 +407,9 @@ ru:
               status_item_on_workplace_not_in_workplace: 'Статус техники %{item_barcode} не соответствует статусу "На рабочем месте"'
               warehouse_items_is_present: "Невозможно исполнить ордер, так как в нем содержится техника, у которой имеются свойства (%{arr_type_with_barcode}), необходимые для переноса на склад"
               workplace_not_present: 'Рабочее место %{workplace_id} не существует. Проверьте корректность введенных данных'
+              request_not_present: 'Заявка №%{request_id} не существует'
+              status_request_not_create_order: 'Статус заявки №%{request_id} должен быть "Требуется создать ордер"'
+              status_request_not_ready: 'Невозможно исполнить расходный ордер пока статус заявки №%{request_id} не будет равен "Готов к выдаче"'
             consumer:
               user_by_tn_not_found: 'с указанным табельным номером не найден. Проверьте корректность
               введенных данных'
@@ -404,7 +466,7 @@ ru:
             base:
               warehouse_order_is_not_present: 'Ордер №%{order_id} не существует'
               warehouse_order_is_not_out_or_done: 'Добавление документа допустимо только для исполненного расходного ордера'
-              warehouse_order_is_present_attachment: 'Ордер №%{order_id} уже имеет вложенный документ'
+              warehouse_order_is_present_attachment: 'Ордер №%{order_id} уже имеет вложенный документ'             
 
         user:
           attributes:

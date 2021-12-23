@@ -74,6 +74,13 @@ gem 'redis-rails'
 gem 'actionpack-action_caching'
 gem 'rails-observers'
 
+gem 'reform'
+gem 'reform-rails'
+
+gem 'wkhtmltopdf-binary'
+gem 'prawn-rails'
+gem 'combine_pdf'
+
 group :test do
   gem 'database_cleaner'
   gem 'json_spec'

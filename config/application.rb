@@ -33,6 +33,7 @@ module Inv
     config.autoload_paths << Rails.root.join('app', 'modules').to_s
     config.autoload_paths << Rails.root.join('app', 'states').to_s
     config.autoload_paths << Rails.root.join('app', 'sweepers').to_s
+    config.autoload_paths << Rails.root.join('app', 'reports').to_s
     config.autoload_paths << Rails.root.join('lib', 'validators').to_s
     config.autoload_paths << Rails.root.join('lib', 'strategy').to_s
 
@@ -60,6 +61,7 @@ module Inv
         resource '/user_isses*', headers: :any,  methods: [:get]
         resource '/api/v1/invent/items*', headers: :any,  methods: [:get]
         resource '/api/v2/invent/items*', headers: :any,  methods: [:get]
+        resource '/api/v3/warehouse/requests*', headers: :any,  methods: [:post, :get]
       end
     end
 

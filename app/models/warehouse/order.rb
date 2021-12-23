@@ -12,6 +12,7 @@ module Warehouse
     has_one :attachment, dependent: :destroy, foreign_key: 'order_id', class_name: 'AttachmentOrder', inverse_of: :order
 
     belongs_to :inv_workplace, foreign_key: 'invent_workplace_id', class_name: 'Invent::Workplace', optional: true
+    belongs_to :request, foreign_key: 'request_id', optional: true, inverse_of: :order
 
     validates :operation, :status, :creator_fio, presence: true
     # validates :consumer_dept, presence: true, if: -> { in? && done? }
@@ -28,6 +29,8 @@ module Warehouse
     validate :present_user_iss
     validate :present_item_for_barcode, if: -> { operation == 'out' && invent_num.present? && property_with_barcode == true }
     validate :check_absent_warehouse_items_for_inv_item, if: -> { execute_in == true }
+    validate :present_request_id, if: -> { new_record? && out? && request_id.present? }
+    validate :check_status_for_request, if: -> { present_request_execute_out == true }
 
     after_initialize :set_initial_status, if: -> { new_record? }
     before_validation :set_consumer, if: -> { consumer_fio.blank? || consumer_id_tn.blank? }
@@ -78,8 +81,10 @@ module Warehouse
     attr_accessor :dont_calculate_status
     # Флаг указывает, что нужно проверить инв.№ техники на РМ и чтобы она соответствовала назначению штрих-кода
     attr_accessor :property_with_barcode
-    # # Флаг указывает, что приходный ордер исполняется
+    # Флаг указывает, что приходный ордер исполняется
     attr_accessor :execute_in
+    # Флаг указывает, что расходный ордер исполняется и имеется связанная заявка
+    attr_accessor :present_request_execute_out
 
     def set_creator(user)
       self.creator_id_tn = user.id_tn
@@ -231,6 +236,29 @@ module Warehouse
       errors.add(:base, :workplace_not_present, workplace_id: invent_workplace_id)
     end
 
+    # Проверка, чтобы создать ордер можно было только если заявка имеет статус - "Обработка"
+    def present_request_id
+      return errors.add(:base, :request_not_present, request_id: request_id) if request.blank?
+
+      # Проверка для категории №1
+      return if request.category != 'office_equipment'
+
+      if request.status == 'create_order'
+        self.request_num = request.number_***REMOVED***
+
+        return true
+      end
+
+      errors.add(:base, :status_request_not_create_order, request_id: request_id)
+    end
+
+    # Проверяем статус заявки для расходного ордера
+    def check_status_for_request
+      return if request.status == 'ready'
+
+      errors.add(:base, :status_request_not_ready, request_id: request_id)
+    end
+
     def set_initial_status
       self.status ||= :processing
     end
@@ -360,6 +388,12 @@ module Warehouse
     end
 
     def prevent_destroy
+      if request.present? && %w[waiting_confirmation_for_user in_work ready].include?(request.status)
+
+        errors.add(:base, :cannot_destroy_with_request)
+        throw(:abort)
+      end
+
       if done?
         errors.add(:base, :cannot_destroy_done)
         throw(:abort)

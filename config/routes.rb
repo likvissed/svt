@@ -139,6 +139,20 @@ Rails.application.routes.draw do
     get 'attachment_orders/download/:id', to: 'attachment_orders#download', as: 'attachment_orders/download'
 
     resources :supplies
+
+    resources :requests, only: [:index, :edit, :update] do
+      put 'send_for_analysis', to: 'requests#send_for_analysis', on: :member
+      put 'confirm_request_and_order', to: 'requests#confirm_request_and_order', on: :member
+      put 'assign_new_executor', to: 'requests#assign_new_executor', on: :member
+      put 'send_to_owner', to: 'requests#send_to_owner', on: :member
+      put 'save_recommendation', to: 'requests#save_recommendation', on: :member
+      put 'expected_is_stock', to: 'requests#expected_is_stock', on: :member
+      
+      get 'close', to: 'requests#close', on: :member
+    end
+      put 'requests/:id/ready', to: 'requests#ready'
+
+    get 'attachment_requests/download/:id', to: 'attachment_requests#download', as: 'attachment_requests/download'
   end
 
   # Получить html-код кнопки "Добавить запись"
@@ -171,6 +185,22 @@ Rails.application.routes.draw do
         get 'items/:barcode', to: 'items#barcode'
          # Поиска техники по filtering_params, возвращает массив
         get 'search_items', to: 'items#search_items'
+      end
+    end
+
+    namespace :v3 do
+      namespace :warehouse do
+        # Добавление новой заявки категории 1
+        post 'requests/new_office_equipment', to: 'requests#new_office_equipment'
+        # Ответ от пользователя (подтверждение/отклонение обработанной заявки) из Orbita
+        post 'requests/answer_from_user/:id', to: 'requests#answer_from_user'
+
+        # Ответ от начальника (подтверждение/отклонение сформированного расходного ордера) из SSD
+        post 'requests/answer_from_owner/:id', to: 'requests#answer_from_owner'
+        # Получение json ссылок на скачивание файлов конкретной заявки для SSD (Приложения)
+        get 'requests/request_files', to: 'requests#request_files'
+        # Скачивать вложенный документ заявки в SSD "Приложения"
+        get 'requests/download_attachment_request/:id', to: 'requests#download_attachment_request'
       end
     end
   end

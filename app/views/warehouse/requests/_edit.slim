@@ -1,0 +1,178 @@
+script type="text/ng-template" id="editRequestModal.slim"
+  form role="form" name="edit.form" data-method="edit.method"
+    .modal-header
+      .pull-left
+        h4
+          = "Заявка в СВТ № {{ edit.request.request_id }}"
+      .pull-right
+        h4
+          = "{{ edit.request.status_translated }}"
+    .modal-body
+      .row
+        .col-sm-24
+          uib-accordion ng-cloak="true"
+            div uib-accordion-group="true" class="panel-default" is-open="edit.tabs.user"
+              uib-accordion-heading
+                | Информация о пользователе
+                i.pull-right
+                  span ng-if="edit.tabs.user"
+                    = fa_icon "chevron-down"
+                  span ng-if="!edit.tabs.user"
+                    = fa_icon "chevron-right"
+              .row
+                .col-lg-12
+                  .form-group
+                    = label_tag "request[user_fio]", "ФИО:", class: "control-label"
+                    |  
+                    span ng-bind="edit.request.user_fio"
+
+                .col-lg-12
+                  .form-group
+                    = label_tag "request[user_dept]", "Отдел:", class: "control-label"
+                    |  
+                    span ng-bind="edit.request.user_dept"
+              .row
+                .col-lg-12
+                  .form-group
+                    = label_tag "request[user_phone]", "Телефон:", class: "control-label"
+                    |  
+                    span ng-bind="edit.request.user_phone"
+              .row
+                .col-lg-24
+                  .form-group
+                    = label_tag "request[user_phone]", "Список замороженных РМ:", class: "control-label"
+                    |  
+                    span ng-if="edit.request.freeze_ids" ng-bind="edit.request.freeze_ids"
+                    span ng-if="!edit.request.freeze_ids" Отсутствует
+      .row
+        .col-sm-24
+          uib-accordion ng-cloak="true"
+            div uib-accordion-group="true" class="panel-default" is-open="edit.tabs.req"
+              uib-accordion-heading
+                | Данные заявки
+                i.pull-right
+                  span ng-if="edit.tabs.req"
+                    = fa_icon "chevron-down"
+                  span ng-if="!edit.tabs.req"
+                    = fa_icon "chevron-right"
+
+              .row
+                .col-lg-24
+                  .col-lg-12
+                    .form-group
+                      = label_tag "request[number_***REMOVED***]", "Заявка в Orbita №:", class: "control-label"
+                      |  
+                      span ng-bind="edit.request.number_***REMOVED***"
+                  .col-lg-12
+                    .form-group
+                      = label_tag "request[number_***REMOVED***]", "Заявка в ЛК №:", class: "control-label"
+                      |  
+                      span ng-bind="edit.request.number_***REMOVED***"
+              .row
+                .col-lg-24
+                  table.table
+                    thead
+                      tr
+                        th.text-center №
+                        th Наименование
+                        th Описание
+                        th Инв.№
+                        th.text-center Количество
+                        th Обоснование
+                    tbody
+                      tr  ng-repeat="item in edit.request.request_items track by $index"
+                        td.col-fhd-1.text-center ng-bind="$index + 1"
+                        td.col-fhd-2 ng-bind="item.name"
+                        td.col-fhd-10 ng-bind="item.description"
+                        td.col-fhd-2 ng-bind="item.invent_num"
+                        td.col-fhd-1.text-center ng-bind="item.count"
+                        td.col-fhd-3 ng-bind="item.reason"
+              .row ng-if="edit.request.attachments.length"
+                .col-lg-24
+                  .form-group
+                    .panel.panel-default
+                      .panel-heading
+                        = label_tag "request[files]", "Прикрепленные файлы:", class: "control-label"
+                        li ng-repeat="attachment in edit.request.attachments"
+                          a ng-href="/warehouse/attachment_requests/download/{{ attachment.id }}" target="_blank"
+                            | {{ attachment.filename }}
+              span ng-if="edit.request.category == 'office_equipment'"
+                = render partial: 'office_equipment'
+                span ng-if="edit.request.status == 'send_to_owner'"
+                  = render partial: 'send_to_owner'
+                
+      .row ng-if="edit.request.order"
+        .col-sm-24
+          uib-accordion ng-cloak="true"
+            div uib-accordion-group="true" class="panel-default" is-open="edit.tabs.order"
+              uib-accordion-heading
+                | Расходный ордер № {{ edit.request.order.id  }}
+
+                i.pull-right
+                  span ng-if="edit.tabs.order"
+                    = fa_icon "chevron-down"
+                  span ng-if="!edit.tabs.order"
+                    = fa_icon "chevron-right"
+
+              .row
+                table.table
+                  thead
+                    tr
+                      th №
+                      th Тип
+                      th Инв.№
+                      th Количество
+                      th Модель
+                  tbody ng-repeat="op in edit.request.order.operations" 
+                    tr
+                      td ng-bind="$index + 1"
+                      td ng-bind="op.item_type || op.item.item_type || op.inv_items[0].type.short_description"
+                      td ng-bind="(op.inv_items | inventNumsToStr) || exec.order.invent_num"
+                      td ng-bind="op.shift | positiveVal"
+                      td ng-bind="op.item_model || op.item.item_model || op.inv_items[0].full_item_model" 
+
+    .modal-footer ng-if="edit.request.category == 'office_equipment'"
+      - if current_user.one_of_roles? :admin, :manager  
+        span ng-if="edit.request.status == 'new'"
+          .pull-left
+            = button_tag "Назначить исполнителя", class: "btn-success", "ng-click": "edit.sendForAnalysis()", "uib-tooltip": "Назначить исполнителя"
+        span ng-if="!(edit.request.status == 'new' || edit.request.status == 'completed' || edit.request.status == 'reject')"
+          .pull-left style="margin-right: 4px;"
+            = button_tag "Изменить исполнителя", class: "btn-warning", "ng-click": "edit.assignNewWorker()", "uib-tooltip": "Назначить нового исполнителя"
+        span ng-if="edit.request.status == 'check_order' && edit.request.order"
+          .pull-left
+            = button_tag "Утвердить ордер", class: "btn-success", "ng-click": "edit.confirmRequestAndOrder()", "uib-tooltip": "Заявка будет утверждена и ордер автоматически"
+          .pull-left style="margin-left: 4px;"
+            = button_tag "Закрыть заявку и удалить ордер", class: "btn-danger", "ng-click": "edit.closeRequest()", "uib-tooltip": "Заявка будет закрыта и ордер удален"
+        span ng-if="edit.request.status == 'new'"
+          .pull-left style="margin-left: 4px;"
+            = button_tag "Отклонить и закрыть заявку", class: "btn-danger", "ng-click": "edit.closeRequest()", "uib-tooltip": "Заявка будет отклонена"
+      
+      - if current_user.one_of_roles? :admin, :manager
+        span ng-if="edit.request.status == 'send_to_owner'"
+          .pull-left
+            = button_tag "Отправить на подпись в ССД", class: "btn-primary", "ng-click": "edit.sendToOwner()", "uib-tooltip": "Отправить выбранному согласующему расходный ордер на подпись",
+              "ng-disabled": "!edit.loadOwner", "ng-class": "{'waiting': !edit.loadOwner}"
+
+      - if current_user.one_of_roles? :admin, :manager, :worker
+        span ng-if="!(edit.request.status == 'completed' || edit.request.status == 'reject')" style="margin-right: 4px;"
+          = button_tag "Обновить комментарий", class: "btn-success", "ng-click": "edit.updateComment()"
+        span ng-if="(edit.request.status == 'analysis')"
+          .pull-left style="margin-right: 4px;"
+            = button_tag "Сохранить список рекомендаций", class: "btn-success", "ng-click": "edit.saveRecommendation()"
+        span ng-if="edit.request.status == 'create_order'"
+          .pull-left style="margin-left: 4px;"
+            = button_tag "Ожидание наличия техники", class: "btn-primary", "ng-click": "edit.expectedInStock(true)", "uib-tooltip": "Изменить статус заявки"
+        span ng-if="edit.request.status == 'expected_in_stock'"
+          .pull-left style="margin-left: 4px;"
+            = button_tag "Продолжить работу заявки", class: "btn-success", "ng-click": "edit.expectedInStock(false)", "uib-tooltip": "Можно будет создавать ордер"
+
+      - if current_user.role? :worker
+        span ng-if="edit.request.status == 'analysis'"
+          .pull-left
+            = button_tag "Отклонить и закрыть заявку", class: "btn-danger", "ng-click": "edit.closeRequest()", "uib-tooltip": "Заявка будет отклонена"
+        span ng-if="edit.request.status == 'in_work'"
+          .pull-left
+            = button_tag "Готово к выдаче", class: "btn-success", "ng-click": "edit.readyRequest()", "uib-tooltip": "Пользователю будет отправлено уведомление о готовности"
+      = button_tag "Закрыть", class: "btn-default btn-sm", "ng-click": "edit.cancel()"
+ 

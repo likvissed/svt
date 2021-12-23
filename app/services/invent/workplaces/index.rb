@@ -15,6 +15,8 @@ module Invent
         prepare_to_render
         load_filters if need_init_filters?
 
+        broadcast_requests
+
         true
       rescue RuntimeError => e
         Rails.logger.error e.inspect.red

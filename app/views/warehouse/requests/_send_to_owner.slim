@@ -1,0 +1,9 @@
+.row
+  .col-lg-24
+    .form-group
+      .panel.panel-default
+        .panel-heading
+          = label_tag "request[owner]", "Согласующий:", class: "control-label"
+          span
+            search-user selected-user="edit.owner"
+            = hidden_field_tag "request[owner]", "", class: "form-control", autocomplete: "off", "ng-model": "edit.owner"

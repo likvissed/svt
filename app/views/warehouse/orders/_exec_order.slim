@@ -8,7 +8,7 @@ script type="text/ng-template" id="execOrder.slim"
           span ng-if="exec.order.status == 'processing'"
             | Ордер № {{exec.order.id}}
           span ng-if="exec.order.request_num"
-            |  (Заявка № {{exec.order.request_num}})
+            |  (Заявка в ЛК № {{exec.order.request_num}})
       .pull-right
         .icon-block
           = render partial: 'templates/load_spinner'

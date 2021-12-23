@@ -24,6 +24,9 @@ $employee_uri = $argv[4];
 if ($_SERVER['RAILS_ENV'] === 'production') {
   $database[$env]['username'] = $_SERVER['MYSQL_PRODUCTION_USER'];
   $database[$env]['password'] = $_SERVER['MYSQL_PRODUCTION_PASSWORD'];
+} elseif ($_SERVER['RAILS_ENV'] === 'staging') {
+  $database[$env]['username'] = $_SERVER['MYSQL_STAGING_USER'];
+  $database[$env]['password'] = $_SERVER['MYSQL_STAGING_PASSWORD'];
 } else {
   $database[$env]['username'] = $_SERVER['MYSQL_DEV_USER'];
   $database[$env]['password'] = $_SERVER['MYSQL_DEV_PASSWORD'];

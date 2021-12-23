@@ -3,7 +3,10 @@ require 'feature_helper'
 module Invent
   module Workplaces
     RSpec.describe Update, type: :model do
-      before { allow(Invent::ChangeOwnerWpWorker).to receive(:perform_async).and_return(true) }
+      before do
+        allow(Invent::ChangeOwnerWpWorker).to receive(:perform_async).and_return(true)
+        allow(UsersReference).to receive(:info_users).and_return(employee)
+      end
       skip_users_reference
 
       let(:employee) { [build(:emp_***REMOVED***)] }
@@ -66,8 +69,11 @@ module Invent
         end
 
         context 'and when update in_tn user' do
+          before do
+            new_workplace['id_tn'] = new_employee['id']
+            allow(UsersReference).to receive(:info_users).and_return([new_employee])
+          end
           let(:new_employee) { build(:emp_***REMOVED***) }
-          before { new_workplace['id_tn'] = new_employee['id'] }
 
           it 'set responsible_fio' do
             subject.run

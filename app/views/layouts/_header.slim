@@ -101,6 +101,10 @@
             = link_to warehouse_supplies_path do
               = fa_icon "truck"
               '  Поставки
+          li class="#{active_class('/warehouse/requests')}"
+            = link_to warehouse_requests_path do
+              = fa_icon "list-alt"
+              '  Заявки
 
       - if current_user.one_of_roles? :admin, :manager, :worker, :read_only
         ul.nav.navbar-nav.navbar-right

@@ -431,6 +431,34 @@ module Warehouse
           its(:run) { is_expected.to be_truthy }
         end
       end
+
+      context 'when request for order is present' do
+        let!(:request) { create(:request_category_one, status: :ready) }
+        let!(:order) { create(:order, operation: :out) }
+
+        let!(:workplace) { create(:workplace_pk, :add_items, items: %i[pc monitor]) }
+        let(:inv_item) { create(:item, :with_property_values, workplace: workplace, type_name: :pc, status: :waiting_take, disable_filters: true) }
+        let(:item) { create(:used_item, count_reserved: 1, inv_item: inv_item) }
+        let(:operation) { build(:order_operation, item: item, inv_item_ids: [item.invent_item_id], shift: -1) }
+        let!(:order) { create(:order, inv_workplace: workplace, operation: :out, validator_id_tn: current_user.id_tn, operations: [operation]) }
+        let(:order_params) do
+          order_json['request_id'] = request.request_id
+          order_json['present_request_execute_out'] = true
+
+          order_json['consumer_tn'] = consumer['tn']
+          order_json['consumer_fio'] = consumer['fullname']
+          order_json['operations_attributes'] = [operation].as_json
+          order_json['operations_attributes'].each { |op| op['status'] = 'done' }
+          order_json
+        end
+        before { allow(Orbita).to receive(:add_event) }
+
+        it 'changed status from request' do
+          subject.run
+
+          expect(request.reload.status).to eq('completed')
+        end
+      end
     end
   end
 end

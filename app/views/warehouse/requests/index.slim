@@ -1,0 +1,41 @@
+= title "Заявки"
+
+.container ng-controller="WarehouseRequestsCtrl as table"
+  .well
+    .table-block
+      .row
+        = render partial: 'filters'
+      .row
+        .col-fhd-24
+          table.table.table-striped.table-condensed
+            thead
+              tr
+                th.text-center № Заявки
+                th Категория
+                th № ордера
+                th Статус
+                th Дата создания
+                th Исполнитель
+                th
+            tbody
+              tr  ng-repeat="request in table.requests"
+                td.col-fhd-1.text-center ng-bind="request.request_id"
+                td.col-fhd-1 ng-bind="request.category_translate"
+                td.col-fhd-1
+                  span ng-if="request.order.id" ng-bind="request.order.id"
+                  span ng-if="!request.order.id" Отсутствует
+                td.col-fhd-2 ng-bind="request.status_translated"
+                td.col-fhd-1 ng-bind="request.created_at"
+                td.col-fhd-1 ng-bind="request.executor_fio"
+                td.col-fhd-1.text-center
+                  = fa_icon "pencil-square-o fw", class: "pointer", "uib-tooltip": "Редактировать заявку",
+                    "ng-click": "table.editRequest(request)", "tooltip-append-to-body": "true"
+
+      .row
+        .col-xs-12
+          .animate-show ng-table-info="" info-attrs="table.pagination" ng-if="table.requests"
+        .col-xs-12
+          ul{ uib-pagination="true" total-items="table.pagination.filteredRecords" ng-model="table.pagination.currentPage"
+            max-size="table.pagination.maxSize" class="pagination-sm pull-right" ng-change="table.reloadRequests()" }
+
+= render partial: 'edit'

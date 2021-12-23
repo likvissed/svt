@@ -18,6 +18,9 @@ $employee_uri = $argv[8];
 if ($_SERVER['RAILS_ENV'] === 'production') {
   $database[$env]['username'] = $_SERVER['MYSQL_PRODUCTION_USER'];
   $database[$env]['password'] = $_SERVER['MYSQL_PRODUCTION_PASSWORD'];
+} elseif ($_SERVER['RAILS_ENV'] === 'staging') {
+  $database[$env]['username'] = $_SERVER['MYSQL_STAGING_USER'];
+  $database[$env]['password'] = $_SERVER['MYSQL_STAGING_PASSWORD'];
 } else {
   $database[$env]['username'] = $_SERVER['MYSQL_DEV_USER'];
   $database[$env]['password'] = $_SERVER['MYSQL_DEV_PASSWORD'];
@@ -356,88 +359,106 @@ $fontBold->setBold();
 $footer_underline_font->setUnderline();
 $section = $rtf->addSection();
 
+$headFormat = new PHPRtfLite_ParFormat('center');
+$fontHeader = new PHPRtfLite_Font(12, 'Times New Roman');
+
+// ============================================ Заголовок ================================================================
+
+$section->writeText('<br> Расходный ордер № ' . $order_id . ' от '. $date, $fontBold, $headFormat);
+$section->writeText('на получение вычислительной техники ' . '<br>', $fontHeader, $headFormat);
+
 // ============================================ Контент ================================================================
 
 $table = $section->addTable();
 
 $rows = count($result);
-$cols = 3;
+$cols = 2; // 3
 $height = 3.0;
 $mainBorder = new PHPRtfLite_Border_Format(1); //Формат барьера
 $border = new PHPRtfLite_Border($rtf, $mainBorder, $mainBorder, $mainBorder, $mainBorder);
 
 $table->addRows($rows, $height);
-$table->addColumnsList(array(2.6, 12.7, 2.6));
+$table->addColumnsList(array(15.3, 2.6)); // array(2.6, 12.7, 2.6)
 $table->setBorderForCellRange($border, 1, 1, $rows, $cols);
 
 $cell = $table->getCell(1, 2);
 
 $i = 0;
 
+// ============================================ Таблица ================================================================
+
 foreach($result as $data) {
 
-  $cell = $table->getCell($i + 1, 1);
-  $cell->setBackgroundColor('#dddddd');
+  // $cell = $table->getCell($i + 1, 1);
+  // $cell->setBackgroundColor('#dddddd');
 
-  $cell = $table->getCell($i + 1, 2);
+  $cell = $table->getCell($i + 1, 1);
   $cell->setCellPaddings(0.2, 0.2, 0.2, 0.2);
 
   if ($data['warehouse_type'] == 'with_invent_num') {
-    $table->writeToCell($i + 1, 2, $data['type'], $fontBold);
+    $table->writeToCell($i + 1, 1, $data['type'], $fontBold);
     if ($data['type'] != 'Системный блок') {
-      $table->writeToCell($i + 1, 2, ' ' . $data['item_model'], $fontBold);
+      $table->writeToCell($i + 1, 1, ' ' . $data['item_model'], $fontBold);
 
     }
-    $table->writeToCell($i + 1, 2, "\n", $fontBold);
+    $table->writeToCell($i + 1, 1, "\n", $fontBold);
     foreach($data['property_values'] as $prop_val) {
 
       if (isset($prop_val['property'])) {
-        $table->writeToCell($i + 1, 2, $prop_val['property'] . ': ' . $prop_val['value'] . "\n", $table_font);
+        $table->writeToCell($i + 1, 1, $prop_val['property'] . ': ' . $prop_val['value'] . "\n", $table_font);
       }
     }
-    $table->writeToCell($i + 1, 3, $data['count'], $table_font);
+    $table->writeToCell($i + 1, 2, $data['count'], $table_font);
 
     // var_dump($sql_consumer_data[0]['fio']);
     // exit;
 
     $nested_table = $cell->addTable();
     $nested_table->addRows(4, 0.5);
-    $nested_table->addColumnsList(array(6, 6));
-    $nested_table->setBorderForCellRange($border, 1, 1, $rows, $cols);
+    $nested_table->addColumnsList(array(5, 5));
+    // $nested_table->setBorderForCellRange($border, 1, 1, $rows, $cols);
     $nested_table->writeToCell(1, 1, ' ');
     $nested_table->writeToCell(1, 2, ' ');
     $nested_table->writeToCell(2, 1, ' ');
     $nested_table->writeToCell(2, 2, ' ');
-    $nested_table->writeToCell(3, 1, 'Заявка № ' . $data['request_num'], $table_font);
+    $nested_table->writeToCell(3, 1, 'Заявка в ЛК № ' . $data['request_num'], $table_font);
     $nested_table->writeToCell(3, 2, 'Сер. № ' . $data['serial_num'], $table_font);
     $nested_table->writeToCell(4, 1, ' ');
     $nested_table->writeToCell(4, 2, 'Инв. № ' . $data['invent_num'], $table_font);
   } else if ($data['warehouse_type'] == 'without_invent_num') {
-    $table->writeToCell($i + 1, 2, $data['item_type'] . ' ', $fontBold);
-    $table->writeToCell($i + 1, 2, $data['item_model'] . ' ', $fontBold);
+    $table->writeToCell($i + 1, 1, $data['item_type'] . ' ', $fontBold); //12
+    $table->writeToCell($i + 1, 1, $data['item_model'] . ' ', $fontBold); // 12
 
-    $table->writeToCell($i + 1, 3, $data['count'], $table_font);
+    $table->writeToCell($i + 1, 2, $data['count'], $table_font); //13
 
     $nested_table = $cell->addTable();
     $nested_table->addRows(4, 0.5);
-    $nested_table->addColumnsList(array(6, 6));
-    $nested_table->setBorderForCellRange($border, 1, 1, $rows, $cols);
+    $nested_table->addColumnsList(array(5, 5));
+    // $nested_table->setBorderForCellRange($border, 1, 1, $rows, $cols);
     $nested_table->writeToCell(1, 1, ' ');
     $nested_table->writeToCell(1, 2, ' ');
     $nested_table->writeToCell(2, 1, ' ');
     $nested_table->writeToCell(2, 2, ' ');
-    $nested_table->writeToCell(3, 1, 'Заявка № ' . $data['request_num'], $table_font);
+    $nested_table->writeToCell(3, 1, 'Заявка в ЛК № ' . $data['request_num'], $table_font);
     $nested_table->writeToCell(3, 2, 'Сер. № ' . $data['serial_num'], $table_font);
     $nested_table->writeToCell(4, 1, ' ');
     $nested_table->writeToCell(4, 2, 'Инв. № ' . $data['order_num'], $table_font);
   }
 
-  $cell = $table->getCell($i + 1, 3);
+  $cell = $table->getCell($i + 1, 2); //13
   $cell->setTextAlignment(PHPRtfLite_ParFormat::TEXT_ALIGN_CENTER);
   $cell->setVerticalAlignment(PHPRtfLite_Table_Cell::VERTICAL_ALIGN_CENTER);
 
   $i++;
 }
+
+// =====================================================================================================================
+
+$base_text = 'Ознакомлен с Положением: «о локальной сети Общества», «о вычислительной технике», «о центре обработки данных», «о центре обработки данных», «о видеонаблюдении и видеоконференцсвязи», «о рабочем месте цветной печати», «о подключении оборудования сторонних организаций к информационным системам ***REMOVED*** «***REMOVED***», «об антивирусной защите информационных систем ***REMOVED*** «***REMOVED***»';
+
+$section->writeText( '     ' . $base_text . '<br>', $footer_font);
+
+// =====================================================================================================================
 
 $section->writeText('', $font, $tableFormat);
 
@@ -450,15 +471,14 @@ $cell = $table->getCell(1, 2);
 // var_dump($common_data);
 // exit;
 
-$table->writeToCell(1, 1, 'Корпус ' . $common_data['building'], $footer_font);
-$table->writeToCell(1, 2, 'Комната ' . $common_data['room'], $footer_font);
-$table->writeToCell(2, 1, 'Подразделение ' . $common_data['division'], $footer_font);
-$table->writeToCell(2, 2, 'Телефон ' . $common_data['tel'], $footer_font);
-$table->writeToCell(3, 1, 'Ответственный: ' . $common_data['fio'], $footer_font);
-$table->writeToCell(3, 2, 'Подпись  _____________________', $footer_font);
+$table->writeToCell(1, 1, 'Ответственный: ' . $common_data['fio'], $footer_font);
+$table->writeToCell(1, 2, 'Подпись  _____________________', $footer_font);
+$table->writeToCell(2, 1, 'Корпус ' . $common_data['building'], $footer_font);
+$table->writeToCell(2, 2, 'Комната ' . $common_data['room'], $footer_font);
+$table->writeToCell(3, 1, 'Подразделение ' . $common_data['division'], $footer_font);
+$table->writeToCell(3, 2, 'Телефон ' . $common_data['tel'], $footer_font);
 $table->writeToCell(4, 1, 'Получающий: ' . $sql_consumer_data['fio'], $footer_font);
 $table->writeToCell(4, 2, 'Подпись  _____________________', $footer_font);
-$table->writeToCell(5, 2, $date, $footer_font);
 // $table->writeToCell(4, 2, '"_____" ________________ 20 г.', $footer_font);
 
 $rtf->sendRtf($dept);

@@ -1,0 +1,43 @@
+.row
+  .col-lg-12
+    .form-group
+      = label_tag "request[executor_fio]", "Исполнитель:", class: "control-label"
+      span
+        ui-select ng-model="edit.request.executor" on-select="edit.setExecutor()" theme="bootstrap" ng-disabled="(edit.request.status == 'completed' || edit.request.status == 'reject')"
+          ui-select-match placeholder="Выберите работника"
+            | {{ $select.selected.fullname }}
+          ui-select-choices repeat="executor in edit.workers | filter: $select.search"
+            div ng-bind-html="executor.fullname | highlight: $select.search"
+      / span ng-if="edit.request.status != 'new'"
+        = text_field_tag "request[executor_fio]", "", class: "form-control", "ng-model": "edit.request.executor_fio", "ng-disabled": "edit.request.status != 'new'"
+.row
+  .col-lg-24
+    .form-group
+      = label_tag "request[comment]", "Комментарий:", class: "control-label"
+      = text_area_tag "request[comment]", "", class: "form-control", "ng-model": "edit.request.comment", rows: "5", "ng-disabled": "(edit.request.status == 'completed' || edit.request.status == 'reject')"
+
+- if current_user.one_of_roles? :admin, :manager, :worker
+  .row
+    .col-lg-24
+      = label_tag "request[executor_fio]", "Список рекомендаций:", class: "control-label"
+      |    
+      i class="fa fa-plus-circle" class="pointer" ng-click="edit.addRecommendation()" uib-tooltip="Добавить рекомендацию"
+    span ng-if="edit.request.recommendation_json !== null"
+      .col-lg-24 
+        span
+          table.table
+            thead
+              tr
+                th.text-center №
+                th Наименование
+                th
+            tbody
+              tr ng-repeat="recomend in edit.request.recommendation_json track by $index"
+                td.col-fhd-1.text-center ng-bind="$index + 1"
+                td.col-fhd-22
+                  = select_tag "request[recommendations]", "", class: "form-control", "ng-model": "edit.request.recommendation_json[$index]",
+                    "ng-options": "recommendation.name disable when recommendation.id for recommendation in edit.list_recommendations track by recommendation.name",
+                    "ng-disabled": "(edit.request.status == 'completed' || edit.request.status == 'reject')"
+                td
+                  i class="fa fa-minus-circle" ng-click="edit.deleteRecommendation($index)" uib-tooltip="Удалить рекомендацию" class="pointer"
+
