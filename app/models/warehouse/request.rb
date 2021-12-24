@@ -4,7 +4,7 @@ module Warehouse
     self.table_name = "#{table_name_prefix}requests"
 
     # Список фильтров по умолчанию для фильтра "Статусы"
-    DEFAULT_STATUS_FILTER = %w[new analysis check waiting_confirmation_for_user on_signature in_work].freeze
+    DEFAULT_STATUS_FILTER = %w[new analysis send_to_owner on_signature expected_in_stock create_order check_order waiting_confirmation_for_user in_work ready].freeze
 
     has_many :attachments, foreign_key: 'request_id', class_name: 'AttachmentRequest', dependent: :destroy, inverse_of: :request
     has_many :request_items, foreign_key: 'request_id', dependent: :destroy, inverse_of: :request

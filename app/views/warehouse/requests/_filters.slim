@@ -6,7 +6,7 @@
     "ng-change": "table.reloadRequests()"
 .col-sm-5.col-lg-3.col-fhd-2.multiline-buffer
   = select_tag "", "", class: "form-control input-sm", "ng-model": "table.selectedFilters.category", "ng-change": "table.reloadRequests()",
-    "ng-options": "category as translated for (category, translated) in table.filters.setCategoryFilter"
-/ .col-sm-4.col-md-5.col-lg-3.col-xlg-4.col-fhd-3.multiline-buffer
+    "ng-options": "category as translated for (category, translated) in table.filters.categories"
+.col-sm-4.col-md-5.col-lg-3.col-xlg-4.col-fhd-3.multiline-buffer
   div{ ng-dropdown-multiselect="" options="table.filters.statuses" selected-model="table.selectedFilters.for_statuses" extra-settings="table.statusFilter.settings"
     translation-texts="table.statusFilter.translations" events="table.statusFilter.events" }

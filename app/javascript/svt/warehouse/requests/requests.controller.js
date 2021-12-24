@@ -19,8 +19,8 @@ import { app } from '../../app/app';
 
     // Фильтры с вариантом выбора значений
     this.filters = {
-      setCategoryFilter: { '': 'Все категории' },
-      statuses         : []
+      categories: { '': 'Все категории' },
+      statuses  : []
     };
 
     // Данные, которые будут отправлены на сервер для фильтрации
@@ -47,16 +47,17 @@ import { app } from '../../app/app';
       }
     };
 
-    this._loadRequests();
+    this._loadRequests(true);
     this._initActionCable();
   }
 
-  WarehouseRequestsCtrl.prototype._loadRequests = function() {
+  WarehouseRequestsCtrl.prototype._loadRequests = function(init = false) {
     this.Server.Warehouse.Request.query(
       {
-        start  : this.TablePaginator.startNum(),
-        length : this.Config.global.uibPaginationConfig.itemsPerPage,
-        filters: this.selectedFilters
+        start       : this.TablePaginator.startNum(),
+        init_filters: init,
+        length      : this.Config.global.uibPaginationConfig.itemsPerPage,
+        filters     : this.selectedFilters
       },
       (response) => {
         this.requests = response.data || [];
@@ -64,8 +65,15 @@ import { app } from '../../app/app';
         this.TablePaginator.setData(response);
 
         if (response.filters) {
-          this.filters.setCategoryFilter = Object.assign(this.filters.setCategoryFilter, response.filters.categories);
-          this.filters.statuses = Object.assign(this.filters.statuses, response.filters.statuses);
+          angular.forEach(this.filters, function (value, key) {
+            if (Array.isArray(this[key])) {
+              this[key] = this[key].concat(response.filters[key]);
+            } else {
+              this[key] = Object.assign(this[key], response.filters[key]);
+            }
+          }, this.filters);
+
+          this.selectedFilters.for_statuses = this.filters.statuses.filter((el) => el.default);
         }
       },
       (response, status) => this.Error.response(response, status)

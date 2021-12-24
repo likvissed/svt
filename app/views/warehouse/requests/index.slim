@@ -24,7 +24,7 @@
                 td.col-fhd-1
                   span ng-if="request.order.id" ng-bind="request.order.id"
                   span ng-if="!request.order.id" Отсутствует
-                td.col-fhd-2 ng-bind="request.status_translated"
+                td.col-fhd-2 ng-bind-html="request.label_status"
                 td.col-fhd-1 ng-bind="request.created_at"
                 td.col-fhd-1 ng-bind="request.executor_fio"
                 td.col-fhd-1.text-center
