@@ -52,7 +52,7 @@ services:
         reservations:
           memory: 1gb
         limits:
-          memory: 2gb
+          memory: 3gb
 
   nginx:
     <<: *syslog-driver
@@ -76,7 +76,7 @@ services:
     deploy:
       resources:
         limits:
-          memory: 400m
+          memory: 128m
 
   redis:
     <<: *syslog-driver
@@ -87,7 +87,7 @@ services:
     deploy:
       resources:
         limits:
-          memory: 400m
+          memory: 512m
 
   sidekiq:
     <<: *backend
