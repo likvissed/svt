@@ -1,7 +1,30 @@
 version: "3.9"
 
+x-common-labels: &common-labels
+  labels:
+    project-name: "svt"
+    comment: "Средства вычислительной техники. Инвентаризация"
+    domain: "svt"
+    environment: "production"
+    git: "***REMOVED***"
+    maintainer: "***REMOVED***"
+    devops-engineer: "***REMOVED***"
+
+x-syslog-driver: &syslog-driver
+  logging:
+    driver: syslog
+    options:
+      syslog-address: ${SYSLOG_URL}
+      tag: "{{.Name}}/{{.ID}}"
+
+x-common: &common
+  restart: unless-stopped
+  stdin_open: true
+  tty: true
+
 x-app: &app
   build:
+    <<: *common-labels
     context: .
     dockerfile: .docker/app/app.prod.Dockerfile
     cache_from:
@@ -16,14 +39,9 @@ x-app: &app
   tmpfs:
     - /tmp
 
-x-syslog-driver: &syslog-driver
-  logging:
-    driver: syslog
-    options:
-      syslog-address: ${SYSLOG_URL}
-      tag: "{{.Name}}/{{.ID}}"
-
 x-backend: &backend
+  <<: *common-labels
+  <<: *common
   <<: *app
   <<: *syslog-driver
   volumes:
@@ -32,19 +50,15 @@ x-backend: &backend
   environment:
     BOOTSNAP_CACHE_DIR: /usr/local/bundle/_bootsnap
     RAILS_LOG_TO_STDOUT: "true"
-  stdin_open: true
-  tty: true
   depends_on:
     - redis
   env_file:
     - .env
 
-
 services:
   app:
     <<: *backend
     image: ${CI_REGISTRY_IMAGE}/${DEPLOY_PROJECT_NAME}_app
-    restart: unless-stopped
     command: bundle exec puma -C config/puma.rb
     entrypoint: .docker/entrypoint.sh
     deploy:
@@ -52,12 +66,15 @@ services:
         reservations:
           memory: 1gb
         limits:
-          memory: 2gb
+          memory: 3gb
 
   nginx:
+    <<: *common-labels
+    <<: *common
     <<: *syslog-driver
     image: ${CI_REGISTRY_IMAGE}/${DEPLOY_PROJECT_NAME}_nginx
     build:
+      <<: *common-labels
       context: .
       dockerfile: .docker/nginx/nginx.Dockerfile
       cache_from:
@@ -65,36 +82,35 @@ services:
       args:
         RAILS_ROOT: /app
         APP_HOSTNAME: svt
-    restart: unless-stopped
     ports:
       - 80:80
       - 443:443
     depends_on:
       - app
-    stdin_open: true
-    tty: true
     deploy:
       resources:
         limits:
-          memory: 400m
+          memory: 128m
 
   redis:
+    <<: *common-labels
+    <<: *common
     <<: *syslog-driver
     image: redis:5.0.11
     volumes:
       - redis:/data
-    restart: always
     deploy:
       resources:
         limits:
-          memory: 400m
+          memory: 512m
 
   sidekiq:
+    <<: *common-labels
+    <<: *common
     <<: *backend
     image: ${CI_REGISTRY_IMAGE}/${DEPLOY_PROJECT_NAME}_sidekiq
     depends_on:
       - redis
-    restart: unless-stopped
     command: bundle exec sidekiq -C config/sidekiq.yml
     deploy:
       resources:
