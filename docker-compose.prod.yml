@@ -10,6 +10,18 @@ x-common-labels: &common-labels
     maintainer: "***REMOVED***"
     devops-engineer: "***REMOVED***"
 
+x-syslog-driver: &syslog-driver
+  logging:
+    driver: syslog
+    options:
+      syslog-address: ${SYSLOG_URL}
+      tag: "{{.Name}}/{{.ID}}"
+
+x-common: &common
+  restart: unless-stopped
+  stdin_open: true
+  tty: true
+
 x-app: &app
   build:
     <<: *common-labels
@@ -27,15 +39,9 @@ x-app: &app
   tmpfs:
     - /tmp
 
-x-syslog-driver: &syslog-driver
-  logging:
-    driver: syslog
-    options:
-      syslog-address: ${SYSLOG_URL}
-      tag: "{{.Name}}/{{.ID}}"
-
 x-backend: &backend
   <<: *common-labels
+  <<: *common
   <<: *app
   <<: *syslog-driver
   volumes:
@@ -44,19 +50,15 @@ x-backend: &backend
   environment:
     BOOTSNAP_CACHE_DIR: /usr/local/bundle/_bootsnap
     RAILS_LOG_TO_STDOUT: "true"
-  stdin_open: true
-  tty: true
   depends_on:
     - redis
   env_file:
     - .env
 
-
 services:
   app:
     <<: *backend
     image: ${CI_REGISTRY_IMAGE}/${DEPLOY_PROJECT_NAME}_app
-    restart: unless-stopped
     command: bundle exec puma -C config/puma.rb
     entrypoint: .docker/entrypoint.sh
     deploy:
@@ -68,6 +70,7 @@ services:
 
   nginx:
     <<: *common-labels
+    <<: *common
     <<: *syslog-driver
     image: ${CI_REGISTRY_IMAGE}/${DEPLOY_PROJECT_NAME}_nginx
     build:
@@ -79,14 +82,11 @@ services:
       args:
         RAILS_ROOT: /app
         APP_HOSTNAME: svt
-    restart: unless-stopped
     ports:
       - 80:80
       - 443:443
     depends_on:
       - app
-    stdin_open: true
-    tty: true
     deploy:
       resources:
         limits:
@@ -94,11 +94,11 @@ services:
 
   redis:
     <<: *common-labels
+    <<: *common
     <<: *syslog-driver
     image: redis:5.0.11
     volumes:
       - redis:/data
-    restart: always
     deploy:
       resources:
         limits:
@@ -106,11 +106,11 @@ services:
 
   sidekiq:
     <<: *common-labels
+    <<: *common
     <<: *backend
     image: ${CI_REGISTRY_IMAGE}/${DEPLOY_PROJECT_NAME}_sidekiq
     depends_on:
       - redis
-    restart: unless-stopped
     command: bundle exec sidekiq -C config/sidekiq.yml
     deploy:
       resources:
