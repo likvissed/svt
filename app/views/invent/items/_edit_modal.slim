@@ -13,3 +13,6 @@ script type="text/ng-template" id="editItem.slim"
   .modal-footer
     = button_tag "Сохранить", type: :button, class: "btn-success", "ng-click": "modal.ok()"
     = button_tag "Закрыть", type: :button, class: "btn-default", "ng-click": "modal.close()"
+
+  -# Добавление картриджа на склад и на РМ
+  = render partial: 'invent/items/add_cartridge'

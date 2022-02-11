@@ -179,5 +179,29 @@ module Invent
         post :to_write_off, params: params, format: :json
       end
     end
+
+    describe 'POST #add_cartridge' do
+      let(:workplace) { create(:workplace_pk, :add_items, items: %i[pc monitor]) }
+      let(:item) { create(:item, :with_property_values, type_name: :printer, status: :in_workplace, workplace: workplace) }
+      let(:cartridge) do
+        obj = {}
+        obj[:item_id] = item.item_id
+        obj['name_model'] = 'test model'
+        obj['count'] = 1
+
+        obj
+      end
+      let(:params) { { cartridge: cartridge } }
+
+      it 'creates instance of the Items::AddCartridge' do
+        post :add_cartridge, params: params, format: :json
+        expect(assigns(:cartridge)).to be_instance_of Items::AddCartridge
+      end
+
+      it 'calls :run method' do
+        expect_any_instance_of(Items::AddCartridge).to receive(:run)
+        post :add_cartridge, params: params, format: :json
+      end
+    end
   end
 end

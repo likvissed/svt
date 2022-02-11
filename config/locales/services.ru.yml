@@ -25,6 +25,9 @@ ru:
           item_not_found: 'Техника не найдена. Проверьте корректность введенных данных'
           item_already_used_in_orders: 'Техника уже используется в ордерах под следующими номерами: %{orders}'
 
+        invent/items/add_cartridge:
+          item_status_not_in_workplace: 'Статус техники не соответствует статусу "На рабочем месте"'
+
         invent/workplaces/confirm:
           unknown_action: 'Неизвестное действие. Обратитесь к администратору (т. ***REMOVED***)'
           error_update_status: 'Не удалось обновить статус для следующих рабочих мест: %{workplaces}. Обратитесь к администратору (т. ***REMOVED***)'

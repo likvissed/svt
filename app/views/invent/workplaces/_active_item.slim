@@ -10,4 +10,8 @@ fieldset.ng-hide ng-show="item" ng-disabled="item.status == 'prepared_to_swap'"
         = button_tag "На списание...", class: "btn-default btn-sm btn-block", "ng-click": "wp.openAssignLocation(item, 'write_off')"
       .col-sm-8.col-lg-6.col-xlg-5.col-fhd-4
         = render partial: 'location_to_stock'
+        
+        -# Добавление картриджа на склад и на РМ
+        = render partial: 'invent/items/add_cartridge'
+
         = button_tag "На склад...", class: "btn-default btn-sm btn-block", "ng-click": "wp.openAssignLocation(item, 'stock')"

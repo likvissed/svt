@@ -91,6 +91,8 @@ Rails.application.routes.draw do
         post 'to_write_off', to: 'items#to_write_off'
         # Отметить как правильно переклеенный штрих-код
         get 'assign_invalid_barcode_as_true/:item_id', to: 'items#assign_invalid_barcode_as_true'
+        # Создать прих.ордер на картридж и сразу расходный на РМ
+        post 'add_cartridge', to: 'items#add_cartridge'
       end
     end
 

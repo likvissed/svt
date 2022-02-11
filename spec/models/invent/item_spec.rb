@@ -511,6 +511,37 @@ module Invent
       end
     end
 
+    describe '#present_warehouse_items' do
+      let(:workplace) do
+        wp = build(:workplace_pk, dept: ***REMOVED***, status: :confirmed)
+        wp.save(validate: false)
+        wp
+      end
+      subject { create(:item, :with_property_values, type_name: :printer, status: :in_workplace, workplace: workplace) }
+
+      its(:destroy) { is_expected.to be_truthy }
+
+      context 'when warehouse_items is present' do
+        let(:cartridge) do
+          obj = {}
+          obj[:item_id] = subject.item_id
+          obj['name_model'] = 'test model'
+          obj['count'] = 2
+
+          obj
+        end
+        before { Items::AddCartridge.new(create(:***REMOVED***_user), cartridge).run }
+
+        its(:destroy) { is_expected.to be_falsey }
+
+        it 'adds :cannot_destroy_warehouse_items error' do
+          subject.destroy
+
+          expect(subject.errors.details[:base]).to include(error: :cannot_destroy_warehouse_items, w_items: 'Картридж')
+        end
+      end
+    end
+
     describe '#prevent_update' do
       let!(:item) { create(:item, :with_property_values, type_name: :printer) }
       subject { item }

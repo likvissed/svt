@@ -130,6 +130,16 @@ module Invent
       end
     end
 
+    def add_cartridge
+      @cartridge = Items::AddCartridge.new(current_user, params[:cartridge])
+
+      if @cartridge.run
+        render json: {}
+      else
+        render json: { full_message: @cartridge.error[:full_message] }, status: 422
+      end
+    end
+
     protected
 
     def check_access

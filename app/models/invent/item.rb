@@ -42,6 +42,7 @@ module Invent
     after_initialize :set_default_values
     before_save :set_default_model
     before_destroy :prevent_destroy, prepend: true, unless: -> { destroy_from_order }
+    before_destroy :present_warehouse_items, prepend: true, if: -> { warehouse_items.present? }
     before_update :prevent_update
     # before_save :model_id_nil_if_model_item
 
@@ -326,11 +327,19 @@ module Invent
         obj_item[:item] = inspect
         obj_item[:barcode_item] = barcode_item.inspect
         obj_item[:property_values] = property_values.inspect
+        Rails.logger.info "destroy inv_item: #{obj_item.inspect}"
 
         return
       end
 
       errors.add(:base, :cannot_destroy_with_processing_operation, order_id: order.id)
+      throw(:abort)
+    end
+
+    def present_warehouse_items
+      arr_w_items_type = warehouse_items.map(&:item_type).uniq.join(', ')
+
+      errors.add(:base, :cannot_destroy_warehouse_items, w_items: arr_w_items_type)
       throw(:abort)
     end
 
