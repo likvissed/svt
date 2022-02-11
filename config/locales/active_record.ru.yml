@@ -361,6 +361,7 @@ ru:
                вручную"'
               property_not_filled: 'Не указано свойство "%{empty_prop}"'
               cannot_destroy_with_processing_operation: 'Невозможно удалить технику, т.к. она используется в незакрытых позициях ордера №%{order_id}'
+              cannot_destroy_warehouse_items: 'Невозможно удалить технику, т.к. в свойствах имеется техника со штрих-кодом: "%{w_items}"'
             type_id:
               blank: 'не выбран'
             model_id:
