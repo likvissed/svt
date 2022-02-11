@@ -8,7 +8,7 @@ module Warehouse
     describe 'GET #index' do
       let!(:requests) { create_list(:request_category_one, 30) }
 
-      %w[user_tn user_id_tn user_fio user_dept user_phone number_***REMOVED*** number_***REMOVED*** executor_fio executor_tn comment status_translated category_translate request_items].each do |i|
+      %w[user_tn user_id_tn user_fio user_dept user_phone number_***REMOVED*** number_***REMOVED*** executor_fio executor_tn comment label_status category_translate request_items].each do |i|
         it "has :#{i} attribute" do
           get :index, format: :json
 

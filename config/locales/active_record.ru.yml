@@ -167,6 +167,7 @@ ru:
         count_reserved: 'Зарезервированное количество техники на складе'
         invent_num_start: 'Начальный инвентарный номер'
         invent_num_end: 'Конечный инвентарный номер'
+        item_model: 'Модель'
 
       warehouse/order/operations/inv_item_to_operations:
         inv_item: ''

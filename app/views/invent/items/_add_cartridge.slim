@@ -1,0 +1,17 @@
+script type="text/ng-template" id="AddCartridgeItemCtrl.slim"
+  form role="form" data-method="edit.method"
+    .modal-header
+      h4 Добавить новый картридж
+    .modal-body
+      .form-group
+        = label_tag "name_model", "Модель", class: "control-label"
+        = text_field_tag "name_model", "", class: "form-control", "ng-model": "edit.cartridge.name_model"
+
+      .form-group
+        = label_tag "count", "Количество", class: "control-label"
+        = text_field_tag "count", "", type: :number, class: "form-control", "ng-model": "edit.cartridge.countGetterSetter",
+          "ng-model-options": "{ getterSetter: true }"
+
+    .modal-footer
+      = button_tag "Сохранить", type: :button, class: "btn-success", "ng-click": "edit.save()"
+      = button_tag "Закрыть", type: :button, class: "btn-default", "ng-click": "edit.close()"

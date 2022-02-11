@@ -106,6 +106,10 @@ import { app } from '../../app/app';
             method: 'GET',
             url   : '/invent/items/assign_invalid_barcode_as_true/:item_id'
           },
+          addCartridge: {
+            method: 'POST',
+            url   : '/invent/items/add_cartridge'
+          },
           update: { method: 'PUT' }
         }),
         Vendor: $resource('/invent/vendors/:vendor_id.json', {}),
