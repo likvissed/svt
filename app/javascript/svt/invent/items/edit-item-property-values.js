@@ -34,7 +34,7 @@ import { app } from '../../app/app';
           return { item_id: this.data.item.id };
         }
       }
-    }).closed.then(function(){
+    }).result.then(function(){
       location.reload();
     });
   };

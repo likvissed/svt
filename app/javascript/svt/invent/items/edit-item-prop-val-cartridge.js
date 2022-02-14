@@ -35,8 +35,8 @@ import { app } from '../../app/app';
 
       return false;
     }
-    if (this.cartridge.count <= 0) {
-      this.Flash.alert('Количество должно быть больше нуля');
+    if (this.cartridge.count <= 0 || this.cartridge.count > 5) {
+      this.Flash.alert('Количество должно быть больше нуля и меньше 6');
 
       return false;
     }
