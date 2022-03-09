@@ -25,6 +25,17 @@
       = button_tag type: :button, class: "btn-default", "ng-click": "table.selected.division = ''; table.reloadOrders()",
         "uib-tooltip": "Очистить", "tooltip-append-to-body": true, "ng-disabled": "!table.selected.division" do
         = fa_icon "times"
+.col-sm-5.col-lg-5.col-xlg-4.multiline-buffer
+  .input-group.input-group-sm.form-input-sm.multiline-select
+    ui-select ng-model="table.selected.item_type" on-select="table.reloadOrders()" theme="bootstrap"
+      ui-select-match placeholder="Тип техники"
+        | {{ $select.selected }}
+      ui-select-choices repeat="item_type in table.filters.item_types | filter: $select.search"
+        div ng-bind-html="item_type | highlight: $select.search"
+    span.input-group-btn
+      = button_tag type: :button, class: "btn-default", "ng-click": "table.selected.item_type = ''; table.reloadOrders()",
+        "uib-tooltip": "Очистить", "tooltip-append-to-body": true, "ng-disabled": "!table.selected.item_type" do
+        = fa_icon "times"
 span ng-if="table.operation == 'archive'"
   .col-sm-6.col-md-5.col-xlg-4.col-fhd-3.multiline-buffer
     = button_tag type: :button, class: "btn btn-default btn-block btn-sm", "ng-click": "table.showOnlyWithAttachmentFilter()" do

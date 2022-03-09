@@ -19,13 +19,15 @@ import { app } from '../../app/app';
         operation                : '',
         creator_fio              : '',
         consumer_fio             : '',
-        show_only_with_attachment: ''
+        show_only_with_attachment: '',
+        item_type                : ''
       };
 
     return {
       set: (data) => {
         filters.divisions = data.divisions;
         filters.operations = Object.assign(filters.operations, data.operations);
+        filters.item_types = data.item_types;
       },
       getFilters      : () => filters,
       getSelected     : () => selected,

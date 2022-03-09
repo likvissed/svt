@@ -36,7 +36,7 @@ module Warehouse
       end
 
       def filtering_params
-        JSON.parse(params[:filters]).slice('id', 'invent_workplace_id', 'invent_num', 'barcode', 'consumer_dept', 'operation', 'creator_fio', 'consumer_fio', 'show_only_with_attachment')
+        JSON.parse(params[:filters]).slice('id', 'invent_workplace_id', 'invent_num', 'barcode', 'consumer_dept', 'operation', 'creator_fio', 'consumer_fio', 'show_only_with_attachment', 'item_type')
       end
 
       def limit_records
@@ -59,6 +59,7 @@ module Warehouse
         data[:filters] = {}
         data[:filters][:divisions] = Invent::WorkplaceCount.select(:workplace_count_id, :division).order('CAST(division AS SIGNED)')
         data[:filters][:operations] = Order.operations.map { |key, _val| [key, Order.translate_enum(:operation, key)] }.to_h
+        data[:filters][:item_types] = Operation.pluck(:item_type).uniq
       end
     end
   end

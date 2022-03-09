@@ -68,6 +68,9 @@ module Warehouse
     end
 
     scope :show_only_with_attachment, ->(attr = nil) { joins(:attachment) unless attr.nil? }
+    scope :item_type, ->(name_type) do
+      joins(:operations).where(warehouse_operations: { item_type: name_type })
+    end
 
     enum operation: { out: 1, in: 2, write_off: 3 }
     enum status: { processing: 1, done: 2 }

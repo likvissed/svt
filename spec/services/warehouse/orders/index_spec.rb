@@ -39,8 +39,8 @@ module Warehouse
             end
             before { subject.run }
 
-            it 'assigns %i[divisions operations] to the :filters key' do
-              expect(subject.data[:filters]).to include(:divisions, :operations)
+            it 'assigns %i[divisions operations item_types] to the :filters key' do
+              expect(subject.data[:filters]).to include(:divisions, :operations, :item_types)
             end
 
             its(:run) { is_expected.to be_truthy }
@@ -53,8 +53,8 @@ module Warehouse
             end
             before { subject.run }
 
-            it 'assigns %i[divisions operations] to the :filters key' do
-              expect(subject.data[:filters]).to include(:divisions, :operations)
+            it 'assigns %i[divisions operations item_types] to the :filters key' do
+              expect(subject.data[:filters]).to include(:divisions, :operations, :item_types)
             end
 
             its(:run) { is_expected.to be_truthy }
