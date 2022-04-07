@@ -81,6 +81,9 @@ gem 'wkhtmltopdf-binary'
 gem 'prawn-rails'
 gem 'combine_pdf'
 
+gem 'ed25519'
+gem 'bcrypt_pbkdf'
+
 group :test do
   gem 'database_cleaner'
   gem 'json_spec'
