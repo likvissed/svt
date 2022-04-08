@@ -1,17 +1,18 @@
+# Создается событие при переносе техники на склад
 class UnregistrationWorker
   include Sidekiq::Worker
 
   def perform(invent_num, access_token)
     response = AuthCenter.unreg_host(invent_num, access_token)
 
+    msg = 'Событие на разрегистрацию техники'
     case response.code
     when 200
-      Sidekiq.logger.info "Событие на разрегистрацию техники создано № #{JSON.parse(response)['result']}"
+      Sidekiq.logger.info "#{msg} создано № #{JSON.parse(response)['result']}"
     else
-      Sidekiq.logger.error "Событие на разрегистрацию техники НЕ создано для инв.№ : #{invent_num}"
-      Sidekiq.logger.error "code #{response.code}; #{response}"
+      Sidekiq.logger.error "<#{response.code}> #{msg} НЕ создано для инв.№: #{invent_num}"
 
-      UnregHostMailer.send_email(response, invent_num).deliver
+      CreateEventMailer.send_email("#{msg} НЕ создано", response, invent_num).deliver
     end
   end
 end

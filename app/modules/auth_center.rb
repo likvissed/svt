@@ -54,20 +54,25 @@ module AuthCenter
     request.execute { |resp| resp }
   end
 
-  def change_owner_wp(workplace_id, data, access_token)
-    RestClient.proxy = ''
-    JSON.parse(RestClient::Request.execute(method: :post,
-                                           url: ENV['CREATE_EVENT_URI'],
-                                           payload: {
-                                             class: 'HOSTREG',
-                                             name: 'invent_change_owner',
-                                             severity: 'INFO',
-                                             subject: workplace_id,
-                                             data: data,
-                                             description: 'Изменение ответственного на РМ'
-                                           },
-                                           headers: {
-                                             'Authorization' => "Bearer #{access_token}"
-                                           }))
+  def change_owner_wp(workplace_id, info, access_token)
+    data = {}
+    data['class'] = 'HOSTREG'
+    data['name'] = 'invent_change_owner'
+    data['severity'] = 'INFO'
+    data['subject'] = workplace_id
+    data['data'] = info
+    data['description'] = 'Изменение ответственного на РМ'
+
+    request = RestClient::Request.new(
+      method: :post,
+      verify_ssl: false,
+      url: ENV['CREATE_EVENT_URI'],
+      headers: {
+        'Authorization' => "Bearer #{access_token}"
+      },
+      payload: data
+    )
+
+    request.execute { |resp| resp }
   end
 end

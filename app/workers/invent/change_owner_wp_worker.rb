@@ -5,8 +5,14 @@ class Invent::ChangeOwnerWpWorker
   def perform(workplace_id, data, access_token)
     response = AuthCenter.change_owner_wp(workplace_id, data, access_token)
 
-    return Sidekiq.logger.info "Событие о смене ответственного на РМ создано №#{response['result']}" if response['result'].present?
+    msg = 'Событие о смене ответственного на РМ'
+    case response.code
+    when 200
+      Sidekiq.logger.info "#{msg} создано № #{JSON.parse(response)['result']}"
+    else
+      Sidekiq.logger.error "<#{response.code}> #{msg} НЕ создано wp_id: #{workplace_id}, #{data}"
 
-    Sidekiq.logger.error "Событие о смене ответственного на РМ не создано: wp_id: #{workplace_id}, #{data}".red
+      CreateEventMailer.send_email("#{msg} НЕ создано", response, "#{workplace_id}, #{data}").deliver
+    end
   end
 end
