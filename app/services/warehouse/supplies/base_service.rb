@@ -7,7 +7,13 @@ module Warehouse
         setting_location_attributes(op[:item])
 
         if op[:item][:warehouse_type].to_s == 'without_invent_num'
-          Item.find_by(item_type: op[:item][:item_type], item_model: op[:item][:item_model], status: :non_used) || Item.new(op[:item])
+          present_w_item = Item.find_by(item_type: op[:item][:item_type], item_model: op[:item][:item_model], status: :non_used)
+
+          if present_w_item.present?
+            match_location(present_w_item, op[:item])
+          else
+            Item.new(op[:item])
+          end
         else
           Item.new(op[:item])
         end
@@ -18,6 +24,18 @@ module Warehouse
         item.delete(:location)
 
         item
+      end
+
+      # Проверить совпадает ли расположение для новой техники и существующей с одинаковым типом, модели и статусом
+      def match_location(item, new_item)
+        if item.location.present? && item.location.site_id == new_item[:location_attributes]['site_id'] &&
+           item.location.building_id == new_item[:location_attributes]['building_id'] &&
+           item.location.room_id == new_item[:location_attributes]['room_id']
+
+          item
+        else
+          Item.new(new_item)
+        end
       end
 
       def save_supply

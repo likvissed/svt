@@ -67,7 +67,7 @@ module Warehouse
 
         context 'and when item already exists' do
           let!(:existing_item_1) { create(:new_item, warehouse_type: :without_invent_num, item_type: 'Мышь', item_model: 'ASUS', count: 5) }
-          let!(:existing_item_2) { create(:new_item, warehouse_type: :without_invent_num, item_type: 'DVD', item_model: 'ASUS', count: 7) }
+          let!(:existing_item_2) { create(:new_item, warehouse_type: :without_invent_num, item_type: 'DVD', item_model: 'ASUS', count: 7, location_id: location.id, location: location) }
 
           its(:run) { is_expected.to be_truthy }
 
