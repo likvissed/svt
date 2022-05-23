@@ -62,8 +62,6 @@ class StatisticsOrderWorker
       end
     end
 
-    Sidekiq.logger.info "month: #{counts}"
-
     Axlsx::Package.new do |p|
       p.workbook.add_worksheet(name: "#{translate(last_month.to_s)}") do |sheet|
         title = sheet.styles.add_style(
