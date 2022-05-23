@@ -46,7 +46,7 @@ x-backend: &backend
   <<: *syslog-driver
   volumes:
     - rails_cache:/app/tmp/cache
-    - upload_file_storage:/app/storage
+    - /data/svt:/app/storage
   environment:
     BOOTSNAP_CACHE_DIR: /usr/local/bundle/_bootsnap
     RAILS_LOG_TO_STDOUT: "true"
@@ -125,4 +125,4 @@ volumes:
     driver_opts:
       type: nfs
       o: nfsvers=4,addr=***REMOVED***,rw
-      device: ":/vol_nfs_for_servers"
+      device: ":/vol_nfs_for_servers/qtree_svt"
