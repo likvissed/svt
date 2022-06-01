@@ -26,6 +26,8 @@ module Invent
     has_many :warehouse_items,
              -> { joins('LEFT OUTER JOIN invent_property ON invent_property_value.property_id = invent_property.property_id') },
              through: :property_values, class_name: 'Warehouse::Item', foreign_key: 'warehouse_item_id'
+    has_many :bindings, as: :bindable, class_name: 'BindingSign', dependent: :destroy, inverse_of: :bindable
+    has_many :signs, through: :bindings, class_name: 'Invent::Sign', foreign_key: 'invent_sign_id'
 
     belongs_to :type, optional: false
     belongs_to :workplace, optional: true

@@ -6,6 +6,8 @@ module Warehouse
     it { is_expected.to have_many(:supplies).through(:operations).class_name('Warehouse::Supply').source(:operationable) }
     it { is_expected.to have_many(:property_values).inverse_of(:item).dependent(:destroy).with_foreign_key('warehouse_item_id').order('invent_property.property_order') }
     it { is_expected.to have_many(:orders).through(:operations).class_name('Warehouse::Order').source(:operationable) }
+    it { is_expected.to have_many(:bindings).class_name('BindingSign').dependent(:destroy).inverse_of(:bindable) }
+    it { is_expected.to have_many(:signs).through(:bindings).class_name('Invent::Sign').with_foreign_key('invent_sign_id') }
     it { is_expected.to have_one(:barcode_item).class_name('Barcode').dependent(:destroy).inverse_of(:codeable) }
     it { is_expected.to have_one(:invent_property_value).with_foreign_key('warehouse_item_id').class_name('Invent::PropertyValue').dependent(:destroy) }
     it { is_expected.to have_one(:item).through(:invent_property_value).class_name('Invent::Item').with_foreign_key('id') }
