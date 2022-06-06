@@ -127,6 +127,12 @@ import { app } from '../../app/app';
             url   : '/invent/models/:model_id/edit'
           },
           update: { method: 'PUT' }
+        }),
+        Sign: $resource('', {}, {
+          loadSigns: {
+            method: 'GET',
+            url   : '/invent/signs/load_signs'
+          }
         })
       },
       /**

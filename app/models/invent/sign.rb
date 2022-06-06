@@ -3,6 +3,6 @@ module Invent
     self.primary_key = :sign_id
     self.table_name = "#{table_name_prefix}signs"
 
-    has_many :bindings, class_name: 'BindingSign', foreign_key: 'invent_sign_id'
+    #TODO: has_many invent_bindings and warehouse_bindings
   end
 end

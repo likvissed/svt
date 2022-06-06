@@ -1,0 +1,46 @@
+<h4>
+  Добавить 
+  <i class="fa fa-plus-circle pointer" ng-click="edit.onAddBinder()" uib-tooltip="Добавить признак"></i>
+</h4>
+
+<div class="form-group"> 
+  <table class="table table-condensed table-striped" ng-if="edit.binders">
+    <tbody>
+      <tr class="b">
+        <th></th>
+        <th> Признак </th>
+        <th> Описание </th>
+        <th></th>
+      </tr>
+      
+      <tr ng-repeat="binder in edit.binders track by $index" ng-hide="binder._destroy">
+        <td>
+          <h4 ng-if="binder.sign_id">
+            <i class="fa fa-info-circle" uib-tooltip="{{edit.long_description_signs[$index]}}">
+            </i>
+          </h4>
+        </td>
+
+        <td class="col-sm-5">
+          <select
+            class="form-control"
+            ng-model="binder.sign_id"
+            ng-options="sign.sign_id as sign.short_description disable when !sign.sign_id for sign in edit.signs"
+            ng-change="edit.onChangeSign($index)"
+          ></select>
+        </td>
+
+        <td class="col-sm-19">
+          <input type="text" class="form-control" ng-model="binder.description">
+        </td>
+
+        <td>
+          <h4>
+            <i class="fa fa-minus-circle pointer" ng-click="edit.onDeleteBinder(binder, $index)" uib-tooltip="Удалить признак"></i>
+          </h4>
+        </td>
+
+      </tr>
+    </tbody>
+  </table>
+</div>

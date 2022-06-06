@@ -335,5 +335,18 @@ import { app } from '../../app/app';
     );
   };
 
+  WarehouseItemsCtrl.prototype.onEditBinder = function(item) {
+    this.$uibModal.open({
+      templateUrl : 'EditWarehouseBinder.slim',
+      controller  : 'EditWarehouseBinderCtrl',
+      controllerAs: 'edit',
+      backdrop    : 'static',
+      size        : 'lg',
+      resolve     : {
+        item: () => item
+      }
+    });
+  };
+
 
 })();

@@ -11,8 +11,6 @@ module Invent
     it { is_expected.to have_many(:warehouse_operations).through(:warehouse_inv_item_to_operations).class_name('Warehouse::Operation').source(:operation) }
     it { is_expected.to have_many(:warehouse_orders).through(:warehouse_operations).class_name('Warehouse::Order').source(:operationable) }
     it { is_expected.to have_many(:warehouse_items).through(:property_values).class_name('Warehouse::Item').with_foreign_key('warehouse_item_id') }
-    it { is_expected.to have_many(:bindings).class_name('BindingSign').dependent(:destroy).inverse_of(:bindable) }
-    it { is_expected.to have_many(:signs).through(:bindings).class_name('Invent::Sign').with_foreign_key('invent_sign_id') }
     it { is_expected.to belong_to(:type).required }
     it { is_expected.to belong_to(:workplace).optional }
     it { is_expected.to belong_to(:model).optional }

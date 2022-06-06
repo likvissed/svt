@@ -67,7 +67,7 @@ module Warehouse
           start = @start - @order_items_to_result.size
         end
 
-        @items = @items.includes(:inv_type, :supplies, :location, :barcode_item, inv_item: :barcode_item).where.not(id: @exclude_items.map(&:id)).order(id: :desc).limit(limit).offset(start)
+        @items = @items.includes(:inv_type, :supplies, :location, :barcode_item, :binders, inv_item: :barcode_item).where.not(id: @exclude_items.map(&:id)).order(id: :desc).limit(limit).offset(start)
       end
 
       def load_locations
@@ -87,6 +87,7 @@ module Warehouse
             :supplies,
             :location,
             :barcode_item,
+            :binders,
             inv_item: { include: :barcode_item }
           ]
         ).each do |item|
@@ -123,6 +124,9 @@ module Warehouse
                                       end
 
           item['supplies'].each { |supply| supply['date'] = supply['date'].strftime('%d-%m-%Y') }
+          item['binder'] = item['binders'].present? ? true : false
+
+          item.delete(:binders)
         end
       end
 

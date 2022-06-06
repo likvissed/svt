@@ -79,6 +79,23 @@ module Warehouse
           include_examples 'add a location in item'
           include_examples 'include data[:item]'
         end
+
+        context 'when binders for item present' do
+          let!(:inv_sign) { create(:sign) }
+          let!(:item) { create(:new_item) }
+          let(:binder) { create(:binder, item: item) }
+          let!(:new_item) do
+            edit = Edit.new(current_user, item.id)
+            edit.run
+
+            edit.data[:item][:binders_attributes] = Array.wrap(binder).as_json
+
+            item_params = edit.data[:item]
+            item_params.as_json
+          end
+
+          its(:run) { is_expected.to be_truthy }
+        end
       end
     end
   end

@@ -7,8 +7,8 @@ module Warehouse
     has_many :orders, through: :operations, source: :operationable, source_type: 'Warehouse::Order'
     has_many :property_values, -> { left_outer_joins(:property).order('invent_property.property_order').includes(:property) },
              inverse_of: :item, dependent: :destroy, foreign_key: 'warehouse_item_id'
-    has_many :bindings, as: :bindable, class_name: 'BindingSign', dependent: :destroy, inverse_of: :bindable
-    has_many :signs, through: :bindings, class_name: 'Invent::Sign'
+    has_many :binders, class_name: 'Warehouse::Binder', foreign_key: 'warehouse_item_id', dependent: :destroy
+    has_many :signs, through: :binders, class_name: 'Invent::Sign'
 
     has_one :barcode_item, as: :codeable, class_name: 'Barcode', dependent: :destroy, inverse_of: :codeable
     has_one :invent_property_value, class_name: 'Invent::PropertyValue', dependent: :destroy, foreign_key: 'warehouse_item_id', autosave: true
@@ -21,6 +21,7 @@ module Warehouse
 
     accepts_nested_attributes_for :property_values, allow_destroy: true, reject_if: proc { |attr| attr['value'].blank? }
     accepts_nested_attributes_for :location, allow_destroy: true, reject_if: proc { |attr| attr['site_id'].blank? }
+    accepts_nested_attributes_for :binders, allow_destroy: true, reject_if: proc { |attr| attr['sign_id'].blank? }
 
     validates :warehouse_type, :item_type, :item_model, presence: true
     validates :inv_item, uniqueness: true, allow_nil: true
@@ -29,6 +30,7 @@ module Warehouse
     validate :max_count, if: -> { inv_item }
     validate :compare_counts, if: -> { count && count_reserved }
     validate :compare_invent_nums_with_reserved, if: -> { warehouse_type.to_s == 'with_invent_num' && new? && (invent_num_start_changed? || invent_num_end_changed?) }
+    validate :uniqueness_of_signs, if: -> { binders.present? }
 
     after_initialize :set_initial_count, if: -> { new_record? }
     before_validation :set_string_values
@@ -158,6 +160,15 @@ module Warehouse
       return unless nums.any? { |num| !num.to_i.zero? && !num.to_i.between?(invent_num_start, invent_num_end) }
 
       errors.add(:base, :invent_num_pool_is_too_small, model: item_model)
+    end
+
+    def uniqueness_of_signs
+      sign_ids = binders.map(&:sign_id)
+      duplicate = sign_ids.detect { |e| sign_ids.count(e) > 1 }
+
+      return if duplicate.blank?
+
+      errors.add(:base, :cannot_update_with_duplicate_signs)
     end
 
     def prevent_update
