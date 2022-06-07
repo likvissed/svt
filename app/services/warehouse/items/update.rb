@@ -11,6 +11,7 @@ module Warehouse
 
       def run
         find_item
+        assign_binders if @item.inv_item.present? && @item_params['binders_attributes'].present?
         update_item_params
         broadcast_items
 
@@ -27,6 +28,11 @@ module Warehouse
       def find_item
         @item = Item.find(@item_id)
         authorize @item, :update?
+      end
+
+      def assign_binders
+        # Привязка к invent_item
+        @item_params['binders_attributes'].each { |binder| binder['invent_item_id'] = @item.inv_item.item_id }
       end
 
       def update_item_params

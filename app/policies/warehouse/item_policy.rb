@@ -46,6 +46,7 @@ module Warehouse
           id
           description
           sign_id
+          invent_item_id
           warehouse_item_id
           _destroy
         ],

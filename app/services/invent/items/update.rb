@@ -15,6 +15,7 @@ module Invent
         if @item_params['property_values_attributes'].present?
           @item_params['property_values_attributes'] = delete_blank_and_assign_barcode_prop_value(@item_params['property_values_attributes'])
         end
+        assign_binders if @item.warehouse_item.present? && @item_params['binders_attributes'].present?
         update_item
 
         broadcast_items
@@ -33,6 +34,11 @@ module Invent
       def find_item
         @item = Item.find(@item_id)
         authorize @item, :update?
+      end
+
+      def assign_binders
+        # Привязка к warehouse_item
+        @item_params['binders_attributes'].each { |binder| binder['warehouse_item_id'] = @item.warehouse_item.id }
       end
 
       def update_item

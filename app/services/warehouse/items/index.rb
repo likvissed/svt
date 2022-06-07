@@ -124,7 +124,7 @@ module Warehouse
                                       end
 
           item['supplies'].each { |supply| supply['date'] = supply['date'].strftime('%d-%m-%Y') }
-          item['binder'] = item['binders'].present? ? true : false
+          item['binder_present'] = item['binders'].present? ? true : false
 
           item.delete(:binders)
         end

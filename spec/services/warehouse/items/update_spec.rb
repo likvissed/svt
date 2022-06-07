@@ -83,7 +83,7 @@ module Warehouse
         context 'when binders for item present' do
           let!(:inv_sign) { create(:sign) }
           let!(:item) { create(:new_item) }
-          let(:binder) { create(:binder, item: item) }
+          let(:binder) { create(:binder, warehouse_item: item) }
           let!(:new_item) do
             edit = Edit.new(current_user, item.id)
             edit.run

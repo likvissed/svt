@@ -1,5 +1,4 @@
 import { app } from '../../app/app';
-// import { runInThisContext } from 'vm';
 
 (function () {
   'use strict';
@@ -19,8 +18,12 @@ import { app } from '../../app/app';
   }
 
   EditWarehouseBinderCtrl.prototype.onSave = function() {
-    // Переобразовать для обновления привязки признаков
-    this.item.binders_attributes = this.item.binders;
+    if (!this.validate()) {
+      this.Flash.alert('Необходимо выбрать признак');
+
+      return false;
+    }
+    this._onPrepareBinders();
 
     this.Server.Warehouse.Item.update(
       { id: this.item.id },
@@ -33,6 +36,26 @@ import { app } from '../../app/app';
         this.Error.response(response, status);
       }
     );
+  };
+
+  EditWarehouseBinderCtrl.prototype.validate = function() {
+    let sign_null = this.item.binders.find((el) => {
+      return el.sign_id === null;
+    })
+
+    if (sign_null) {
+      return false;
+    } else {
+      return true;
+    }
+  };
+
+  EditWarehouseBinderCtrl.prototype._onPrepareBinders = function() {
+    // Переобразовать для обновления привязки признаков
+    this.item.binders_attributes = this.item.binders;
+
+    // Назначить id warehouse_item
+    this.item.binders_attributes.forEach((value) => value.warehouse_item_id = this.item.id);
   };
 
   EditWarehouseBinderCtrl.prototype.onClose = function() {

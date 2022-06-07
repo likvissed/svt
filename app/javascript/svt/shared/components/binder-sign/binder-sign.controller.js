@@ -26,7 +26,6 @@ BinderSignCtrl.prototype.loadSigns = function() {
       this.signs = response.signs;
 
       this.new_binder = response.new_binder;
-      this.new_binder.warehouse_item_id = this.selectedItem.id;
 
       this.prepareData();
     },

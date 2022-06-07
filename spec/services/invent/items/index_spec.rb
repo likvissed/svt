@@ -99,7 +99,7 @@ module Invent
 
             it 'returns filtered data' do
               subject.data[:data].each do |el|
-                expect(el['location']).to eq 'Не назначено'
+                expect(el['location_str']).to eq 'Не назначено'
               end
             end
 
@@ -114,7 +114,7 @@ module Invent
 
               it 'returns filtered data' do
                 subject.data[:data].each do |el|
-                  expect(el['location']).to eq "Пл. '#{site_name}', корп. #{building_name}, комн. #{room_name}"
+                  expect(el['location_str']).to eq "Пл. '#{site_name}', корп. #{building_name}, комн. #{room_name}"
                 end
               end
             end

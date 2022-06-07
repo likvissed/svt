@@ -131,7 +131,7 @@ import { app } from '../../app/app';
         Sign: $resource('', {}, {
           loadSigns: {
             method: 'GET',
-            url   : '/invent/signs/load_signs'
+            url   : '/signs/load_signs'
           }
         })
       },

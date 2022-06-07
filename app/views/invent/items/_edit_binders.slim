@@ -1,0 +1,9 @@
+script type="text/ng-template" id="EditInventBinder.slim"
+  .modal-header
+    h4 Список признаков
+  .modal-body
+    binder-sign selected-item="edit.item"
+
+  .modal-footer
+    = button_tag "Сохранить", type: :button, class: "btn-success", "ng-click": "edit.onSave()"
+    = button_tag "Закрыть", type: :button, class: "btn-default", "ng-click": "edit.onClose()"

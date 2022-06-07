@@ -91,6 +91,15 @@ module Invent
             expect(changed_prop_value.value).not_to eq sent_property_value['value']
           end
         end
+
+        context 'and when binders for item present' do
+          let!(:inv_sign) { create(:sign) }
+          let(:binder) { create(:binder, invent_item: old_item) }
+
+          before { new_item['binders_attributes'] = Array.wrap(binder).as_json }
+
+          its(:run) { is_expected.to be_truthy }
+        end
       end
 
       context 'with invalid item params' do

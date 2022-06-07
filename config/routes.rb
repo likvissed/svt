@@ -98,13 +98,6 @@ Rails.application.routes.draw do
 
     resources :vendors, only: [:index, :create, :destroy], param: :vendor_id
     resources :models, param: :model_id
-
-    resources :signs, param: :sign_id, only: [:index] do
-      collection do
-        # Загрузить все признаки
-        get 'load_signs', to: 'signs#load_signs'
-      end
-    end
   end
 
   # Эталоны
@@ -176,6 +169,13 @@ Rails.application.routes.draw do
 
   resource :statistics, only: :show
   get 'statistics/export', to: 'statistics#export', as: 'statistics/export'
+
+  resources :signs, param: :sign_id, only: [:index] do
+    collection do
+      # Загрузить все признаки
+      get 'load_signs', to: 'signs#load_signs'
+    end
+  end
 
   namespace :api do
     namespace :v1 do

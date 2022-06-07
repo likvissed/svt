@@ -13,6 +13,7 @@
                 th
                 th
                 th
+                th
                 th Штрих-код
                 th Тип
                 th Модель
@@ -33,6 +34,12 @@
                     uib-tooltip="Открыть кейс" tooltip-append-to-body="true" ng-if="item.status == 'in_workplace'" }
                     | кейс
                   / = link_to "кейс", class: "btn btn-default btn-xs", "uib-tooltip": "Открыть кейс", "tooltip-append-to-body": "true"
+                td
+                  = render partial: 'edit_binders'
+                  div ng-if="item.binder_present"
+                    span class="fa fa-flag" uib-tooltip="Редактировать признаки" class="pointer" ng-click="table.onEditBinder(item)"
+                  div ng-if="!item.binder_present"
+                    span class="fa fa-flag-o" uib-tooltip="Добавить признаки" class="pointer" ng-click="table.onEditBinder(item)"
                 td.col-sm-1
                   a ng-href="/invent/workplaces/{{item.workplace.workplace_id}}/edit" class="default-color" target="_blank" ng-show="item.workplace"
                     = fa_icon "external-link fw", class: "pointer", "uib-tooltip": "Перейти к рабочему месту", "tooltip-append-to-body": "true"
@@ -46,7 +53,7 @@
                 td.col-sm-1 ng-bind="item.workplace.workplace_id"
                 td.col-sm-4 ng-bind="item.employee.fullName"
                 td.col-sm-1 ng-bind-html="item.label_status"
-                td.col-sm-4 ng-bind-html="item.location"
+                td.col-sm-4 ng-bind-html="item.location_str"
                 td.col-sm-9 ng-bind-html="item.description"
                 td.col-sm-1 ng-bind="item.modify_time"
                 td.text-center

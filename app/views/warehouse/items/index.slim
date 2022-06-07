@@ -52,9 +52,9 @@
                     span class="fa fa-pencil-square-o" uib-tooltip="Редактировать технику" class="pointer" ng-click="table.editItem(item)" ng-if="item.inv_type.name == 'allin1' || item.inv_type.name == 'pc' || item.inv_type.name == 'notebook'"
                 td
                   = render partial: 'edit_binders'
-                  div ng-if="item.binder"
+                  div ng-if="item.binder_present"
                     span class="fa fa-flag" uib-tooltip="Редактировать признаки" class="pointer" ng-click="table.onEditBinder(item)"
-                  div ng-if="!item.binder"
+                  div ng-if="!item.binder_present"
                     span class="fa fa-flag-o" uib-tooltip="Добавить признаки" class="pointer" ng-click="table.onEditBinder(item)"
                 td
                   = render partial: 'location'

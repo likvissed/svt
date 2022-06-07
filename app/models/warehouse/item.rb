@@ -7,8 +7,8 @@ module Warehouse
     has_many :orders, through: :operations, source: :operationable, source_type: 'Warehouse::Order'
     has_many :property_values, -> { left_outer_joins(:property).order('invent_property.property_order').includes(:property) },
              inverse_of: :item, dependent: :destroy, foreign_key: 'warehouse_item_id'
-    has_many :binders, class_name: 'Warehouse::Binder', foreign_key: 'warehouse_item_id', dependent: :destroy
-    has_many :signs, through: :binders, class_name: 'Invent::Sign'
+    has_many :binders, class_name: 'Binder', foreign_key: 'warehouse_item_id'
+    has_many :signs, through: :binders, class_name: 'Sign'
 
     has_one :barcode_item, as: :codeable, class_name: 'Barcode', dependent: :destroy, inverse_of: :codeable
     has_one :invent_property_value, class_name: 'Invent::PropertyValue', dependent: :destroy, foreign_key: 'warehouse_item_id', autosave: true
