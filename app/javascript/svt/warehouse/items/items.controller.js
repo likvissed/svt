@@ -175,6 +175,14 @@ import { app } from '../../app/app';
   };
 
   /**
+   * Событие изменения фильтра "Показать с признаками"
+   */
+  WarehouseItemsCtrl.prototype.showOnlyWithBindersFilter = function() {
+    this.selectedFilters.show_only_with_binders = !this.selectedFilters.show_only_with_binders;
+    this.reloadItems();
+  };
+
+  /**
    * Добавить/удалить технику из ордера
    *
    * @param item

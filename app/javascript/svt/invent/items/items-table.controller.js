@@ -96,6 +96,14 @@ import { app } from '../../app/app';
   };
 
   /**
+   * Событие изменения фильтра "Показать с признаками"
+   */
+  InventItemsTableCtrl.prototype.showOnlyWithBindersFilter = function() {
+    this.selected.show_only_with_binders = !this.selected.show_only_with_binders;
+    this.changeFilter();
+  };
+
+  /**
    * Удалить выбранный фильтр по составу техники.
    *
    * @param index - индекс удаляемого элемента.

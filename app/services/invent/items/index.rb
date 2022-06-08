@@ -41,7 +41,7 @@ module Invent
       def filtering_params
         filters = JSON.parse(params[:filters])
         filters['for_statuses'] = data[:filters][:statuses].select { |filter| filter[:default] }.as_json if need_init_filters?
-        filters.slice('barcode_item', 'type_id', 'invent_num', 'serial_num', 'item_model', 'responsible', 'properties', 'for_statuses', 'location_building_id', 'location_room_id', 'priority', 'workplace_count_id')
+        filters.slice('barcode_item', 'type_id', 'invent_num', 'serial_num', 'item_model', 'responsible', 'properties', 'for_statuses', 'location_building_id', 'location_room_id', 'priority', 'workplace_count_id', 'show_only_with_binders', 'name_binder')
       end
 
       def limit_records
@@ -56,7 +56,7 @@ module Invent
                      { warehouse_item: :location },
                      { property_values: %i[property property_list] },
                      workplace: %i[iss_reference_room]
-                   ).order(item_id: :desc).limit(params[:length]).offset(params[:start])
+                   ).order(item_id: :desc).group(:item_id).limit(params[:length]).offset(params[:start])
       end
 
       def prepare_to_render

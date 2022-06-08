@@ -51,7 +51,7 @@ module Invent
 
     scope :barcode_item, ->(barcode_item) do
       joins("INNER JOIN #{Barcode.table_name} invent_barcodes ON invent_barcodes.codeable_id = invent_item.item_id")
-        .where('id = ?', barcode_item)
+        .where('invent_barcodes.id = ?', barcode_item)
     end
     scope :type_id, ->(type_id) { where(type_id: type_id) }
     scope :invent_num, ->(invent_num) { where('invent_num LIKE ?', "%#{invent_num}%").limit(RECORD_LIMIT) }
@@ -119,6 +119,16 @@ module Invent
     scope :priority, ->(priority) { where(priority: priority) }
     scope :workplace_count_id, ->(workplace_count_id) { left_outer_joins(:workplace).where(invent_workplace: { workplace_count_id: workplace_count_id }) }
     scope :id_tn, ->(id_tn) { left_outer_joins(:workplace).where(invent_workplace: { id_tn: id_tn }) }
+    scope :show_only_with_binders, ->(attr = nil) do
+      unless attr.nil?
+        joins("INNER JOIN
+          invent_binders AS binder
+        ON
+          binder.invent_item_id = invent_item.item_id
+        ")
+      end
+    end
+    scope :name_binder, ->(name_binder) { left_outer_joins(:binders).where('invent_binders.description LIKE :binder_description', binder_description: "%#{name_binder}%") }
 
     attr_accessor :disable_filters
     attr_accessor :destroy_from_order

@@ -50,7 +50,7 @@ module Warehouse
       end
 
       def filtering_params
-        JSON.parse(params[:filters]).slice('show_only_presence', 'status', 'item_type', 'barcode', 'item_model', 'invent_num', 'barcode_item', 'building_id', 'room_id')
+        JSON.parse(params[:filters]).slice('show_only_presence', 'status', 'item_type', 'barcode', 'item_model', 'invent_num', 'barcode_item', 'building_id', 'room_id', 'show_only_with_binders', 'name_binder')
       end
 
       def limit_records
@@ -67,7 +67,7 @@ module Warehouse
           start = @start - @order_items_to_result.size
         end
 
-        @items = @items.includes(:inv_type, :supplies, :location, :barcode_item, :binders, inv_item: :barcode_item).where.not(id: @exclude_items.map(&:id)).order(id: :desc).limit(limit).offset(start)
+        @items = @items.includes(:inv_type, :supplies, :location, :barcode_item, :binders, inv_item: :barcode_item).where.not(id: @exclude_items.map(&:id)).order(id: :desc).group(:id).limit(limit).offset(start)
       end
 
       def load_locations

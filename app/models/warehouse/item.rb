@@ -77,6 +77,18 @@ module Warehouse
       left_outer_joins(:location).where(warehouse_locations: { room_id: room_id })
     end
 
+    scope :show_only_with_binders, ->(attr = nil) do
+      unless attr.nil?
+        joins("INNER JOIN
+          invent_binders AS binder
+        ON
+          binder.warehouse_item_id = warehouse_items.id
+        ")
+      end
+    end
+    scope :name_binder, ->(name_binder) { left_outer_joins(:binders).where('invent_binders.description LIKE :binder_description', binder_description: "%#{name_binder}%") }
+
+
     enum warehouse_type: { without_invent_num: 1, with_invent_num: 2 }
     enum status: { non_used: 1, used: 2, waiting_write_off: 3, written_off: 4 }
 
