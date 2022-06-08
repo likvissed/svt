@@ -18,11 +18,6 @@ import { app } from '../../app/app';
   }
 
   EditWarehouseBinderCtrl.prototype.onSave = function() {
-    if (!this.validate()) {
-      this.Flash.alert('Необходимо выбрать признак');
-
-      return false;
-    }
     this._onPrepareBinders();
 
     this.Server.Warehouse.Item.update(

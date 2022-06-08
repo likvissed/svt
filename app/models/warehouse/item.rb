@@ -21,7 +21,7 @@ module Warehouse
 
     accepts_nested_attributes_for :property_values, allow_destroy: true, reject_if: proc { |attr| attr['value'].blank? }
     accepts_nested_attributes_for :location, allow_destroy: true, reject_if: proc { |attr| attr['site_id'].blank? }
-    accepts_nested_attributes_for :binders, allow_destroy: true, reject_if: proc { |attr| attr['sign_id'].blank? }
+    accepts_nested_attributes_for :binders, allow_destroy: true
 
     validates :warehouse_type, :item_type, :item_model, presence: true
     validates :inv_item, uniqueness: true, allow_nil: true

@@ -259,6 +259,9 @@ ru:
           printing: 'Печатная техника'
           expendable_materials: 'Расходка'
 
+      binders:
+        sign: 'Признак'
+
       user:
         tn: Табельный номер
         role: Роль
