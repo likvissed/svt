@@ -26,6 +26,8 @@ module Invent
     has_many :warehouse_items,
              -> { joins('LEFT OUTER JOIN invent_property ON invent_property_value.property_id = invent_property.property_id') },
              through: :property_values, class_name: 'Warehouse::Item', foreign_key: 'warehouse_item_id'
+    has_many :binders, class_name: 'Binder', foreign_key: 'invent_item_id'
+    has_many :signs, through: :binders, class_name: 'Sign'
 
     belongs_to :type, optional: false
     belongs_to :workplace, optional: true
@@ -38,6 +40,7 @@ module Invent
     validate :presence_model, :check_mandatory, if: -> { errors.details[:type].empty? && !disable_filters }
     validate :property_values_validation, if: -> { validate_prop_values }
     validate :invent_num_from_allowed_pool_of_numbers, if: -> { invent_num_changed? }
+    validate :uniqueness_of_signs, if: -> { binders.present? }
 
     after_initialize :set_default_values
     before_save :set_default_model
@@ -48,7 +51,7 @@ module Invent
 
     scope :barcode_item, ->(barcode_item) do
       joins("INNER JOIN #{Barcode.table_name} invent_barcodes ON invent_barcodes.codeable_id = invent_item.item_id")
-        .where('id = ?', barcode_item)
+        .where('invent_barcodes.id = ?', barcode_item)
     end
     scope :type_id, ->(type_id) { where(type_id: type_id) }
     scope :invent_num, ->(invent_num) { where('invent_num LIKE ?', "%#{invent_num}%").limit(RECORD_LIMIT) }
@@ -116,6 +119,16 @@ module Invent
     scope :priority, ->(priority) { where(priority: priority) }
     scope :workplace_count_id, ->(workplace_count_id) { left_outer_joins(:workplace).where(invent_workplace: { workplace_count_id: workplace_count_id }) }
     scope :id_tn, ->(id_tn) { left_outer_joins(:workplace).where(invent_workplace: { id_tn: id_tn }) }
+    scope :show_only_with_binders, ->(attr = nil) do
+      unless attr.nil?
+        joins("INNER JOIN
+          invent_binders AS binder
+        ON
+          binder.invent_item_id = invent_item.item_id
+        ")
+      end
+    end
+    scope :name_binder, ->(name_binder) { left_outer_joins(:binders).where('invent_binders.description LIKE :binder_description', binder_description: "%#{name_binder}%") }
 
     attr_accessor :disable_filters
     attr_accessor :destroy_from_order
@@ -126,6 +139,7 @@ module Invent
 
     accepts_nested_attributes_for :property_values, allow_destroy: true
     accepts_nested_attributes_for :barcode_item, allow_destroy: true, reject_if: proc { |attributes| attributes['id'].present? }
+    accepts_nested_attributes_for :binders, allow_destroy: true
 
     enum status: { waiting_take: 1, waiting_bring: 2, prepared_to_swap: 3, in_stock: 4, in_workplace: 5, waiting_write_off: 6, written_off: 7 }
     enum priority: { default: 1, high: 2 }
@@ -377,6 +391,15 @@ module Invent
       return if invent_num.to_i.between?(w_item.invent_num_start, w_item.invent_num_end)
 
       errors.add(:invent_num, :not_from_allowed_pool, start_num: w_item.invent_num_start, end_num: w_item.invent_num_end)
+    end
+
+    def uniqueness_of_signs
+      sign_ids = binders.map(&:sign_id)
+      duplicate = sign_ids.detect { |e| sign_ids.count(e) > 1 }
+
+      return if duplicate.blank?
+
+      errors.add(:base, :cannot_update_with_duplicate_signs)
     end
   end
 end

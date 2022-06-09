@@ -15,6 +15,7 @@ module Warehouse
         search_inv_items
         return false unless validate_order
 
+        check_signs
         prepare_params
 
         true
@@ -28,7 +29,7 @@ module Warehouse
       protected
 
       def find_order
-        @order = Order.includes(:inv_items).find(@order_id)
+        @order = Order.includes(:inv_items, inv_workplace: { items: :binders }).find(@order_id)
         @order.assign_attributes(@order_params)
         authorize @order, :prepare_to_deliver?
       end
@@ -54,10 +55,22 @@ module Warehouse
         false
       end
 
+      def check_signs
+        # ids признаков подтвержденной техники на РМ
+        data[:sign_ids_on_wp] = []
+        @order.inv_workplace.items.each do |it|
+          next unless it.status == 'in_workplace' && it.binders.present?
+
+          # Сортируем для дальнейшего сравнения техники, которая исполняется
+          data[:sign_ids_on_wp] = it.binders.map(&:sign_id).sort
+        end
+      end
+
       def prepare_params
-        data[:operations_attributes] = @order.operations.includes(inv_items: [:model, property_values: :property_list])
+        data[:operations_attributes] = @order.operations.includes(inv_items: [:model, property_values: :property_list], item: :location)
                                          .as_json(
                                            include: {
+                                             item: { include: :binders },
                                              inv_items: {
                                                include: {
                                                  property_values: {
@@ -80,11 +93,26 @@ module Warehouse
             inv_item['id'] = inv_item['item_id']
             inv_item.delete('item_id')
           end
-          op['status'] = :done if data[:selected_op].any? { |sel| sel.id == op['id'] }
+
+          if data[:selected_op].any? { |sel| sel.id == op['id'] }
+            op['status'] = :done
+
+            op['binders_for_execute_out'] = check_binders_for_item(op) if data[:sign_ids_on_wp].present?
+          end
 
           op.delete('inv_items')
         end
         data[:selected_op] = data[:selected_op].as_json(only: :id)
+      end
+
+      def check_binders_for_item(operation)
+        msg_signs_incorrect = '(признаки техники не соответствуют признакам на РМ )'
+
+        return msg_signs_incorrect if operation['item']['binders'].blank?
+
+        item_sign_ids = operation['item']['binders'].map { |bind| bind['sign_id'] }.sort
+
+        data[:sign_ids_on_wp] == item_sign_ids ? ' ' : msg_signs_incorrect
       end
     end
   end

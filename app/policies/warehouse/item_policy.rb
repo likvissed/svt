@@ -42,6 +42,14 @@ module Warehouse
           room_id
           comment
         ],
+        binders_attributes: %i[
+          id
+          description
+          sign_id
+          invent_item_id
+          warehouse_item_id
+          _destroy
+        ],
         property_values_attributes: %i[
           id
           warehouse_item_id

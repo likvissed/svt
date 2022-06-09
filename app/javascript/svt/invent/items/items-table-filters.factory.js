@@ -38,18 +38,20 @@ import { app } from '../../app/app';
       },
       // Данные, которые будут отправлены на сервер
       _selected = {
-        barcode_item: '',
-        type_id     : _filters.types[0].type_id,
-        invent_num  : '',
-        serial_num  : '',
-        responsible : '',
-        item_model  : '',
-        for_statuses: [],
-        priority    : Object.keys(_filters.priorities)[0],
-        building    : '',
-        room        : '',
-        properties  : [],
-        division    : ''
+        barcode_item          : '',
+        type_id               : _filters.types[0].type_id,
+        invent_num            : '',
+        serial_num            : '',
+        responsible           : '',
+        item_model            : '',
+        for_statuses          : [],
+        priority              : Object.keys(_filters.priorities)[0],
+        building              : '',
+        room                  : '',
+        properties            : [],
+        division              : '',
+        show_only_with_binders: false,
+        name_binder           : ''
       };
 
     function _addProperty() {

@@ -22,6 +22,8 @@ script type="text/ng-template" id="deliveryOfItems.slim"
               span ng-bind="$index + 1"
               ' .
               span ng-bind="op.item_type || op.item.item_type"
+              ' 
+            span.bcIncorrectBinders ng-bind="op.binders_for_execute_out"
 
           div style="padding: 0 45px 15px 45px;"
             table.table.table-condensed
@@ -39,6 +41,8 @@ script type="text/ng-template" id="deliveryOfItems.slim"
                 span ng-bind="$index + 1"
                 ' .
                 span ng-bind="op.item_type || op.item.item_type"
+                ' 
+              span.bcIncorrectBinders ng-bind="op.binders_for_execute_out"
               span.pull-right
                 = fa_icon "refresh lg", class: "pointer", "tooltip-placement": "left", "uib-tooltip": "Обновить данные",
                   "ng-click": "delivery.refreshInvItemData(inv_item)"

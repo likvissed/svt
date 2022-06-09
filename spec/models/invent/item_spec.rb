@@ -11,6 +11,8 @@ module Invent
     it { is_expected.to have_many(:warehouse_operations).through(:warehouse_inv_item_to_operations).class_name('Warehouse::Operation').source(:operation) }
     it { is_expected.to have_many(:warehouse_orders).through(:warehouse_operations).class_name('Warehouse::Order').source(:operationable) }
     it { is_expected.to have_many(:warehouse_items).through(:property_values).class_name('Warehouse::Item').with_foreign_key('warehouse_item_id') }
+    it { is_expected.to have_many(:binders).class_name('Binder').with_foreign_key('invent_item_id')}
+    it { is_expected.to have_many(:signs).through(:binders).class_name('Sign') }
     it { is_expected.to belong_to(:type).required }
     it { is_expected.to belong_to(:workplace).optional }
     it { is_expected.to belong_to(:model).optional }
@@ -699,6 +701,21 @@ module Invent
         before { subject.invent_num = 'new_num' }
 
         it { is_expected.to be_valid }
+      end
+    end
+
+    describe '#uniqueness_of_signs' do
+      let!(:sign) { create(:sign) }
+      let!(:item) { create(:item, :with_property_values, type_name: :printer) }
+      let!(:binder) { create(:binder, invent_item: item) }
+      subject { item }
+
+      before { item.binders = [binder, binder] }
+
+      it 'uniqueness inv_signs' do
+        subject.valid?
+
+        expect(subject.errors.details[:base]).to include(error: :cannot_update_with_duplicate_signs)
       end
     end
 

@@ -96,6 +96,14 @@ import { app } from '../../app/app';
   };
 
   /**
+   * Событие изменения фильтра "Показать с признаками"
+   */
+  InventItemsTableCtrl.prototype.showOnlyWithBindersFilter = function() {
+    this.selected.show_only_with_binders = !this.selected.show_only_with_binders;
+    this.changeFilter();
+  };
+
+  /**
    * Удалить выбранный фильтр по составу техники.
    *
    * @param index - индекс удаляемого элемента.
@@ -248,5 +256,23 @@ import { app } from '../../app/app';
 
       return encodeURIComponent(JSON.stringify(data));
     }
+  };
+
+  InventItemsTableCtrl.prototype.onEditBinder = function(item) {
+    this.Item.edit(item.item_id).then(
+      () => {
+        this.$uibModal.open({
+          animation   : this.Config.global.modalAnimation,
+          templateUrl : 'EditInventBinder.slim',
+          controller  : 'EditInventBinderCtrl',
+          controllerAs: 'edit',
+          size        : 'lg',
+          backdrop    : 'static',
+          resolve     : {
+            item: () => item
+          }
+        });
+      }
+    );
   };
 })();

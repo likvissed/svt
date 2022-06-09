@@ -175,6 +175,14 @@ import { app } from '../../app/app';
   };
 
   /**
+   * Событие изменения фильтра "Показать с признаками"
+   */
+  WarehouseItemsCtrl.prototype.showOnlyWithBindersFilter = function() {
+    this.selectedFilters.show_only_with_binders = !this.selectedFilters.show_only_with_binders;
+    this.reloadItems();
+  };
+
+  /**
    * Добавить/удалить технику из ордера
    *
    * @param item
@@ -333,6 +341,19 @@ import { app } from '../../app/app';
       },
       (response, status) => this.Error.response(response, status)
     );
+  };
+
+  WarehouseItemsCtrl.prototype.onEditBinder = function(item) {
+    this.$uibModal.open({
+      templateUrl : 'EditWarehouseBinder.slim',
+      controller  : 'EditWarehouseBinderCtrl',
+      controllerAs: 'edit',
+      backdrop    : 'static',
+      size        : 'lg',
+      resolve     : {
+        item: () => item
+      }
+    });
   };
 
 

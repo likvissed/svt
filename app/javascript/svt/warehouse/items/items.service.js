@@ -18,14 +18,16 @@ import { app } from '../../app/app';
     this.$uibModal = $uibModal;
 
     this.selectedTableFilters = {
-      show_only_presence: true,
-      status            : '',
-      item_type         : '',
-      barcode           : '',
-      invent_num        : '',
-      invent_item_id    : '',
-      building_id       : '',
-      room_id           : ''
+      show_only_presence    : true,
+      status                : '',
+      item_type             : '',
+      barcode               : '',
+      invent_num            : '',
+      invent_item_id        : '',
+      building_id           : '',
+      room_id               : '',
+      show_only_with_binders: false,
+      name_binder           : ''
     };
     this.filters = {
       selStatusFilter: { '': 'Все состояния' }
