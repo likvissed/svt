@@ -5519,6 +5519,10 @@ a.label:focus {
 .badge:empty {
   display: none;
 }
+.badge-info {  
+  background-color: #5bc0de;
+  color: #ffffff;
+}
 .btn .badge {
   position: relative;
   top: -1px;
