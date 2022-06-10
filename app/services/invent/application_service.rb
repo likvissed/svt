@@ -35,7 +35,13 @@ class Invent::ApplicationService < ApplicationService
     item['property_values_attributes'] = item['property_values']
     item['barcode_item_attributes'] = item['barcode_item']
 
-    item['signs_name'] = item['signs'].map { |sign| sign['short_description'] }.join(', ') if item['signs'].present?
+    item['binder_present'] = false
+
+    if item['signs'].present?
+      item['signs_name'] = item['signs'].map { |sign| sign['short_description'] }.join(', ')
+
+      item['binder_present'] = true
+    end
 
     item.delete('item_id')
     item.delete('property_values')

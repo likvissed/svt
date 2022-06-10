@@ -1,6 +1,14 @@
-.form-group ng-if="item.signs_name" 
-  span.badge.badge-info 
-    | {{ item.signs_name }}
+
+div
+  = render partial: 'invent/items/edit_binders'
+  .col-lg-1
+    div ng-if="item.binder_present"
+      span class="fa fa-flag" uib-tooltip="Редактировать признаки" tooltip-append-to-body="true" class="pointer" ng-click="wp.onEditBinder(item)"
+    div ng-if="!item.binder_present"
+      span class="fa fa-flag-o" uib-tooltip="Добавить признаки" tooltip-append-to-body="true" class="pointer" ng-click="wp.onEditBinder(item)"
+  span ng-if="item.signs_name" 
+    .badge.badge-info 
+      | {{ item.signs_name }}
 
 fieldset.ng-hide ng-show="item" ng-disabled="item.status == 'prepared_to_swap'"
   .col-sm-24.col-lg-18.col-lg-offset-3.col-xlg-16.col-xlg-offset-4.col-fhd-12.col-fhd-offset-6

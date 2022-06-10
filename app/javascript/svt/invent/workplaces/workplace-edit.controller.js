@@ -302,4 +302,30 @@ import { app } from '../../app/app';
       });
     }
   };
+
+  /**
+   * Открыть модальное окно на редактирования признаков
+   */
+   WorkplaceEditCtrl.prototype.onEditBinder = function(item) {
+    // Для передачи корректных параметров в `invent/items/edit_binders`
+    item.item_id = item.id;
+
+    let modalInstance = this.$uibModal.open({
+      templateUrl : 'EditInventBinder.slim',
+      controller  : 'EditInventBinderCtrl',
+      controllerAs: 'edit',
+      backdrop    : 'static',
+      size        : 'lg',
+      resolve     : {
+        item: () => item
+      }
+    });
+
+    // Перезагрузка страницы для обновления признаков на форме
+    modalInstance.result
+      .then(() => {
+        this.$window.location.reload();
+      }
+    );
+  };
 })();
