@@ -187,7 +187,12 @@ module Invent
 
           wp.data.delete('location_room')
           wp.data.delete('new_attachment')
+
           wp.data['items_attributes'] << new_mon
+          wp.data['items_attributes'].each do |item|
+            item.delete('binder_present')
+          end
+
           wp.data
         end
         let(:swap) { Warehouse::Orders::Swap.new(user, old_workplace.workplace_id, [new_workplace['items_attributes'].last['id']]) }

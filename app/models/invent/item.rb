@@ -46,6 +46,7 @@ module Invent
     before_save :set_default_model
     before_destroy :prevent_destroy, prepend: true, unless: -> { destroy_from_order }
     before_destroy :present_warehouse_items, prepend: true, if: -> { warehouse_items.present? }
+    before_destroy :present_binders, prepend: true, if: -> { binders.present? }
     before_update :prevent_update
     # before_save :model_id_nil_if_model_item
 
@@ -354,6 +355,13 @@ module Invent
       arr_w_items_type = warehouse_items.map(&:item_type).uniq.join(', ')
 
       errors.add(:base, :cannot_destroy_warehouse_items, w_items: arr_w_items_type)
+      throw(:abort)
+    end
+
+    def present_binders
+      arr_signs = signs.map(&:short_description).uniq.join(', ')
+
+      errors.add(:base, :cannot_destroy_binders, signs: arr_signs)
       throw(:abort)
     end
 

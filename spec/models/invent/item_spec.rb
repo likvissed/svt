@@ -544,6 +544,21 @@ module Invent
       end
     end
 
+    describe '#present_binders' do
+      let!(:sign) { create(:sign) }
+      let!(:binder) { create(:binder) }
+
+      subject { build(:item, :with_property_values, item_model: 'my model', type_name: :printer, binders: [binder], signs: [sign]) }
+
+      its(:destroy) { is_expected.to be_falsey }
+
+      it 'adds :cannot_destroy_binders error' do
+        subject.destroy
+
+        expect(subject.errors.details[:base]).to include(error: :cannot_destroy_binders, signs: sign.short_description)
+      end
+    end
+
     describe '#prevent_update' do
       let!(:item) { create(:item, :with_property_values, type_name: :printer) }
       subject { item }

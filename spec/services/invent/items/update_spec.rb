@@ -31,6 +31,7 @@ module Invent
           prop_val.delete('property_list')
         end
         data.delete('full_item_model')
+        data.delete('binder_present')
 
         data.as_json
       end
