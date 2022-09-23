@@ -14,7 +14,7 @@ class UserWorker
     if ids.any?
       users = User.where(id: ids)
 
-      Sidekiq.logger.info "delete_fired_users: #{users.pluck(:fullname)}"
+      Sidekiq.logger.info "delete_fired_users: #{users.pluck(:fullname, :tn, :id_tn, :role_id)}"
       users.destroy_all if ids.any?
     end
   end
@@ -25,8 +25,11 @@ class UserWorker
     employees = UsersReference.info_users("id=in=(#{array_id_tn})").map { |employee| employee.slice('id') }
 
     users.find_each.map do |user|
+      Sidekiq.logger.info "log 1(user): #{user.inspect}"
+
       # Найти пользователя в базе сотрудников
       match = employees.find { |value| value['id'] == user.id_tn }
+      Sidekiq.logger.info "log 2(match): #{match.inspect}"
 
       next if match.present?
 
