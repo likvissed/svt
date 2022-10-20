@@ -13,6 +13,8 @@ ENV LC_ALL ru_RU.UTF-8
 
 ENV DEBIAN_FRONTEND noninteractive
 
+COPY .docker/etc/apt/sources.list /etc/apt/sources.list
+
 # Common packages
 RUN apt-get update -qq && apt-get install -yq --no-install-recommends \
     build-essential \

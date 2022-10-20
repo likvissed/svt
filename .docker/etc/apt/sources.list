@@ -1,0 +1,4 @@
+deb [trusted=yes] https://nexus.***REMOVED***.ru/repository/debian-deb buster main
+deb [trusted=yes] https://nexus.***REMOVED***.ru/repository/debian-security buster/updates main
+deb [trusted=yes] https://nexus.***REMOVED***.ru/repository/debian-deb buster-updates main
+deb [trusted=yes] https://nexus.***REMOVED***.ru/repository/debian-deb buster-backports main
