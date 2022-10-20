@@ -15,10 +15,10 @@
 
 # Ignore all logfiles and tempfiles.
 /log/*
-/tmp/*
+# /tmp/*
 /uploads/*
 !/log/.keep
-!/tmp/.keep
+# !/tmp/.keep
 
 # Ignore Byebug command history file.
 .byebug_history

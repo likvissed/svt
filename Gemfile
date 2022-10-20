@@ -1,4 +1,4 @@
-source 'https://rubygems.org'
+source 'https://nexus.***REMOVED***.ru/repository/gem-proxy/'
 
 git_source(:github) do |repo_name|
   repo_name = "#{repo_name}/#{repo_name}" unless repo_name.include?('/')

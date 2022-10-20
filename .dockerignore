@@ -12,9 +12,9 @@ pickle-email-*.html
 
 # Ignore all logfiles and tempfiles.
 /log/*
-/tmp/*
+# /tmp/*
 !/log/.keep
-!/tmp/.keep
+# !/tmp/.keep
 
 # secrets
 # config/initializers/secret_token.rb
@@ -59,7 +59,7 @@ yarn-debug.log*
 /spec/examples.txt
 /test/tmp/
 /test/version_tmp/
-/tmp/
+#/tmp/
 
 ## Documentation cache and generated files:
 /.yardoc/
